@@ -107,13 +107,13 @@ def xml_delete_attribute(file,element_name,attribute_name):
 # Graphical User Interface settings #
 
 # Add your new theme colors and settings
-my_new_theme = {"BACKGROUND": "#191e26",
-                "TEXT": "#d2d2d3",
+my_new_theme = {"BACKGROUND": "#22333e",
+                "TEXT": "#ffffff",
                 "INPUT": "#1c1e23",
                 "TEXT_INPUT": "#d2d2d3",
                 "SCROLL": "#1c1e23",
-                "BUTTON": ("#e6d922", "#313641"),
-                "PROGRESS": ("#e6d922", "#4a6ab3"),
+                "BUTTON": ("#11b893", "#313641"),
+                "PROGRESS": ("#11b893", "#4a6ab3"),
                 "BORDER": 1,
                 "SLIDER_DEPTH": 0,
                 "PROGRESS_DEPTH": 0}
@@ -127,32 +127,41 @@ font = ("Arial", 14)
 # Graphical User Interface layout #
 MENU_RIGHT_CLICK = ["",["Clear Output", "Version", "Exit"]]
 FILE_TYPES = (("CSV (Comma Seperated Value)",".csv"), ("XLSX (Excel Sheet)",".xlsx"), ("JSON (JavaScript Object Notation)",".json"),("HTML (Hypertext Markup Language)",".html"))
-
+FILE_TYPE_XML = (('XML (Extensible Markup Language)', '.xml'),)
 element_name_in_xml = []
 
-layout_add_attributes = [[sg.Text("Adding Attributes to XML:",text_color="#e6d922")],
-                         [sg.Text("Add attribute:"),sg.Input(size=(10,1),key="-ATTRIBUTE_NAME_INPUT-"),sg.Text("to element:"),sg.Combo(element_name_in_xml,size=(10,1),key="-ELEMENT_NAME_INPUT-"),sg.Text("with value:"),sg.Input(size=(10,1),key="-ATTRIBUTE_VALUE_INPUT-"),sg.Button("Add",key="-ADD_ATTRIBUTE_BUTTON-")]]
+layout_add_attributes = [[sg.Text("Adding Attributes to XML:",text_color="#11b893")],
+                         [sg.Text("Attribute:"),sg.Input(size=(15,1),key="-ATTRIBUTE_NAME_INPUT-"),sg.Text("to element:"),sg.Combo(element_name_in_xml,size=(15,1),key="-ELEMENT_NAME_INPUT-",readonly=True, auto_size_text=False),sg.Text("with value:"),sg.Input(size=(15,1),key="-ATTRIBUTE_VALUE_INPUT-"),sg.Button("Add",key="-ADD_ATTRIBUTE_BUTTON-")]]
 
-layout_delete_attributes = [[sg.Text("Deleting Attributes from XML:",text_color="#e6d922")],
-                            [sg.Text("Del attribute:"),sg.Input(size=(10,1),key="-DEL_ATTRIBUTE_NAME_INPUT-"),sg.Text("from element:"),sg.Combo(element_name_in_xml,size=(10,1),key="-DEL_ELEMENT_NAME_INPUT-"),sg.Button("Delete",key="-DELETE_ATTRIBUTE_BUTTON-")]]
+layout_delete_attributes = [[sg.Text("Deleting Attributes from XML:",text_color="#11b893")],
+                            [sg.Text("Attribute:"),sg.Input(size=(15,1),key="-DEL_ATTRIBUTE_NAME_INPUT-"),sg.Text("from element:"),sg.Combo(element_name_in_xml,size=(15,1),key="-DEL_ELEMENT_NAME_INPUT-", readonly=True, auto_size_text=False),sg.Button("Delete",key="-DELETE_ATTRIBUTE_BUTTON-")]]
 
-main_tab_layout =  [[sg.Text("XML Data Parser",font="Arial 28 bold underline",text_color="#e6d922",pad=20)],
-                    [sg.Text("Select XML File:",text_color="#e6d922")],
-                    [sg.Text("Input File:"),sg.Input(size=(43,1),key="-FILE_INPUT-"),sg.FileBrowse(button_text="Choose",file_types=FILE_TYPES),sg.Button("Read",key="-READ_FILE-")],
+main_tab_layout =  [[sg.Text("XML Data Parser",font=("Arial 24 bold underline"),text_color="#11b893", pad=10, justification="center")],
+                    [sg.Text("Select a XML File:",text_color="#11b893")],
+                    [sg.Input(size=(43,1),key="-FILE_INPUT_TAB1-"),sg.FileBrowse(button_text="Choose",file_types=FILE_TYPE_XML),sg.Button("Read",key="-READ_FILE-")],
                     [sg.Checkbox(text="Show Add Attributes",default=False,key="-CHECKBOX_ADD_ATTRIBUTES-",enable_events=True),sg.Checkbox(text="Show Delete Attributes",default=False,key="-CHECKBOX_DELETE_ATTRIBUTES-", enable_events=True)],
                     [sg.pin(sg.Column(layout_add_attributes,key="-ADD_ATTRIBUTES_COLUMN-",visible=False))],
                     [sg.pin(sg.Column(layout_delete_attributes,key="-DELETE_ATTRIBUTES_COLUMN-",visible=False))],
-                    [sg.Text("Convert the XML file to a different one:",text_color="#e6d922")],
-                    [sg.Text("Output File:"),sg.Input(size=(42,1),key="-FILE_OUTPUT-"),sg.FileSaveAs(file_types=FILE_TYPES,target="-FILE_OUTPUT-",key="-SAVE_AS_BUTTON-"),sg.Button("Save",key="-CONVERT-")]]
+                    [sg.Text("Conversion", font=("Arial 18 bold"),text_color="#11b893", pad=10)],
+                    [sg.Text("Convert XML file selected filetype:",text_color="#11b893")],
+                    [sg.Input(size=(42,1),key="-FILE_OUTPUT_TAB1-"),sg.FileSaveAs(button_text="Save as",file_types=FILE_TYPES,target="-FILE_OUTPUT_TAB1-",key="-SAVE_AS_BUTTON-"),sg.Button("Convert",key="-CONVERT-")]]
 
-other_tab_layout = [[sg.Text("XML Data Parser",font="Arial 28 bold underline",text_color="#e6d922",pad=20)],
-                    [sg.Text("Select Folder for iteration",text_color="#e6d922")],
-                    [sg.Text("Folder:"),sg.Input(size=(43,1),key="-FOLDER_INPUT-"),sg.FolderBrowse(target="-FOLDER_INPUT-")]]
+other_tab_layout = [[sg.Text("XML Data Parser",font="Arial 24 bold underline",text_color="#11b893",pad=10)],
+                    [sg.Text("Select a Folder for XML Batch Evaluation",text_color="#11b893")],
+                    [sg.Input(size=(43,1),key="-FOLDER_INPUT-"),sg.FolderBrowse(target="-FOLDER_INPUT-")],
+                    [sg.Text("Filtering", font=("Arial 18 bold"),text_color="#11b893",pad=10)],
+                    [sg.Text("XML Filter Options for Evaluation:",text_color="#11b893")],
+                    [sg.Text("Attribute:"),sg.Input(size=(15,1),key="-ATTRIBUTE-"),sg.Text("Element:"),sg.Combo(element_name_in_xml,size=(15,1),key="-ELEMENT-",readonly=True, auto_size_text=False)],
+                    [sg.Text("Save Evaluation", font=("Arial 18 bold"),text_color="#11b893",pad=10)],
+                    [sg.Text("Select a folder where to save the evaluation (Evaluations are saved as CSV Files):",text_color="#11b893")],
+                    [sg.Input(size=(42,1),key="-FILE_OUTPUT_TAB2-"),sg.FolderBrowse(target="-FOLDER_INPUT_TAB2-"),sg.Button("Save",key="-SAVE_EVALUATION-")]]
 
-layout = [[sg.TabGroup([[sg.Tab('Tab 1', main_tab_layout, tooltip='tip'), sg.Tab('Tab 2', other_tab_layout)]], tooltip='TIP2')],    
-          [sg.Multiline(size=(70,10),key="-OUTPUT_WINDOW-")]]    
+layout_output = [[sg.Multiline(size=(82,18),key="-OUTPUT_WINDOW-")]]
 
-window = sg.Window("Data Parser",layout,font=font, finalize=True,right_click_menu=MENU_RIGHT_CLICK)
+layout = [[sg.TabGroup([[sg.Tab('Convert and Manipulate', main_tab_layout), sg.Tab('Batch Evaluation', other_tab_layout)]], selected_title_color="#11b893",expand_x=True)],    
+          [sg.Frame("Program Output",layout_output)]]    
+
+window = sg.Window("XMLuvation - by Jovan",layout,font=font, finalize=True,right_click_menu=MENU_RIGHT_CLICK)
 
 # Main Window events and functionality #
 while True:
@@ -162,10 +171,11 @@ while True:
         break
     
     # VARIABLES #
-    input_path = values["-FILE_INPUT-"]
-    output_path = values["-FILE_OUTPUT-"]
-    input_file_extension = Path(input_path).stem
-    output_file_extension = Path(output_path).stem
+    input_path_tab1 = values["-FILE_INPUT_TAB1-"]
+    output_path_tab1 = values["-FILE_OUTPUT_TAB1-"]
+    input_file_extension = Path(input_path_tab1).stem
+    output_file_extension = Path(output_path_tab1).stem
+    output_path_tab2 = values["-FILE_OUTPUT_TAB2-"]
     element_name = values["-ELEMENT_NAME_INPUT-"]
     del_element_name = values["-DEL_ELEMENT_NAME_INPUT-"]
     del_attribute_name = values["-DEL_ATTRIBUTE_NAME_INPUT-"]
@@ -192,21 +202,21 @@ while True:
             window["-FOLDER_INPUT_COLUMN-"].update(visible=False)
 
     if event == "-READ_FILE-":
-        if len(input_path) == 0 or not input_path.endswith(".xml"):
+        if len(input_path_tab1) == 0 or not input_path_tab1.endswith(".xml"):
             window["-OUTPUT_WINDOW-"].update("Error, no Input File selected or wrong filetype")
         else:
-            window.perform_long_operation(lambda: xml_parser(input_path),"-OUTPUT_WINDOW-")
+            window.perform_long_operation(lambda: xml_parser(input_path_tab1),"-OUTPUT_WINDOW-")
         
     if event == "-ADD_ATTRIBUTE_BUTTON-":
-        if len(input_path) == 0 or not input_path.endswith(".xml"):
+        if len(input_path_tab1) == 0 or not input_path_tab1.endswith(".xml"):
             window["-OUTPUT_WINDOW-"].update("Error, no Input File selected or wrong filetype")
         else:
-            window.perform_long_operation(lambda: xml_add_attribute(input_path,element_name,attribute_name,attribute_value),"-OUTPUT_WINDOW-")
+            window.perform_long_operation(lambda: xml_add_attribute(input_path_tab1,element_name,attribute_name,attribute_value),"-OUTPUT_WINDOW-")
     if event =="-DELETE_ATTRIBUTE_BUTTON-":
-        if len(input_path) == 0 or not input_path.endswith(".xml"):
+        if len(input_path_tab1) == 0 or not input_path_tab1.endswith(".xml"):
             window["-OUTPUT_WINDOW-"].update("Empty Inputs, can't delete Attribute.")
         else:
-            window.perform_long_operation(lambda: xml_delete_attribute(input_path,del_element_name,del_attribute_name),"-OUTPUT_WINDOW-")
+            window.perform_long_operation(lambda: xml_delete_attribute(input_path_tab1,del_element_name,del_attribute_name),"-OUTPUT_WINDOW-")
             
     if event == "-CONVERT-":
         if len(values["-FILE_OUTPUT-"]) == 0:
@@ -214,7 +224,7 @@ while True:
         elif not values["-FILE_OUTPUT-"].endswith(".csv"):
             window["-OUTPUT_WINDOW-"].print("Wrong filetype to save as")
         else:
-            window.perform_long_operation(lambda: convert_files(input_path, output_path, input_file_extension, output_file_extension),"-OUTPUT_WINDOW-")
+            window.perform_long_operation(lambda: convert_files(input_path_tab1, output_path_tab1, input_file_extension, output_file_extension),"-OUTPUT_WINDOW-")
         
     if event == "Clear Output":
         window["-OUTPUT_WINDOW-"].update("")
