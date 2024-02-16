@@ -55,23 +55,28 @@ def convert_files(input_file, output_file, input_ext, output_ext):
     except Exception as e:
         window["-OUTPUT_WINDOW-"].update(f"ERROR: {e}", text_color="#ff4545")
         
-def xml_parser(file):
+def get_attributes(root, tag):
+    attributes = []
+    for elem in root.iter(tag):
+        attributes.extend(elem.attrib.keys())
+    return set(attributes)
 
+def xml_parser(file):
+    # Parse XML file
     tree = ET.parse(file)
     root = tree.getroot()
 
     xml_string = ET.tostring(root).decode("UTF-8")
     window["-OUTPUT_WINDOW-"].update(xml_string)
     
-    # Get elements in XML File:
+    # Get tags in XML File:
     tags_xml = [elem.tag for elem in root.iter()]
     tags_to_set = set(tags_xml)
     tags_to_list = list(tags_to_set)
     
     # Add Elements to ComboBox List
-    window["-ELEMENT_NAME_INPUT-"].update(values=tags_to_list)
-    window["-DEL_ELEMENT_NAME_INPUT-"].update(values=tags_to_list)
-    
+    window["-XML_TAG_NAME-"].update(values=tags_to_list)
+
 # Graphical User Interface settings #
 
 # Add your new theme colors and settings
@@ -105,12 +110,12 @@ layout_xml_export = [[sg.Text("Select XML File that you want to read:",text_colo
                     [sg.Text("Output:"),sg.Input(size=(42,1),key="-FILE_EXPORT_OUTPUT-"),sg.FileSaveAs(button_text="Save as",file_types=FILE_TYPES,target="-FILE_EXPORT_OUTPUT-",key="-SAVE_AS_BUTTON_EXPORT-"),sg.Button("Export",key="-EXPORT-")]]
 
 layout_xml_eval = [[sg.Text("Multi-XML Files Iteration in a Folder:",text_color="#11b893")],
-                    [sg.Text("Folder:"),sg.Input(size=(43,1),key="-FOLDER_EVALUATION_INPUT-"),sg.FolderBrowse(button_text="Browse Folder",target="-FOLDER_EVALUATION_INPUT-"),sg.Button("Read",key="-READ_BUTTON_EVALUATION-")],
+                    [sg.Text("Path:"),sg.Input(size=(43,1),key="-FOLDER_EVALUATION_INPUT-"),sg.FolderBrowse(button_text="Browse Folder",target="-FOLDER_EVALUATION_INPUT-"),sg.Button("Read",key="-READ_BUTTON_EVALUATION-")],
                     [sg.Text("Filtering Options for XML Evaluation:",text_color="#11b893")],
-                    [sg.Text("Tag:"),sg.Combo(tag_name,size=(10,1)),sg.Text("Tag Value:"),sg.Input(size=(10,1))],
-                    [sg.Text("Att:  "),sg.Combo(attribute_name,size=(10,1)),sg.Text("Att Value:  "),sg.Input(size=(10,1))],
+                    [sg.Text("Tag:"),sg.Combo(tag_name,size=(10,1),key="-XML_TAG_NAME-", enable_events=True),sg.Text("Tag Value:"),sg.Input(size=(10,1),key="-XML_TAG_VALUE-")],
+                    [sg.Text("Att:  "),sg.Combo(attribute_name,size=(10,1),key="-XML_ATTRIBUTE_NAME-"),sg.Text("Att Value:  "),sg.Input(size=(10,1),key="-XML_ATTRIBUTE_VALUE-")],
                     [sg.Text("Export Evaluation as CSV File:",text_color="#11b893")],
-                    [sg.Text("Folder:"),sg.Input(size=(43,1),key="-FOLDER_EVALUATION_OUTPUT-"),sg.FolderBrowse(button_text="Browse Folder",target="-FOLDER_EVALUATION_OUTPUT-"),sg.Button("Export")]]
+                    [sg.Text("Path:"),sg.Input(size=(43,1),key="-FOLDER_EVALUATION_OUTPUT-"),sg.FolderBrowse(button_text="Browse Folder",target="-FOLDER_EVALUATION_OUTPUT-"),sg.Button("Export")]]
 
 layout_title =  [[sg.Text("XMLuvation",font=("Arial 24 bold"),text_color="#11b893",pad=10, justification="center")]]
 
