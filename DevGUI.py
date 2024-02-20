@@ -6,6 +6,7 @@ import xml.etree.ElementTree as ET
 from logging.handlers import RotatingFileHandler
 import logging
 import csv
+import random
 
 # Create a rotating file handler
 # file_handler = RotatingFileHandler(filename="Log.log",
@@ -80,21 +81,23 @@ def xml_parser(file):
 # Graphical User Interface settings #
 
 # Add your new theme colors and settings
-my_new_theme = {"BACKGROUND": "#22333e",
-                "TEXT": "#ffffff",
-                "INPUT": "#1c1e23",
-                "TEXT_INPUT": "#d2d2d3",
-                "SCROLL": "#1c1e23",
-                "BUTTON": ("#11b893", "#313641"),
-                "PROGRESS": ("#11b893", "#4a6ab3"),
-                "BORDER": 1,
-                "SLIDER_DEPTH": 0,
-                "PROGRESS_DEPTH": 0}
+LightTheme = {
+'BACKGROUND': '#081705', 
+'TEXT': '#FFFFFF', 
+'INPUT': '#00303a', 
+'TEXT_INPUT': '#ffffff',
+'SCROLL': '#689F38',
+'BUTTON': ('#212121', '#006699'),
+'PROGRESS': ('#4CAF50', '#81C784'),
+'BORDER': 0,
+'SLIDER_DEPTH': 1,
+'PROGRESS_DEPTH': 0}
+
 # Add your dictionary to the PySimpleGUI themes
-sg.theme_add_new("MyYellow", my_new_theme)
+sg.theme_add_new("LightTheme", LightTheme)
 
 # Switch your theme to use the newly added one. You can add spaces to make it more readable
-sg.theme("MyYellow")
+sg.theme("LightTheme")
 font = ("Arial", 14)
 
 # Graphical User Interface layout #
@@ -104,27 +107,33 @@ FILE_TYPE_XML = (('XML (Extensible Markup Language)', '.xml'),)
 tag_name = []
 attribute_name = []
 
-layout_xml_export = [[sg.Text("Select XML File that you want to read:",text_color="#11b893")],
-                    [sg.Text("File:  "),sg.Input(size=(43,1),key="-FILE_EXPORT_INPUT-"),sg.FileBrowse(button_text="Choose",file_types=FILE_TYPE_XML),sg.Button("Read",key="-READ_BUTTON_EXPORT-")],
-                    [sg.Text("Export XML File to a different filetype:",text_color="#11b893")],
-                    [sg.Text("Output:"),sg.Input(size=(42,1),key="-FILE_EXPORT_OUTPUT-"),sg.FileSaveAs(button_text="Save as",file_types=FILE_TYPES,target="-FILE_EXPORT_OUTPUT-",key="-SAVE_AS_BUTTON_EXPORT-"),sg.Button("Export",key="-EXPORT-")]]
-
-layout_xml_eval = [[sg.Text("Multi-XML Files Iteration in a Folder:",text_color="#11b893")],
-                    [sg.Text("Path:"),sg.Input(size=(43,1),key="-FOLDER_EVALUATION_INPUT-"),sg.FolderBrowse(button_text="Browse Folder",target="-FOLDER_EVALUATION_INPUT-"),sg.Button("Read",key="-READ_BUTTON_EVALUATION-")],
-                    [sg.Text("Filtering Options for XML Evaluation:",text_color="#11b893")],
-                    [sg.Text("Tag:"),sg.Combo(tag_name,size=(10,1),key="-XML_TAG_NAME-", enable_events=True),sg.Text("Tag Value:"),sg.Input(size=(10,1),key="-XML_TAG_VALUE-")],
-                    [sg.Text("Att:  "),sg.Combo(attribute_name,size=(10,1),key="-XML_ATTRIBUTE_NAME-"),sg.Text("Att Value:  "),sg.Input(size=(10,1),key="-XML_ATTRIBUTE_VALUE-")],
-                    [sg.Text("Export Evaluation as CSV File:",text_color="#11b893")],
-                    [sg.Text("Path:"),sg.Input(size=(43,1),key="-FOLDER_EVALUATION_OUTPUT-"),sg.FolderBrowse(button_text="Browse Folder",target="-FOLDER_EVALUATION_OUTPUT-"),sg.Button("Export")]]
-
 layout_title =  [[sg.Text("XMLuvation",font=("Arial 24 bold"),text_color="#11b893",pad=10, justification="center")]]
 
-layout_output = [[sg.Multiline(size=(80,18),key="-OUTPUT_WINDOW-")]]
+layout_xml_export = [[sg.Text("Select XML File that you want to read:",text_color="#11b893")],
+                    [sg.Input(size=(22,1),key="-FILE_EXPORT_INPUT-"),sg.FileBrowse(button_text="Choose",file_types=FILE_TYPE_XML),sg.Button("Read",key="-READ_BUTTON_EXPORT-")],
+                    [sg.Text("Export XML File to a different filetype:",text_color="#11b893")],
+                    [sg.Input(size=(22,1),key="-FILE_EXPORT_OUTPUT-"),sg.FileSaveAs(button_text="Save as",file_types=FILE_TYPES,target="-FILE_EXPORT_OUTPUT-",key="-SAVE_AS_BUTTON_EXPORT-"),sg.Button("Export",key="-EXPORT-")]]
 
-layout = [[sg.Column(layout_title,justification="center")],
-          [sg.Frame("XML Export as Specific Filetype", layout_xml_export,expand_x=True)],
-          [sg.Frame("XML Evaluation and Filtering",layout_xml_eval,expand_x=True)],
-          [sg.Frame("Program Output", layout_output,expand_x=True)]]
+layout_xml_eval = [[sg.Text("Multi-XML Files Iteration in a Folder:",text_color="#11b893")],
+                    [sg.Input(size=(22,1),key="-FOLDER_EVALUATION_INPUT-"),sg.FolderBrowse(button_text="Browse Folder",target="-FOLDER_EVALUATION_INPUT-"),sg.Button("Read",key="-READ_BUTTON_EVALUATION-")],
+                    [sg.Text("Filtering Options for XML Evaluation:",text_color="#11b893")],
+                    [sg.Text("Tag name:"),sg.Combo(tag_name,size=(10,1),key="-XML_TAG_NAME-"),sg.Text("Tag Value:"),sg.Input(size=(10,1),key="-XML_TAG_VALUE-")],
+                    [sg.Text("Att name:  "),sg.Combo(attribute_name,size=(10,1),key="-XML_ATTRIBUTE_NAME-"),sg.Text("Att Value:  "),sg.Input(size=(10,1),key="-XML_ATTRIBUTE_VALUE-")],
+                    [sg.Text("Export Evaluation as CSV File:",text_color="#11b893")],
+                    [sg.Input(size=(22,1),key="-FOLDER_EVALUATION_OUTPUT-"),sg.FolderBrowse(button_text="Browse Folder",target="-FOLDER_EVALUATION_OUTPUT-"),sg.Button("Export")]]
+
+layout_output = [[sg.Multiline(size=(60,19),key="-OUTPUT_WINDOW-")]]
+
+frame_xml_export = sg.Frame("XML Export as Specific Filetype", layout_xml_export, expand_x=True)
+frame_xml_eval = sg.Frame("XML Evaluation and Filtering", layout_xml_eval, expand_x=True)
+frame_output = sg.Frame("Program Output", layout_output, expand_x=True)
+
+layout = [
+    [
+        sg.Column([[frame_xml_export], [frame_xml_eval],[sg.VSep()]], expand_y=True),
+        sg.Column([[frame_output]], expand_y=True)
+    ]
+]
 
 window = sg.Window("XMLuvation - by Jovan",layout,font=font, finalize=True,right_click_menu=MENU_RIGHT_CLICK)
 
@@ -146,6 +155,11 @@ while True:
             window["-OUTPUT_WINDOW-"].update("Error, no Input File selected or wrong filetype")
         else:
             window.perform_long_operation(lambda: xml_parser(input_path),"-OUTPUT_WINDOW-")
+    
+    if event == "-XML_TAG_NAME-":
+            selected_tag = values["-XML_TAG_NAME-"]
+            attributes_xml = get_attributes(selected_tag)
+            window["-ATTRIBUTES-"].update(values=attributes_xml)
             
     if event == "-EXPORT-":
         if len(values["-FILE_EXPORT_OUTPUT-"]) == 0:
