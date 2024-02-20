@@ -1,0 +1,22 @@
+Root Tag: bookstore - Root Attribute: {}
+
+Child Tag: book - Child Attribute: {'category': 'cooking'}
+	Childs_child Tag: title - Childs_child Attribute: {'lang': 'en'}
+	Childs_child Tag: author - Childs_child Attribute: {}
+	Childs_child Tag: year - Childs_child Attribute: {}
+	Childs_child Tag: price - Childs_child Attribute: {}
+Child Tag: book - Child Attribute: {'category': 'children'}
+	Childs_child Tag: title - Childs_child Attribute: {'lang': 'en'}
+	Childs_child Tag: author - Childs_child Attribute: {}
+	Childs_child Tag: year - Childs_child Attribute: {}
+	Childs_child Tag: price - Childs_child Attribute: {}
+Child Tag: book - Child Attribute: {'category': 'web'}
+	Childs_child Tag: title - Childs_child Attribute: {'lang': 'en'}
+	Childs_child Tag: author - Childs_child Attribute: {}
+	Childs_child Tag: year - Childs_child Attribute: {}
+	Childs_child Tag: price - Childs_child Attribute: {}
+Child Tag: book - Child Attribute: {'category': 'code'}
+	Childs_child Tag: title - Childs_child Attribute: {'lang': 'en'}
+	Childs_child Tag: author - Childs_child Attribute: {}
+	Childs_child Tag: year - Childs_child Attribute: {}
+	Childs_child Tag: price - Childs_child Attribute: {}

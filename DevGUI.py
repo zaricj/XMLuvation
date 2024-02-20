@@ -97,8 +97,8 @@ LightTheme = {
 sg.theme_add_new("LightTheme", LightTheme)
 
 # Switch your theme to use the newly added one. You can add spaces to make it more readable
-sg.theme("LightTheme")
-font = ("Arial", 14)
+sg.theme("SystemDefault")
+font = ("Arial", 10)
 
 # Graphical User Interface layout #
 MENU_RIGHT_CLICK = ["",["Clear Output", "Version", "Exit"]]
@@ -107,22 +107,22 @@ FILE_TYPE_XML = (('XML (Extensible Markup Language)', '.xml'),)
 tag_name = []
 attribute_name = []
 
-layout_title =  [[sg.Text("XMLuvation",font=("Arial 24 bold"),text_color="#11b893",pad=10, justification="center")]]
+layout_title =  [[sg.Text("XMLuvation",font=("Arial 24 bold"),pad=10, justification="center")]]
 
-layout_xml_export = [[sg.Text("Select XML File that you want to read:",text_color="#11b893")],
-                    [sg.Input(size=(22,1),key="-FILE_EXPORT_INPUT-"),sg.FileBrowse(button_text="Choose",file_types=FILE_TYPE_XML),sg.Button("Read",key="-READ_BUTTON_EXPORT-")],
-                    [sg.Text("Export XML File to a different filetype:",text_color="#11b893")],
-                    [sg.Input(size=(22,1),key="-FILE_EXPORT_OUTPUT-"),sg.FileSaveAs(button_text="Save as",file_types=FILE_TYPES,target="-FILE_EXPORT_OUTPUT-",key="-SAVE_AS_BUTTON_EXPORT-"),sg.Button("Export",key="-EXPORT-")]]
+layout_xml_export = [[sg.Text("Select XML File that you want to read:")],
+                    [sg.Input(size=(41,2),font="Arial 8",key="-FILE_EXPORT_INPUT-"),sg.FileBrowse(button_text="Choose",file_types=FILE_TYPE_XML),sg.Button("Read",key="-READ_BUTTON_EXPORT-")],
+                    [sg.Text("Export XML File to a different filetype:")],
+                    [sg.Input(size=(41,2),font="Arial 8",key="-FILE_EXPORT_OUTPUT-"),sg.FileSaveAs(button_text="Save as",file_types=FILE_TYPES,target="-FILE_EXPORT_OUTPUT-",key="-SAVE_AS_BUTTON_EXPORT-"),sg.Button("Export",key="-EXPORT-")]]
 
-layout_xml_eval = [[sg.Text("Multi-XML Files Iteration in a Folder:",text_color="#11b893")],
-                    [sg.Input(size=(22,1),key="-FOLDER_EVALUATION_INPUT-"),sg.FolderBrowse(button_text="Browse Folder",target="-FOLDER_EVALUATION_INPUT-"),sg.Button("Read",key="-READ_BUTTON_EVALUATION-")],
-                    [sg.Text("Filtering Options for XML Evaluation:",text_color="#11b893")],
-                    [sg.Text("Tag name:"),sg.Combo(tag_name,size=(10,1),key="-XML_TAG_NAME-"),sg.Text("Tag Value:"),sg.Input(size=(10,1),key="-XML_TAG_VALUE-")],
-                    [sg.Text("Att name:  "),sg.Combo(attribute_name,size=(10,1),key="-XML_ATTRIBUTE_NAME-"),sg.Text("Att Value:  "),sg.Input(size=(10,1),key="-XML_ATTRIBUTE_VALUE-")],
-                    [sg.Text("Export Evaluation as CSV File:",text_color="#11b893")],
-                    [sg.Input(size=(22,1),key="-FOLDER_EVALUATION_OUTPUT-"),sg.FolderBrowse(button_text="Browse Folder",target="-FOLDER_EVALUATION_OUTPUT-"),sg.Button("Export")]]
+layout_xml_eval = [[sg.Text("Multi-XML Files Iteration in a Folder:")],
+                    [sg.Input(size=(35,2),font="Arial 8",key="-FOLDER_EVALUATION_INPUT-"),sg.FolderBrowse(button_text="Browse Folder",target="-FOLDER_EVALUATION_INPUT-"),sg.Button("Read",key="-READ_BUTTON_EVALUATION-")],
+                    [sg.Text("Filtering Options for XML Evaluation:")],
+                    [sg.Text("Tag name:"),sg.Combo(tag_name,size=(14,1),auto_size_text=False,key="-XML_TAG_NAME-"),sg.Text("Tag Value:"),sg.Input(size=(14,1),key="-XML_TAG_VALUE-")],
+                    [sg.Text("Att name: "),sg.Combo(attribute_name,size=(14,1),auto_size_text=False,key="-XML_ATTRIBUTE_NAME-"),sg.Text("Att Value:  "),sg.Input(size=(14,1),key="-XML_ATTRIBUTE_VALUE-")],
+                    [sg.Text("Export Evaluation as CSV File:")],
+                    [sg.Input(size=(35,2),font="Arial 8",key="-FOLDER_EVALUATION_OUTPUT-"),sg.FolderBrowse(button_text="Browse Folder",target="-FOLDER_EVALUATION_OUTPUT-"),sg.Button("Export")]]
 
-layout_output = [[sg.Multiline(size=(60,19),key="-OUTPUT_WINDOW-")]]
+layout_output = [[sg.Multiline(size=(60,21),write_only=False,key="-OUTPUT_WINDOW-")]]
 
 frame_xml_export = sg.Frame("XML Export as Specific Filetype", layout_xml_export, expand_x=True)
 frame_xml_eval = sg.Frame("XML Evaluation and Filtering", layout_xml_eval, expand_x=True)
@@ -130,7 +130,7 @@ frame_output = sg.Frame("Program Output", layout_output, expand_x=True)
 
 layout = [
     [
-        sg.Column([[frame_xml_export], [frame_xml_eval],[sg.VSep()]], expand_y=True),
+        sg.Column([[frame_xml_export], [frame_xml_eval]], expand_y=True),
         sg.Column([[frame_output]], expand_y=True)
     ]
 ]
