@@ -118,7 +118,7 @@ layout_xml_eval = [[sg.Text("Multi-XML Files Iteration in a Folder:")],
                     [sg.Input(size=(35,2),font="Arial 8",key="-FOLDER_EVALUATION_INPUT-"),sg.FolderBrowse(button_text="Browse Folder",target="-FOLDER_EVALUATION_INPUT-"),sg.Button("Read",key="-READ_BUTTON_EVALUATION-")],
                     [sg.Text("Filtering Options for XML Evaluation:")],
                     [sg.Text("Tag name:"),sg.Combo(tag_name,size=(14,1),auto_size_text=False,key="-XML_TAG_NAME-"),sg.Text("Tag Value:"),sg.Input(size=(14,1),key="-XML_TAG_VALUE-")],
-                    [sg.Text("Att name: "),sg.Combo(attribute_name,size=(14,1),auto_size_text=False,key="-XML_ATTRIBUTE_NAME-"),sg.Text("Att Value:  "),sg.Input(size=(14,1),key="-XML_ATTRIBUTE_VALUE-")],
+                    [sg.Text("Att name: "),sg.Combo(attribute_name,size=(14,1),auto_size_text=False,key="-XML_ATTRIBUTE_NAME-"),sg.Text("Att Value: "),sg.Input(size=(14,1),key="-XML_ATTRIBUTE_VALUE-")],
                     [sg.Text("Export Evaluation as CSV File:")],
                     [sg.Input(size=(35,2),font="Arial 8",key="-FOLDER_EVALUATION_OUTPUT-"),sg.FolderBrowse(button_text="Browse Folder",target="-FOLDER_EVALUATION_OUTPUT-"),sg.Button("Export")]]
 
