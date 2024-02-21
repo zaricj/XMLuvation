@@ -1,40 +1,33 @@
 import csv
 import xml.etree.ElementTree as ET
 
-datafile = "Data.xml"
+datafile = "movies.xml"
 
 tree = ET.parse(datafile)
 root = tree.getroot()
 
 root_tag = root.tag
-print(root_tag)
+print(f"Root Tag: {root_tag}")
 root_attribute = root.attrib
 
 if root_attribute:
     print(root_attribute)
 else:
     print("Root has no attributes")
-
+    
 for child in root:
     print(f"Child Tag: {child.tag} - Child Attribute: {child.attrib}")
-    
-for element in child:
-    print(f"Element Tag: {element.tag} - Element Attribute: {element.attrib}")
-    
-for element_name in root.iter("country"):
-    print(f"{element_name.tag}: {element_name.attrib}")
-    
-for element_name1 in root.findall("country"):
-    rank = element_name1.find("rank").text
-    name = element_name1.get("name")
-    print(name, rank)
+    for children in child:
+        print(f"Children Tag: {children.tag} - Children Attribute: {children.attrib}")
+        for sibling in children:
+            print(f"Sibling tag: {sibling.tag} - Sibling Attribute {sibling.attrib}")
 
 #with open("text.txt", "w") as f:
-#    f.write(f"Root Tag: {root_tag} - Root Attribute: {root_attribute}\n\n")
+#    f.write(f"Root {root_tag} - {root_attribute}\n\n")
 #
 #    for child in root:
-#        f.write(f"Child Tag: {child.tag} - Child Attribute: {child.attrib}\n")
-#        for childs_child in child:
-#            f.write(f"\tChilds_child Tag: {childs_child.tag} - Childs_child Attribute: {childs_child.attrib}\n")
-#            for sibling in childs_child:
-#                f.write(f"\t\tSibling Tag: {sibling.tag} - Sibling Attribute: {sibling.attrib}\n")
+#        f.write(f"CHILD {child.tag} - {child.attrib} - {child.text}\n")
+#        for children in child:
+#            f.write(f"\t CHILDREN {children.tag} - {children.attrib} - {children.text}\n")
+#            for sibling in children:
+#                f.write(f"\t\t SIBLING {sibling.tag} - {sibling.attrib} - {sibling.text}")

@@ -1,22 +1,24 @@
-Root Tag: bookstore - Root Attribute: {}
+Root collection - {}
 
-Child Tag: book - Child Attribute: {'category': 'cooking'}
-	Childs_child Tag: title - Childs_child Attribute: {'lang': 'en'}
-	Childs_child Tag: author - Childs_child Attribute: {}
-	Childs_child Tag: year - Childs_child Attribute: {}
-	Childs_child Tag: price - Childs_child Attribute: {}
-Child Tag: book - Child Attribute: {'category': 'children'}
-	Childs_child Tag: title - Childs_child Attribute: {'lang': 'en'}
-	Childs_child Tag: author - Childs_child Attribute: {}
-	Childs_child Tag: year - Childs_child Attribute: {}
-	Childs_child Tag: price - Childs_child Attribute: {}
-Child Tag: book - Child Attribute: {'category': 'web'}
-	Childs_child Tag: title - Childs_child Attribute: {'lang': 'en'}
-	Childs_child Tag: author - Childs_child Attribute: {}
-	Childs_child Tag: year - Childs_child Attribute: {}
-	Childs_child Tag: price - Childs_child Attribute: {}
-Child Tag: book - Child Attribute: {'category': 'code'}
-	Childs_child Tag: title - Childs_child Attribute: {'lang': 'en'}
-	Childs_child Tag: author - Childs_child Attribute: {}
-	Childs_child Tag: year - Childs_child Attribute: {}
-	Childs_child Tag: price - Childs_child Attribute: {}
+CHILD genre - {'category': 'Action'} - 
+        
+	 CHILDREN decade - {'years': '1980s'} - 
+            
+		 SIBLING movie - {'favorite': 'True', 'title': 'Indiana Jones: The raiders of the lost Ark'} - 
+                		 SIBLING movie - {'favorite': 'True', 'title': 'THE KARATE KID'} - 
+               		 SIBLING movie - {'favorite': 'False', 'title': 'Back 2 the Future'} - 
+               	 CHILDREN decade - {'years': '1990s'} - 
+            
+		 SIBLING movie - {'favorite': 'False', 'title': 'X-Men'} - 
+               		 SIBLING movie - {'favorite': 'True', 'title': 'Batman Returns'} - 
+               		 SIBLING movie - {'favorite': 'False', 'title': 'Reservoir Dogs'} - 
+               CHILD genre - {'category': 'Thriller'} - 
+        
+	 CHILDREN decade - {'years': '1970s'} - 
+            
+		 SIBLING movie - {'favorite': 'False', 'title': 'ALIEN'} - 
+                	 CHILDREN decade - {'years': '1980s'} - 
+            
+		 SIBLING movie - {'favorite': 'True', 'title': "Ferris Bueller's Day Off"} - 
+                		 SIBLING movie - {'favorite': 'FALSE', 'title': 'American Psycho'} - 
+                

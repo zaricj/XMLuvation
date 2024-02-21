@@ -46,7 +46,10 @@ def convert_files(input_file, output_file, input_ext, output_ext):
         if read_func is None or write_func is None:
             window["-OUTPUT_WINDOW-"].update("Unsupported conversion!", text_color="#ff4545")
             return
-    
+
+        # Alternate try only for csv tho: 
+        # df = pd.DataFrame(parsed_dict)
+        # df.to_csv("parsed_xml_data.csv", index=False)
         df = read_func(input_file)
         write_func(df, output_file)
         window["-OUTPUT_WINDOW-"].update(f"Successfully converted {Path(input_file).stem} {input_ext.upper()} to {Path(output_file).stem} {output_ext.upper()}", text_color="#51e98b")
