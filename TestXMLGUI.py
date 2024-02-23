@@ -81,13 +81,16 @@ def parse_xml(xml_file, tag_name=None, tag_value=None, attribute_name=None, attr
             if attribute_name and attribute_value:
                 if element.attrib.get(attribute_name) != attribute_value:
                     continue
-            
-            yield {
+                
+            data = {
                 'Tag Name': element.tag,
                 'Tag Value': element.text,
                 'Attributes': element.attrib,
                 'Attribute Value': element.attrib.get(attribute_name)
             }
+            
+            yield data
+            
     except Exception as e:
         print(f"Error parsing {xml_file}: {e}")
 
