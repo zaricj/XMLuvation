@@ -1,7 +1,7 @@
 import csv
 import xml.etree.ElementTree as ET
 
-datafile = "Data.xml"
+datafile = "./XML_Files/Data.xml"
 
 tree = ET.parse(datafile)
 root = tree.getroot()
