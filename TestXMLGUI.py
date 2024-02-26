@@ -83,36 +83,34 @@ def parse_xml(xml_file, filters):
         print(f"Error parsing {xml_file}: {e}")
         return False
 
-def build_query(filters):
+def build_query(filters, additional_data):
     """
-    Builds a dictionary containing the filtering criteria.
+    Builds a dictionary containing the filtering criteria and additional data.
 
     Args:
-        filters (list): List of filters
+        filters (list): List containing dictionaries representing filtering criteria.
+        additional_data (list): List of strings representing additional data to log.
 
     Returns:
-        dict: Dictionary containing the filtering criteria.
+        dict: Dictionary containing combined filtering criteria and additional data.
     """
     query = {}
-    for filter in filter:
-        key = filter.get("key")
-        value = filter.get("value")
-        if key and value:
-            query[key] = value
+    query["filters"] = filters
+    query["additional_data"] = additional_data
     return query
 
 def log_matching_files(folder_path, query, output_filename):
     """
-    Logs information about matching XML files to a CSV file.
+    Logs information about matching XML files and additional data to a CSV file.
 
     Args:
         folder_path (str): Path to the folder containing XML files.
-        query (dict): Dictionary containing the filtering criteria.
+        query (dict): Dictionary containing filtering criteria and additional data.
         output_filename (str): Path to the output CSV file.
     """
     csv_exists = os.path.isfile(output_filename)
     with open(output_filename, 'a' if csv_exists else 'w', newline='') as csvfile:
-        fieldnames = ['File', 'Tag Name', 'Tag Value', 'Attributes', 'Attribute Value']
+        fieldnames = ['File', 'Tag Name', 'Tag Value', 'Attributes', 'Attribute Value'] + query["additional_data"]
         writer = csv.DictWriter(csvfile, fieldnames=fieldnames)
         if not csv_exists:
             writer.writeheader()
@@ -120,7 +118,7 @@ def log_matching_files(folder_path, query, output_filename):
         for filename in os.listdir(folder_path):
             if filename.endswith('.xml'):
                 xml_file = os.path.join(folder_path, filename)
-                if parse_xml(xml_file, query):
+                if parse_xml(xml_file, query["filters"]):
                     try:
                         tree = ET.parse(xml_file)
                         root = tree.getroot()
@@ -132,13 +130,13 @@ def log_matching_files(folder_path, query, output_filename):
                             'Attribute Value': None
                         }
                         for attr_name, attr_value in root.attrib.items():
-                            if attr_name in query and query[attr_name] == attr_value:
+                            if attr_name in query["filters"] and query["filters"][attr_name] == attr_value:
                                 data['Attribute Value'] = attr_value
                                 break  # Only need to report the first matching attribute
+                        data.update({key: value for key, value in zip(query["additional_data"], query["additional_data"])})  # Add additional data
                         writer.writerow(data)
                     except Exception as e:
                         print(f"Error processing {xml_file}: {e}")
-
 
 my_new_theme = {'BACKGROUND': '#2d3039', 
         'TEXT': 'white', 
@@ -163,6 +161,8 @@ tag_value = []
 attribute_name = []
 attribute_value = []
 filters = [] 
+filters_log = []
+additional_data = []
 
 layout_xml_eval = [[sg.Text("Multi-XML Files Iteration in a Folder:", pad=5)],
                     [sg.Input(size=(36,2),font="Arial 10",key="-FOLDER_EVALUATION_INPUT-"),sg.FolderBrowse(button_text="Browse Folder",target="-FOLDER_EVALUATION_INPUT-"),sg.Button("Read XML",key="-READ_XML-")],
@@ -170,16 +170,14 @@ layout_xml_eval = [[sg.Text("Multi-XML Files Iteration in a Folder:", pad=5)],
                     [sg.Text("Tag name:"),sg.Combo(tag_name, size=(14,1), disabled=True, auto_size_text=False, enable_events=True, enable_per_char_events=True, expand_x=True, key="-XML_TAG_NAME-"),sg.Text("Tag Value:"),sg.Combo(tag_value, size=(14,1), disabled=True, enable_events=True, enable_per_char_events=True, auto_size_text=False, expand_x=True, key="-XML_TAG_VALUE-")],
                     [sg.Text("Att name:  "),sg.Combo(attribute_name, size=(14,1), disabled=True, auto_size_text=False, enable_events=True, expand_x=True, key="-XML_ATTRIBUTE_NAME-"),sg.Text("Att Value:  "),sg.Combo(attribute_value, size=(14,1), disabled=True, enable_events=True, auto_size_text=False, expand_x=True, key="-XML_ATTRIBUTE_VALUE-")],
                     [sg.Text("Add selection for filtering/matching:", pad=10),sg.Button("Add to Filter", key="-FILTER-", pad=10)],
-                    [sg.Listbox(values=filters, size=(40,5), enable_events=True, key="-FILTER_LIST-")]]
+                    [sg.Listbox(values=filters, size=(60,5), enable_events=True, key="-FILTER_LIST-")]]
 
-layout_statusbars = [[sg.Text("Tag Name:",font="Arial 11 bold"),sg.StatusBar("", size=(20,1), auto_size_text=False, key="-STATUSBAR_TAG_NAME-")],
-                     [sg.Text("Tag Value:",font="Arial 11 bold"),sg.StatusBar("", size=(20,1), auto_size_text=False, key="-STATUSBAR_TAG_VALUE-")],
-                     [sg.Text("Att Name:  ",font="Arial 11 bold"),sg.StatusBar("", size=(20,1), auto_size_text=False, key="-STATUSBAR_ATTRIBUTE_NAME-")],
-                     [sg.Text("Att Value:  ",font="Arial 11 bold"),sg.StatusBar("" , size=(20,1), auto_size_text=False, key="-STATUSBAR_ATTRIBUTE_VALUE-")],
-                     [sg.Text("Export Evaluation as CSV File:")],
+layout_statusbars = [[sg.Text("Additional data for logging (not used for XML filtering/matching):"), sg.Button("Add to Log", key="-ADD_DATA-")],
+                    [sg.Listbox(values=additional_data, size=(60,5), enable_events=True, key="-ADDITIONAL_DATA_LIST-")],
+                    [sg.Text("Export Evaluation as CSV File:")],
                     [sg.Input(size=(36,2),font="Arial 10",key="-FOLDER_EVALUATION_OUTPUT-"),sg.SaveAs(button_text="Save as", file_types=(("Comma Seperated Values (.csv)",".csv"),), target="-FOLDER_EVALUATION_OUTPUT-"),sg.Button("Export", key="-EXPORT_AS_CSV-")]]
 
-layout_output = [[sg.Multiline(size=(60,23),write_only=False,key="-OUTPUT_WINDOW-",pad=10)]]
+layout_output = [[sg.Multiline(size=(60,30),write_only=False,key="-OUTPUT_WINDOW-",pad=10)]]
 
 frame_xml_eval = sg.Frame("XML Evaluation and Filtering", layout_xml_eval, expand_x=True)
 frame_statusbars = sg.Frame("Status of XML Values/Attributes",layout_statusbars,expand_x=True)
@@ -207,7 +205,9 @@ while True:
     tag_value_combo = values["-XML_TAG_VALUE-"]
     attribute_name_combo = values["-XML_ATTRIBUTE_NAME-"]
     attribute_value_combo = values["-XML_ATTRIBUTE_VALUE-"]
+    
     filter_list = values["-FILTER_LIST-"]
+    additional_data_list = values["-ADDITIONAL_DATA_LIST-"]
     
     # RegEx Matching
     file_path_regex = r'\.xml$'
@@ -324,36 +324,41 @@ while True:
 
             filters.append(filter_dict)
             window["-FILTER_LIST-"].update(values=filters)
+                
+    elif event == "-ADD_DATA-":
+        # Get current selections from comboboxes
+        selected_tag_name2 = values.get("-XML_TAG_NAME-")
+        selected_tag_value2 = values.get("-XML_TAG_VALUE-")
+        selected_attribute_name2 = values.get("-XML_ATTRIBUTE_NAME-")
+        selected_attribute_value2 = values.get("-XML_ATTRIBUTE_VALUE-")
 
-    elif event == "-FILTER_LIST-":
-        # Update status bar based on the selected filter in the listbox
-        if filter_list:
-            selected_filter = filter_list[0]  # Assuming only one filter is selected at a time
-            if "tag_name" in selected_filter:
-                window["-STATUSBAR_TAG_NAME-"].update(selected_filter["tag_name"])
-            else:
-                window["-STATUSBAR_TAG_NAME-"].update("")
-            if "tag_value" in selected_filter:
-                window["-STATUSBAR_TAG_VALUE-"].update(selected_filter["tag_value"])
-            else:
-                window["-STATUSBAR_TAG_VALUE-"].update("")
-            if "attribute_name" in selected_filter:
-                window["-STATUSBAR_ATTRIBUTE_NAME-"].update(selected_filter["attribute_name"])
-            else:
-                window["-STATUSBAR_ATTRIBUTE_NAME-"].update("")
-            if "attribute_value" in selected_filter:
-                window["-STATUSBAR_ATTRIBUTE_VALUE-"].update(selected_filter["attribute_value"])
-            else:
-                window["-STATUSBAR_ATTRIBUTE_VALUE-"].update("")
+        # Check if any value is selected from comboboxes
+        if selected_tag_name2 or selected_tag_value2 or selected_attribute_name2 or selected_attribute_value2:
+            filter_dict_log = {}
+            if selected_tag_name2:
+                filter_dict_log["tag_name"] = selected_tag_name2
+            if selected_tag_value2:
+                filter_dict_log["tag_value"] = selected_tag_value2
+            if selected_attribute_name2:
+                filter_dict_log["attribute_name"] = selected_attribute_name2
+            if selected_attribute_value2:
+                filter_dict_log["attribute_value"] = selected_attribute_value2
+                
+            filters_log.append(filter_dict_log)
+            window["-ADDITIONAL_DATA_LIST-"].update(values=filters_log)
+            
+    elif event == "-ADDITIONAL_DATA_LIST-":
+        # Handle potential actions on the listbox, such as editing or removing data
+        pass  # Implement actions based on your specific requirements
 
     # Export as CSV
     elif event == "-EXPORT_AS_CSV-":
         if eval_input_folder and eval_output_folder:
-            if os.path.isdir(eval_input_folder) and os.path.isdir(eval_output_folder):
-                query = build_query(filters)
-                log_matching_files(eval_input_folder, query, eval_output_folder + os.path.sep + "matching_files.csv")
-                sg.popup(f"Matching XML files information exported to {eval_output_folder + os.path.sep}matching_files.csv")
+            if os.path.isdir(eval_input_folder): # and os.path.isdir(eval_output_folder)?
+                query = build_query(filters,filters_log)
+                log_matching_files(eval_input_folder, query, eval_output_folder)
+                sg.popup(f"Matching XML files information exported to {eval_output_folder}")
             else:
-                sg.popup("Invalid folder paths. Please enter valid paths for both 'XML Evaluation Input' and 'Export Evaluation as CSV File' sections.")
+                sg.popup("Invalid folder paths.\nPlease enter valid paths for both 'XML Evaluation Input' and 'Export Evaluation as CSV File' sections.")
 
 window.close()
