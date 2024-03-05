@@ -2,7 +2,8 @@
 
 ## Overview
 XMLuvation is a Python application designed to parse and evaluate XML files. It provides a user-friendly interface for performing various operations such as reading XML files, filtering XML content based on specific criteria, and exporting the evaluation results to a CSV file.
-Features
+
+## Features
 
 * XML Parsing and Evaluation: XMLuvation allows users to read XML files, view their content, and evaluate them based on XPath expressions.
 * XPath Filtering: Users can filter XML content using XPath expressions to extract specific elements or attributes.
@@ -12,7 +13,10 @@ Features
 ## Installation
 To run XMLuvation, you need to have Python installed on your system. You can install the required dependencies using the following command:
 
-```pip install PySimpleGUI lxml```
+```
+pip install PySimpleGUI
+pip install lxml
+```
 
 Usage:
 
