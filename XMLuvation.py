@@ -54,47 +54,70 @@ def get_attribute_values(xml_file, tag, attribute):
     return list(set(attribute_value_list))
 
 
-def evaluate_xml_files(folder_path, expressions, output_csv_path):
-    window['-PROGRESS_BAR-'].update(0)
-    matches = []  # Initialize an empty list to store matches
+def evaluate_xml_files(folder_path, matching_filters, output_csv_path, logging_filters):
+    matching_results = []  # Initialize an empty list to store matches
+    logging_results = []  # Initialize an empty list to store logging results
     total_files = sum(1 for filename in os.listdir(folder_path) if filename.endswith('.xml'))
     progress_increment = 100 / total_files
     current_progress = 0
     window['-PROGRESS_BAR-'].update(current_progress)
+    
+    # Determine if expressions are for matching or logging
+    is_matching = bool(matching_filters)
+    is_logging = bool(logging_filters)
+    
     # Iterate through each XML file in the folder
     for filename in os.listdir(folder_path):
         if filename.endswith('.xml'):
             file_path = os.path.join(folder_path, filename)
+            # Update progress bar after processing each file
+            current_progress += progress_increment
+            window['-PROGRESS_BAR-'].update(current_progress)
             try:
                 tree = ET.parse(file_path)
-                root = tree.getroot()
                 print(f"Evaluating file: {filename}")
-                # Evaluate expressions for each XML file
-                for expression in expressions:
-                    result = root.findall(expression)
-                    for element in result:
-                        match = {'Filename': filename, 'XML Tag': element.tag, 'XPath Expression': expression} # Add matches to the list
-                        matches.append(match)  
-                # Update progress bar after processing each file
-                current_progress += progress_increment
-                window['-PROGRESS_BAR-'].update(current_progress)
+                
+                # Evaluate matching filters
+                for expression in matching_filters:
+                    if is_matching:
+                        result = tree.xpath(expression)
+                        for element in result:
+                            # Store matches
+                            match = {'Filename': filename, 'XML Tag': element.tag, 'XPath Expression': expression}
+                            matching_results.append(match)
+                
+                # Evaluate logging filters
+                for expression in logging_filters:
+                    if is_logging:
+                        result = tree.xpath(expression)
+                        # Store logging results
+                        logging_results.extend(result)
             except Exception as e:
                 window["-OUTPUT_WINDOW_MAIN-"].update(f"Error processing {filename}, Error: {e}")
                 
-    # Save matches to CSV file
-    if matches:
+    # Save matches and logging results to CSV file
+    if matching_results or logging_results:
         with open(output_csv_path, 'w', newline='', encoding='utf-8') as csvfile:
-            fieldnames = ['Filename','XML Tag','XPath Expression']
+            fieldnames = ['Filename', 'XML Tag', 'XPath Expression']
+            # Add keys for logging filters to the fieldnames
+            for i in range(len(logging_filters)):
+                fieldnames.append(f'Logging Filter {i+1}')
             writer = csv.DictWriter(csvfile, fieldnames=fieldnames)
             writer.writeheader()
-            for match in matches:
+            # Write matching results
+            for match in matching_results:
                 print(f"MATCH: {match}")
                 writer.writerow(match)
+            # Write logging results
+            for result in logging_results:
+                logging_match = {'Filename': filename, 'XML Tag': result, 'XPath Expression': expression}
+                writer.writerow(logging_match)
         window["-OUTPUT_WINDOW_MAIN-"].update(f"Matches saved to {output_csv_path}")
         window["-PROGRESS_BAR-"].update(100)  # Update progress bar to 100% after completion
     else:
         window["-OUTPUT_WINDOW_MAIN-"].update("No matches found.")
         window["-PROGRESS_BAR-"].update(0)
+
 
 my_new_theme = {
         'BACKGROUND': '#2d3039', 
@@ -102,8 +125,8 @@ my_new_theme = {
         'INPUT': '#535360', 
         'TEXT_INPUT': 'white', 
         'SCROLL': '#333', 
-        'BUTTON': ('#f8e24b', '#626271'), 
-        'PROGRESS': ('#f8e24b', '#9d8a06'), 
+        'BUTTON': ('#FFC857', '#626271'), 
+        'PROGRESS': ('#FFC857', '#ABABAB'), 
         'BORDER': 2, 
         'SLIDER_DEPTH': 1, 
         'PROGRESS_DEPTH': 1, 
@@ -114,7 +137,7 @@ sg.theme_add_new("MyTheme", my_new_theme)
 
 sg.theme("MyTheme")
 
-font = ("Arial", 12)
+font = ("Calibri", 12)
 
 FILE_TYPE_XML = (('XML (Extensible Markup Language)', '.xml'),)
 MENU_RIGHT_CLICK_DELETE = ["&Right", ["&Delete", "&Delete All"]]
@@ -124,14 +147,14 @@ tag_value = []
 attribute_name = []
 attribute_value = []
 # Listbox Lists
-matching_filters = []
-logging_filters = []
+matching_filters_listbox = []
+logging_filters_listbox = []
 
-layout_listbox_matching_filter = [[sg.Listbox(values=matching_filters, size=(60, 5), enable_events=True, key="-MATCHING_FILTER_LIST-")],
+layout_listbox_matching_filter = [[sg.Listbox(values=matching_filters_listbox, size=(60, 5), enable_events=True, key="-MATCHING_FILTER_LIST-")],
                                   [sg.Text("Add a XPath filter to match in the XML Evaluation:", expand_x=True),
                                    sg.Button("Add to Matching", key="-ADD_TO_MATCHING-")]]
 layout_listbox_logging_filter = [
-    [sg.Listbox(values=logging_filters, size=(60, 5), enable_events=True, key="-LOGGING_FILTER_LIST-")],
+    [sg.Listbox(values=logging_filters_listbox, size=(60, 5), enable_events=True, key="-LOGGING_FILTER_LIST-")],
     [sg.Text("Additional XPath filter for logging (not used for matching):", expand_x=True),
      sg.Button("Add to Logging", key="-ADD_TO_LOGGING-")]]
 
@@ -150,7 +173,7 @@ layout_xml_eval = [[sg.Text("Multi-XML Files Iteration in a Folder:", pad=5)],
                              expand_x=True, key="-XML_ATTRIBUTE_NAME-"), sg.Text("Att Value:"),
                     sg.Combo(attribute_value, size=(15, 1), disabled=True, enable_events=True, auto_size_text=False,
                              expand_x=True, key="-XML_ATTRIBUTE_VALUE-", pad=10)],
-                   [sg.Text("Build XPath Expression:"), sg.Input(size=(14, 1), expand_x=True, key="-XPATH_EXPRESSION-"),
+                   [sg.Text("XPath Expression:"), sg.Input(size=(14, 1), expand_x=True, key="-XPATH_EXPRESSION-"),
                     sg.Button("Build XPath", key="-XPATH_BUILD-")]]
 
 layout_export_evaluation = [[sg.Text("Select a Path where you want to save the XML Evaluation:")],
@@ -164,12 +187,12 @@ layout_output = [[sg.Multiline(size=(62, 20), write_only=False, horizontal_scrol
 layout_output_main = [[sg.Multiline(size=(62, 10),key="-OUTPUT_WINDOW_MAIN-", pad=5)],
                       [sg.Text("Progress:"),sg.ProgressBar(max_value=100, size=(20,15), orientation="h", expand_x=True, key='-PROGRESS_BAR-')]]
 
-frame_xml_eval = sg.Frame("XML Evaluation and Filtering", layout_xml_eval, title_color="#f8e24b", expand_x=True)
-frame_export_evaluation = sg.Frame("Export Evaluation as Log File", layout_export_evaluation, title_color="#f8e24b", expand_x=True)
-frame_output = sg.Frame("XML Output", layout_output, title_color="#f8e24b", expand_x=True)
-frame_output_main = sg.Frame("Program Output", layout_output_main, title_color="#f8e24b", expand_x=True)
-frame_listbox_matching_filter = sg.Frame("XML Filter for Matching",layout_listbox_matching_filter, title_color="#f8e24b")
-frame_listbox_logging_filter = sg.Frame("XML Filter for Logging", layout_listbox_logging_filter, title_color="#f8e24b")
+frame_xml_eval = sg.Frame("XML Evaluation and Filtering", layout_xml_eval, title_color="#FFC857", expand_x=True)
+frame_export_evaluation = sg.Frame("Export Evaluation as Log File", layout_export_evaluation, title_color="#FFC857", expand_x=True)
+frame_output = sg.Frame("XML Output", layout_output, title_color="#FFC857", expand_x=True)
+frame_output_main = sg.Frame("Program Output", layout_output_main, title_color="#FFC857", expand_x=True)
+frame_listbox_matching_filter = sg.Frame("XML Filter for Matching",layout_listbox_matching_filter, title_color="#FFC857",expand_x=True)
+frame_listbox_logging_filter = sg.Frame("XML Filter for Logging", layout_listbox_logging_filter, title_color="#FFC857",expand_x=True)
 
 layout = [
     [
@@ -189,10 +212,10 @@ while True:
         # Values #
     eval_input_folder = values["-FOLDER_EVALUATION_INPUT-"]
     export_evaluation_path = values["-FOLDER_EVALUATION_OUTPUT-"]
-    tag_name_combo = values["-XML_TAG_NAME-"]
-    tag_value_combo = values["-XML_TAG_VALUE-"]
-    attribute_name_combo = values["-XML_ATTRIBUTE_NAME-"]
-    attribute_value_combo = values["-XML_ATTRIBUTE_VALUE-"]
+    tag_name_combobox = values["-XML_TAG_NAME-"]
+    tag_value_combobox = values["-XML_TAG_VALUE-"]
+    attribute_name_combobox = values["-XML_ATTRIBUTE_NAME-"]
+    attribute_value_combobox = values["-XML_ATTRIBUTE_VALUE-"]
     
     # Listbox Variable Values
    # listbox_matching_element = window["-MATCHING_FILTER_LIST-"]
@@ -230,37 +253,33 @@ while True:
 
 
     elif event == "-XML_TAG_NAME-":
-        try:
-            selected_tag = tag_name_combo
-            attributes = get_attributes(eval_input_file, selected_tag)
-            window["-XML_ATTRIBUTE_NAME-"].update(values=attributes)
-            values_xml = get_tag_values(eval_input_file, selected_tag)
-            window["-XML_TAG_VALUE-"].update(values=values_xml)
+        selected_tag = tag_name_combobox
+        attributes = get_attributes(eval_input_file, selected_tag)
+        window["-XML_ATTRIBUTE_NAME-"].update(values=attributes)
+        values_xml = get_tag_values(eval_input_file, selected_tag)
+        window["-XML_TAG_VALUE-"].update(values=values_xml)
+        # Disable tag value combo box if there are no values for the selected tag
+        if not values_xml or all(value.strip() == '' for value in values_xml if value is not None):
+            window["-XML_TAG_VALUE-"].update(disabled=True, values="")
+        else:
+            window["-XML_TAG_VALUE-"].update(disabled=False)
+        #print(f"XML VALUES: {values_xml}")
+        #print(type(values_xml))
+        # Disable attribute name and value combo boxes if there are no attributes for the selected tag
+        if not attributes:
+            window["-XML_ATTRIBUTE_NAME-"].update(disabled=True, values="")
+            window["-XML_ATTRIBUTE_VALUE-"].update(disabled=True, values=[])
+        else:
+            window["-XML_ATTRIBUTE_NAME-"].update(disabled=False)
+            #print(f"ATTRIBUTE: {attributes}")
+            #print(type(attributes))
 
-            # Disable tag value combo box if there are no values for the selected tag
-            if not values_xml or all(value.strip() == '' for value in values_xml if value is not None):
-                window["-XML_TAG_VALUE-"].update(disabled=True, values="")
-            else:
-                window["-XML_TAG_VALUE-"].update(disabled=False)
-            #print(f"XML VALUES: {values_xml}")
-            #print(type(values_xml))
-
-            # Disable attribute name and value combo boxes if there are no attributes for the selected tag
-            if not attributes:
-                window["-XML_ATTRIBUTE_NAME-"].update(disabled=True, values="")
-                window["-XML_ATTRIBUTE_VALUE-"].update(disabled=True, values=[])
-            else:
-                window["-XML_ATTRIBUTE_NAME-"].update(disabled=False)
-                #print(f"ATTRIBUTE: {attributes}")
-                #print(type(attributes))
-        except Exception as e:
-            window["-OUTPUT_WINDOW_MAIN-"].update(f"Fatal Error: \n{e}")
 
 
     elif event == "-XML_ATTRIBUTE_NAME-":
         try:
-            selected_tag = tag_name_combo
-            selected_attribute = attribute_name_combo
+            selected_tag = tag_name_combobox
+            selected_attribute = attribute_name_combobox
             attribute_values = get_attribute_values(eval_input_file, selected_tag, selected_attribute)
             window["-XML_ATTRIBUTE_VALUE-"].update(values=attribute_values)
 
@@ -282,26 +301,31 @@ while True:
 
     elif event == "-XPATH_BUILD-":
         try:
+            tree = ET.parse(eval_input_file)
             # Basic XPath expression based on the tag name
-            if not tag_name_combo:
+            if not tag_name_combobox:
                 window["-OUTPUT_WINDOW_MAIN-"].update("No tag selected.")
             else:
-                xpath_expression += f".//{tag_name_combo}"
+                xpath_expression = f"string(//{tag_name_combobox})"
+                window["-OUTPUT_WINDOW_MAIN-"].update(tree.xpath(xpath_expression))
                 # Check if tag value is provided
-                if tag_value_combo:
-                    xpath_expression += f"[text()='{tag_value_combo}']"
+                if tag_value_combobox:
+                    xpath_expression = f"string(//{tag_name_combobox}='{tag_value_combobox}')"
+                    window["-OUTPUT_WINDOW_MAIN-"].update(tree.xpath(xpath_expression))
                 # Check if attribute name is provided
-                if attribute_name_combo:
+                if attribute_name_combobox:
                     # Check if attribute value is provided
-                    if attribute_value_combo:
-                        window["-OUTPUT_WINDOW_MAIN-"].update(f"Getting value {attribute_value_combo} from attribute {attribute_name_combo}")
-                        xpath_expression += f"[@{attribute_name_combo}='{attribute_value_combo}']"
+                    if attribute_value_combobox:
+                        window["-OUTPUT_WINDOW_MAIN-"].update(f"Getting value {attribute_value_combobox} from attribute {attribute_name_combobox}")
+                        xpath_expression = f"string(//{tag_name_combobox}/@{attribute_name_combobox}='{attribute_value_combobox}')"
+                        window["-OUTPUT_WINDOW_MAIN-"].update(tree.xpath(xpath_expression))
                     else:
-                        window["-OUTPUT_WINDOW_MAIN-"].update(f"Getting value from attribute {attribute_name_combo}")
-                        xpath_expression += f"[@{attribute_name_combo}][1]"
+                        window["-OUTPUT_WINDOW_MAIN-"].update(f"Getting value from attribute {attribute_name_combobox}")
+                        xpath_expression = f"string(//{tag_name_combobox}/@{attribute_name_combobox})"  # Gets first value of attribute name in the first found element
+                        window["-OUTPUT_WINDOW_MAIN-"].update(tree.xpath(xpath_expression))
             window["-XPATH_EXPRESSION-"].update(xpath_expression)
             if xpath_expression != "":
-                window["-OUTPUT_WINDOW_MAIN-"].update(f"Final XPath expression: {xpath_expression}")
+                window["-OUTPUT_WINDOW_MAIN-"].print(f"Final XPath expression: {xpath_expression}")
         except NameError:
             window["-OUTPUT_WINDOW_MAIN-"].update("Name 'parsed_xml_file' is not defined")
 
@@ -311,8 +335,8 @@ while True:
             if not xpath_expression_input:
                 window["-OUTPUT_WINDOW_MAIN-"].update("No XPath expression entered.")
             else:
-                matching_filters.append(xpath_expression_input)
-                window["-MATCHING_FILTER_LIST-"].update(values=matching_filters)
+                matching_filters_listbox.append(xpath_expression_input)
+                window["-MATCHING_FILTER_LIST-"].update(values=matching_filters_listbox)
                 window["-OUTPUT_WINDOW_MAIN-"].update(f"XPath expression added: {xpath_expression_input}")
         except Exception as e:
             window["-OUTPUT_WINDOW_MAIN-"].update(f"Error adding filter: {e}")
@@ -323,8 +347,8 @@ while True:
             if not xpath_expression_input:
                 window["-OUTPUT_WINDOW_MAIN-"].update("No XPath expression entered.")
             else:
-                logging_filters.append(xpath_expression_input)
-                window["-LOGGING_FILTER_LIST-"].update(values=logging_filters)
+                logging_filters_listbox.append(xpath_expression_input)
+                window["-LOGGING_FILTER_LIST-"].update(values=logging_filters_listbox)
                 window["-OUTPUT_WINDOW_MAIN-"].update(f"XPath expression added: {xpath_expression_input}")
         except Exception as e:
             window["-OUTPUT_WINDOW_MAIN-"].update(f"Error adding filter: {e}")
@@ -332,7 +356,7 @@ while True:
             
     elif event == "-EXPORT_AS_CSV-":
         try:
-            window.perform_long_operation(lambda: evaluate_xml_files(eval_input_folder, matching_filters, export_evaluation_path),"-OUTPUT_WINDOW_MAIN-")
+            window.perform_long_operation(lambda: evaluate_xml_files(eval_input_folder, matching_filters_listbox, export_evaluation_path, logging_filters_listbox),"-OUTPUT_WINDOW_MAIN-")
         except Exception as e:
             window["-OUTPUT_WINDOW_MAIN-"].update(f"Error exporting CSV: {e}")
             

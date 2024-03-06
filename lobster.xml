@@ -1,0 +1,549 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<datawizardprofile name="T_V4_LFSV8_TestMail_(jz)" dw_version="4.1" data_version="4.1.0_40547" system_id="2280p">
+  <id>6b61b635:18a6a69156c:7d89.642dc09126b690a0:6b61b635:18968469793:-8000</id>
+  <path_of_group>Test</path_of_group>
+  <client_id>-1</client_id>
+  <type>Man. upload</type>
+  <description></description>
+  <group_id>-41bfdb51_1287d762dce_ba_91cc6083629615c9_-41bfdb51_1287d7488aa_-7f8f</group_id>
+  <valid_from>06.09.2023 00:00:00</valid_from>
+  <valid_until>06.09.2043 00:00:00</valid_until>
+  <is_one_request>false</is_one_request>
+  <skip_mapping>false</skip_mapping>
+  <start_value_of_counter>1</start_value_of_counter>
+  <end_value_of_counter>2147483647</end_value_of_counter>
+  <suspended>false</suspended>
+  <throws_exception_on_suspend>false</throws_exception_on_suspend>
+  <retain_backup>-1</retain_backup>
+  <created_at>06.09.2023</created_at>
+  <version>1</version>
+  <check_env_class></check_env_class>
+  <config_env_class></config_env_class>
+  <save_environment>true</save_environment>
+  <active>true</active>
+  <master>false</master>
+  <history_note>[06-Sep-2023 14:56] Fryc, Ondrej: .</history_note>
+  <no_error_mail>false</no_error_mail>
+  <tags></tags>
+  <replace_profile></replace_profile>
+  <max_data_len>0</max_data_len>
+  <no_tracking>false</no_tracking>
+  <transport>false</transport>
+  <last_mod_gui>1694005013803</last_mod_gui>
+  <master_id>6b61b635:18a6a69156c:7d89.642dc09126b690a0:6b61b635:18968469793:-8000</master_id>
+  <dataproperties>
+    <filetype>0</filetype>
+    <xml_renderer>com.ebd.hub.datawizard.parser.xmlschema.NewSchemaToTreeParser</xml_renderer>
+    <xml_recordtag></xml_recordtag>
+    <delim_row>new Line</delim_row>
+    <delim_column><![CDATA[NL]]></delim_column>
+    <line_is_row>true</line_is_row>
+    <zipped>false</zipped>
+    <start_row>1</start_row>
+    <start_column>1</start_column>
+    <end_row>2147483647</end_row>
+    <empty_rows>0</empty_rows>
+    <source_alias></source_alias>
+    <source_sql></source_sql>
+    <file_encoding>8859_1</file_encoding>
+    <delete_rows>false</delete_rows>
+    <perform_db_op>false</perform_db_op>
+    <postparser></postparser>
+    <preparser>com.ebd.hub.datawizard.parser.DummyPreParser</preparser>
+    <mappertype>1</mappertype>
+    <use_xpath>true</use_xpath>
+    <checkminmax_xml>false</checkminmax_xml>
+    <trimFixRecordValues>false</trimFixRecordValues>
+    <init_variables_type_save>true</init_variables_type_save>
+    <split_files>false</split_files>
+    <ignore_empty_fields>true</ignore_empty_fields>
+    <trim_sql_values>false</trim_sql_values>
+    <empty_value_is_null>true</empty_value_is_null>
+    <swap_out_result>true</swap_out_result>
+    <swap_out_at_percentage>70</swap_out_at_percentage>
+    <skip_record_on_error>false</skip_record_on_error>
+    <sql_variable></sql_variable>
+    <use_archive>false</use_archive>
+    <use_matchcode>false</use_matchcode>
+    <error_recipient></error_recipient>
+    <skip_chars>0</skip_chars>
+    <ignore_namespace>false</ignore_namespace>
+    <high_priority>false</high_priority>
+    <excel_scrapbook>1</excel_scrapbook>
+    <split_outgoing>false</split_outgoing>
+    <fill_with_zero>false</fill_with_zero>
+    <xml_version>V3</xml_version>
+    <ignore_sql_errors>false</ignore_sql_errors>
+    <treat_csv_as_edi>false</treat_csv_as_edi>
+    <conf_preparser></conf_preparser>
+    <compression_type>1</compression_type>
+    <skip_already_receivedFiles>false</skip_already_receivedFiles>
+    <overwrite_backup>false</overwrite_backup>
+    <single_run>false</single_run>
+    <check_min_max>false</check_min_max>
+    <max_process_time>0</max_process_time>
+    <zip_algo>0</zip_algo>
+    <zip_passwd></zip_passwd>
+    <rows_bwa>0</rows_bwa>
+    <check_type>false</check_type>
+    <use_contrl>false</use_contrl>
+    <cntrl_profile></cntrl_profile>
+    <delete_as_where>false</delete_as_where>
+    <all_excel_sheets>false</all_excel_sheets>
+    <split_iu>false</split_iu>
+    <sql_dummy>false</sql_dummy>
+    <sql_dummy_data></sql_dummy_data>
+    <hint_version></hint_version>
+    <csv_continue_read>false</csv_continue_read>
+    <csv_quote>"</csv_quote>
+    <base_64>false</base_64>
+    <exception_profile></exception_profile>
+    <excel_conform>false</excel_conform>
+    <tradacoms>false</tradacoms>
+    <verify_profile></verify_profile>
+    <verify_file>false</verify_file>
+    <stop_on_verify_err>false</stop_on_verify_err>
+    <old_checking>false</old_checking>
+    <excel_is_variable>false</excel_is_variable>
+    <excel_sheets></excel_sheets>
+    <only_one_value_changed>false</only_one_value_changed>
+    <apply_for_all_excel>false</apply_for_all_excel>
+    <xml_split_node></xml_split_node>
+    <xml_split_size>0</xml_split_size>
+    <xml_support_big_data>false</xml_support_big_data>
+    <xml_mem_mode>3</xml_mem_mode>
+    <skip_unreferenced_fields>true</skip_unreferenced_fields>
+    <copy_xml_element></copy_xml_element>
+    <copy_xml_attributes>false</copy_xml_attributes>
+    <use_uno_encoding>false</use_uno_encoding>
+    <check_edifact_envelope>false</check_edifact_envelope>
+    <check_edifact_encoding>false</check_edifact_encoding>
+    <check_edifact_data>false</check_edifact_data>
+    <fill_after_template>false</fill_after_template>
+    <thread_pool>2</thread_pool>
+    <log_pool>STANDARD</log_pool>
+    <thread_group_name>Normal</thread_group_name>
+    <excel_password></excel_password>
+    <index_backup>false</index_backup>
+    <write_excel_index>1</write_excel_index>
+    <skip_hidden_excel_rows>false</skip_hidden_excel_rows>
+    <skip_hidden_excel_cols>false</skip_hidden_excel_cols>
+    <structuredefinition>
+      <fieldcounter_input>3</fieldcounter_input>
+      <fieldcounter_output>2</fieldcounter_output>
+      <constant_values></constant_values>
+      <inputtree>
+        <node name="DummyData" description="" deleted="false" field_delim=";" min="0" max="1" is_node="true" mandatory="false" force_new_line="true" new_record_after_node="false" alias="" sqltable="" truncate_table="false" sqltype="5" sqlmode="0" sql_commit_mode="0" only_for_sql="false" xpath="" user_xpath="" rel_xpath="true" xpathexpression="" traverse_mode="2" new_record="-1" special_tag="0" default_value="" set_of_alternatives="false" delim_fixrecord_field="" new_record_on_chaged_value="false" optimaze_path="true" offset_variable="" stepsize_variable="" sql_cmd="" sort_field="" sort_order="1" show_grid="false" localize_key="" xml_ns="" xml_node_type="0" event="0" profile="" calcNode="false" allowed_value="">
+          <note></note>
+          <matchcode condition="startsWith" value="dummy" />
+          <node name="DummyField" description="" deleted="false" field_delim=";" min="0" max="1" is_node="false" mandatory="false" force_new_line="true" new_record_after_node="false" alias="" sqltable="" truncate_table="false" sqltype="5" sqlmode="0" sql_commit_mode="0" only_for_sql="false" xpath="" user_xpath="" rel_xpath="true" xpathexpression="" traverse_mode="2" new_record="-1" special_tag="0" default_value="" set_of_alternatives="false" delim_fixrecord_field="" new_record_on_chaged_value="false" optimaze_path="true" offset_variable="" stepsize_variable="" sql_cmd="" sort_field="" sort_order="1" show_grid="false" localize_key="" xml_ns="" xml_node_type="0" event="0" profile="" calcNode="false" allowed_value="">
+            <note></note>
+            <field name="S-DummyField" type="String" length="0" mandatory="false" template="">
+              <note></note>
+            </field>
+          </node>
+        </node>
+      </inputtree>
+      <outputtree>
+        <node name="DummyData" description="" deleted="false" field_delim=";" min="0" max="1" is_node="true" mandatory="false" force_new_line="true" new_record_after_node="false" alias="" sqltable="" truncate_table="false" sqltype="5" sqlmode="0" sql_commit_mode="0" only_for_sql="false" xpath="DummyData" user_xpath="" rel_xpath="true" xpathexpression="DummyData" traverse_mode="2" new_record="-1" special_tag="0" default_value="" set_of_alternatives="false" delim_fixrecord_field="" new_record_on_chaged_value="false" optimaze_path="true" offset_variable="" stepsize_variable="" sql_cmd="" sort_field="" sort_order="1" show_grid="false" localize_key="" xml_ns="" xml_node_type="0" event="0" profile="" calcNode="false" allowed_value="">
+          <note></note>
+          <field name="DummyField" type="String" length="0" mandatory="false" template="" no_output="false" use_template_for_output_fields="false" fix_value="" description="" filler="" fill_from_left="false" sql_column_name="" sql_key="false" log_field="false" remove_empty_sql_value="true" log_name="" autonumber="false" xml_ns="" calcNode="false">
+            <note></note>
+            <filter id="127" description="send mail(a,b,c,d,e,f,g[,h,i,j,k,l])">
+              <a type="constant" fieldconstant="" link="1:" />
+              <b type="constant" fieldconstant="appmessages@geis-group.de" link="1:appmessages@geis-group.de" />
+              <c type="constant" fieldconstant="" link="1:" />
+              <d type="constant" fieldconstant="" link="1:" />
+              <e type="constant" fieldconstant="ondrej.fryc@geis-group.de" link="1:ondrej.fryc@geis-group.de" />
+              <f type="constant" fieldconstant="TEST SENDER" link="1:TEST SENDER" />
+              <g type="constant" fieldconstant="&lt;table&gt;&lt;tr&gt;&lt;td&gt;Hi HTML!&lt;/td&gt;&lt;/tr&gt;&lt;/table&gt;" link="1:&lt;table&gt;&lt;tr&gt;&lt;td&gt;Hi HTML!&lt;/td&gt;&lt;/tr&gt;&lt;/table&gt;" />
+              <h type="constant" fieldconstant="" link="1:" />
+              <i type="constant" fieldconstant="" link="1:" />
+              <j type="constant" fieldconstant="" link="1:" />
+              <k type="constant" fieldconstant="" link="1:" />
+              <l type="constant" fieldconstant="true" link="1:true" />
+            </filter>
+            <filter id="2001" description="result = sendet Email an (a) mit dem Betreff(b) Inhalt(c) und vom Typ (d). Typ 1 = Info; Typ 2 = Warning; Typ 3 Error (Abbruch!)">
+              <a type="constant" fieldconstant="ondrej.fryc@geis-group.de" link="1:ondrej.fryc@geis-group.de" />
+              <b type="constant" fieldconstant="Falsche WEQTY" link="1:Falsche WEQTY" />
+              <c type="variable" fieldconstant="VAR_PROFILENAME" link="3:VAR_PROFILENAME" />
+              <d type="constant" fieldconstant="3" link="1:3" />
+              <e type="constant" fieldconstant="" link="1:" />
+              <f type="constant" fieldconstant="" link="1:" />
+              <g type="constant" fieldconstant="" link="1:" />
+              <h type="constant" fieldconstant="" link="1:" />
+              <i type="constant" fieldconstant="" link="1:" />
+            </filter>
+          </field>
+        </node>
+      </outputtree>
+      <variables>
+        <variable>
+          <key>VAR_SENDER</key>
+          <description>the sender addresses - if suitable</description>
+          <xpathexpression></xpathexpression>
+          <type>0</type>
+          <value></value>
+          <init_gv_on_new_record>false</init_gv_on_new_record>
+        </variable>
+        <variable>
+          <key>VAR_SYS_FILE_PATH</key>
+          <description>contains the path of the file read by cron job (type file operation)</description>
+          <xpathexpression></xpathexpression>
+          <type>0</type>
+          <value></value>
+          <init_gv_on_new_record>false</init_gv_on_new_record>
+        </variable>
+        <variable>
+          <key>VAR_SYS_SYSTEM_TYPE</key>
+          <description>0=productive, 1=test, 2=standby; will be initialized by system.</description>
+          <xpathexpression></xpathexpression>
+          <type>1</type>
+          <value>-1</value>
+          <init_gv_on_new_record>false</init_gv_on_new_record>
+        </variable>
+        <variable>
+          <key>VAR_ORIGINATOR_JOBNR</key>
+          <description>contains jobnr of the first convertion of a file compound</description>
+          <xpathexpression></xpathexpression>
+          <type>0</type>
+          <value></value>
+          <init_gv_on_new_record>false</init_gv_on_new_record>
+        </variable>
+        <variable>
+          <key>VAR_MAILSUBJECT</key>
+          <description>the mail subject - if it is a mail</description>
+          <xpathexpression></xpathexpression>
+          <type>0</type>
+          <value></value>
+          <init_gv_on_new_record>false</init_gv_on_new_record>
+        </variable>
+        <variable>
+          <key>VAR_SYS_MESSAGE</key>
+          <description>single content of failed data</description>
+          <xpathexpression></xpathexpression>
+          <type>0</type>
+          <value></value>
+          <init_gv_on_new_record>false</init_gv_on_new_record>
+        </variable>
+        <variable>
+          <key>VAR_JOBNR</key>
+          <description>the current job number</description>
+          <xpathexpression></xpathexpression>
+          <type>0</type>
+          <value></value>
+          <init_gv_on_new_record>false</init_gv_on_new_record>
+        </variable>
+        <variable>
+          <key>VAR_SYS_HAS_SQL_ERROR</key>
+          <description>set to true if there are sql erros in phase 4</description>
+          <xpathexpression></xpathexpression>
+          <type>4</type>
+          <value>false</value>
+          <init_gv_on_new_record>false</init_gv_on_new_record>
+        </variable>
+        <variable>
+          <key>VAR_SYS_ARCHENTRY_PATH</key>
+          <description>contains the path of the archive-entry</description>
+          <xpathexpression></xpathexpression>
+          <type>0</type>
+          <value></value>
+          <init_gv_on_new_record>false</init_gv_on_new_record>
+        </variable>
+        <variable>
+          <key>VAR_SYS_EXCEPTION</key>
+          <description>contains the exception message if an error occurred</description>
+          <xpathexpression></xpathexpression>
+          <type>0</type>
+          <value></value>
+          <init_gv_on_new_record>false</init_gv_on_new_record>
+        </variable>
+        <variable>
+          <key>VAR_FILENAME_PREFIX</key>
+          <description>Orig. file name without suffix</description>
+          <xpathexpression></xpathexpression>
+          <type>0</type>
+          <value></value>
+          <init_gv_on_new_record>false</init_gv_on_new_record>
+        </variable>
+        <variable>
+          <key>VAR_SYS_MAIL_ARCHIVE</key>
+          <description>contains the path of the archived mail</description>
+          <xpathexpression></xpathexpression>
+          <type>0</type>
+          <value></value>
+          <init_gv_on_new_record>false</init_gv_on_new_record>
+        </variable>
+        <variable>
+          <key>VAR_SYS_COLLECTED_MSGS</key>
+          <description>appended content of failed data</description>
+          <xpathexpression></xpathexpression>
+          <type>0</type>
+          <value></value>
+          <init_gv_on_new_record>false</init_gv_on_new_record>
+        </variable>
+        <variable>
+          <key>VAR_SYS_EXCEL_SHEET_NAMES</key>
+          <description>LF-delimited list of read-in excel sheets</description>
+          <xpathexpression></xpathexpression>
+          <type>0</type>
+          <value></value>
+          <init_gv_on_new_record>false</init_gv_on_new_record>
+        </variable>
+        <variable>
+          <key>VAR_SYS_MESSAGE_ID</key>
+          <description>Message ID of received data</description>
+          <xpathexpression></xpathexpression>
+          <type>0</type>
+          <value></value>
+          <init_gv_on_new_record>false</init_gv_on_new_record>
+        </variable>
+        <variable>
+          <key>VAR_SYS_OFTP_SFID</key>
+          <description>the destination of a oftp message</description>
+          <xpathexpression></xpathexpression>
+          <type>0</type>
+          <value></value>
+          <init_gv_on_new_record>false</init_gv_on_new_record>
+        </variable>
+        <variable>
+          <key>VAR_SYS_BACKUP</key>
+          <description>Backup file name</description>
+          <xpathexpression></xpathexpression>
+          <type>0</type>
+          <value></value>
+          <init_gv_on_new_record>false</init_gv_on_new_record>
+        </variable>
+        <variable>
+          <key>VAR_SYS_MAIL_BODY</key>
+          <description>contains the mail body</description>
+          <xpathexpression></xpathexpression>
+          <type>0</type>
+          <value></value>
+          <init_gv_on_new_record>false</init_gv_on_new_record>
+        </variable>
+        <variable>
+          <key>VAR_SYS_MAIL_RECIPIENTS</key>
+          <description>contains the mail recipient address(es)</description>
+          <xpathexpression></xpathexpression>
+          <type>0</type>
+          <value></value>
+          <init_gv_on_new_record>false</init_gv_on_new_record>
+        </variable>
+        <variable>
+          <key>VAR_SYS_RESTART</key>
+          <description>is true if this is a restart of a (failed) job</description>
+          <xpathexpression></xpathexpression>
+          <type>4</type>
+          <value>false</value>
+          <init_gv_on_new_record>false</init_gv_on_new_record>
+        </variable>
+        <variable>
+          <key>VAR_IS_NOT_TEST</key>
+          <description>true if this is not a test run</description>
+          <xpathexpression></xpathexpression>
+          <type>4</type>
+          <value>true</value>
+          <init_gv_on_new_record>false</init_gv_on_new_record>
+        </variable>
+        <variable>
+          <key>VAR_SYS_ARCHIVE_NAME</key>
+          <description>contains the name of the archive</description>
+          <xpathexpression></xpathexpression>
+          <type>0</type>
+          <value></value>
+          <init_gv_on_new_record>false</init_gv_on_new_record>
+        </variable>
+        <variable>
+          <key>VAR_SYS_CTRL_FILE</key>
+          <description>content of ftp ctrl file - if set</description>
+          <xpathexpression></xpathexpression>
+          <type>0</type>
+          <value></value>
+          <init_gv_on_new_record>false</init_gv_on_new_record>
+        </variable>
+        <variable>
+          <key>VAR_RECORDS</key>
+          <description>contains the amount of records</description>
+          <xpathexpression></xpathexpression>
+          <type>1</type>
+          <value>0</value>
+          <init_gv_on_new_record>false</init_gv_on_new_record>
+        </variable>
+        <variable>
+          <key>VAR_SYS_CURRENT_RECORD</key>
+          <description>contains the current record number where the exception occurred</description>
+          <xpathexpression></xpathexpression>
+          <type>1</type>
+          <value>0</value>
+          <init_gv_on_new_record>false</init_gv_on_new_record>
+        </variable>
+        <variable>
+          <key>VAR_SYS_OFTP_FILE_COUNTER</key>
+          <description>contains oftp file counter</description>
+          <xpathexpression></xpathexpression>
+          <type>1</type>
+          <value>0</value>
+          <init_gv_on_new_record>false</init_gv_on_new_record>
+        </variable>
+        <variable>
+          <key>VAR_IS_TEST</key>
+          <description>true if this is a test run</description>
+          <xpathexpression></xpathexpression>
+          <type>4</type>
+          <value>false</value>
+          <init_gv_on_new_record>false</init_gv_on_new_record>
+        </variable>
+        <variable>
+          <key>VAR_SYS_OFTP_ORIGINATOR</key>
+          <description>the originator of a oftp message - may differ from VAR_SENDER</description>
+          <xpathexpression></xpathexpression>
+          <type>0</type>
+          <value></value>
+          <init_gv_on_new_record>false</init_gv_on_new_record>
+        </variable>
+        <variable>
+          <key>VAR_FILESIZE</key>
+          <description>the input data size</description>
+          <xpathexpression></xpathexpression>
+          <type>1</type>
+          <value>0</value>
+          <init_gv_on_new_record>false</init_gv_on_new_record>
+        </variable>
+        <variable>
+          <key>VAR_SYS_HAS_INVALID_RECORD</key>
+          <description>set to true if there are invalid records in phase 3</description>
+          <xpathexpression></xpathexpression>
+          <type>4</type>
+          <value>false</value>
+          <init_gv_on_new_record>false</init_gv_on_new_record>
+        </variable>
+        <variable>
+          <key>VAR_SYS_VALIDATION_ERRORS</key>
+          <description>Amount of validation errors</description>
+          <xpathexpression></xpathexpression>
+          <type>1</type>
+          <value>0</value>
+          <init_gv_on_new_record>false</init_gv_on_new_record>
+        </variable>
+        <variable>
+          <key>VAR_SYS_LINES</key>
+          <description>number of parsed lines of csv, excel, idoc and fix records files</description>
+          <xpathexpression></xpathexpression>
+          <type>1</type>
+          <value>0</value>
+          <init_gv_on_new_record>false</init_gv_on_new_record>
+        </variable>
+        <variable>
+          <key>VAR_FILENAME</key>
+          <description>Orig. file name</description>
+          <xpathexpression></xpathexpression>
+          <type>0</type>
+          <value></value>
+          <init_gv_on_new_record>false</init_gv_on_new_record>
+        </variable>
+        <variable>
+          <key>VAR_SYS_LASTINBULK</key>
+          <description>is true on last received file of ssh/ftp/oftp incoming transfer; applies only if process on logout is set</description>
+          <xpathexpression></xpathexpression>
+          <type>4</type>
+          <value>false</value>
+          <init_gv_on_new_record>false</init_gv_on_new_record>
+        </variable>
+        <variable>
+          <key>VAR_SYS_DMZ_ID</key>
+          <description>Factory ID of DMZ</description>
+          <xpathexpression></xpathexpression>
+          <type>0</type>
+          <value></value>
+          <init_gv_on_new_record>false</init_gv_on_new_record>
+        </variable>
+        <variable>
+          <key>VAR_PROFILENAME</key>
+          <description>the current profile name</description>
+          <xpathexpression></xpathexpression>
+          <type>0</type>
+          <value></value>
+          <init_gv_on_new_record>false</init_gv_on_new_record>
+        </variable>
+        <variable>
+          <key>VAR_TIMESTAMP</key>
+          <description>the file time stamp or current time of the event</description>
+          <xpathexpression></xpathexpression>
+          <type>8</type>
+          <value>2023-09-06 14:17:14.443</value>
+          <init_gv_on_new_record>false</init_gv_on_new_record>
+        </variable>
+        <variable>
+          <key>VAR_SYS_LAST_IN_ARCHIVE</key>
+          <description>is true if this is the last file within an archive container</description>
+          <xpathexpression></xpathexpression>
+          <type>4</type>
+          <value>false</value>
+          <init_gv_on_new_record>false</init_gv_on_new_record>
+        </variable>
+        <variable>
+          <key>VAR_PROFILE_VERSION</key>
+          <description>Version id of the profile</description>
+          <xpathexpression></xpathexpression>
+          <type>1</type>
+          <value>0</value>
+          <init_gv_on_new_record>false</init_gv_on_new_record>
+        </variable>
+      </variables>
+      <mappinginformation>
+        <mappingentry source="DummyField" destination="DummyField" />
+      </mappinginformation>
+      <namespaces />
+      <namespaces_input />
+      <input_name></input_name>
+      <output_name></output_name>
+      <quick_view>
+        <input>
+          <entity>root;DummyData;t;f;t;f</entity>
+          <entity>DummyData;DummyField;f;f;f;t</entity>
+        </input>
+        <output>
+          <entity>root;DummyData;t;f;f;f;f;f;f</entity>
+          <entity>DummyData;DummyField;f;f;t;f;t;f;f</entity>
+        </output>
+      </quick_view>
+    </structuredefinition>
+    <sqlparams />
+  </dataproperties>
+  <integrationsettings>
+    <realm>
+      <client>eai-wizard</client>
+      <supplier>eai-wizard</supplier>
+      <function>1000</function>
+      <subfunction>0</subfunction>
+      <unit>com.ebd.hub.datawizard.iu.NoActionUnit</unit>
+    </realm>
+    <config></config>
+    <postexecutor></postexecutor>
+    <encoding>8859_1</encoding>
+    <varname></varname>
+  </integrationsettings>
+  <checkpoint_data>
+    <host></host>
+    <port>25</port>
+    <user></user>
+    <password></password>
+    <subject></subject>
+    <text></text>
+    <sender></sender>
+    <as_html>false</as_html>
+  </checkpoint_data>
+  <responsesettings>
+    <run_as_thread>false</run_as_thread>
+    <base_file_name></base_file_name>
+    <err_recipient></err_recipient>
+    <err_subject></err_subject>
+    <err_text>Original file name: {--@VAR_FILENAME@--}&#xD;
+Job reference number: {--@VAR_JOBNR@--}</err_text>
+    <use_mail_attachment>false</use_mail_attachment>
+    <err_cc_recipients />
+    <responseunits />
+  </responsesettings>
+</datawizardprofile>
+
