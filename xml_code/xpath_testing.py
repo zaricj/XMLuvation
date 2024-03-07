@@ -12,8 +12,18 @@ text_content = tree.xpath("string(//filter/@description='send mail(a,b,c,d,e,f,g
 
 anotha_xpath = tree.xpath("string(//id='6b61b635:18a6a69156c:7d89.642dc09126b690a0:6b61b635:18968469793:-8000' )")
 
+test = tree.xpath("//fill_after_template[text()='false']")
+
+print(test)
+
+for elem in test:
+    print(elem.tag)
 
 print(f"Attribute Name: {attribute_name}")
 print(f"Attribute Value: {attribute_value}")
 print(f"Text Content: {text_content}")
 print(f"anotha xpath: {anotha_xpath}")
+
+datawiz = tree.xpath("//filter[@id='127']/@description")
+value_from_list = datawiz[0]
+print(f"Datawiz {value_from_list}")

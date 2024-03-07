@@ -35,12 +35,15 @@ def get_tag_values(xml_file, tag):
 
 
 def get_attributes(xml_file, tag):
-    tree = ET.parse(xml_file)
-    root = tree.getroot()
-    attributes = []
-    for element in root.iter(tag):
-        attributes.extend(element.attrib.keys())
-    return list(set(attributes))
+    try:
+        tree = ET.parse(xml_file)
+        root = tree.getroot()
+        attributes = []
+        for element in root.iter(tag):
+            attributes.extend(element.attrib.keys())
+        return list(set(attributes))
+    except ValueError as e:
+        window["-OUTPUT_WINDOW_MAIN-"].update(e)
 
 
 def get_attribute_values(xml_file, tag, attribute):
@@ -150,13 +153,13 @@ attribute_value = []
 matching_filters_listbox = []
 logging_filters_listbox = []
 
-layout_listbox_matching_filter = [[sg.Listbox(values=matching_filters_listbox, size=(60, 5), enable_events=True, key="-MATCHING_FILTER_LIST-")],
+layout_listbox_matching_filter = [[sg.Listbox(values=matching_filters_listbox, size=(60, 5), enable_events=True, expand_x=True, key="-MATCHING_FILTER_LIST-")],
                                   [sg.Text("Add a XPath filter to match in the XML Evaluation:", expand_x=True),
                                    sg.Button("Add to Matching", key="-ADD_TO_MATCHING-")]]
 layout_listbox_logging_filter = [
-    [sg.Listbox(values=logging_filters_listbox, size=(60, 5), enable_events=True, key="-LOGGING_FILTER_LIST-")],
-    [sg.Text("Additional XPath filter for logging (not used for matching):", expand_x=True),
-     sg.Button("Add to Logging", key="-ADD_TO_LOGGING-")]]
+    [sg.Multiline(size=(60, 5), key='-LOGGING_FILTER_OUTPUT-', horizontal_scroll=True, expand_x=True)],
+    [sg.Text("Input Message and XPath expressions (comma-separated):")], 
+    [sg.Input(key='-LOGGING_FILTER_INPUT-', enable_events=True),sg.Button("Add to Logging", key="-ADD_TO_LOGGING-"), sg.Button('Clear')]]
 
 layout_xml_eval = [[sg.Text("Multi-XML Files Iteration in a Folder:", pad=5)],
                    [sg.Input(size=(36, 2), font="Arial 10", expand_x=True, key="-FOLDER_EVALUATION_INPUT-"),
@@ -174,7 +177,7 @@ layout_xml_eval = [[sg.Text("Multi-XML Files Iteration in a Folder:", pad=5)],
                     sg.Combo(attribute_value, size=(15, 1), disabled=True, enable_events=True, auto_size_text=False,
                              expand_x=True, key="-XML_ATTRIBUTE_VALUE-", pad=10)],
                    [sg.Text("XPath Expression:"), sg.Input(size=(14, 1), expand_x=True, key="-XPATH_EXPRESSION-"),
-                    sg.Button("Build XPath", key="-XPATH_BUILD-")]]
+                    sg.Button("Build XPath", key="-XPATH_BUILD_MATCHING-")]]
 
 layout_export_evaluation = [[sg.Text("Select a Path where you want to save the XML Evaluation:")],
                             [sg.Input(expand_x=True, font="Arial 10", key="-FOLDER_EVALUATION_OUTPUT-"),
@@ -299,30 +302,22 @@ while True:
             window["-OUTPUT_WINDOW_MAIN-"].update(f"Fatal error! \n {e}")
 
 
-    elif event == "-XPATH_BUILD-":
+    elif event == "-XPATH_BUILD_MATCHING-":
         try:
             tree = ET.parse(eval_input_file)
-            # Basic XPath expression based on the tag name
-            if not tag_name_combobox:
-                window["-OUTPUT_WINDOW_MAIN-"].update("No tag selected.")
-            else:
-                xpath_expression = f"string(//{tag_name_combobox})"
-                window["-OUTPUT_WINDOW_MAIN-"].update(tree.xpath(xpath_expression))
-                # Check if tag value is provided
-                if tag_value_combobox:
-                    xpath_expression = f"string(//{tag_name_combobox}='{tag_value_combobox}')"
-                    window["-OUTPUT_WINDOW_MAIN-"].update(tree.xpath(xpath_expression))
-                # Check if attribute name is provided
-                if attribute_name_combobox:
-                    # Check if attribute value is provided
-                    if attribute_value_combobox:
-                        window["-OUTPUT_WINDOW_MAIN-"].update(f"Getting value {attribute_value_combobox} from attribute {attribute_name_combobox}")
-                        xpath_expression = f"string(//{tag_name_combobox}/@{attribute_name_combobox}='{attribute_value_combobox}')"
-                        window["-OUTPUT_WINDOW_MAIN-"].update(tree.xpath(xpath_expression))
-                    else:
-                        window["-OUTPUT_WINDOW_MAIN-"].update(f"Getting value from attribute {attribute_name_combobox}")
-                        xpath_expression = f"string(//{tag_name_combobox}/@{attribute_name_combobox})"  # Gets first value of attribute name in the first found element
-                        window["-OUTPUT_WINDOW_MAIN-"].update(tree.xpath(xpath_expression))
+            xpath_expression = "//" + tag_name_combobox
+
+            if tag_value_combobox:
+                xpath_expression += f"[text()='{tag_value_combobox}']"
+
+            if attribute_name_combobox:
+                if attribute_value_combobox:
+                    xpath_expression += f"[@{attribute_name_combobox}='{attribute_value_combobox}']"
+                else:
+                    xpath_expression += f"[@{attribute_name_combobox}]/@{attribute_name_combobox}"
+
+            window["-OUTPUT_WINDOW_MAIN-"].update(tree.xpath(xpath_expression))
+
             window["-XPATH_EXPRESSION-"].update(xpath_expression)
             if xpath_expression != "":
                 window["-OUTPUT_WINDOW_MAIN-"].print(f"Final XPath expression: {xpath_expression}")
@@ -344,12 +339,12 @@ while True:
 
     elif event == "-ADD_TO_LOGGING-":
         try:
-            if not xpath_expression_input:
-                window["-OUTPUT_WINDOW_MAIN-"].update("No XPath expression entered.")
-            else:
-                logging_filters_listbox.append(xpath_expression_input)
-                window["-LOGGING_FILTER_LIST-"].update(values=logging_filters_listbox)
-                window["-OUTPUT_WINDOW_MAIN-"].update(f"XPath expression added: {xpath_expression_input}")
+            input_message_and_variables = values['-LOGGING_FILTER_INPUT-']
+            parts = input_message_and_variables.split(',')  # Split by comma
+            # Concatenate the input message parts with variables
+            log_message = ' '.join(parts)
+            # Log the message
+            window['-LOGGING_FILTER_OUTPUT-'].update(f"{log_message.strip()}\n", append=True)
         except Exception as e:
             window["-OUTPUT_WINDOW_MAIN-"].update(f"Error adding filter: {e}")
 
