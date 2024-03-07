@@ -57,18 +57,73 @@ def get_attribute_values(xml_file, tag, attribute):
     return list(set(attribute_value_list))
 
 
-def evaluate_xml_files(folder_path, matching_filters, output_csv_path, logging_filters):
-    matching_results = []  # Initialize an empty list to store matches
-    logging_results = []  # Initialize an empty list to store logging results
+def evaluate_xml_files_logging(folder_path, output_log_message):
+    # Iterate through each XML file in the folder
+    log_message_dict = {}
+    matching_results = []
     total_files = sum(1 for filename in os.listdir(folder_path) if filename.endswith('.xml'))
     progress_increment = 100 / total_files
     current_progress = 0
     window['-PROGRESS_BAR-'].update(current_progress)
     
-    # Determine if expressions are for matching or logging
-    is_matching = bool(matching_filters)
-    is_logging = bool(logging_filters)
+    for filename in os.listdir(folder_path):
+        if filename.endswith('.xml'):
+            file_path = os.path.join(folder_path, filename)
+            # Update progress bar after processing each file
+            current_progress += progress_increment
+            window['-PROGRESS_BAR-'].update(current_progress)
+            # Get the input message and variables
+            output_log_message = values['-LOGGING_FILTER_INPUT-']
+            output_message = re.sub(r',\s*', ',', output_log_message)
+            parts = output_message.split(',')  # Split by comma
+            # Initialize lists to store log message parts and field names
+            tree = ET.parse(file_path)
+            log_values = []
+            field_names = []
+            xpath_expression_list = []
+            expression_value = []
+            placeholder_count = 0
+            # Iterate over the parts
+            for part in parts:
+                # Check if the part starts with '!'
+                if part.startswith("!"):
+                    # Add a prefix to the variable and append to log parts
+                    log_values.append(part[1:])
+                if part.startswith("!//"):
+                    xpath_expression_list.append(part[1:])
+                    for expression in xpath_expression_list:
+                        result = tree.xpath(expression)
+                        match = {'Filename': filename}
+                        matching_results.append(match)
+                    expression_value.append(result)
+                else:
+                    # Add the part as a field name and append to field names
+                    field_names.append(part)
+                if len(log_values) or len(xpath_expression_list) > len(field_names):
+                    placeholder_count += 1
+                    field_names.append(f"PlaceholderHeader{placeholder_count}")
+    # Concatenate the log message parts
+    if log_values:
+        log_message = ' '.join([f"{field_name}: {log_part}" for field_name, log_part in zip(field_names, log_values)])
+        log_message_dict = {field_name: log_part for field_name, log_part in zip(field_names, log_values)}
+        #window['-LOGGING_FILTER_OUTPUT-'].update(f"{log_message.strip()}", append=True)
+    if expression_value:
+        log_message = ' '.join([f"{field_name}: {log_part}" for field_name, log_part in zip(field_names, expression_value)])
+        log_message_dict = {field_name: log_part for field_name, log_part in zip(field_names, expression_value)}
+        #window['-LOGGING_FILTER_OUTPUT-'].update(f"{log_message.strip()}", append=True)
     
+    # Add matching results at the beginning of the log message dictionary
+    log_message_dict['Filename'] = matching_results
+    
+    return log_message_dict
+    
+def evaluate_xml_files_matching(folder_path, matching_filters):
+    matching_results = []  # Initialize an empty list to store matches
+    total_files = sum(1 for filename in os.listdir(folder_path) if filename.endswith('.xml'))
+    progress_increment = 100 / total_files
+    current_progress = 0
+    window['-PROGRESS_BAR-'].update(current_progress)
+
     # Iterate through each XML file in the folder
     for filename in os.listdir(folder_path):
         if filename.endswith('.xml'):
@@ -79,61 +134,66 @@ def evaluate_xml_files(folder_path, matching_filters, output_csv_path, logging_f
             try:
                 tree = ET.parse(file_path)
                 print(f"Evaluating file: {filename}")
-                
                 # Evaluate matching filters
                 for expression in matching_filters:
-                    if is_matching:
-                        result = tree.xpath(expression)
-                        for element in result:
-                            # Store matches
-                            match = {'Filename': filename, 'XML Tag': element.tag, 'XPath Expression': expression}
-                            matching_results.append(match)
-                
-                # Evaluate logging filters
-                for expression in logging_filters:
-                    if is_logging:
-                        result = tree.xpath(expression)
-                        # Store logging results
-                        logging_results.extend(result)
+                    result = tree.xpath(expression)
+                    for element in result:
+                        # Store matches
+                        match = {'Filename': filename, 'XML Tag': element.tag, 'XPath Expression': expression}
+                        matching_results.append(match)
             except Exception as e:
                 window["-OUTPUT_WINDOW_MAIN-"].update(f"Error processing {filename}, Error: {e}")
-                
-    # Save matches and logging results to CSV file
-    if matching_results or logging_results:
-        with open(output_csv_path, 'w', newline='', encoding='utf-8') as csvfile:
-            fieldnames = ['Filename', 'XML Tag', 'XPath Expression']
-            # Add keys for logging filters to the fieldnames
-            for i in range(len(logging_filters)):
-                fieldnames.append(f'Logging Filter {i+1}')
-            writer = csv.DictWriter(csvfile, fieldnames=fieldnames)
-            writer.writeheader()
-            # Write matching results
-            for match in matching_results:
-                print(f"MATCH: {match}")
-                writer.writerow(match)
-            # Write logging results
-            for result in logging_results:
-                logging_match = {'Filename': filename, 'XML Tag': result, 'XPath Expression': expression}
-                writer.writerow(logging_match)
-        window["-OUTPUT_WINDOW_MAIN-"].update(f"Matches saved to {output_csv_path}")
-        window["-PROGRESS_BAR-"].update(100)  # Update progress bar to 100% after completion
-    else:
-        window["-OUTPUT_WINDOW_MAIN-"].update("No matches found.")
-        window["-PROGRESS_BAR-"].update(0)
+        
+    return matching_results
+
+def export_evaluation_as_csv(csv_output_path, folder_path, matching_filters, logging_message):
+    try:
+        # Evaluate both matching and logging parts
+        matching_results = evaluate_xml_files_matching(folder_path, matching_filters)
+        log_dictionary = evaluate_xml_files_logging(folder_path, logging_message)
+        
+        # Save matching results to CSV file
+        if matching_results:
+            with open(csv_output_path, 'w', newline='', encoding='utf-8') as csvfile:
+                fieldnames = ['Filename', 'XML Tag', 'XPath Expression']
+                writer = csv.DictWriter(csvfile, fieldnames=fieldnames)
+                writer.writeheader()
+                # Write matching results
+                for match in matching_results:
+                    writer.writerow(match)
+            window["-OUTPUT_WINDOW_MAIN-"].update(f"Matches saved to {csv_output_path}")
+            window["-PROGRESS_BAR-"].update(100)  # Update progress bar to 100% after completion
+        else:
+            window["-OUTPUT_WINDOW_MAIN-"].update("No matches found.")
+            window["-PROGRESS_BAR-"].update(0)
+        
+        # Export logging message as CSV
+        if log_dictionary and matching_results:
+            with open(csv_output_path, 'w', newline='', encoding='utf-8') as logfile:
+                fieldnames = log_dictionary.keys()
+                writer = csv.DictWriter(logfile, fieldnames=fieldnames)
+                writer.writeheader()
+                writer.writerow(log_dictionary.items())
+            window["-OUTPUT_WINDOW_MAIN-"].update(f"Logging message saved to {csv_output_path}")
+        else:
+            window["-OUTPUT_WINDOW_MAIN-"].update("No logging message found.")
+    
+    except Exception as e:
+        window["-OUTPUT_WINDOW_MAIN-"].update(f"Exception in Program {e}")
 
 
 my_new_theme = {
-        'BACKGROUND': '#2d3039', 
-        'TEXT': 'white', 
-        'INPUT': '#535360', 
-        'TEXT_INPUT': 'white', 
-        'SCROLL': '#333', 
-        'BUTTON': ('#FFC857', '#626271'), 
-        'PROGRESS': ('#FFC857', '#ABABAB'), 
-        'BORDER': 2, 
-        'SLIDER_DEPTH': 1, 
-        'PROGRESS_DEPTH': 1, 
-        }
+    'BACKGROUND': '#2d3039',
+    'TEXT': 'white',
+    'INPUT': '#535360',
+    'TEXT_INPUT': 'white',
+    'SCROLL': '#333',
+    'BUTTON': ('#FFC857', '#626271'),
+    'PROGRESS': ('#FFC857', '#ABABAB'),
+    'BORDER': 2,
+    'SLIDER_DEPTH': 1,
+    'PROGRESS_DEPTH': 1,
+}
 
 # Add your dictionary to the PySimpleGUI themes
 sg.theme_add_new("MyTheme", my_new_theme)
@@ -151,56 +211,41 @@ attribute_name = []
 attribute_value = []
 # Listbox Lists
 matching_filters_listbox = []
-logging_filters_listbox = []
 
-layout_listbox_matching_filter = [[sg.Listbox(values=matching_filters_listbox, size=(60, 5), enable_events=True, expand_x=True, key="-MATCHING_FILTER_LIST-")],
-                                  [sg.Text("Add a XPath filter to match in the XML Evaluation:", expand_x=True),
-                                   sg.Button("Add to Matching", key="-ADD_TO_MATCHING-")]]
+layout_listbox_matching_filter = [[sg.Listbox(values=matching_filters_listbox, size=(60, 5), enable_events=True,expand_x=True, key="-MATCHING_FILTER_LIST-")],
+                                  [sg.Text("Add a XPath filter to match in the XML Evaluation:", expand_x=True),sg.Button("Add to Matching", key="-ADD_TO_MATCHING-")]]
 layout_listbox_logging_filter = [
-    [sg.Text("Input Log Messages and XPath expressions (comma-separated):")], 
-    [sg.Input(key='-LOGGING_FILTER_INPUT-', enable_events=True),sg.Button("Add Log Message", key="-ADD_TO_LOGGING-"), sg.Button('Clear')],
+    [sg.Text("Input Log Messages and XPath expressions (comma-separated):")],
+    [sg.Input(key='-LOGGING_FILTER_INPUT-', enable_events=True), sg.Button("Add Log Message", key="-ADD_TO_LOGGING-"), sg.Button('Clear')],
     [sg.Multiline(size=(60, 3), key='-LOGGING_FILTER_OUTPUT-', horizontal_scroll=True, expand_x=True)]]
 
 layout_xml_eval = [[sg.Text("Multi-XML Files Iteration in a Folder:", pad=5)],
-                   [sg.Input(size=(36, 2), font="Arial 10", expand_x=True, key="-FOLDER_EVALUATION_INPUT-"),
-                    sg.FolderBrowse(button_text="Browse Folder", target="-FOLDER_EVALUATION_INPUT-"),
-                    sg.Button("Read XML", key="-READ_XML-")],
+                   [sg.Input(size=(36, 2), font="Arial 10", expand_x=True, key="-FOLDER_EVALUATION_INPUT-"),sg.FolderBrowse(button_text="Browse Folder", target="-FOLDER_EVALUATION_INPUT-"),sg.Button("Read XML", key="-READ_XML-")],
                    [sg.Text("Filtering Options for XML Evaluation:", pad=5)],
-                   [sg.Text("Tag name:"),
-                    sg.Combo(tag_name, size=(15, 1), disabled=True, auto_size_text=False, enable_events=True,
-                             enable_per_char_events=True, expand_x=True, key="-XML_TAG_NAME-"), sg.Text("Tag Value:"),
-                    sg.Combo(tag_value, size=(15, 1), disabled=True, enable_events=True, enable_per_char_events=True,
-                             auto_size_text=False, expand_x=True, key="-XML_TAG_VALUE-")],
-                   [sg.Text("Att name:"),
-                    sg.Combo(attribute_name, size=(15, 1), disabled=True, auto_size_text=False, enable_events=True,
-                             expand_x=True, key="-XML_ATTRIBUTE_NAME-"), sg.Text("Att Value:"),
-                    sg.Combo(attribute_value, size=(15, 1), disabled=True, enable_events=True, auto_size_text=False,
-                             expand_x=True, key="-XML_ATTRIBUTE_VALUE-", pad=5)],
-                   [sg.Text("XPath Expression:"), sg.Input(size=(14, 1), expand_x=True, key="-XPATH_EXPRESSION-"),
-                    sg.Button("Build XPath", key="-XPATH_BUILD_MATCHING-")]]
+                   [sg.Text("Tag name:"),sg.Combo(tag_name, size=(15, 1), disabled=True, auto_size_text=False, enable_events=True,enable_per_char_events=True, expand_x=True, key="-XML_TAG_NAME-"), sg.Text("Tag Value:"),sg.Combo(tag_value, size=(15, 1), disabled=True, enable_events=True, enable_per_char_events=True,auto_size_text=False, expand_x=True, key="-XML_TAG_VALUE-")],
+                   [sg.Text("Att name:"),sg.Combo(attribute_name, size=(15, 1), disabled=True, auto_size_text=False, enable_events=True,expand_x=True, key="-XML_ATTRIBUTE_NAME-"), sg.Text("Att Value:"),sg.Combo(attribute_value, size=(15, 1), disabled=True, enable_events=True, auto_size_text=False,expand_x=True, key="-XML_ATTRIBUTE_VALUE-", pad=5)],
+                   [sg.Text("XPath Expression:"), sg.Input(size=(14, 1), expand_x=True, key="-XPATH_EXPRESSION-"),sg.Button("Build XPath", key="-XPATH_BUILD_MATCHING-")]]
 
 layout_export_evaluation = [[sg.Text("Select a Path where you want to save the XML Evaluation:")],
-                            [sg.Input(expand_x=True, font="Arial 10", key="-FOLDER_EVALUATION_OUTPUT-"),
-                             sg.SaveAs(button_text="Save as", file_types=(("Comma Seperated Value (.csv)", ".csv"),),
-                                       target="-FOLDER_EVALUATION_OUTPUT-"),
-                             sg.Button("Export", key="-EXPORT_AS_CSV-")]]
+                            [sg.Input(expand_x=True, font="Arial 10", key="-FOLDER_EVALUATION_OUTPUT-"),sg.SaveAs(button_text="Save as", file_types=(("Comma Seperated Value (.csv)", ".csv"),),target="-FOLDER_EVALUATION_OUTPUT-"),sg.Button("Export", key="-EXPORT_AS_CSV-")]]
 
-layout_output = [[sg.Multiline(size=(62, 20), write_only=False, horizontal_scroll=True, key="-OUTPUT_XML_FILE-", pad=5)]]
+layout_output = [
+    [sg.Multiline(size=(62, 20), write_only=False, horizontal_scroll=True, key="-OUTPUT_XML_FILE-", pad=5)]]
 
-layout_output_main = [[sg.Multiline(size=(62, 10),key="-OUTPUT_WINDOW_MAIN-", pad=5)],
-                      [sg.Text("Progress:"),sg.ProgressBar(max_value=100, size=(20,15), orientation="h", expand_x=True, key='-PROGRESS_BAR-')]]
+layout_output_main = [[sg.Multiline(size=(62, 10), key="-OUTPUT_WINDOW_MAIN-", pad=5)],
+                      [sg.Text("Progress:"),sg.ProgressBar(max_value=100, size=(20, 15), orientation="h", expand_x=True,key='-PROGRESS_BAR-')]]
 
 frame_xml_eval = sg.Frame("XML Evaluation and Filtering", layout_xml_eval, title_color="#FFC857", expand_x=True)
-frame_export_evaluation = sg.Frame("Export Evaluation as Log File", layout_export_evaluation, title_color="#FFC857", expand_x=True)
+frame_export_evaluation = sg.Frame("Export Evaluation as Log File", layout_export_evaluation, title_color="#FFC857",expand_x=True)
 frame_output = sg.Frame("XML Output", layout_output, title_color="#FFC857", expand_x=True)
 frame_output_main = sg.Frame("Program Output", layout_output_main, title_color="#FFC857", expand_x=True)
-frame_listbox_matching_filter = sg.Frame("XML Filter for Matching",layout_listbox_matching_filter, title_color="#FFC857",expand_x=True)
+frame_listbox_matching_filter = sg.Frame("XML Filter for Matching", layout_listbox_matching_filter,title_color="#FFC857", expand_x=True)
 frame_listbox_logging_filter = sg.Frame("XML Filter for Logging", layout_listbox_logging_filter, title_color="#FFC857",expand_x=True)
 
 layout = [
     [
-        sg.Column(layout=[[frame_xml_eval], [frame_listbox_matching_filter], [frame_listbox_logging_filter], [frame_export_evaluation]],expand_y=True),
-        sg.Column([[frame_output],[frame_output_main]], expand_y=True)
+        sg.Column(layout=[[frame_xml_eval], [frame_listbox_matching_filter], [frame_listbox_logging_filter],[frame_export_evaluation]], expand_y=True),
+        sg.Column([[frame_output], [frame_output_main]], expand_y=True)
     ]
 ]
 
@@ -212,20 +257,23 @@ while True:
     if event == sg.WIN_CLOSED or event == "Exit":
         break
 
-        # Values #
-    eval_input_folder = values["-FOLDER_EVALUATION_INPUT-"]
-    export_evaluation_path = values["-FOLDER_EVALUATION_OUTPUT-"]
+    # BrowseFolder Input and Save As Input Elements
+    evaluation_input_folder = values["-FOLDER_EVALUATION_INPUT-"]
+    evaluation_output_folder = values["-FOLDER_EVALUATION_OUTPUT-"]
+
+    # XML Combobox Element Values
     tag_name_combobox = values["-XML_TAG_NAME-"]
     tag_value_combobox = values["-XML_TAG_VALUE-"]
     attribute_name_combobox = values["-XML_ATTRIBUTE_NAME-"]
     attribute_value_combobox = values["-XML_ATTRIBUTE_VALUE-"]
-    
-    # Listbox Variable Values
-   # listbox_matching_element = window["-MATCHING_FILTER_LIST-"]
-   # listbox_filtering_element = window["-ADD_TO_MATCHING-"]
 
+    # XPath for XML Matching 
     xpath_expression_input = values["-XPATH_EXPRESSION-"]
     xpath_expression = ""
+
+    # Logging Input Element for Log Message Generation
+    input_logging_message = values['-LOGGING_FILTER_INPUT-']
+    output_log_message = values["-LOGGING_FILTER_OUTPUT-"]
 
     # RegEx Matching
     file_path_regex = r'\.xml$'
@@ -254,7 +302,6 @@ while True:
                         window["-XML_ATTRIBUTE_VALUE-"].update(values=attribute_value_list)
                         break  # Only need to get attributes and values for the first tag
 
-
     elif event == "-XML_TAG_NAME-":
         selected_tag = tag_name_combobox
         attributes = get_attributes(eval_input_file, selected_tag)
@@ -266,18 +313,16 @@ while True:
             window["-XML_TAG_VALUE-"].update(disabled=True, values="")
         else:
             window["-XML_TAG_VALUE-"].update(disabled=False)
-        #print(f"XML VALUES: {values_xml}")
-        #print(type(values_xml))
+        # print(f"XML VALUES: {values_xml}")
+        # print(type(values_xml))
         # Disable attribute name and value combo boxes if there are no attributes for the selected tag
         if not attributes:
             window["-XML_ATTRIBUTE_NAME-"].update(disabled=True, values="")
             window["-XML_ATTRIBUTE_VALUE-"].update(disabled=True, values=[])
         else:
             window["-XML_ATTRIBUTE_NAME-"].update(disabled=False)
-            #print(f"ATTRIBUTE: {attributes}")
-            #print(type(attributes))
-
-
+            # print(f"ATTRIBUTE: {attributes}")
+            # print(type(attributes))
 
     elif event == "-XML_ATTRIBUTE_NAME-":
         try:
@@ -292,15 +337,14 @@ while True:
                 window["-XML_ATTRIBUTE_NAME-"].update(disabled=True, values=[])
             else:
                 window["-XML_ATTRIBUTE_VALUE-"].update(disabled=False)
-                #print(f"ATTRIBUTE VALUES: {attribute_values}")
-                #print(type(values_xml))
+                # print(f"ATTRIBUTE VALUES: {attribute_values}")
+                # print(type(values_xml))
 
             # Disable tag value combo box if the selected tag has no values
             if not values_xml:
                 window["-XML_TAG_VALUE-"].update(disabled=True, values="")
         except Exception as e:
             window["-OUTPUT_WINDOW_MAIN-"].update(f"Fatal error! \n {e}")
-
 
     elif event == "-XPATH_BUILD_MATCHING-":
         try:
@@ -324,7 +368,6 @@ while True:
         except NameError:
             window["-OUTPUT_WINDOW_MAIN-"].update("Name 'parsed_xml_file' is not defined")
 
-
     elif event == "-ADD_TO_MATCHING-":
         try:
             if not xpath_expression_input:
@@ -336,36 +379,44 @@ while True:
         except Exception as e:
             window["-OUTPUT_WINDOW_MAIN-"].update(f"Error adding filter: {e}")
 
-
     elif event == "-ADD_TO_LOGGING-":
         try:
-            input_message_and_variables = values['-LOGGING_FILTER_INPUT-']
-            output_message = re.sub(r',\s*', ',', input_message_and_variables) # Remove any whitespaces in input
-            parts = output_message.split(",")  # Split by comma
-           # Initialize lists to store log message parts and field names
-            log_parts = []
-            field_names = [] # For CSV Output Fieldnames/Headers
-            # Iterate over the parts
-            for part in parts:
-                # Check if the part starts with '!'
-                if part.startswith("!"):
-                    # Add a prefix to the variable and append to log parts
-                    log_parts.append(part)
-                else:
-                    # Add the part as a field name and append to field names
-                    field_names.append(part)
-            # Concatenate the log message parts
-            log_message = " ".join(field_names) + ' '.join(log_parts)
-            window['-LOGGING_FILTER_OUTPUT-'].update(f"{log_message.strip()}", append=True)
-            
+            if not input_logging_message:
+                window["-OUTPUT_WINDOW_MAIN-"].update("No Logging message entered.")
+            else:
+                # Get the input message and variables
+                input_logging_message = values['-LOGGING_FILTER_INPUT-']
+                output_message = re.sub(r',\s*', ',', input_logging_message)
+                parts = output_message.split(',')  # Split by comma
+                # Initialize lists to store log message parts and field names
+                log_values = []
+                field_names = []
+                placeholder_count = 0
+                # Iterate over the parts
+                for part in parts:
+                    # Check if the part starts with '!'
+                    if part.startswith('!'):
+                        # Add a prefix to the variable and append to log parts
+                        log_values.append(part[1:])
+                    else:
+                        # Add the part as a field name and append to field names
+                        field_names.append(part)
+                    if len(log_values) > len(field_names):
+                        placeholder_count += 1
+                        field_names.append(f"PlaceholderHeader{placeholder_count}")
+                # Concatenate the log message parts
+                log_message = ' '.join([f"{field_name}: {log_part}" for field_name, log_part in zip(field_names, log_values)])
+                window['-LOGGING_FILTER_OUTPUT-'].update(f"{log_message.strip()}", append=True)
         except Exception as e:
             window["-OUTPUT_WINDOW_MAIN-"].update(f"Error adding filter: {e}")
 
-            
+    elif event == "Clear":
+        window["-OUTPUT_WINDOW_MAIN-"].update(log_message)
+
     elif event == "-EXPORT_AS_CSV-":
         try:
-            window.perform_long_operation(lambda: evaluate_xml_files(eval_input_folder, matching_filters_listbox, export_evaluation_path, logging_filters_listbox),"-OUTPUT_WINDOW_MAIN-")
+            window.perform_long_operation(lambda: export_evaluation_as_csv(evaluation_output_folder, evaluation_input_folder, matching_filters_listbox, input_logging_message), "-OUTPUT_WINDOW_MAIN-")
         except Exception as e:
             window["-OUTPUT_WINDOW_MAIN-"].update(f"Error exporting CSV: {e}")
-            
-window.close() # Kill Programm
+
+window.close()  # Kill Programm

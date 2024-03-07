@@ -1,2 +1,2 @@
-Message,Text        
-Variable: !//filter[@id],Variable: !//filter
+Text,Number
+Name,Integer
