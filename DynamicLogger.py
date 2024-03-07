@@ -1,5 +1,6 @@
 import csv
 import PySimpleGUI as sg
+import re
 
 # Define the layout
 layout = [
@@ -25,8 +26,8 @@ while True:
     elif event == 'Log':
         # Get the input message and variables
         input_message_and_variables = values['-INPUT-']
-        parts = input_message_and_variables.split(',')  # Split by comma
-
+        output_message = re.sub(r',\s*', ',', input_message_and_variables)
+        parts = output_message.split(',')  # Split by comma
         # Initialize lists to store log message parts and field names
         log_parts = []
         field_names = []
@@ -43,10 +44,9 @@ while True:
 
         # Concatenate the log message parts
         log_message = ' '.join(log_parts)
-
         # Log the message
         window['-LOG-'].update(f"{log_message.strip()}\n", append=True)
-
+        print(log_message)
         # Write field names and log message to CSV
         with open('output.csv', 'w', newline='') as csvfile:
             writer = csv.writer(csvfile)

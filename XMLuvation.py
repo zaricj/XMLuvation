@@ -157,9 +157,9 @@ layout_listbox_matching_filter = [[sg.Listbox(values=matching_filters_listbox, s
                                   [sg.Text("Add a XPath filter to match in the XML Evaluation:", expand_x=True),
                                    sg.Button("Add to Matching", key="-ADD_TO_MATCHING-")]]
 layout_listbox_logging_filter = [
-    [sg.Multiline(size=(60, 5), key='-LOGGING_FILTER_OUTPUT-', horizontal_scroll=True, expand_x=True)],
-    [sg.Text("Input Message and XPath expressions (comma-separated):")], 
-    [sg.Input(key='-LOGGING_FILTER_INPUT-', enable_events=True),sg.Button("Add to Logging", key="-ADD_TO_LOGGING-"), sg.Button('Clear')]]
+    [sg.Text("Input Log Messages and XPath expressions (comma-separated):")], 
+    [sg.Input(key='-LOGGING_FILTER_INPUT-', enable_events=True),sg.Button("Add Log Message", key="-ADD_TO_LOGGING-"), sg.Button('Clear')],
+    [sg.Multiline(size=(60, 3), key='-LOGGING_FILTER_OUTPUT-', horizontal_scroll=True, expand_x=True)]]
 
 layout_xml_eval = [[sg.Text("Multi-XML Files Iteration in a Folder:", pad=5)],
                    [sg.Input(size=(36, 2), font="Arial 10", expand_x=True, key="-FOLDER_EVALUATION_INPUT-"),
@@ -175,7 +175,7 @@ layout_xml_eval = [[sg.Text("Multi-XML Files Iteration in a Folder:", pad=5)],
                     sg.Combo(attribute_name, size=(15, 1), disabled=True, auto_size_text=False, enable_events=True,
                              expand_x=True, key="-XML_ATTRIBUTE_NAME-"), sg.Text("Att Value:"),
                     sg.Combo(attribute_value, size=(15, 1), disabled=True, enable_events=True, auto_size_text=False,
-                             expand_x=True, key="-XML_ATTRIBUTE_VALUE-", pad=10)],
+                             expand_x=True, key="-XML_ATTRIBUTE_VALUE-", pad=5)],
                    [sg.Text("XPath Expression:"), sg.Input(size=(14, 1), expand_x=True, key="-XPATH_EXPRESSION-"),
                     sg.Button("Build XPath", key="-XPATH_BUILD_MATCHING-")]]
 
@@ -340,11 +340,24 @@ while True:
     elif event == "-ADD_TO_LOGGING-":
         try:
             input_message_and_variables = values['-LOGGING_FILTER_INPUT-']
-            parts = input_message_and_variables.split(',')  # Split by comma
-            # Concatenate the input message parts with variables
-            log_message = ' '.join(parts)
-            # Log the message
-            window['-LOGGING_FILTER_OUTPUT-'].update(f"{log_message.strip()}\n", append=True)
+            output_message = re.sub(r',\s*', ',', input_message_and_variables) # Remove any whitespaces in input
+            parts = output_message.split(",")  # Split by comma
+           # Initialize lists to store log message parts and field names
+            log_parts = []
+            field_names = [] # For CSV Output Fieldnames/Headers
+            # Iterate over the parts
+            for part in parts:
+                # Check if the part starts with '!'
+                if part.startswith("!"):
+                    # Add a prefix to the variable and append to log parts
+                    log_parts.append(part)
+                else:
+                    # Add the part as a field name and append to field names
+                    field_names.append(part)
+            # Concatenate the log message parts
+            log_message = " ".join(field_names) + ' '.join(log_parts)
+            window['-LOGGING_FILTER_OUTPUT-'].update(f"{log_message.strip()}", append=True)
+            
         except Exception as e:
             window["-OUTPUT_WINDOW_MAIN-"].update(f"Error adding filter: {e}")
 
