@@ -151,7 +151,7 @@ attribute_value = []
 matching_filters_listbox = []
 
 layout_listbox_matching_filter = [[sg.Listbox(values=matching_filters_listbox, size=(60, 5), enable_events=True,expand_x=True, key="-MATCHING_FILTER_LIST-")],
-                                  [sg.Text("Add a XPath filter to match in the XML Files for the evaluation:", expand_x=True),sg.Button("Add to Matching", key="-ADD_TO_MATCHING-")]]
+                                  [sg.Text("Add a XPath Filter for matching in the XML Files:", expand_x=True),sg.Button("Add to Matching", key="-ADD_TO_MATCHING-")]]
 
 layout_xml_eval = [[sg.Text("Multi-XML File Iteration in a Folder:", pad=5)],
                    [sg.Input(size=(36, 2), font="Arial 10", expand_x=True, key="-FOLDER_EVALUATION_INPUT-"),sg.FolderBrowse(button_text="Browse Folder", target="-FOLDER_EVALUATION_INPUT-"),sg.Button("Read XML", key="-READ_XML-")],
@@ -170,7 +170,7 @@ layout_xml_output = [
 layout_output_main = [[sg.Multiline(size=(62, 5), key="-OUTPUT_WINDOW_MAIN-", pad=5)]]
 
 frame_xml_eval = sg.Frame("XML Filters for Evaluation", layout_xml_eval, title_color="#FFC857", expand_x=True)
-frame_export_evaluation = sg.Frame("Export vvaluation results as a CSV File", layout_export_evaluation, title_color="#FFC857",expand_x=True)
+frame_export_evaluation = sg.Frame("Export Evaluation result as a CSV File", layout_export_evaluation, title_color="#FFC857",expand_x=True)
 frame_xml_output = sg.Frame("XML Output", layout_xml_output, title_color="#FFC857", expand_x=True)
 frame_output_main = sg.Frame("Program Output", layout_output_main, title_color="#FFC857", expand_x=True)
 frame_listbox_matching_filter = sg.Frame("Filters to match in XML files", layout_listbox_matching_filter,title_color="#FFC857", expand_x=True)
