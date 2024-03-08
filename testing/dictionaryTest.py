@@ -13,7 +13,9 @@ func_return = dic_creator()
 
 with open('output.csv', 'w', newline='') as csvfile:
     keys = func_return.keys()
+    print(keys)
     values = func_return.items()
+    print(values)
     dic_writer = csv.DictWriter(csvfile, fieldnames=keys)
     dic_writer.writeheader()
     dic_writer.writerow(func_return)
