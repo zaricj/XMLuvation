@@ -64,57 +64,61 @@ def get_attribute_values(xml_file, tag, attribute):
 
 
 def evaluate_xml_files_matching(folder_path, matching_filters):
-    final_results = []
+    try:
+        final_results = []
+        for filename in os.listdir(folder_path):
+            if filename.endswith('.xml'):
+                file_path = os.path.join(folder_path, filename)
+                try:
+                    tree = ET.parse(file_path)
+                    total_matches = 0  # Initialize total matches for the file
 
-    for filename in os.listdir(folder_path):
-        if filename.endswith('.xml'):
-            file_path = os.path.join(folder_path, filename)
-            try:
-                tree = ET.parse(file_path)
-                total_matches = 0  # Initialize total matches for the file
+                    print(f"Evaluating file: {filename}")
 
-                print(f"Evaluating file: {filename}")
+                    for expression in matching_filters:
+                        result = tree.xpath(expression)
+                        total_matches += len(result)
 
-                for expression in matching_filters:
-                    result = tree.xpath(expression)
-                    total_matches += len(result)
+                    if total_matches > 0:  # Only append if there are any matches
+                        final_results.append({"Filename": filename, "Total Matches": total_matches})
 
-                if total_matches > 0:  # Only append if there are any matches
-                    final_results.append({"Filename": filename, "Total Matches": total_matches})
-
-            except Exception as e:
-                print(f"Error processing {filename}, Error: {e}")
-
-    return final_results
+                except Exception as e:
+                    window["-OUTPUT_WINDOW_MAIN-"].update(f"Error processing {filename}, Error: {e}")
+        return final_results
+    except Exception as e:
+        window["-OUTPUT_WINDOW_MAIN-"].update(f"Exception in Program {e}")
         
 
 def export_evaluation_as_csv(csv_output_path, folder_path, matching_filters):
-    total_files = sum(1 for filename in os.listdir(folder_path) if filename.endswith('.xml'))
-    progress_increment = 100 / total_files
-    current_progress = 0
-    window['-PROGRESS_BAR-'].update(current_progress)
-    
-    for filename in os.listdir(folder_path):  # Iterate over files in the folder
-        if filename.endswith('.xml'):
-            # Update progress bar after processing each file
-            current_progress += progress_increment
-            window['-PROGRESS_BAR-'].update(current_progress)
+    try:
+        total_files = sum(1 for filename in os.listdir(folder_path) if filename.endswith('.xml'))
+        progress_increment = 100 / total_files
+        current_progress = 0
+        window['-PROGRESS_BAR-'].update(current_progress)
 
-    matching_results = evaluate_xml_files_matching(folder_path, matching_filters)
+        for filename in os.listdir(folder_path):  # Iterate over files in the folder
+            if filename.endswith('.xml'):
+                # Update progress bar after processing each file
+                current_progress += progress_increment
+                window['-PROGRESS_BAR-'].update(current_progress)
 
-    # Save matching results to CSV file
-    if matching_results:  # Check if matching results exist and logging message doesn't
-        with open(csv_output_path, "w", newline="", encoding="utf-8") as csvfile:
-            fieldnames = ["Filename", "Total Matches"]
-            writer = csv.DictWriter(csvfile, fieldnames=fieldnames)
-            writer.writeheader()
-            # Write matching results
-            for match in matching_results:
-                writer.writerow(match)
-        window["-OUTPUT_WINDOW_MAIN-"].update(f"Matches saved to {csv_output_path}")
-    else:
-        window["-OUTPUT_WINDOW_MAIN-"].update("No matches found.")
-        window["-PROGRESS_BAR-"].update(0)
+        matching_results = evaluate_xml_files_matching(folder_path, matching_filters)
+
+        # Save matching results to CSV file
+        if matching_results:  # Check if matching results exist and logging message doesn't
+            with open(csv_output_path, "w", newline="", encoding="utf-8") as csvfile:
+                fieldnames = ["Filename", "Total Matches"]
+                writer = csv.DictWriter(csvfile, fieldnames=fieldnames)
+                writer.writeheader()
+                # Write matching results
+                for match in matching_results:
+                    writer.writerow(match)
+            window["-OUTPUT_WINDOW_MAIN-"].update(f"Matches saved to {csv_output_path}")
+        else:
+            window["-OUTPUT_WINDOW_MAIN-"].update("No matches found.")
+            window["-PROGRESS_BAR-"].update(0)
+    except Exception as e:
+        window["-OUTPUT_WINDOW_MAIN-"].update(f"Exception in Program {e}")
 
 my_custom_theme = {
     "BACKGROUND": "#2d3039",
@@ -171,12 +175,7 @@ frame_xml_output = sg.Frame("XML Output", layout_xml_output, title_color="#FFC85
 frame_output_main = sg.Frame("Program Output", layout_output_main, title_color="#FFC857", expand_x=True)
 frame_listbox_matching_filter = sg.Frame("Filters for Matching Evaluation", layout_listbox_matching_filter,title_color="#FFC857", expand_x=True)
 
-layout = [
-    [
-        sg.Column(layout=[[frame_xml_eval], [frame_listbox_matching_filter],[frame_export_evaluation],[frame_output_main]], expand_y=True),
-        sg.Column([[frame_xml_output]], expand_y=True)
-    ]
-]
+layout = [[sg.Column(layout=[[frame_xml_eval], [frame_listbox_matching_filter],[frame_export_evaluation],[frame_output_main]], expand_y=True),sg.Column([[frame_xml_output]], expand_y=True)]]
 
 window = sg.Window("XMLuvation - by Jovan", layout, font=font, icon=xml_32px, finalize=True)
 
@@ -228,26 +227,29 @@ while True:
                         break  # Only need to get attributes and values for the first tag
 
     elif event == "-XML_TAG_NAME-":
-        selected_tag = tag_name_combobox
-        attributes = get_attributes(eval_input_file, selected_tag)
-        window["-XML_ATTRIBUTE_NAME-"].update(values=attributes)
-        values_xml = get_tag_values(eval_input_file, selected_tag)
-        window["-XML_TAG_VALUE-"].update(values=values_xml)
-        # Disable tag value combo box if there are no values for the selected tag
-        if not values_xml or all(value.strip() == '' for value in values_xml if value is not None):
-            window["-XML_TAG_VALUE-"].update(disabled=True, values="")
-        else:
-            window["-XML_TAG_VALUE-"].update(disabled=False)
-        # print(f"XML VALUES: {values_xml}")
-        # print(type(values_xml))
-        # Disable attribute name and value combo boxes if there are no attributes for the selected tag
-        if not attributes:
-            window["-XML_ATTRIBUTE_NAME-"].update(disabled=True, values="")
-            window["-XML_ATTRIBUTE_VALUE-"].update(disabled=True, values=[])
-        else:
-            window["-XML_ATTRIBUTE_NAME-"].update(disabled=False)
-            # print(f"ATTRIBUTE: {attributes}")
-            # print(type(attributes))
+        try:
+            selected_tag = tag_name_combobox
+            attributes = get_attributes(eval_input_file, selected_tag)
+            window["-XML_ATTRIBUTE_NAME-"].update(values=attributes)
+            values_xml = get_tag_values(eval_input_file, selected_tag)
+            window["-XML_TAG_VALUE-"].update(values=values_xml)
+            # Disable tag value combo box if there are no values for the selected tag
+            if not values_xml or all(value.strip() == '' for value in values_xml if value is not None):
+                window["-XML_TAG_VALUE-"].update(disabled=True, values="")
+            else:
+                window["-XML_TAG_VALUE-"].update(disabled=False)
+            # print(f"XML VALUES: {values_xml}")
+            # print(type(values_xml))
+            # Disable attribute name and value combo boxes if there are no attributes for the selected tag
+            if not attributes:
+                window["-XML_ATTRIBUTE_NAME-"].update(disabled=True, values="")
+                window["-XML_ATTRIBUTE_VALUE-"].update(disabled=True, values=[])
+            else:
+                window["-XML_ATTRIBUTE_NAME-"].update(disabled=False)
+                # print(f"ATTRIBUTE: {attributes}")
+                # print(type(attributes))
+        except Exception as e:
+            window["-OUTPUT_WINDOW_MAIN-"].update(f"Exception in Program {e}")
 
     elif event == "-XML_ATTRIBUTE_NAME-":
         try:
@@ -269,7 +271,7 @@ while True:
             if not values_xml:
                 window["-XML_TAG_VALUE-"].update(disabled=True, values="")
         except Exception as e:
-            window["-OUTPUT_WINDOW_MAIN-"].update(f"Fatal error! \n {e}")
+            window["-OUTPUT_WINDOW_MAIN-"].update(f"Exception in Program: {e}")
 
     elif event == "-XPATH_BUILD_MATCHING-":
         try:
@@ -283,7 +285,7 @@ while True:
                 if attribute_value_combobox:
                     xpath_expression += f"[@{attribute_name_combobox}='{attribute_value_combobox}']"
                 else:
-                    xpath_expression += f"[@{attribute_name_combobox}]/@{attribute_name_combobox}"
+                    xpath_expression += f"[@{attribute_name_combobox}]"
 
             window["-OUTPUT_WINDOW_MAIN-"].update(tree.xpath(xpath_expression))
 
