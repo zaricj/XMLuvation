@@ -1,5 +1,5 @@
 import PySimpleGUI as sg
-from lxml import etree as ET
+import xml.etree.ElementTree as ET
 import csv
 import os
 import re
@@ -66,9 +66,19 @@ def get_attribute_values(xml_file, tag, attribute):
 def evaluate_xml_files_matching(folder_path, matching_filters):
     try:
         final_results = []
+        total_files = sum(1 for filename in os.listdir(folder_path) if filename.endswith('.xml'))
+        progress_increment = 100 / total_files
+        current_progress = 0
+        window['-PROGRESS_BAR-'].update(current_progress)
+        total_sum_matches = 0
+        total_matching_files = 0
+        
         for filename in os.listdir(folder_path):
             if filename.endswith('.xml'):
                 file_path = os.path.join(folder_path, filename)
+                # Update progress bar after processing each file
+                current_progress += progress_increment
+                window['-PROGRESS_BAR-'].update(current_progress)
                 try:
                     tree = ET.parse(file_path)
                     total_matches = 0  # Initialize total matches for the file
@@ -76,44 +86,35 @@ def evaluate_xml_files_matching(folder_path, matching_filters):
                     print(f"Evaluating file: {filename}")
 
                     for expression in matching_filters:
-                        result = tree.xpath(expression)
+                        result = tree.findall(expression)
                         total_matches += len(result)
-
+                    total_sum_matches += total_matches # Sum together all matches
                     if total_matches > 0:  # Only append if there are any matches
                         final_results.append({"Filename": filename, "Total Matches": total_matches})
-
+                        total_matching_files += 1   
                 except Exception as e:
                     window["-OUTPUT_WINDOW_MAIN-"].update(f"Error processing {filename}, Error: {e}")
-        return final_results
+        return final_results, total_sum_matches, total_matching_files
     except Exception as e:
         window["-OUTPUT_WINDOW_MAIN-"].update(f"Exception in Program {e}")
         
 
 def export_evaluation_as_csv(csv_output_path, folder_path, matching_filters):
     try:
-        total_files = sum(1 for filename in os.listdir(folder_path) if filename.endswith('.xml'))
-        progress_increment = 100 / total_files
-        current_progress = 0
-        window['-PROGRESS_BAR-'].update(current_progress)
-
-        for filename in os.listdir(folder_path):  # Iterate over files in the folder
-            if filename.endswith('.xml'):
-                # Update progress bar after processing each file
-                current_progress += progress_increment
-                window['-PROGRESS_BAR-'].update(current_progress)
-
-        matching_results = evaluate_xml_files_matching(folder_path, matching_filters)
+        matching_results, total_matches_found, total_matching_files = evaluate_xml_files_matching(folder_path, matching_filters)
 
         # Save matching results to CSV file
-        if matching_results:  # Check if matching results exist and logging message doesn't
+        if matching_results:  # Check if matching results exist and logging message doesn't     
+               
             with open(csv_output_path, "w", newline="", encoding="utf-8") as csvfile:
                 fieldnames = ["Filename", "Total Matches"]
                 writer = csv.DictWriter(csvfile, fieldnames=fieldnames)
                 writer.writeheader()
                 # Write matching results
                 for match in matching_results:
+                   
                     writer.writerow(match)
-            window["-OUTPUT_WINDOW_MAIN-"].update(f"Matches saved to {csv_output_path}")
+            window["-OUTPUT_WINDOW_MAIN-"].update(f"Matches saved to {csv_output_path}\nFound {total_matching_files} files that have a total sum of {total_matches_found} matches.")
         else:
             window["-OUTPUT_WINDOW_MAIN-"].update("No matches found.")
             window["-PROGRESS_BAR-"].update(0)
@@ -276,7 +277,7 @@ while True:
     elif event == "-XPATH_BUILD_MATCHING-":
         try:
             tree = ET.parse(eval_input_file)
-            xpath_expression = "//" + tag_name_combobox
+            xpath_expression = ".//" + tag_name_combobox
 
             if tag_value_combobox:
                 xpath_expression += f"[text()='{tag_value_combobox}']"
@@ -286,8 +287,6 @@ while True:
                     xpath_expression += f"[@{attribute_name_combobox}='{attribute_value_combobox}']"
                 else:
                     xpath_expression += f"[@{attribute_name_combobox}]"
-
-            window["-OUTPUT_WINDOW_MAIN-"].update(tree.xpath(xpath_expression))
 
             window["-XPATH_EXPRESSION-"].update(xpath_expression)
             if xpath_expression != "":
