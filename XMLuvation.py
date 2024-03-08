@@ -66,7 +66,7 @@ def get_attribute_values(xml_file, tag, attribute):
 def evaluate_xml_files_logging(folder_path, output_log_message):
     # Iterate through each XML file in the folder
     log_message_dict = {}
-    matching_results = []
+    xpath_values = []
     for filename in os.listdir(folder_path):
         if filename.endswith('.xml'):
             file_path = os.path.join(folder_path, filename)
@@ -81,23 +81,24 @@ def evaluate_xml_files_logging(folder_path, output_log_message):
             placeholder_count = 0
             # Iterate over the parts
             for part in parts:
-                # Check if the part starts with '!'
-                if part.startswith("!//"):
+                # Check if the part starts with '!//'
+                if part.startswith("!"):
                     # Add a prefix to the variable and append to log parts
                     log_values.append(part[1:])
+                    for value in log_values:
+                        result = tree.xpath(value)
+                        xpath_values.append(result)
                 else:
                     # Add the part as a field name and append to field names
                     field_names.append(part)
-                if len(log_values) > len(field_names):
+                if len(xpath_values) > len(field_names):
                     placeholder_count += 1
                     field_names.append(f"PlaceholderHeader{placeholder_count}")
     # Concatenate the log message parts
     if log_values:
-        log_message = ' '.join([f"{field_name}: {log_part}" for field_name, log_part in zip(field_names, log_values)])
-        log_message_dict = {field_name: log_part for field_name, log_part in zip(field_names, log_values)}
+        log_message = ' '.join([f"{field_name}: {log_part}" for field_name, log_part in zip(field_names, xpath_values)])
+        log_message_dict = {field_name: log_part for field_name, log_part in zip(field_names, xpath_values)}
     
-    # Add matching results at the beginning of the log message dictionary
-    log_message_dict['Filename'] = matching_results
     
     return log_message_dict
     
@@ -128,7 +129,7 @@ def export_evaluation_as_csv(csv_output_path, folder_path, matching_filters, log
         progress_increment = 100 / total_files
         current_progress = 0
         window['-PROGRESS_BAR-'].update(current_progress)
-        for filename in folder_path:
+        for filename in os.listdir(folder_path):  # Iterate over files in the folder
             if filename.endswith('.xml'):
                 # Update progress bar after processing each file
                 current_progress += progress_increment
@@ -144,7 +145,7 @@ def export_evaluation_as_csv(csv_output_path, folder_path, matching_filters, log
             matching_results = evaluate_xml_files_matching(folder_path, matching_filters)
         
         # Save matching results to CSV file
-        if matching_results and log_dictionary is None:
+        if matching_results and not log_dictionary:  # Check if matching results exist and logging message doesn't
             with open(csv_output_path, 'w', newline='', encoding='utf-8') as csvfile:
                 fieldnames = ['Filename', 'XML Tag', 'XPath Expression']
                 writer = csv.DictWriter(csvfile, fieldnames=fieldnames)
@@ -159,18 +160,18 @@ def export_evaluation_as_csv(csv_output_path, folder_path, matching_filters, log
             window["-PROGRESS_BAR-"].update(0)
         
         # Export logging message as CSV
-        if log_dictionary and matching_results:
+        if log_dictionary and matching_results:  # Check if both logging message and matching results exist
             with open(csv_output_path, 'w', newline='', encoding='utf-8') as csvfile:
                 fieldnames = list(log_dictionary.keys())
                 writer = csv.DictWriter(csvfile, fieldnames=fieldnames)
                 writer.writeheader()
-                writer.writerow(log_dictionary)
+                writer.writerow(log_dictionary)  # Write logging message
             window["-OUTPUT_WINDOW_MAIN-"].update(f"Logging message saved to {csv_output_path}")
         else:
             window["-OUTPUT_WINDOW_MAIN-"].update("No logging message found.")
-    
     except Exception as e:
-        window["-OUTPUT_WINDOW_MAIN-"].update(f"Exception in Program {e}")
+        window["-OUTPUT_WINDOW_MAIN-"].update(f"Exception in Program: {e}")
+
 
 
 my_custom_theme = {
