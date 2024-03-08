@@ -159,22 +159,22 @@ layout_xml_eval = [[sg.Text("Multi-XML Files Iteration in a Folder:", pad=5)],
 layout_export_evaluation = [[sg.Text("Select a Path where you want to save the XML Evaluation:")],
                             [sg.Input(expand_x=True, font="Arial 10", key="-FOLDER_EVALUATION_OUTPUT-"),sg.SaveAs(button_text="Save as", file_types=(("Comma Seperated Value (.csv)", ".csv"),),target="-FOLDER_EVALUATION_OUTPUT-"),sg.Button("Export", key="-EXPORT_AS_CSV-")]]
 
-layout_output = [
-    [sg.Multiline(size=(62,19), write_only=False, horizontal_scroll=True, key="-OUTPUT_XML_FILE-", pad=5)]]
+layout_xml_output = [
+    [sg.Multiline(size=(62,29), write_only=False, horizontal_scroll=True, key="-OUTPUT_XML_FILE-", pad=5)],
+    [sg.Text("Progress:"),sg.ProgressBar(max_value=100, size=(20, 15), orientation="h", expand_x=True,key='-PROGRESS_BAR-', pad=11)]]
 
-layout_output_main = [[sg.Multiline(size=(62, 8), key="-OUTPUT_WINDOW_MAIN-", pad=5)],
-                      [sg.Text("Progress:"),sg.ProgressBar(max_value=100, size=(20, 15), orientation="h", expand_x=True,key='-PROGRESS_BAR-')]]
+layout_output_main = [[sg.Multiline(size=(62, 5), key="-OUTPUT_WINDOW_MAIN-", pad=5)]]
 
 frame_xml_eval = sg.Frame("XML Evaluation and Filtering", layout_xml_eval, title_color="#FFC857", expand_x=True)
 frame_export_evaluation = sg.Frame("Export Evaluation as Log File", layout_export_evaluation, title_color="#FFC857",expand_x=True)
-frame_output = sg.Frame("XML Output", layout_output, title_color="#FFC857", expand_x=True)
+frame_xml_output = sg.Frame("XML Output", layout_xml_output, title_color="#FFC857", expand_x=True)
 frame_output_main = sg.Frame("Program Output", layout_output_main, title_color="#FFC857", expand_x=True)
 frame_listbox_matching_filter = sg.Frame("Filters for Matching Evaluation", layout_listbox_matching_filter,title_color="#FFC857", expand_x=True)
 
 layout = [
     [
-        sg.Column(layout=[[frame_xml_eval], [frame_listbox_matching_filter],[frame_export_evaluation]], expand_y=True),
-        sg.Column([[frame_output], [frame_output_main]], expand_y=True)
+        sg.Column(layout=[[frame_xml_eval], [frame_listbox_matching_filter],[frame_export_evaluation],[frame_output_main]], expand_y=True),
+        sg.Column([[frame_xml_output]], expand_y=True)
     ]
 ]
 
