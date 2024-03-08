@@ -39,4 +39,4 @@ XMLuvation was created by me. It utilizes the PySimpleGUI library for building t
 This project is licensed under the MIT License.
 
 ## Screenshot
-![python_RYJuk44bmi](https://github.com/zaricj/XMLuvation/assets/93329694/bb52a036-0cce-4c34-9f44-4cd35cc555de)
+![python_YqzK2D5XCP](https://github.com/zaricj/XMLuvation/assets/93329694/b8277436-6acc-40ad-a1d2-7da052ad1388)
