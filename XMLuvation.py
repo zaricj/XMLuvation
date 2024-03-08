@@ -177,7 +177,7 @@ frame_listbox_matching_filter = sg.Frame("Filters for Matching Evaluation", layo
 
 layout = [[sg.Column(layout=[[frame_xml_eval], [frame_listbox_matching_filter],[frame_export_evaluation],[frame_output_main]], expand_y=True),sg.Column([[frame_xml_output]], expand_y=True)]]
 
-window = sg.Window("XMLuvation - by Jovan", layout, font=font, icon=xml_32px, finalize=True)
+window = sg.Window("XMLuvation", layout, font=font, icon=xml_32px, finalize=True)
 
 while True:
     event, values = window.read()
