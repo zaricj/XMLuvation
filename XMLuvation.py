@@ -67,17 +67,9 @@ def evaluate_xml_files_logging(folder_path, output_log_message):
     # Iterate through each XML file in the folder
     log_message_dict = {}
     matching_results = []
-    total_files = sum(1 for filename in os.listdir(folder_path) if filename.endswith('.xml'))
-    progress_increment = 100 / total_files
-    current_progress = 0
-    window['-PROGRESS_BAR-'].update(current_progress)
-    
     for filename in os.listdir(folder_path):
         if filename.endswith('.xml'):
             file_path = os.path.join(folder_path, filename)
-            # Update progress bar after processing each file
-            current_progress += progress_increment
-            window['-PROGRESS_BAR-'].update(current_progress)
             # Get the input message and variables
             output_log_message = values['-LOGGING_FILTER_INPUT-']
             output_message = re.sub(r',\s*', ',', output_log_message)
@@ -111,18 +103,10 @@ def evaluate_xml_files_logging(folder_path, output_log_message):
     
 def evaluate_xml_files_matching(folder_path, matching_filters):
     matching_results = []  # Initialize an empty list to store matches
-    total_files = sum(1 for filename in os.listdir(folder_path) if filename.endswith('.xml'))
-    progress_increment = 100 / total_files
-    current_progress = 0
-    window['-PROGRESS_BAR-'].update(current_progress)
-
     # Iterate through each XML file in the folder
     for filename in os.listdir(folder_path):
         if filename.endswith('.xml'):
             file_path = os.path.join(folder_path, filename)
-            # Update progress bar after processing each file
-            current_progress += progress_increment
-            window['-PROGRESS_BAR-'].update(current_progress)
             try:
                 tree = ET.parse(file_path)
                 print(f"Evaluating file: {filename}")
@@ -140,14 +124,27 @@ def evaluate_xml_files_matching(folder_path, matching_filters):
 
 def export_evaluation_as_csv(csv_output_path, folder_path, matching_filters, logging_message):
     try:
+        total_files = sum(1 for filename in os.listdir(folder_path) if filename.endswith('.xml'))
+        progress_increment = 100 / total_files
+        current_progress = 0
+        window['-PROGRESS_BAR-'].update(current_progress)
+        for filename in folder_path:
+            if filename.endswith('.xml'):
+                # Update progress bar after processing each file
+                current_progress += progress_increment
+                window['-PROGRESS_BAR-'].update(current_progress)
+
         # Evaluate both matching and logging parts
-        matching_results = evaluate_xml_files_matching(folder_path, matching_filters)
+        matching_results = None
         log_dictionary = None
+        
         if logging_message:
             log_dictionary = evaluate_xml_files_logging(folder_path, logging_message)
+        if matching_filters:
+            matching_results = evaluate_xml_files_matching(folder_path, matching_filters)
         
         # Save matching results to CSV file
-        if matching_results:
+        if matching_results and log_dictionary is None:
             with open(csv_output_path, 'w', newline='', encoding='utf-8') as csvfile:
                 fieldnames = ['Filename', 'XML Tag', 'XPath Expression']
                 writer = csv.DictWriter(csvfile, fieldnames=fieldnames)
@@ -163,11 +160,11 @@ def export_evaluation_as_csv(csv_output_path, folder_path, matching_filters, log
         
         # Export logging message as CSV
         if log_dictionary and matching_results:
-            with open(csv_output_path, 'w', newline='', encoding='utf-8') as logfile:
+            with open(csv_output_path, 'w', newline='', encoding='utf-8') as csvfile:
                 fieldnames = list(log_dictionary.keys())
-                writer = csv.DictWriter(logfile, fieldnames=fieldnames)
+                writer = csv.DictWriter(csvfile, fieldnames=fieldnames)
                 writer.writeheader()
-                writer.writerow(list(log_dictionary.items()))
+                writer.writerow(log_dictionary)
             window["-OUTPUT_WINDOW_MAIN-"].update(f"Logging message saved to {csv_output_path}")
         else:
             window["-OUTPUT_WINDOW_MAIN-"].update("No logging message found.")
@@ -176,7 +173,7 @@ def export_evaluation_as_csv(csv_output_path, folder_path, matching_filters, log
         window["-OUTPUT_WINDOW_MAIN-"].update(f"Exception in Program {e}")
 
 
-my_new_theme = {
+my_custom_theme = {
     'BACKGROUND': '#2d3039',
     'TEXT': 'white',
     'INPUT': '#535360',
@@ -190,7 +187,7 @@ my_new_theme = {
 }
 
 # Add your dictionary to the PySimpleGUI themes
-sg.theme_add_new("MyTheme", my_new_theme)
+sg.theme_add_new("MyTheme", my_custom_theme)
 
 sg.theme("MyTheme")
 
