@@ -1,5 +1,5 @@
 import PySimpleGUI as sg
-from lxml import etree as ET
+import xml.etree.ElementTree as ET
 import csv
 import os
 import re
@@ -66,9 +66,19 @@ def get_attribute_values(xml_file, tag, attribute):
 def evaluate_xml_files_matching(folder_path, matching_filters):
     try:
         final_results = []
+        total_files = sum(1 for filename in os.listdir(folder_path) if filename.endswith('.xml'))
+        progress_increment = 100 / total_files
+        current_progress = 0
+        window['-PROGRESS_BAR-'].update(current_progress)
+        total_sum_matches = 0
+        total_matching_files = 0
+
         for filename in os.listdir(folder_path):
             if filename.endswith('.xml'):
                 file_path = os.path.join(folder_path, filename)
+                # Update progress bar after processing each file
+                current_progress += progress_increment
+                window['-PROGRESS_BAR-'].update(current_progress)
                 try:
                     tree = ET.parse(file_path)
                     total_matches = 0  # Initialize total matches for the file
@@ -76,36 +86,27 @@ def evaluate_xml_files_matching(folder_path, matching_filters):
                     print(f"Evaluating file: {filename}")
 
                     for expression in matching_filters:
-                        result = tree.xpath(expression)
+                        result = tree.findall(expression)
                         total_matches += len(result)
-
+                    total_sum_matches += total_matches  # Sum together all matches
                     if total_matches > 0:  # Only append if there are any matches
                         final_results.append({"Filename": filename, "Total Matches": total_matches})
-
+                        total_matching_files += 1
                 except Exception as e:
                     window["-OUTPUT_WINDOW_MAIN-"].update(f"Error processing {filename}, Error: {e}")
-        return final_results
+        return final_results, total_sum_matches, total_matching_files
     except Exception as e:
         window["-OUTPUT_WINDOW_MAIN-"].update(f"Exception in Program {e}")
-        
+
 
 def export_evaluation_as_csv(csv_output_path, folder_path, matching_filters):
     try:
-        total_files = sum(1 for filename in os.listdir(folder_path) if filename.endswith('.xml'))
-        progress_increment = 100 / total_files
-        current_progress = 0
-        window['-PROGRESS_BAR-'].update(current_progress)
-
-        for filename in os.listdir(folder_path):  # Iterate over files in the folder
-            if filename.endswith('.xml'):
-                # Update progress bar after processing each file
-                current_progress += progress_increment
-                window['-PROGRESS_BAR-'].update(current_progress)
-
-        matching_results = evaluate_xml_files_matching(folder_path, matching_filters)
+        matching_results, total_matches_found, total_matching_files = evaluate_xml_files_matching(folder_path,
+                                                                                                  matching_filters)
 
         # Save matching results to CSV file
         if matching_results:  # Check if matching results exist and logging message doesn't
+
             with open(csv_output_path, "w", newline="", encoding="utf-8") as csvfile:
                 fieldnames = ["Filename", "Total Matches"]
                 writer = csv.DictWriter(csvfile, fieldnames=fieldnames)
@@ -113,12 +114,14 @@ def export_evaluation_as_csv(csv_output_path, folder_path, matching_filters):
                 # Write matching results
                 for match in matching_results:
                     writer.writerow(match)
-            window["-OUTPUT_WINDOW_MAIN-"].update(f"Matches saved to {csv_output_path}")
+            window["-OUTPUT_WINDOW_MAIN-"].update(
+                f"Matches saved to {csv_output_path}\nFound {total_matching_files} files that have a total sum of {total_matches_found} matches.")
         else:
             window["-OUTPUT_WINDOW_MAIN-"].update("No matches found.")
             window["-PROGRESS_BAR-"].update(0)
     except Exception as e:
         window["-OUTPUT_WINDOW_MAIN-"].update(f"Exception in Program {e}")
+
 
 my_custom_theme = {
     "BACKGROUND": "#2d3039",
@@ -150,32 +153,53 @@ attribute_value = []
 # Listbox Lists
 matching_filters_listbox = []
 
-layout_listbox_matching_filter = [[sg.Listbox(values=matching_filters_listbox, size=(60, 5), enable_events=True,expand_x=True, key="-MATCHING_FILTER_LIST-")],
-                                  [sg.Text("Add a XPath Filter for matching in the XML Files:", expand_x=True),sg.Button("Add to Matching", key="-ADD_TO_MATCHING-")]]
+layout_listbox_matching_filter = [[sg.Listbox(values=matching_filters_listbox, size=(60, 5), enable_events=True,
+                                              expand_x=True, key="-MATCHING_FILTER_LIST-")],
+                                  [sg.Text("Add a XPath Filter for matching in the XML Files:", expand_x=True),
+                                   sg.Button("Add to Matching", key="-ADD_TO_MATCHING-")]]
 
 layout_xml_eval = [[sg.Text("Multi-XML File Iteration in a Folder:", pad=5)],
-                   [sg.Input(size=(36, 2), font="Arial 10", expand_x=True, key="-FOLDER_EVALUATION_INPUT-"),sg.FolderBrowse(button_text="Browse Folder", target="-FOLDER_EVALUATION_INPUT-"),sg.Button("Read XML", key="-READ_XML-")],
+                   [sg.Input(size=(36, 2), font="Arial 10", expand_x=True, key="-FOLDER_EVALUATION_INPUT-"),
+                    sg.FolderBrowse(button_text="Browse Folder", target="-FOLDER_EVALUATION_INPUT-"),
+                    sg.Button("Read XML", key="-READ_XML-")],
                    [sg.Text("Filtering Options for XML Evaluation:", pad=5)],
-                   [sg.Text("Tag name:"),sg.Combo(tag_name, size=(15, 1), disabled=True, auto_size_text=False, enable_events=True,enable_per_char_events=True, expand_x=True, key="-XML_TAG_NAME-"), sg.Text("Tag Value:"),sg.Combo(tag_value, size=(15, 1), disabled=True, enable_events=True, enable_per_char_events=True,auto_size_text=False, expand_x=True, key="-XML_TAG_VALUE-")],
-                   [sg.Text("Att name:"),sg.Combo(attribute_name, size=(15, 1), disabled=True, auto_size_text=False, enable_events=True,expand_x=True, key="-XML_ATTRIBUTE_NAME-"), sg.Text("Att Value:"),sg.Combo(attribute_value, size=(15, 1), disabled=True, enable_events=True, auto_size_text=False,expand_x=True, key="-XML_ATTRIBUTE_VALUE-", pad=5)],
-                   [sg.Text("XPath Expression:"), sg.Input(size=(14, 1), expand_x=True, key="-XPATH_EXPRESSION-"),sg.Button("Build XPath", key="-XPATH_BUILD_MATCHING-")]]
+                   [sg.Text("Tag name:"),
+                    sg.Combo(tag_name, size=(15, 1), disabled=True, auto_size_text=False, enable_events=True,
+                             enable_per_char_events=True, expand_x=True, key="-XML_TAG_NAME-"), sg.Text("Tag Value:"),
+                    sg.Combo(tag_value, size=(15, 1), disabled=True, enable_events=True, enable_per_char_events=True,
+                             auto_size_text=False, expand_x=True, key="-XML_TAG_VALUE-")],
+                   [sg.Text("Att name:"),
+                    sg.Combo(attribute_name, size=(15, 1), disabled=True, auto_size_text=False, enable_events=True,
+                             expand_x=True, key="-XML_ATTRIBUTE_NAME-"), sg.Text("Att Value:"),
+                    sg.Combo(attribute_value, size=(15, 1), disabled=True, enable_events=True, auto_size_text=False,
+                             expand_x=True, key="-XML_ATTRIBUTE_VALUE-", pad=5)],
+                   [sg.Text("XPath Expression:"), sg.Input(size=(14, 1), expand_x=True, key="-XPATH_EXPRESSION-"),
+                    sg.Button("Build XPath", key="-XPATH_BUILD_MATCHING-")]]
 
 layout_export_evaluation = [[sg.Text("Select a Path where you want to save the XML Evaluation:")],
-                            [sg.Input(expand_x=True, font="Arial 10", key="-FOLDER_EVALUATION_OUTPUT-"),sg.SaveAs(button_text="Save as", file_types=(("Comma Seperated Value (.csv)", ".csv"),),target="-FOLDER_EVALUATION_OUTPUT-"),sg.Button("Export", key="-EXPORT_AS_CSV-")]]
+                            [sg.Input(expand_x=True, font="Arial 10", key="-FOLDER_EVALUATION_OUTPUT-"),
+                             sg.SaveAs(button_text="Save as", file_types=(("Comma Seperated Value (.csv)", ".csv"),),
+                                       target="-FOLDER_EVALUATION_OUTPUT-"),
+                             sg.Button("Export", key="-EXPORT_AS_CSV-")]]
 
 layout_xml_output = [
-    [sg.Multiline(size=(62,29), write_only=False, horizontal_scroll=True, key="-OUTPUT_XML_FILE-", pad=5)],
-    [sg.Text("Progress:"),sg.ProgressBar(max_value=100, size=(20, 15), orientation="h", expand_x=True,key='-PROGRESS_BAR-', pad=11)]]
+    [sg.Multiline(size=(62, 29), write_only=False, horizontal_scroll=True, key="-OUTPUT_XML_FILE-", pad=5)],
+    [sg.Text("Progress:"),
+     sg.ProgressBar(max_value=100, size=(20, 15), orientation="h", expand_x=True, key='-PROGRESS_BAR-', pad=11)]]
 
 layout_output_main = [[sg.Multiline(size=(62, 5), key="-OUTPUT_WINDOW_MAIN-", pad=5)]]
 
 frame_xml_eval = sg.Frame("XML Filters for Evaluation", layout_xml_eval, title_color="#FFC857", expand_x=True)
-frame_export_evaluation = sg.Frame("Export Evaluation result as a CSV File", layout_export_evaluation, title_color="#FFC857",expand_x=True)
+frame_export_evaluation = sg.Frame("Export Evaluation result as a CSV File", layout_export_evaluation,
+                                   title_color="#FFC857", expand_x=True)
 frame_xml_output = sg.Frame("XML Output", layout_xml_output, title_color="#FFC857", expand_x=True)
 frame_output_main = sg.Frame("Program Output", layout_output_main, title_color="#FFC857", expand_x=True)
-frame_listbox_matching_filter = sg.Frame("Filters to match in XML files", layout_listbox_matching_filter,title_color="#FFC857", expand_x=True)
+frame_listbox_matching_filter = sg.Frame("Filters to match in XML files", layout_listbox_matching_filter,
+                                         title_color="#FFC857", expand_x=True)
 
-layout = [[sg.Column(layout=[[frame_xml_eval], [frame_listbox_matching_filter],[frame_export_evaluation],[frame_output_main]], expand_y=True),sg.Column([[frame_xml_output]], expand_y=True)]]
+layout = [[sg.Column(
+    layout=[[frame_xml_eval], [frame_listbox_matching_filter], [frame_export_evaluation], [frame_output_main]],
+    expand_y=True), sg.Column([[frame_xml_output]], expand_y=True)]]
 
 window = sg.Window("XMLuvation", layout, font=font, icon=xml_32px, finalize=True)
 
@@ -195,7 +219,7 @@ while True:
     attribute_name_combobox = values["-XML_ATTRIBUTE_NAME-"]
     attribute_value_combobox = values["-XML_ATTRIBUTE_VALUE-"]
 
-    # XPath for XML Matching 
+    # XPath for XML Matching
     xpath_expression_input = values["-XPATH_EXPRESSION-"]
     xpath_expression = ""
 
@@ -276,7 +300,7 @@ while True:
     elif event == "-XPATH_BUILD_MATCHING-":
         try:
             tree = ET.parse(eval_input_file)
-            xpath_expression = "//" + tag_name_combobox
+            xpath_expression = ".//" + tag_name_combobox
 
             if tag_value_combobox:
                 xpath_expression += f"[text()='{tag_value_combobox}']"
@@ -286,8 +310,6 @@ while True:
                     xpath_expression += f"[@{attribute_name_combobox}='{attribute_value_combobox}']"
                 else:
                     xpath_expression += f"[@{attribute_name_combobox}]"
-
-            window["-OUTPUT_WINDOW_MAIN-"].update(tree.xpath(xpath_expression))
 
             window["-XPATH_EXPRESSION-"].update(xpath_expression)
             if xpath_expression != "":
@@ -308,7 +330,9 @@ while True:
 
     elif event == "-EXPORT_AS_CSV-":
         try:
-            window.perform_long_operation(lambda: export_evaluation_as_csv(evaluation_output_folder, evaluation_input_folder, matching_filters_listbox), "-OUTPUT_WINDOW_MAIN-")
+            window.perform_long_operation(
+                lambda: export_evaluation_as_csv(evaluation_output_folder, evaluation_input_folder,
+                                                 matching_filters_listbox), "-OUTPUT_WINDOW_MAIN-")
         except Exception as e:
             window["-OUTPUT_WINDOW_MAIN-"].update(f"Error exporting CSV: {e}")
 
