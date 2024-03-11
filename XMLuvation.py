@@ -1,5 +1,5 @@
 import PySimpleGUI as sg
-import xml.etree.ElementTree as ET
+from lxml import etree as ET
 import csv
 import os
 import re
@@ -32,9 +32,11 @@ def get_tag_values(xml_file, tag):
         tag_value = []
         for element in root.iter(tag):  # Add Parameter in Function later for root.iter(parameter)
             tag_value.append(element.text)
+        if not tag:
+            pass
         return list(set(tag_value))
     except ValueError as e:
-        window["-OUTPUT_WINDOW_MAIN-"].update(f"Exception in Program {e}")
+        pass
 
 
 def get_attributes(xml_file, tag):
@@ -46,7 +48,7 @@ def get_attributes(xml_file, tag):
             attributes.extend(element.attrib.keys())
         return list(set(attributes))
     except ValueError as e:
-        window["-OUTPUT_WINDOW_MAIN-"].update(f"Exception in Program {e}")
+        pass
 
 
 def get_attribute_values(xml_file, tag, attribute):
@@ -60,7 +62,7 @@ def get_attribute_values(xml_file, tag, attribute):
                 attribute_value_list.append(attribute_value)
         return list(set(attribute_value_list))
     except ValueError as e:
-        window["-OUTPUT_WINDOW_MAIN-"].update(f"Exception in Program {e}")
+        pass
 
 
 def evaluate_xml_files_matching(folder_path, matching_filters):
@@ -72,28 +74,26 @@ def evaluate_xml_files_matching(folder_path, matching_filters):
         window['-PROGRESS_BAR-'].update(current_progress)
         total_sum_matches = 0
         total_matching_files = 0
-        
-        for filename in os.listdir(folder_path):
-            if filename.endswith('.xml'):
-                file_path = os.path.join(folder_path, filename)
-                # Update progress bar after processing each file
-                current_progress += progress_increment
-                window['-PROGRESS_BAR-'].update(current_progress)
-                try:
+        try:
+            for filename in os.listdir(folder_path):
+                if filename.endswith('.xml'):
+                    file_path = os.path.join(folder_path, filename)
+                    # Update progress bar after processing each file
+                    current_progress += progress_increment
+                    window['-PROGRESS_BAR-'].update(current_progress)
+
                     tree = ET.parse(file_path)
                     total_matches = 0  # Initialize total matches for the file
-
                     print(f"Evaluating file: {filename}")
-
                     for expression in matching_filters:
-                        result = tree.findall(expression)
+                        result = tree.xpath(expression)
                         total_matches += len(result)
                     total_sum_matches += total_matches # Sum together all matches
                     if total_matches > 0:  # Only append if there are any matches
                         final_results.append({"Filename": filename, "Total Matches": total_matches})
                         total_matching_files += 1   
-                except Exception as e:
-                    window["-OUTPUT_WINDOW_MAIN-"].update(f"Error processing {filename}, Error: {e}")
+        except Exception as e:
+            window["-OUTPUT_WINDOW_MAIN-"].update(f"Error processing {filename}, Error: {e}")
         return final_results, total_sum_matches, total_matching_files
     except Exception as e:
         window["-OUTPUT_WINDOW_MAIN-"].update(f"Exception in Program {e}")
@@ -112,7 +112,6 @@ def export_evaluation_as_csv(csv_output_path, folder_path, matching_filters):
                 writer.writeheader()
                 # Write matching results
                 for match in matching_results:
-                   
                     writer.writerow(match)
             window["-OUTPUT_WINDOW_MAIN-"].update(f"Matches saved to {csv_output_path}\nFound {total_matching_files} files that have a total sum of {total_matches_found} matches.")
         else:
@@ -120,6 +119,10 @@ def export_evaluation_as_csv(csv_output_path, folder_path, matching_filters):
             window["-PROGRESS_BAR-"].update(0)
     except Exception as e:
         window["-OUTPUT_WINDOW_MAIN-"].update(f"Exception in Program {e}")
+
+
+def is_duplicate(xpath_expression):
+    return xpath_expression in matching_filters_listbox
 
 my_custom_theme = {
     "BACKGROUND": "#2d3039",
@@ -151,7 +154,7 @@ attribute_value = []
 # Listbox Lists
 matching_filters_listbox = []
 
-layout_listbox_matching_filter = [[sg.Listbox(values=matching_filters_listbox, size=(60, 5), enable_events=True,expand_x=True, key="-MATCHING_FILTER_LIST-")],
+layout_listbox_matching_filter = [[sg.Listbox(values=matching_filters_listbox, size=(60, 5), enable_events=True,expand_x=True, right_click_menu=MENU_RIGHT_CLICK_DELETE, key="-MATCHING_FILTER_LIST-")],
                                   [sg.Text("Add a XPath Filter for matching in the XML Files:", expand_x=True),sg.Button("Add to Matching", key="-ADD_TO_MATCHING-")]]
 
 layout_xml_eval = [[sg.Text("Multi-XML File Iteration in a Folder:", pad=5)],
@@ -203,8 +206,23 @@ while True:
     # RegEx Matching
     file_path_regex = r'\.xml$'
 
-    if event == "-READ_XML-":
-        eval_input_file = sg.popup_get_file("Select an XML file", file_types=(("XML Files", "*.xml"),))
+    if event in ("Delete", "Delete All"):
+            try:
+                if event == "Delete":
+                    selected_indices = window["-MATCHING_FILTER_LIST-"].get_indexes()
+                    for index in selected_indices:
+                        matching_filters_listbox.pop(index)
+                        # Update remaining URLs' indexes
+                        window["-MATCHING_FILTER_LIST-"].update(values=matching_filters_listbox)
+                    window["-OUTPUT_WINDOW_MAIN-"].update(f"Removed filter `{matching_filters_listbox}` from list!")
+                elif event == "Delete All":
+                    matching_filters_listbox.clear()
+                    window["-MATCHING_FILTER_LIST-"].update(values=matching_filters_listbox)
+            except UnboundLocalError:
+                window["-OUTPUT_WINDOW-"].update("ERROR: To delete a Filter from the Listbox, select it first.")
+    
+    elif event == "-READ_XML-":
+        eval_input_file = sg.popup_get_file("Select a XML file to fill out the Name/Value boxes.", file_types=(("XML Files", "*.xml"),))
         if eval_input_file:
             window.perform_long_operation(lambda: parse_XML(eval_input_file), "-OUTPUT_WINDOW_MAIN-")
             window["-XML_TAG_VALUE-"].update(values="")
@@ -276,8 +294,10 @@ while True:
 
     elif event == "-XPATH_BUILD_MATCHING-":
         try:
-            tree = ET.parse(eval_input_file)
-            xpath_expression = ".//" + tag_name_combobox
+            if not tag_name_combobox:
+                window["-OUTPUT_WINDOW_MAIN-"].update("To start building a XPath expression, select a Tag Name first from the combobox.")
+            else:
+                xpath_expression = "//" + tag_name_combobox
 
             if tag_value_combobox:
                 xpath_expression += f"[text()='{tag_value_combobox}']"
@@ -290,7 +310,7 @@ while True:
 
             window["-XPATH_EXPRESSION-"].update(xpath_expression)
             if xpath_expression != "":
-                window["-OUTPUT_WINDOW_MAIN-"].print(f"Final XPath expression: {xpath_expression}")
+                window["-OUTPUT_WINDOW_MAIN-"].update(f"Final XPath expression: {xpath_expression}")
         except NameError:
             window["-OUTPUT_WINDOW_MAIN-"].update("Name 'parsed_xml_file' is not defined")
 
@@ -298,16 +318,26 @@ while True:
         try:
             if not xpath_expression_input:
                 window["-OUTPUT_WINDOW_MAIN-"].update("No XPath expression entered.")
-            else:
+            elif xpath_expression_input and not is_duplicate(xpath_expression_input):
                 matching_filters_listbox.append(xpath_expression_input)
                 window["-MATCHING_FILTER_LIST-"].update(values=matching_filters_listbox)
                 window["-OUTPUT_WINDOW_MAIN-"].update(f"XPath expression added: {xpath_expression_input}")
+            elif is_duplicate(xpath_expression_input):
+                window["-OUTPUT_WINDOW_MAIN-"].update(f"Duplicate XPath expression {xpath_expression_input} is already in the list.")
+                
         except Exception as e:
             window["-OUTPUT_WINDOW_MAIN-"].update(f"Error adding filter: {e}")
 
     elif event == "-EXPORT_AS_CSV-":
         try:
-            window.perform_long_operation(lambda: export_evaluation_as_csv(evaluation_output_folder, evaluation_input_folder, matching_filters_listbox), "-OUTPUT_WINDOW_MAIN-")
+            if not os.path.exists(os.path.dirname(evaluation_input_folder)):
+                window["-OUTPUT_WINDOW_MAIN-"].update("Folder Path that contains XML Files is either empty or not a valid path!")
+            elif not len(matching_filters_listbox) > 0:
+                window["-OUTPUT_WINDOW_MAIN-"].update("No Filters for Matching added, please add one as XPath!")
+            elif not os.path.exists(os.path.dirname(evaluation_output_folder)):
+                window["-OUTPUT_WINDOW_MAIN-"].update("Please select a Output Folder where the Evaluation should be saved as a CSV File!")
+            else:
+                window.perform_long_operation(lambda: export_evaluation_as_csv(evaluation_output_folder, evaluation_input_folder, matching_filters_listbox), "-OUTPUT_WINDOW_MAIN-")
         except Exception as e:
             window["-OUTPUT_WINDOW_MAIN-"].update(f"Error exporting CSV: {e}")
 
