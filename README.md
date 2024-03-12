@@ -13,15 +13,15 @@ XMLuvation is a Python application designed to parse and evaluate XML files. It 
 ## Installation
 To run XMLuvation, you need to have Python installed on your system. The required dependencies are as follows:
 
-Requirements
+### Requirements
 
-Python 3.x
-PySimpleGUI library (install using pip install PySimpleGUI)
-lxml library (install using pip install lxml)
-csv library (included in the standard Python library)
-os library (included in the standard Python library)
-re library (included in the standard Python library)
-webbrowser library (included in the standard Python library)
+- Python 3.x
+- PySimpleGUI library (install using pip install PySimpleGUI)
+- lxml library (install using pip install lxml)
+- csv library (included in the standard Python library)
+- os library (included in the standard Python library)
+- re library (included in the standard Python library)
+- webbrowser library (included in the standard Python library)
 
 ## Usage Guide
 
