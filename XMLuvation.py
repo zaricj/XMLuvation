@@ -11,10 +11,8 @@ def parse_XML(xml_file):
     try:
         tree = ET.parse(xml_file)
         root = tree.getroot()
-
         xml_string = ET.tostring(root).decode("UTF-8")  # Converts the read xml file to a string
         window["-OUTPUT_XML_FILE-"].update(xml_string)  # Prints the xml file in the output window
-
         # Get tags in XML File:
         tags_xml = [element.tag for element in root.iter()]
         tags_to_set = set(tags_xml)
@@ -80,23 +78,27 @@ def evaluate_xml_files_matching(folder_path, matching_filters):
                     file_path = os.path.join(folder_path, filename)
                     # Update progress bar after processing each file
                     current_progress += progress_increment
-                    window['-PROGRESS_BAR-'].update(current_progress)
-
+                    window['-PROGRESS_BAR-'].update(round(current_progress, 2))
                     tree = ET.parse(file_path)
                     total_matches = 0  # Initialize total matches for the file
-                    print(f"Evaluating file: {filename}")
+                    current_file_results = {"Filename": filename}
                     for expression in matching_filters:
                         result = tree.xpath(expression)
                         total_matches += len(result)
-                    total_sum_matches += total_matches # Sum together all matches
-                    if total_matches > 0:  # Only append if there are any matches
-                        final_results.append({"Filename": filename, "Total Matches": total_matches})
-                        total_matching_files += 1   
+                    current_file_results["Total Matching Tags"] = total_matches
+                    if total_matches > 0:
+                        for index, expression in enumerate(matching_filters):
+                            current_file_results[f"Filter {index+1}"] = expression
+                        final_results.append(current_file_results)
+                    total_sum_matches += total_matches
+                    total_matching_files += 1 if total_matches > 0 else 0
+                else:
+                    window["-OUTPUT_WINDOW_MAIN-"].update(f"No XML Files found in selected Folder.")
+            return final_results, total_sum_matches, total_matching_files
         except Exception as e:
-            window["-OUTPUT_WINDOW_MAIN-"].update(f"Error processing {filename}, Error: {e}")
-        return final_results, total_sum_matches, total_matching_files
-    except Exception as e:
-        window["-OUTPUT_WINDOW_MAIN-"].update(f"Exception in Program {e}")
+            window["-OUTPUT_WINDOW_MAIN-"].update(f"Error processing {filename}, Error: {e}.")
+    except ZeroDivisionError:
+        pass
         
 
 def export_evaluation_as_csv(csv_output_path, folder_path, matching_filters):
@@ -104,21 +106,22 @@ def export_evaluation_as_csv(csv_output_path, folder_path, matching_filters):
         matching_results, total_matches_found, total_matching_files = evaluate_xml_files_matching(folder_path, matching_filters)
 
         # Save matching results to CSV file
-        if matching_results:  # Check if matching results exist and logging message doesn't     
-               
+        if matching_results:  # Check if matching results exist
+            headers = [key for key in {key:None for dic in matching_results for key in dic}]
             with open(csv_output_path, "w", newline="", encoding="utf-8") as csvfile:
-                fieldnames = ["Filename", "Total Matches"]
+                fieldnames = headers
                 writer = csv.DictWriter(csvfile, fieldnames=fieldnames)
                 writer.writeheader()
                 # Write matching results
                 for match in matching_results:
                     writer.writerow(match)
+                csvfile.close()
             window["-OUTPUT_WINDOW_MAIN-"].update(f"Matches saved to {csv_output_path}\nFound {total_matching_files} files that have a total sum of {total_matches_found} matches.")
         else:
             window["-OUTPUT_WINDOW_MAIN-"].update("No matches found.")
             window["-PROGRESS_BAR-"].update(0)
-    except Exception as e:
-        window["-OUTPUT_WINDOW_MAIN-"].update(f"Exception in Program {e}")
+    except TypeError:
+        window["-OUTPUT_WINDOW_MAIN-"].update(f"No XML Files found in selected Folder.")
 
 
 def is_duplicate(xpath_expression):
