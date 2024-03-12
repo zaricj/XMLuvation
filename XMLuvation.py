@@ -3,6 +3,7 @@ from lxml import etree as ET
 import csv
 import os
 import re
+import webbrowser
 
 xml_32px = b'iVBORw0KGgoAAAANSUhEUgAAACAAAAAgCAYAAABzenr0AAAABHNCSVQICAgIfAhkiAAAAAlwSFlzAAAOxAAADsQBlSsOGwAAA8pJREFUWIXtVl1oHFUYPefOJpNkQ9omJps11mIZKkiTaQmEarMtguKDL4ot9adCQUVU0pBSRRBEpSiJUKlYxPTnrVUEhT5UCaKYbkqlVM0mNBTZaoNtuhuX/Ehbd5LZ+/mw2dnZNWm6NIhgztOd+X7OuWcu9xtgGcv4v4NL0eRcK8qaKu2dBNYpxWjDqcGv/lUByYj9KsgeABCRTIXo+pUDw5O3UquWQgCInfklRm+VfEkEJLY0NwNsyYuR46XU374Dwme8pYhkkClJQGCxhFSbVeOWBzug8ApEv9QYHT7hEQIcB5/KPZP4WURVJiN2UoscV4bbHeofSdys/4KHcHKrvdIRdkKkk+SqLKEcaTwVez6XM9a+fquhAt97gjJ6rxCzSqkD2RfylwZ6DTjdDdELV+fj+ccnmGpvXpVst99xNC4ReCtHDgDQ+M2fazDgtz9jiPGpoVQ8vz1WKrJTYF5MROwDfzxw750LOjC16b5apyywR8AOkjUFWSITEBy8YUy9e0//aBoAfrEssyYcvOoJFPk2FI09JIAxHmnpEuEeKoYL20haAYfSs+i++4fYFU/AxP0b18wE9E8kawsL9BUl2C+G2xvqH7nmjyU224/T4JeeORn9XPj00FGv1rLMVDi4KwPsJWkVbSgNyGOh6FBfAADcgPswadTm4+JQpCs14R5ZPzIyU2zbnHd++9Nm+toXBeF43EEcnwhwKLHZ3qYMfASwPhtkhRZ5BECfAgABfy8oJk1QvVFfV9aZarMKPweAida1K0g8mt8RTtb++Ot0cd7ngJGItGynwuseeY5DMAXMHcKG6NA3FP0mIPkbjGgC2eOa1aPJSMu+sXbLa+BUVW8DWeETcMzfXCzLTETsF7dE7AuK6jOSG/NBcbToXk64+7M0PlxsXbsiWFW9G2BXwenPklwH9BOh6FBfItLyHakenAtMTo9dD6+Lxx0ASG2ymzLlOANwdUG5iAPgaBnc9+qi5z3H570HUm1WjTaDuwXogv9giv5gxpH95aa6BNIAAK3lcHgg9kIuJdm+4WUoHPQRp5XIYWdGulefHb5czDXvTXjH2fifAPal2qwPdUWwQwRdIOsgiuUmngRheA2K7adMEwREbmiRXoMzPQ0D819CCzownyOzZtV2pdyT1OVfC7FhbneXP47G1rwN6FzuudbWsrsq3V2SkRPhM0Pji/Uu6X8gO/mMGOfqROP9xoHB10rpUYzSpqFWT9MnmjJ77GbpSy8AaMstRDAYOn0+drsCFh3HfhhaPSvQO7SirhKUNPeXsYz/LP4Gk8OElv5Vn3MAAAAASUVORK5CYII='
 
@@ -145,10 +146,13 @@ sg.theme_add_new("MyTheme", my_custom_theme)
 
 sg.theme("MyTheme")
 
-font = ("Calibri", 12)
+font = ("Calibri", 13)
 
+# Constants
 FILE_TYPE_XML = (('XML (Extensible Markup Language)', '.xml'),)
 MENU_RIGHT_CLICK_DELETE = ["&Right", ["&Delete", "&Delete All"]]
+MENU_DEFINITION = [["&File", ["E&xit"]], ["&Help",["&XPath Syntax Help::XPathSyntaxURL"]]]
+
 # Combobox Lists
 tag_name = []
 tag_value = []
@@ -157,15 +161,16 @@ attribute_value = []
 # Listbox Lists
 matching_filters_listbox = []
 
-layout_listbox_matching_filter = [[sg.Listbox(values=matching_filters_listbox, size=(60, 5), enable_events=True,expand_x=True, right_click_menu=MENU_RIGHT_CLICK_DELETE, key="-MATCHING_FILTER_LIST-")],
-                                  [sg.Text("Add a XPath Filter for matching in the XML Files:", expand_x=True),sg.Button("Add to Matching", key="-ADD_TO_MATCHING-")]]
+layout_listbox_matching_filter = [[sg.Listbox(values=matching_filters_listbox, size=(60, 5), enable_events=True,expand_x=True, right_click_menu=MENU_RIGHT_CLICK_DELETE, key="-MATCHING_FILTER_LIST-")]]
 
-layout_xml_eval = [[sg.Text("Multi-XML File Iteration in a Folder:", pad=5)],
+layout_xml_eval = [[sg.Menu(MENU_DEFINITION)],
+                   [sg.Text("Select a Folder that contains XML Files:", pad=5)],
                    [sg.Input(size=(36, 2), font="Arial 10", expand_x=True, key="-FOLDER_EVALUATION_INPUT-"),sg.FolderBrowse(button_text="Browse Folder", target="-FOLDER_EVALUATION_INPUT-"),sg.Button("Read XML", key="-READ_XML-")],
-                   [sg.Text("Filtering Options for XML Evaluation:", pad=5)],
+                   [sg.Text("Get XML Tag and Attribute Names/Values for XPath generation:", pad=5)],
                    [sg.Text("Tag name:"),sg.Combo(tag_name, size=(15, 1), disabled=True, auto_size_text=False, enable_events=True,enable_per_char_events=True, expand_x=True, key="-XML_TAG_NAME-"), sg.Text("Tag Value:"),sg.Combo(tag_value, size=(15, 1), disabled=True, enable_events=True, enable_per_char_events=True,auto_size_text=False, expand_x=True, key="-XML_TAG_VALUE-")],
                    [sg.Text("Att name:"),sg.Combo(attribute_name, size=(15, 1), disabled=True, auto_size_text=False, enable_events=True,expand_x=True, key="-XML_ATTRIBUTE_NAME-"), sg.Text("Att Value:"),sg.Combo(attribute_value, size=(15, 1), disabled=True, enable_events=True, auto_size_text=False,expand_x=True, key="-XML_ATTRIBUTE_VALUE-", pad=5)],
-                   [sg.Text("XPath Expression:"), sg.Input(size=(14, 1), expand_x=True, key="-XPATH_EXPRESSION-"),sg.Button("Build XPath", key="-XPATH_BUILD_MATCHING-")]]
+                   [sg.Text("XPath Expression:"), sg.Input(size=(14, 1), expand_x=True, key="-XPATH_EXPRESSION-"),sg.Button("Build XPath", key="-XPATH_BUILD_MATCHING-")],
+                   [sg.Text("Add XPath Expressions to look for and match in XML Files:", expand_x=True),sg.Button("Add XPath Filter", key="-ADD_TO_MATCHING-")]]
 
 layout_export_evaluation = [[sg.Text("Select a Path where you want to save the XML Evaluation:")],
                             [sg.Input(expand_x=True, font="Arial 10", key="-FOLDER_EVALUATION_OUTPUT-"),sg.SaveAs(button_text="Save as", file_types=(("Comma Seperated Value (.csv)", ".csv"),),target="-FOLDER_EVALUATION_OUTPUT-"),sg.Button("Export", key="-EXPORT_AS_CSV-")]]
@@ -188,6 +193,7 @@ window = sg.Window("XMLuvation", layout, font=font, icon=xml_32px, finalize=True
 
 while True:
     event, values = window.read()
+    print(event, values)
 
     if event == sg.WIN_CLOSED or event == "Exit":
         break
@@ -223,6 +229,12 @@ while True:
                     window["-MATCHING_FILTER_LIST-"].update(values=matching_filters_listbox)
             except UnboundLocalError:
                 window["-OUTPUT_WINDOW-"].update("ERROR: To delete a Filter from the Listbox, select it first.")
+    
+    elif event == "XPath Syntax Help::XPathSyntaxURL":
+        webbrowser.open("https://www.w3schools.com/xml/xpath_syntax.asp")
+    
+    elif event == "Change Theme::ChangeTheme":
+        pass
     
     elif event == "-READ_XML-":
         eval_input_file = sg.popup_get_file("Select a XML file to fill out the Name/Value boxes.", file_types=(("XML Files", "*.xml"),))
