@@ -130,27 +130,43 @@ def evaluate_xml_files_matching(folder_path, matching_filters):
         total_matching_files = 0
         try:
             for filename in os.listdir(folder_path):
+                
                 if filename.endswith('.xml'):
                     file_path = os.path.join(folder_path, filename)
                     # Update progress bar after processing each file
                     current_progress += progress_increment
                     window['-PROGRESS_BAR-'].update(round(current_progress, 2))
+                    
                     tree = ET.parse(file_path)
                     total_matches = 0  # Initialize total matches for the file
                     current_file_results = {"Filename": filename}
+                    
                     for expression in matching_filters:
                         result = tree.xpath(expression)
                         total_matches += len(result)
+
+                        if "@" in expression:
+                            match = re.search(r"@([^=]+)=", expression)
+                            if match:
+                                attribute_name_string = match.group(1).strip()
+                            for element in result:
+                                attr_value = element.get(attribute_name_string)
+                                if attr_value and attr_value.strip():  # Check if not None or empty
+                                    current_file_results[f"Filter '{attribute_name_string}'"] = attr_value
+                                    
+                        else:
+                            current_file_results[f"Filter {matching_filters.index(expression) + 1}"] = expression
+            
                     current_file_results["Total Matching Tags"] = total_matches
+
                     if total_matches > 0:
-                        for index, expression in enumerate(matching_filters):
-                            current_file_results[f"Filter {index + 1}"] = expression
                         final_results.append(current_file_results)
+                        
                     total_sum_matches += total_matches
                     total_matching_files += 1 if total_matches > 0 else 0
-                else:
-                    window["-OUTPUT_WINDOW_MAIN_MAIN-"].update(f"No XML Files found in selected Folder.")
+
             return final_results, total_sum_matches, total_matching_files
+        
         except Exception as e:
             window["-OUTPUT_WINDOW_MAIN_MAIN-"].update(f"Error processing {filename}, Error: {e}.")
     except ZeroDivisionError:
