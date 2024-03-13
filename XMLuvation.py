@@ -7,8 +7,8 @@ import os
 import re
 import webbrowser
 
-xml_32px = b'iVBORw0KGgoAAAANSUhEUgAAACAAAAAgCAYAAABzenr0AAAABHNCSVQICAgIfAhkiAAAAAlwSFlzAAAOxAAADsQBlSsOGwAAA8pJREFUWIXtVl1oHFUYPefOJpNkQ9omJps11mIZKkiTaQmEarMtguKDL4ot9adCQUVU0pBSRRBEpSiJUKlYxPTnrVUEhT5UCaKYbkqlVM0mNBTZaoNtuhuX/Ehbd5LZ+/mw2dnZNWm6NIhgztOd+X7OuWcu9xtgGcv4v4NL0eRcK8qaKu2dBNYpxWjDqcGv/lUByYj9KsgeABCRTIXo+pUDw5O3UquWQgCInfklRm+VfEkEJLY0NwNsyYuR46XU374Dwme8pYhkkClJQGCxhFSbVeOWBzug8ApEv9QYHT7hEQIcB5/KPZP4WURVJiN2UoscV4bbHeofSdys/4KHcHKrvdIRdkKkk+SqLKEcaTwVez6XM9a+fquhAt97gjJ6rxCzSqkD2RfylwZ6DTjdDdELV+fj+ccnmGpvXpVst99xNC4ReCtHDgDQ+M2fazDgtz9jiPGpoVQ8vz1WKrJTYF5MROwDfzxw750LOjC16b5apyywR8AOkjUFWSITEBy8YUy9e0//aBoAfrEssyYcvOoJFPk2FI09JIAxHmnpEuEeKoYL20haAYfSs+i++4fYFU/AxP0b18wE9E8kawsL9BUl2C+G2xvqH7nmjyU224/T4JeeORn9XPj00FGv1rLMVDi4KwPsJWkVbSgNyGOh6FBfAADcgPswadTm4+JQpCs14R5ZPzIyU2zbnHd++9Nm+toXBeF43EEcnwhwKLHZ3qYMfASwPhtkhRZ5BECfAgABfy8oJk1QvVFfV9aZarMKPweAida1K0g8mt8RTtb++Ot0cd7ngJGItGynwuseeY5DMAXMHcKG6NA3FP0mIPkbjGgC2eOa1aPJSMu+sXbLa+BUVW8DWeETcMzfXCzLTETsF7dE7AuK6jOSG/NBcbToXk64+7M0PlxsXbsiWFW9G2BXwenPklwH9BOh6FBfItLyHakenAtMTo9dD6+Lxx0ASG2ymzLlOANwdUG5iAPgaBnc9+qi5z3H570HUm1WjTaDuwXogv9giv5gxpH95aa6BNIAAK3lcHgg9kIuJdm+4WUoHPQRp5XIYWdGulefHb5czDXvTXjH2fifAPal2qwPdUWwQwRdIOsgiuUmngRheA2K7adMEwREbmiRXoMzPQ0D819CCzownyOzZtV2pdyT1OVfC7FhbneXP47G1rwN6FzuudbWsrsq3V2SkRPhM0Pji/Uu6X8gO/mMGOfqROP9xoHB10rpUYzSpqFWT9MnmjJ77GbpSy8AaMstRDAYOn0+drsCFh3HfhhaPSvQO7SirhKUNPeXsYz/LP4Gk8OElv5Vn3MAAAAASUVORK5CYII='
-
+xml_32px = b"iVBORw0KGgoAAAANSUhEUgAAACAAAAAgCAYAAABzenr0AAAABHNCSVQICAgIfAhkiAAAAAlwSFlzAAAOxAAADsQBlSsOGwAAA8pJREFUWIXtVl1oHFUYPefOJpNkQ9omJps11mIZKkiTaQmEarMtguKDL4ot9adCQUVU0pBSRRBEpSiJUKlYxPTnrVUEhT5UCaKYbkqlVM0mNBTZaoNtuhuX/Ehbd5LZ+/mw2dnZNWm6NIhgztOd+X7OuWcu9xtgGcv4v4NL0eRcK8qaKu2dBNYpxWjDqcGv/lUByYj9KsgeABCRTIXo+pUDw5O3UquWQgCInfklRm+VfEkEJLY0NwNsyYuR46XU374Dwme8pYhkkClJQGCxhFSbVeOWBzug8ApEv9QYHT7hEQIcB5/KPZP4WURVJiN2UoscV4bbHeofSdys/4KHcHKrvdIRdkKkk+SqLKEcaTwVez6XM9a+fquhAt97gjJ6rxCzSqkD2RfylwZ6DTjdDdELV+fj+ccnmGpvXpVst99xNC4ReCtHDgDQ+M2fazDgtz9jiPGpoVQ8vz1WKrJTYF5MROwDfzxw750LOjC16b5apyywR8AOkjUFWSITEBy8YUy9e0//aBoAfrEssyYcvOoJFPk2FI09JIAxHmnpEuEeKoYL20haAYfSs+i++4fYFU/AxP0b18wE9E8kawsL9BUl2C+G2xvqH7nmjyU224/T4JeeORn9XPj00FGv1rLMVDi4KwPsJWkVbSgNyGOh6FBfAADcgPswadTm4+JQpCs14R5ZPzIyU2zbnHd++9Nm+toXBeF43EEcnwhwKLHZ3qYMfASwPhtkhRZ5BECfAgABfy8oJk1QvVFfV9aZarMKPweAida1K0g8mt8RTtb++Ot0cd7ngJGItGynwuseeY5DMAXMHcKG6NA3FP0mIPkbjGgC2eOa1aPJSMu+sXbLa+BUVW8DWeETcMzfXCzLTETsF7dE7AuK6jOSG/NBcbToXk64+7M0PlxsXbsiWFW9G2BXwenPklwH9BOh6FBfItLyHakenAtMTo9dD6+Lxx0ASG2ymzLlOANwdUG5iAPgaBnc9+qi5z3H570HUm1WjTaDuwXogv9giv5gxpH95aa6BNIAAK3lcHgg9kIuJdm+4WUoHPQRp5XIYWdGulefHb5czDXvTXjH2fifAPal2qwPdUWwQwRdIOsgiuUmngRheA2K7adMEwREbmiRXoMzPQ0D819CCzownyOzZtV2pdyT1OVfC7FhbneXP47G1rwN6FzuudbWsrsq3V2SkRPhM0Pji/Uu6X8gO/mMGOfqROP9xoHB10rpUYzSpqFWT9MnmjJ77GbpSy8AaMstRDAYOn0+drsCFh3HfhhaPSvQO7SirhKUNPeXsYz/LP4Gk8OElv5Vn3MAAAAASUVORK5CYII="
+logo = "./images/logo.png"
 # Mapping of file extensions to corresponding read and write functions
 CONVERSION_FUNCTIONS = {
     # CSV Conversion
@@ -19,6 +19,7 @@ CONVERSION_FUNCTIONS = {
     ("csv", "md"): (pd.read_csv, pd.DataFrame.to_markdown),
 }
 
+pandas_font = "Calibri 13 bold"
 
 # Generic conversion function for CSV Files
 def convert_files(input_file, output_file, input_ext, output_ext):
@@ -26,18 +27,18 @@ def convert_files(input_file, output_file, input_ext, output_ext):
         read_func, write_func = CONVERSION_FUNCTIONS.get((input_ext, output_ext), (None, None))
 
         if read_func is None or write_func is None:
-            window["-OUTPUT_WINDOW_CSV-"].update("Unsupported conversion!", text_color="#ff4545")
+            window["-OUTPUT_WINDOW_CSV-"].update("Unsupported conversion!", text_color="#ff4545", font=pandas_font)
             return
 
         df = read_func(input_file)
         write_func(df, output_file)
         window["-OUTPUT_WINDOW_CSV-"].update(
             f"Successfully converted {Path(input_file).stem} {input_ext.upper()} to {Path(output_file).stem} {output_ext.upper()}",
-            text_color="#51e98b")
+            text_color="#51e98b", font=pandas_font)
     except FileNotFoundError:
-        window["-OUTPUT_WINDOW_CSV-"].update(f"{input_ext.upper()} File not found!", text_color="#ff4545")
+        window["-OUTPUT_WINDOW_CSV-"].update(f"{input_ext.upper()} File not found!", text_color="#ff4545", font=pandas_font)
     except Exception as e:
-        window["-OUTPUT_WINDOW_CSV-"].update(f"ERROR: {e}", text_color="#ff4545")
+        window["-OUTPUT_WINDOW_CSV-"].update(f"ERROR: {e}", text_color="#ff4545", font=pandas_font)
 
 
 # Read file data in Pandas DataFrame       
@@ -52,13 +53,13 @@ def read_file_data(file):
         if df is not None:
             column_names = df.columns.tolist()
             window["-COLUMNS-"].update(values=column_names)
-            window["-OUTPUT_WINDOW-"].update(df, text_color="white")
+            window["-OUTPUT_WINDOW_CSV-"].update(df, text_color="white")
             return df, column_names
         else:
             return None, []
 
-    except Exception as e:
-        window["-OUTPUT_WINDOW-"].update(f"ERROR: {e}", text_color="#ff4545")
+    except FileNotFoundError as e:
+        window["-OUTPUT_WINDOW_CSV-"].update(f"ERROR: {e}", text_color="#ff4545", font=pandas_font)
         return None, []
 
 
@@ -222,7 +223,7 @@ attribute_value = []
 matching_filters_listbox = []
 
 # ========== START Layout for Pandas Conversion START ========== #
-layout_pandas_conversion = [[sg.Text("CSV Converter", font="Arial 36 bold underline", text_color="#FFC857", pad=30)],
+layout_pandas_conversion = [[sg.Text("CSV Converter", font="Calibri 36 bold underline", text_color="#FFC857", pad=30)],
                             [sg.Text(
                                 "Convert CSV File to a different file type with Pandas\nSupported output file types: Excel, Markdown. HTML and JSON")],
                             [sg.HSep(pad=30)],
@@ -234,13 +235,14 @@ layout_pandas_conversion = [[sg.Text("CSV Converter", font="Arial 36 bold underl
                             [sg.Input(size=(36, 1), key="-FILE_OUTPUT-"),
                              sg.FileSaveAs(button_text="Save as", size=(7, 1), file_types=FILE_TYPES_OUTPUT,
                                            target="-FILE_OUTPUT-", key="-SAVE_AS_BUTTON-"),
-                             sg.Button("Convert", key="-SAVE-")]]
+                             sg.Button("Convert", key="-SAVE-", expand_x=True)],
+                            [sg.Image(source=logo)]]
 
-layout_pandas_output = [[sg.Multiline(size=(67, 32), key="-OUTPUT_WINDOW_CSV-")]]
+layout_pandas_output = [[sg.Multiline(size=(67, 32), key="-OUTPUT_WINDOW_CSV-", write_only=True)]]
 
-frame_pandas = sg.Frame("CSV Conversion to different file type", layout_pandas_conversion, expand_x=True,
+frame_pandas = sg.Frame("CSV Conversion to different file type", layout_pandas_conversion, expand_x=True, expand_y=True,
                         title_color="#FFC857")
-frame_pandas_output = sg.Frame("CSV Conversion Output", layout_pandas_output, expand_x=True, title_color="#FFC857")
+frame_pandas_output = sg.Frame("CSV Conversion Output", layout_pandas_output, expand_x=True, expand_y=True, title_color="#FFC857")
 # ========== END Layout for Pandas Conversion END ========== #
 
 # ========== START Layout for XML Evaluation START ========== #
