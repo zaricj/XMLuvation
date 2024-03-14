@@ -18,6 +18,7 @@ To run XMLuvation, you need to have Python installed on your system. The require
 - Python 3.x
 - PySimpleGUI library (install using pip install PySimpleGUI)
 - lxml library (install using pip install lxml)
+- pandas library (install using pip install pandas)
 - tabulate library (install using pip install tabulate)
 - openpyxl library (install using pip install openpyxl)
 - csv library (included in the standard Python library)
