@@ -13,8 +13,9 @@ pandas_font = "Calibri 13 bold"
 
 
 # Generic conversion function for CSV Files
-def convert_files(input_file, output_file, input_ext, output_ext):
+def convert_csv_file(input_file, output_file, input_ext, output_ext):
     try:
+        window["-CONVERT_CSV_FILE-"].update(disabled=True)
         # Mapping of csv file to corresponding write functions
         CONVERSION_FUNCTIONS = {
         # CSV Conversion
@@ -35,15 +36,20 @@ def convert_files(input_file, output_file, input_ext, output_ext):
         window["-OUTPUT_WINDOW_CSV-"].update(
             f"Successfully converted {Path(input_file).stem} {input_ext.upper()} to {Path(output_file).stem} {output_ext.upper()}",
             text_color="#51e98b", font=pandas_font)
+        window["-CONVERT_CSV_FILE-"].update(disabled=False)
         
     except FileNotFoundError:
         window["-OUTPUT_WINDOW_CSV-"].update(f"{input_ext.upper()} File not found!", text_color="#ff4545", font=pandas_font)
+        window["-CONVERT_CSV_FILE-"].update(disabled=False)
+
     except Exception as e:
         window["-OUTPUT_WINDOW_CSV-"].update(f"ERROR: {e}", text_color="#ff4545", font=pandas_font)
+        window["-CONVERT_CSV_FILE-"].update(disabled=False)
 
 
-# Read file data in Pandas DataFrame       
-def read_file_data(csv_file):
+
+# Read csv file data in Pandas DataFrame       
+def read_csv_data(csv_file):
     try:
         file_suffix_in_input = Path(csv_file).suffix.upper().strip(".")
         df = pd.read_csv(csv_file, delimiter=";", index_col=0)
@@ -173,6 +179,7 @@ def evaluate_xml_files_matching(folder_path, matching_filters):
 
 def export_evaluation_as_csv(csv_output_path, folder_path, matching_filters):
     try:
+        window["-EXPORT_AS_CSV-"].update(disabled=True)
         matching_results, total_matches_found, total_matching_files = evaluate_xml_files_matching(folder_path,
                                                                                                   matching_filters)
 
@@ -192,13 +199,18 @@ def export_evaluation_as_csv(csv_output_path, folder_path, matching_filters):
                 
             window["-OUTPUT_WINDOW_MAIN_MAIN-"].update(
                 f"Matches saved to {csv_output_path}\nFound {total_matching_files} files that have a total sum of {total_matches_found} matches.")
-        
+            window["-EXPORT_AS_CSV-"].update(disabled=False)
+            window['-PROGRESS_BAR-'].update(0)
         else:
             window["-OUTPUT_WINDOW_MAIN_MAIN-"].update("No matches found.")
             window["-PROGRESS_BAR-"].update(0)
+            window["-EXPORT_AS_CSV-"].update(disabled=False)
+            window['-PROGRESS_BAR-'].update(0)
             
     except TypeError:
         window["-OUTPUT_WINDOW_MAIN_MAIN-"].update(f"No XML Files found in selected Folder.")
+        window["-EXPORT_AS_CSV-"].update(disabled=False)
+        window['-PROGRESS_BAR-'].update(0)
     
 
 def is_duplicate(xpath_expression):
@@ -254,7 +266,7 @@ layout_pandas_conversion = [[sg.Text("CSV Converter", font="Calibri 36 bold unde
                             [sg.Input(size=(36, 1), key="-FILE_OUTPUT-"),
                              sg.FileSaveAs(button_text="Save as", size=(7, 1), file_types=FILE_TYPES_OUTPUT,
                                            target="-FILE_OUTPUT-", key="-SAVE_AS_BUTTON-"),
-                             sg.Button("Convert", key="-SAVE-", expand_x=True)],
+                             sg.Button("Convert", key="-CONVERT_CSV_FILE-", expand_x=True)],
                             [sg.Image(source=logo)]]
 
 layout_pandas_output = [[sg.Multiline(size=(67, 32), key="-OUTPUT_WINDOW_CSV-", write_only=True)]]
@@ -432,12 +444,12 @@ while True:
                         window["-XML_ATTRIBUTE_VALUE-"].update(values=attribute_value_list)
                         break  # Only need to get attributes and values for the first tag
 
-    elif event == "-SAVE-":
-        window.perform_long_operation(lambda: convert_files(input_file, output_file, input_ext, output_ext),
+    elif event == "-CONVERT_CSV_FILE-":
+        window.perform_long_operation(lambda: convert_csv_file(input_file, output_file, input_ext, output_ext),
                                       "-OUTPUT_WINDOW_CSV-")
 
     elif event == "-READ_FILE-":
-        window.perform_long_operation(lambda: read_file_data(input_file), "-OUTPUT_WINDOW_CSV-")
+        window.perform_long_operation(lambda: read_csv_data(input_file), "-OUTPUT_WINDOW_CSV-")
 
     elif event == "-XML_TAG_NAME-":
         try:
