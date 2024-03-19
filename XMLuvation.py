@@ -14,15 +14,25 @@ pandas_font = "Calibri 13 bold"
 
 # Generic conversion function for CSV Files
 def convert_csv_file(input_file, output_file, input_ext, output_ext):
+    """Converts the selected CSV File to the supported extension types with the Pandas module
+
+    Args:
+        input_file (str): Folder Path of CSV File
+        output_file (str): Folder Path where the Converted CSV File should be saved
+        input_ext (str): CSV Extension Suffix
+        output_ext (str): To be converted to Extension Type Suffix
+    """
     try:
         window["-CONVERT_CSV_FILE-"].update(disabled=True)
+        csv_df = pd.read_csv(input_file, delimiter=";", encoding="utf-8", index_col=0)
+        
         # Mapping of csv file to corresponding write functions
         CONVERSION_FUNCTIONS = {
         # CSV Conversion
-        ("csv", "html"): (pd.read_csv(input_file, delimiter=";", index_col=0), pd.DataFrame.to_html),
-        ("csv", "json"): (pd.read_csv(input_file, delimiter=";", index_col=0), pd.DataFrame.to_json),
-        ("csv", "xlsx"): (pd.read_csv(input_file, delimiter=";", index_col=0), pd.DataFrame.to_excel),
-        ("csv", "md"): (pd.read_csv(input_file, delimiter=";", index_col=0), pd.DataFrame.to_markdown),
+        ("csv", "html"): (csv_df, pd.DataFrame.to_html),
+        ("csv", "json"): (csv_df, pd.DataFrame.to_json),
+        ("csv", "xlsx"): (csv_df, pd.DataFrame.to_excel),
+        ("csv", "md"): (csv_df, pd.DataFrame.to_markdown),
         }
         
         read_func, write_func = CONVERSION_FUNCTIONS.get((input_ext, output_ext), (None, None))
@@ -47,19 +57,29 @@ def convert_csv_file(input_file, output_file, input_ext, output_ext):
         window["-CONVERT_CSV_FILE-"].update(disabled=False)
 
 
-
 # Read csv file data in Pandas DataFrame       
 def read_csv_data(csv_file):
+    """Reads CSV File and displays it's data as a DataFrame
+
+    Args:
+        csv_file (str): Path to CSV File
+
+    Raises:
+        ValueError: ValueError Exception gets risen if no input folder has been set
+
+    Returns:
+        dataframe: Returns CSV file as a Pandas DataFrame 
+    """
     try:
         file_suffix_in_input = Path(csv_file).suffix.upper().strip(".")
-        df = pd.read_csv(csv_file, delimiter=";", index_col=0)
+        csv_df = pd.read_csv(input_file, delimiter=";", encoding="utf-8", index_col=0)
 
         if file_suffix_in_input == "":
             raise ValueError("Error: Input is empty. Cannot read nothing!")
 
-        if df is not None:
-            window["-OUTPUT_WINDOW_CSV-"].update(df, text_color="white")
-            return df
+        if csv_df is not None:
+            window["-OUTPUT_WINDOW_CSV-"].update(csv_df, text_color="white")
+            return csv_df
         else:
             return None, []
 
@@ -69,6 +89,11 @@ def read_csv_data(csv_file):
 
 
 def parse_xml(xml_file):
+    """Reads XML File and adds elements to the Tag Name ComboBox GUI element
+
+    Args:
+        xml_file (str): Single XML File
+    """
     try:
         tree = ET.parse(xml_file)
         root = tree.getroot()
@@ -125,6 +150,15 @@ def get_attribute_values(xml_file, tag, attribute):
 
 
 def evaluate_xml_files_matching(folder_path, matching_filters):
+    """Evaluates and searches for matches in XML Files
+
+    Args:
+        folder_path (str): Folder path where one or more XML Files are located
+        matching_filters (list): Added XPath filters in the ListBox GUI element
+
+    Returns:
+        list: Returns list of added Filter to match to and evaluate one or multiple XML Files
+    """
     try:
         final_results = []
         total_files = sum(1 for filename in os.listdir(folder_path) if filename.endswith('.xml'))
@@ -178,6 +212,13 @@ def evaluate_xml_files_matching(folder_path, matching_filters):
 
 
 def export_evaluation_as_csv(csv_output_path, folder_path, matching_filters):
+    """Export found XML Files and it's matches in a single CSV File
+
+    Args:
+        csv_output_path (str): Folder Path where the Evaluation should be exported 
+        folder_path (str): Folder Path where one or more XML Files are located
+        matching_filters (list): Added XPath filters in the ListBox GUI element
+    """
     try:
         window["-EXPORT_AS_CSV-"].update(disabled=True)
         matching_results, total_matches_found, total_matching_files = evaluate_xml_files_matching(folder_path,
@@ -254,22 +295,21 @@ attribute_value = []
 matching_filters_listbox = []
 
 # ========== START Layout for Pandas Conversion START ========== #
-layout_pandas_conversion = [[sg.Text("CSV Converter", font="Calibri 36 bold underline", text_color="#FFC857", pad=30, justification="center")],
-                            [sg.Text(
-                                "Convert CSV File to a different file type with Pandas\nSupported output file types: Excel, Markdown. HTML and JSON")],
-                            [sg.HSep(pad=30)],
+layout_pandas_conversion = [[sg.Text("CSV Converter", font="Calibri 36 bold underline", text_color="#FFC857", pad=10, justification="center", grab=True)],
+                            [sg.Text("Convert CSV File to a different file type with the Pandas module\nSupported output file types: Excel, Markdown. HTML and JSON", justification="center")],
+                            [sg.HSep(pad=10)],
                             [sg.Text("Select a CSV file for conversion:")],
-                            [sg.Input(size=(36, 1), key="-FILE_INPUT-"),
+                            [sg.Input(size=(44, 1), key="-FILE_INPUT-"),
                              sg.FileBrowse(file_types=FILE_TYPES_INPUT, size=(8, 1)),
                              sg.Button("Read CSV", size=(7, 1), key="-READ_FILE-")],
                             [sg.Text("Select folder and output file type of selected CSV file:")],
-                            [sg.Input(size=(36, 1), key="-FILE_OUTPUT-"),
+                            [sg.Input(size=(44, 1), key="-FILE_OUTPUT-"),
                              sg.FileSaveAs(button_text="Save as", size=(7, 1), file_types=FILE_TYPES_OUTPUT,
                                            target="-FILE_OUTPUT-", key="-SAVE_AS_BUTTON-"),
                              sg.Button("Convert", key="-CONVERT_CSV_FILE-", expand_x=True)],
-                            [sg.Image(source=logo)]]
+                            [sg.Image(source=logo, expand_x=True, expand_y=True)]]
 
-layout_pandas_output = [[sg.Multiline(size=(67, 32), key="-OUTPUT_WINDOW_CSV-", write_only=True)]]
+layout_pandas_output = [[sg.Multiline(size=(58, 32), key="-OUTPUT_WINDOW_CSV-", write_only=True, horizontal_scroll=True)]]
 
 frame_pandas = sg.Frame("CSV Conversion to different file type", layout_pandas_conversion, expand_x=True, expand_y=True,
                         title_color="#FFC857")
