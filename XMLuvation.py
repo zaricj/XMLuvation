@@ -358,11 +358,11 @@ layout_export_evaluation = [[sg.Text("Select a Path where you want to save the X
                              sg.Button("Export", key="-EXPORT_AS_CSV-")]]
 
 layout_xml_output = [
-    [sg.Multiline(size=(58, 29), write_only=False, horizontal_scroll=True, key="-OUTPUT_XML_FILE-", pad=5)],
+    [sg.Multiline(size=(58, 30), write_only=False, horizontal_scroll=True, key="-OUTPUT_XML_FILE-", pad=5)],
     [sg.Text("Progress:"),
      sg.ProgressBar(max_value=100, size=(20, 18), orientation="h", expand_x=True, key='-PROGRESS_BAR-', pad=11)]]
 
-layout_output_main = [[sg.Multiline(size=(62, 5), key="-OUTPUT_WINDOW_MAIN_MAIN-", pad=5)]]
+layout_output_main = [[sg.Multiline(size=(62, 6), key="-OUTPUT_WINDOW_MAIN_MAIN-", pad=5)]]
 
 frame_xml_eval = sg.Frame("XML Filters for Evaluation", layout_xml_eval, title_color="#FFC857", expand_x=True)
 frame_export_evaluation = sg.Frame("Export Evaluation result as a CSV File", layout_export_evaluation,
