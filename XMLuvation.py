@@ -1,11 +1,12 @@
-import PySimpleGUI as sg
-from lxml import etree as ET
-import pandas as pd
-from pathlib import Path
 import csv
 import os
 import re
 import webbrowser
+from pathlib import Path
+
+import PySimpleGUI as sg
+import pandas as pd
+from lxml import etree as ET
 
 xml_32px = b"iVBORw0KGgoAAAANSUhEUgAAACAAAAAgCAYAAABzenr0AAAABHNCSVQICAgIfAhkiAAAAAlwSFlzAAAOxAAADsQBlSsOGwAAA8pJREFUWIXtVl1oHFUYPefOJpNkQ9omJps11mIZKkiTaQmEarMtguKDL4ot9adCQUVU0pBSRRBEpSiJUKlYxPTnrVUEhT5UCaKYbkqlVM0mNBTZaoNtuhuX/Ehbd5LZ+/mw2dnZNWm6NIhgztOd+X7OuWcu9xtgGcv4v4NL0eRcK8qaKu2dBNYpxWjDqcGv/lUByYj9KsgeABCRTIXo+pUDw5O3UquWQgCInfklRm+VfEkEJLY0NwNsyYuR46XU374Dwme8pYhkkClJQGCxhFSbVeOWBzug8ApEv9QYHT7hEQIcB5/KPZP4WURVJiN2UoscV4bbHeofSdys/4KHcHKrvdIRdkKkk+SqLKEcaTwVez6XM9a+fquhAt97gjJ6rxCzSqkD2RfylwZ6DTjdDdELV+fj+ccnmGpvXpVst99xNC4ReCtHDgDQ+M2fazDgtz9jiPGpoVQ8vz1WKrJTYF5MROwDfzxw750LOjC16b5apyywR8AOkjUFWSITEBy8YUy9e0//aBoAfrEssyYcvOoJFPk2FI09JIAxHmnpEuEeKoYL20haAYfSs+i++4fYFU/AxP0b18wE9E8kawsL9BUl2C+G2xvqH7nmjyU224/T4JeeORn9XPj00FGv1rLMVDi4KwPsJWkVbSgNyGOh6FBfAADcgPswadTm4+JQpCs14R5ZPzIyU2zbnHd++9Nm+toXBeF43EEcnwhwKLHZ3qYMfASwPhtkhRZ5BECfAgABfy8oJk1QvVFfV9aZarMKPweAida1K0g8mt8RTtb++Ot0cd7ngJGItGynwuseeY5DMAXMHcKG6NA3FP0mIPkbjGgC2eOa1aPJSMu+sXbLa+BUVW8DWeETcMzfXCzLTETsF7dE7AuK6jOSG/NBcbToXk64+7M0PlxsXbsiWFW9G2BXwenPklwH9BOh6FBfItLyHakenAtMTo9dD6+Lxx0ASG2ymzLlOANwdUG5iAPgaBnc9+qi5z3H570HUm1WjTaDuwXogv9giv5gxpH95aa6BNIAAK3lcHgg9kIuJdm+4WUoHPQRp5XIYWdGulefHb5czDXvTXjH2fifAPal2qwPdUWwQwRdIOsgiuUmngRheA2K7adMEwREbmiRXoMzPQ0D819CCzownyOzZtV2pdyT1OVfC7FhbneXP47G1rwN6FzuudbWsrsq3V2SkRPhM0Pji/Uu6X8gO/mMGOfqROP9xoHB10rpUYzSpqFWT9MnmjJ77GbpSy8AaMstRDAYOn0+drsCFh3HfhhaPSvQO7SirhKUNPeXsYz/LP4Gk8OElv5Vn3MAAAAASUVORK5CYII="
 logo = "./images/logo.png"
@@ -24,36 +25,37 @@ def convert_csv_file(input_file, output_file, input_ext, output_ext):
     """
     try:
         window["-CONVERT_CSV_FILE-"].update(disabled=True)
-        
+
         if not values["-CHECKBOX_WRITE_INDEX_COLUMN-"]:
             csv_df = pd.read_csv(input_file, delimiter=";", encoding="utf-8", index_col=0)
         else:
             csv_df = pd.read_csv(input_file, delimiter=";", encoding="utf-8")
-        
+
         # Mapping of csv file to corresponding write functions
         CONVERSION_FUNCTIONS = {
-        # CSV Conversion
-        ("csv", "html"): (csv_df, pd.DataFrame.to_html),
-        ("csv", "json"): (csv_df, pd.DataFrame.to_json),
-        ("csv", "xlsx"): (csv_df, pd.DataFrame.to_excel),
-        ("csv", "md"): (csv_df, pd.DataFrame.to_markdown),
+            # CSV Conversion
+            ("csv", "html"): (csv_df, pd.DataFrame.to_html),
+            ("csv", "json"): (csv_df, pd.DataFrame.to_json),
+            ("csv", "xlsx"): (csv_df, pd.DataFrame.to_excel),
+            ("csv", "md"): (csv_df, pd.DataFrame.to_markdown),
         }
-        
+
         read_func, write_func = CONVERSION_FUNCTIONS.get((input_ext, output_ext), (None, None))
 
         if read_func is None or write_func is None:
             window["-OUTPUT_WINDOW_CSV-"].update("Unsupported conversion!", text_color="#ff4545", font=pandas_font)
             return
-        
+
         csv_df = read_func
         write_func(csv_df, output_file)
         window["-OUTPUT_WINDOW_CSV-"].update(
             f"Successfully converted {Path(input_file).stem} {input_ext.upper()} to {Path(output_file).stem} {output_ext.upper()}",
             text_color="#51e98b", font=pandas_font)
         window["-CONVERT_CSV_FILE-"].update(disabled=False)
-        
+
     except FileNotFoundError:
-        window["-OUTPUT_WINDOW_CSV-"].update(f"{input_ext.upper()} File not found!", text_color="#ff4545", font=pandas_font)
+        window["-OUTPUT_WINDOW_CSV-"].update(f"{input_ext.upper()} File not found!", text_color="#ff4545",
+                                             font=pandas_font)
         window["-CONVERT_CSV_FILE-"].update(disabled=False)
 
     except Exception as e:
@@ -76,7 +78,7 @@ def read_csv_data(csv_file):
     """
     try:
         file_suffix_in_input = Path(csv_file).suffix.upper().strip(".")
-        
+
         if not values["-CHECKBOX_WRITE_INDEX_COLUMN-"]:
             csv_df = pd.read_csv(input_file, delimiter=";", encoding="utf-8", index_col=0)
         else:
@@ -114,7 +116,7 @@ def parse_xml(xml_file):
         # Add Elements to ComboBox List
         window["-XML_TAG_NAME-"].update(values=tags_to_list)
     except Exception as e:
-        window["-OUTPUT_WINDOW_MAIN_MAIN-"].update(f"Exception in program: {e}")
+        window["-OUTPUT_WINDOW_MAIN-"].update(f"Exception in program: {e}")
 
 
 def get_tag_values(xml_file, tag):
@@ -182,11 +184,11 @@ def evaluate_xml_files_matching(folder_path, matching_filters):
                     # Update progress bar after processing each file
                     current_progress += progress_increment
                     window['-PROGRESS_BAR-'].update(round(current_progress, 2))
-                    
+
                     tree = ET.parse(file_path)
                     total_matches = 0  # Initialize total matches for the file
                     current_file_results = {"Filename": os.path.splitext(filename)[0]}
-                    
+
                     for expression in matching_filters:
                         result = tree.xpath(expression)
                         total_matches += len(result)
@@ -199,22 +201,22 @@ def evaluate_xml_files_matching(folder_path, matching_filters):
                                 attr_value = element.get(attribute_name_string)
                                 if attr_value and attr_value.strip():  # Check if not None or empty
                                     current_file_results[f"Filter {attribute_name_string}"] = attr_value
-                                    
+
                         else:
                             current_file_results[f"Filter {matching_filters.index(expression) + 1}"] = expression
-            
+
                     current_file_results["Total Matching Tags"] = total_matches
 
                     if total_matches > 0:
                         final_results.append(current_file_results)
-                        
+
                     total_sum_matches += total_matches
                     total_matching_files += 1 if total_matches > 0 else 0
 
             return final_results, total_sum_matches, total_matching_files
-        
+
         except Exception as e:
-            window["-OUTPUT_WINDOW_MAIN_MAIN-"].update(f"Error processing {filename}, Error: {e}.")
+            window["-OUTPUT_WINDOW_MAIN-"].update(f"Error processing {filename}, Error: {e}.")
     except ZeroDivisionError:
         pass
 
@@ -235,32 +237,32 @@ def export_evaluation_as_csv(csv_output_path, folder_path, matching_filters):
         # Save matching results to CSV file
         if matching_results:  # Check if matching results exist
             headers = [key for key in {key: None for dic in matching_results for key in dic}]
-            
+
             with open(csv_output_path, "w", newline="", encoding="utf-8") as csvfile:
                 fieldnames = headers
                 writer = csv.DictWriter(csvfile, fieldnames=fieldnames, delimiter=";")
                 writer.writeheader()
-                
+
                 # Write matching results
                 for match in matching_results:
                     writer.writerow(match)
                 csvfile.close()
-                
-            window["-OUTPUT_WINDOW_MAIN_MAIN-"].update(
+
+            window["-OUTPUT_WINDOW_MAIN-"].update(
                 f"Matches saved to {csv_output_path}\nFound {total_matching_files} files that have a total sum of {total_matches_found} matches.")
             window["-EXPORT_AS_CSV-"].update(disabled=False)
             window['-PROGRESS_BAR-'].update(0)
         else:
-            window["-OUTPUT_WINDOW_MAIN_MAIN-"].update("No matches found.")
+            window["-OUTPUT_WINDOW_MAIN-"].update("No matches found.")
             window["-PROGRESS_BAR-"].update(0)
             window["-EXPORT_AS_CSV-"].update(disabled=False)
             window['-PROGRESS_BAR-'].update(0)
-            
+
     except TypeError:
-        window["-OUTPUT_WINDOW_MAIN_MAIN-"].update(f"No XML Files found in selected Folder.")
+        window["-OUTPUT_WINDOW_MAIN-"].update(f"No XML Files found in selected Folder.")
         window["-EXPORT_AS_CSV-"].update(disabled=False)
         window['-PROGRESS_BAR-'].update(0)
-    
+
 
 def is_duplicate(xpath_expression):
     return xpath_expression in matching_filters_listbox
@@ -287,12 +289,13 @@ font = ("Calibri", 13)
 # Constants
 FILE_TYPE_XML = (("XML (Extensible Markup Language)", ".xml"),)
 MENU_RIGHT_CLICK_DELETE = ["&Right", ["&Delete", "&Delete All"]]
-MENU_DEFINITION = [["&File", ["E&xit"]], ["&Help", ["&XPath Syntax Help::XPathSyntaxURL"]]]
+MENU_DEFINITION = [["&File", ["&Open Output Folder::OpenOutputFolder", "---", "E&xit"]],
+                   ["&Help", ["&XPath Syntax Help::XPathSyntaxURL"]]]
 # Constants for Pandas Conversion
 FILE_TYPES_INPUT = (("CSV (Comma Separated Value)", ".csv"),)
 FILE_TYPES_OUTPUT = (
-("XLSX (Excel Sheet)", ".xlsx"), ("MD (Markdown README)", ".md"), ("HTML (Hypertext Markup Language)", ".html"),
-("JSON (JavaScript Object Notation)", ".json"))
+    ("XLSX (Excel Sheet)", ".xlsx"), ("MD (Markdown README)", ".md"), ("HTML (Hypertext Markup Language)", ".html"),
+    ("JSON (JavaScript Object Notation)", ".json"))
 
 # Combobox Lists
 tag_name = []
@@ -303,8 +306,11 @@ attribute_value = []
 matching_filters_listbox = []
 
 # ========== START Layout for Pandas Conversion START ========== #
-layout_pandas_conversion = [[sg.Text("CSV Converter", font="Calibri 36 bold underline", text_color="#FFC857", pad=10, justification="center", grab=True)],
-                            [sg.Text("Convert CSV File to a different file type with the Pandas module\nSupported output file types: Excel, Markdown. HTML and JSON", justification="center")],
+layout_pandas_conversion = [[sg.Text("CSV Converter", font="Calibri 36 bold underline", text_color="#FFC857", pad=10,
+                                     justification="center", grab=True)],
+                            [sg.Text(
+                                "Convert CSV File to a different file type with the Pandas module\nSupported output file types: Excel, Markdown. HTML and JSON",
+                                justification="center")],
                             [sg.HSep(pad=10)],
                             [sg.Text("Select a CSV file for conversion:")],
                             [sg.Input(size=(44, 1), key="-FILE_INPUT-"),
@@ -318,11 +324,13 @@ layout_pandas_conversion = [[sg.Text("CSV Converter", font="Calibri 36 bold unde
                             [sg.Checkbox("Write Index Column?", default=False, key="-CHECKBOX_WRITE_INDEX_COLUMN-")],
                             [sg.Image(source=logo, expand_x=True, expand_y=True)]]
 
-layout_pandas_output = [[sg.Multiline(size=(58, 32), key="-OUTPUT_WINDOW_CSV-", write_only=True, horizontal_scroll=True)]]
+layout_pandas_output = [
+    [sg.Multiline(size=(58, 32), key="-OUTPUT_WINDOW_CSV-", disabled=True, horizontal_scroll=True)]]
 
 frame_pandas = sg.Frame("CSV Conversion to different file type", layout_pandas_conversion, expand_x=True, expand_y=True,
                         title_color="#FFC857")
-frame_pandas_output = sg.Frame("CSV Conversion Output", layout_pandas_output, expand_x=True, expand_y=True, title_color="#FFC857")
+frame_pandas_output = sg.Frame("CSV Conversion Output", layout_pandas_output, expand_x=True, expand_y=True,
+                               title_color="#FFC857")
 # ========== END Layout for Pandas Conversion END ========== #
 
 # ========== START Layout for XML Evaluation START ========== #
@@ -362,7 +370,7 @@ layout_xml_output = [
     [sg.Text("Progress:"),
      sg.ProgressBar(max_value=100, size=(20, 18), orientation="h", expand_x=True, key='-PROGRESS_BAR-', pad=11)]]
 
-layout_output_main = [[sg.Multiline(size=(62, 6), key="-OUTPUT_WINDOW_MAIN_MAIN-", pad=5)]]
+layout_output_main = [[sg.Multiline(size=(62, 6), key="-OUTPUT_WINDOW_MAIN-", pad=5, disabled=True)]]
 
 frame_xml_eval = sg.Frame("XML Filters for Evaluation", layout_xml_eval, title_color="#FFC857", expand_x=True)
 frame_export_evaluation = sg.Frame("Export Evaluation result as a CSV File", layout_export_evaluation,
@@ -422,7 +430,6 @@ window = sg.Window("XMLuvation", layout, font=font, icon=xml_32px, finalize=True
 
 while True:
     event, values = window.read()
-
     if event == sg.WIN_CLOSED or event == "Exit":
         break
 
@@ -453,26 +460,32 @@ while True:
         try:
             if event == "Delete":
                 selected_indices = window["-MATCHING_FILTER_LIST-"].get_indexes()
-                
+
                 for index in selected_indices:
                     matching_filters_listbox.pop(index)
                     window["-MATCHING_FILTER_LIST-"].update(values=matching_filters_listbox)
-                    
+
             elif event == "Delete All":
                 matching_filters_listbox.clear()
                 window["-MATCHING_FILTER_LIST-"].update(values=matching_filters_listbox)
-                
+
         except UnboundLocalError:
             window["-OUTPUT_WINDOW_MAIN-"].update("ERROR: To delete a Filter from the Listbox, select it first.")
 
     elif event == "XPath Syntax Help::XPathSyntaxURL":
         webbrowser.open("https://www.w3schools.com/xml/xpath_syntax.asp")
 
+    elif event == "Open Output Folder::OpenOutputFolder":
+        output_folder = evaluation_output_folder
+        directory_path = os.path.dirname(output_folder)
+        windows_path = directory_path.replace("/", "\\")
+        os.startfile(windows_path)
+
     elif event == "-READ_XML-":
         eval_input_file = sg.popup_get_file("Select a XML file to fill out the Name/Value boxes.",
                                             file_types=(("XML (Extensible Markup Language )", "*.xml"),))
         if eval_input_file:
-            window.perform_long_operation(lambda: parse_xml(eval_input_file), "-OUTPUT_WINDOW_MAIN_MAIN-")
+            window.perform_long_operation(lambda: parse_xml(eval_input_file), "-OUTPUT_WINDOW_MAIN-")
             window["-XML_TAG_VALUE-"].update(values="")
             window["-XML_ATTRIBUTE_NAME-"].update(values="")
             window["-XML_ATTRIBUTE_VALUE-"].update(values="")
@@ -508,7 +521,7 @@ while True:
             values_xml = get_tag_values(eval_input_file, selected_tag)
             window["-XML_TAG_VALUE-"].update(values=values_xml)
             # Disable tag value combo box if there are no values for the selected tag
-            
+
             if not values_xml or all(value.strip() == '' for value in values_xml if value is not None):
                 window["-XML_TAG_VALUE-"].update(disabled=True, values="")
             else:
@@ -522,7 +535,7 @@ while True:
                 window["-XML_ATTRIBUTE_NAME-"].update(disabled=False)
 
         except Exception as e:
-            window["-OUTPUT_WINDOW_MAIN_MAIN-"].update(f"Exception in Program {e}")
+            window["-OUTPUT_WINDOW_MAIN-"].update(f"Exception in Program {e}")
 
     elif event == "-XML_ATTRIBUTE_NAME-":
         try:
@@ -541,14 +554,14 @@ while True:
             # Disable tag value combo box if the selected tag has no values
             if not values_xml:
                 window["-XML_TAG_VALUE-"].update(disabled=True, values="")
-                
+
         except Exception as e:
-            window["-OUTPUT_WINDOW_MAIN_MAIN-"].update(f"Exception in Program: {e}")
+            window["-OUTPUT_WINDOW_MAIN-"].update(f"Exception in Program: {e}")
 
     elif event == "-XPATH_BUILD_MATCHING-":
         try:
             if not tag_name_combobox:
-                window["-OUTPUT_WINDOW_MAIN_MAIN-"].update(
+                window["-OUTPUT_WINDOW_MAIN-"].update(
                     "To start building a XPath expression, select a Tag Name first from the combobox.")
             else:
                 xpath_expression = "//" + tag_name_combobox
@@ -563,47 +576,47 @@ while True:
                     xpath_expression += f"[@{attribute_name_combobox}]"
 
             window["-XPATH_EXPRESSION-"].update(xpath_expression)
-            
+
             if xpath_expression != "":
-                window["-OUTPUT_WINDOW_MAIN_MAIN-"].update(f"Final XPath expression: {xpath_expression}")
-                
+                window["-OUTPUT_WINDOW_MAIN-"].update(f"Final XPath expression: {xpath_expression}")
+
         except NameError:
-            window["-OUTPUT_WINDOW_MAIN_MAIN-"].update("Name 'parsed_xml_file' is not defined")
+            window["-OUTPUT_WINDOW_MAIN-"].update("Name 'parsed_xml_file' is not defined")
 
     elif event == "-ADD_TO_MATCHING-":
         try:
             if not xpath_expression_input:
-                window["-OUTPUT_WINDOW_MAIN_MAIN-"].update("No XPath expression entered.")
-                
+                window["-OUTPUT_WINDOW_MAIN-"].update("No XPath expression entered.")
+
             elif xpath_expression_input and not is_duplicate(xpath_expression_input):
                 matching_filters_listbox.append(xpath_expression_input)
                 window["-MATCHING_FILTER_LIST-"].update(values=matching_filters_listbox)
-                window["-OUTPUT_WINDOW_MAIN_MAIN-"].update(f"XPath expression added: {xpath_expression_input}")
-                
+                window["-OUTPUT_WINDOW_MAIN-"].update(f"XPath expression added: {xpath_expression_input}")
+
             elif is_duplicate(xpath_expression_input):
-                window["-OUTPUT_WINDOW_MAIN_MAIN-"].update(
+                window["-OUTPUT_WINDOW_MAIN-"].update(
                     f"Duplicate XPath expression {xpath_expression_input} is already in the list.")
 
         except Exception as e:
-            window["-OUTPUT_WINDOW_MAIN_MAIN-"].update(f"Error adding filter: {e}")
+            window["-OUTPUT_WINDOW_MAIN-"].update(f"Error adding filter: {e}")
 
     elif event == "-EXPORT_AS_CSV-":
         try:
             if not os.path.exists(os.path.dirname(evaluation_input_folder)):
-                window["-OUTPUT_WINDOW_MAIN_MAIN-"].update(
+                window["-OUTPUT_WINDOW_MAIN-"].update(
                     "Folder Path that contains XML Files is either empty or not a valid path!")
-                
+
             elif not len(matching_filters_listbox) > 0:
-                window["-OUTPUT_WINDOW_MAIN_MAIN-"].update("No Filters for Matching added, please add one as XPath!")
-                
+                window["-OUTPUT_WINDOW_MAIN-"].update("No Filters for Matching added, please add one as XPath!")
+
             elif not os.path.exists(os.path.dirname(evaluation_output_folder)):
-                window["-OUTPUT_WINDOW_MAIN_MAIN-"].update(
+                window["-OUTPUT_WINDOW_MAIN-"].update(
                     "Please select a Output Folder where the Evaluation should be saved as a CSV File!")
             else:
                 window.perform_long_operation(
                     lambda: export_evaluation_as_csv(evaluation_output_folder, evaluation_input_folder,
-                                                     matching_filters_listbox), "-OUTPUT_WINDOW_MAIN_MAIN-")
+                                                     matching_filters_listbox), "-OUTPUT_WINDOW_MAIN-")
         except Exception as e:
-            window["-OUTPUT_WINDOW_MAIN_MAIN-"].update(f"Error exporting CSV: {e}")
+            window["-OUTPUT_WINDOW_MAIN-"].update(f"Error exporting CSV: {e}")
 
 window.close()  # Kill Program
