@@ -24,7 +24,11 @@ def convert_csv_file(input_file, output_file, input_ext, output_ext):
     """
     try:
         window["-CONVERT_CSV_FILE-"].update(disabled=True)
-        csv_df = pd.read_csv(input_file, delimiter=";", encoding="utf-8", index_col=0)
+        
+        if not values["-CHECKBOX_WRITE_INDEX_COLUMN-"]:
+            csv_df = pd.read_csv(input_file, delimiter=";", encoding="utf-8", index_col=0)
+        else:
+            csv_df = pd.read_csv(input_file, delimiter=";", encoding="utf-8")
         
         # Mapping of csv file to corresponding write functions
         CONVERSION_FUNCTIONS = {
@@ -40,9 +44,9 @@ def convert_csv_file(input_file, output_file, input_ext, output_ext):
         if read_func is None or write_func is None:
             window["-OUTPUT_WINDOW_CSV-"].update("Unsupported conversion!", text_color="#ff4545", font=pandas_font)
             return
-
-        df = read_func
-        write_func(df, output_file)
+        
+        csv_df = read_func
+        write_func(csv_df, output_file)
         window["-OUTPUT_WINDOW_CSV-"].update(
             f"Successfully converted {Path(input_file).stem} {input_ext.upper()} to {Path(output_file).stem} {output_ext.upper()}",
             text_color="#51e98b", font=pandas_font)
@@ -72,7 +76,11 @@ def read_csv_data(csv_file):
     """
     try:
         file_suffix_in_input = Path(csv_file).suffix.upper().strip(".")
-        csv_df = pd.read_csv(input_file, delimiter=";", encoding="utf-8", index_col=0)
+        
+        if not values["-CHECKBOX_WRITE_INDEX_COLUMN-"]:
+            csv_df = pd.read_csv(input_file, delimiter=";", encoding="utf-8", index_col=0)
+        else:
+            csv_df = pd.read_csv(input_file, delimiter=";", encoding="utf-8")
 
         if file_suffix_in_input == "":
             raise ValueError("Error: Input is empty. Cannot read nothing!")
@@ -307,6 +315,7 @@ layout_pandas_conversion = [[sg.Text("CSV Converter", font="Calibri 36 bold unde
                              sg.FileSaveAs(button_text="Save as", size=(7, 1), file_types=FILE_TYPES_OUTPUT,
                                            target="-FILE_OUTPUT-", key="-SAVE_AS_BUTTON-"),
                              sg.Button("Convert", key="-CONVERT_CSV_FILE-", expand_x=True)],
+                            [sg.Checkbox("Write Index Column?", default=False, key="-CHECKBOX_WRITE_INDEX_COLUMN-")],
                             [sg.Image(source=logo, expand_x=True, expand_y=True)]]
 
 layout_pandas_output = [[sg.Multiline(size=(58, 32), key="-OUTPUT_WINDOW_CSV-", write_only=True, horizontal_scroll=True)]]
