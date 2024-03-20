@@ -169,56 +169,74 @@ def evaluate_xml_files_matching(folder_path, matching_filters):
     Returns:
         list: Returns list of added Filter to match to and evaluate one or multiple XML Files
     """
+    final_results = []
+    total_files = sum(1 for filename in os.listdir(folder_path) if filename.endswith('.xml'))
+    progress_increment = 100 / total_files
+    current_progress = 0
+    window['-PROGRESS_BAR-'].update(current_progress)
+    total_sum_matches = 0
+    total_matching_files = 0
+
     try:
-        final_results = []
-        total_files = sum(1 for filename in os.listdir(folder_path) if filename.endswith('.xml'))
-        progress_increment = 100 / total_files
-        current_progress = 0
-        window['-PROGRESS_BAR-'].update(current_progress)
-        total_sum_matches = 0
-        total_matching_files = 0
-        try:
-            for filename in os.listdir(folder_path):
-                if filename.endswith('.xml'):
-                    file_path = os.path.join(folder_path, filename)
-                    # Update progress bar after processing each file
-                    current_progress += progress_increment
-                    window['-PROGRESS_BAR-'].update(round(current_progress, 2))
+        for filename in os.listdir(folder_path):
+            if filename.endswith('.xml'):
+                file_path = os.path.join(folder_path, filename)
+                # Update progress bar after processing each file
+                current_progress += progress_increment
+                window['-PROGRESS_BAR-'].update(round(current_progress, 2))
 
+                try:
                     tree = ET.parse(file_path)
-                    total_matches = 0  # Initialize total matches for the file
-                    current_file_results = {"Filename": os.path.splitext(filename)[0]}
+                except ET.XMLSyntaxError as e:
+                    if "Document is empty" in str(e):
+                        window["-OUTPUT_WINDOW_MAIN-"].update(f"Error processing {filename}\nError: XML File is Empty, skipping file...")
+                        continue  # Skip processing this file
+                    else:
+                        window["-OUTPUT_WINDOW_MAIN-"].update(f"XMLSyntaxError occurred: {e}")
+                        continue  # Skip processing this file
 
-                    for expression in matching_filters:
-                        result = tree.xpath(expression)
-                        total_matches += len(result)
+                total_matches = 0  # Initialize total matches for the file
+                current_file_results = {"Filename": os.path.splitext(filename)[0]}
 
-                        if "@" in expression:
-                            match = re.search(r"@([^=]+)=", expression)
+                for expression in matching_filters:
+                    result = tree.xpath(expression)
+                    total_matches += len(result)
+
+                    if "@" in expression:
+                        match = re.search(r"@([^=]+)=", expression)
+                        if match:
+                            attribute_name_string = match.group(1).strip()
+                            print(f"Att String: {attribute_name_string}")
+                        else:
+                            match = re.search(r"@([^=]+),", expression) # Grabs string between @ and , Example: @filter1, >>> filter1
                             if match:
                                 attribute_name_string = match.group(1).strip()
-                            for element in result:
-                                attr_value = element.get(attribute_name_string)
-                                if attr_value and attr_value.strip():  # Check if not None or empty
-                                    current_file_results[f"Filter {attribute_name_string}"] = attr_value
+                                print(f"None Att String: {attribute_name_string}")
+                            else:
+                                attribute_name_string = "default_value_here"  # Set a default value
+                                print("No match found, using default value")
+                            
+                        for element in result:
+                            attr_value = element.get(attribute_name_string)
+                            if attr_value and attr_value.strip():  # Check if not None or empty
+                                current_file_results[f"Filter {attribute_name_string}"] = attr_value
 
-                        else:
-                            current_file_results[f"Filter {matching_filters.index(expression) + 1}"] = expression
+                    else:
+                        current_file_results[f"Filter {matching_filters.index(expression) + 1}"] = expression
 
-                    current_file_results["Total Matching Tags"] = total_matches
+                current_file_results["Total Matching Tags"] = total_matches
 
-                    if total_matches > 0:
-                        final_results.append(current_file_results)
+                if total_matches > 0:
+                    final_results.append(current_file_results)
 
-                    total_sum_matches += total_matches
-                    total_matching_files += 1 if total_matches > 0 else 0
+                total_sum_matches += total_matches
+                total_matching_files += 1 if total_matches > 0 else 0
 
-            return final_results, total_sum_matches, total_matching_files
+        return final_results, total_sum_matches, total_matching_files
 
-        except Exception as e:
-            window["-OUTPUT_WINDOW_MAIN-"].update(f"Error processing {filename}, Error: {e}.")
     except ZeroDivisionError:
         pass
+
 
 
 def export_evaluation_as_csv(csv_output_path, folder_path, matching_filters):
@@ -235,7 +253,7 @@ def export_evaluation_as_csv(csv_output_path, folder_path, matching_filters):
                                                                                                   matching_filters)
 
         # Save matching results to CSV file
-        if matching_results:  # Check if matching results exist
+        if matching_results is not None:  # Check if matching results exist
             headers = [key for key in {key: None for dic in matching_results for key in dic}]
 
             with open(csv_output_path, "w", newline="", encoding="utf-8") as csvfile:
@@ -245,7 +263,8 @@ def export_evaluation_as_csv(csv_output_path, folder_path, matching_filters):
 
                 # Write matching results
                 for match in matching_results:
-                    writer.writerow(match)
+                    if match is not None:
+                        writer.writerow(match)
                 csvfile.close()
 
             window["-OUTPUT_WINDOW_MAIN-"].update(
@@ -258,8 +277,8 @@ def export_evaluation_as_csv(csv_output_path, folder_path, matching_filters):
             window["-EXPORT_AS_CSV-"].update(disabled=False)
             window['-PROGRESS_BAR-'].update(0)
 
-    except TypeError:
-        window["-OUTPUT_WINDOW_MAIN-"].update(f"No XML Files found in selected Folder.")
+    except TypeError as e:
+        window["-OUTPUT_WINDOW_MAIN-"].update(f"Exception in program: {e}")
         window["-EXPORT_AS_CSV-"].update(disabled=False)
         window['-PROGRESS_BAR-'].update(0)
 
