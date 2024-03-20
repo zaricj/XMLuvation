@@ -3,7 +3,6 @@ import os
 import re
 import webbrowser
 from pathlib import Path
-
 import PySimpleGUI as sg
 import pandas as pd
 from lxml import etree as ET
@@ -204,23 +203,34 @@ def evaluate_xml_files_matching(folder_path, matching_filters):
 
                     if "@" in expression:
                         match = re.search(r"@([^=]+)=", expression)
+                        
                         if match:
                             attribute_name_string = match.group(1).strip()
-                            print(f"Att String: {attribute_name_string}")
+                            
                         else:
                             match = re.search(r"@([^=]+),", expression) # Grabs string between @ and , Example: @filter1, >>> filter1
+                            
                             if match:
                                 attribute_name_string = match.group(1).strip()
-                                print(f"None Att String: {attribute_name_string}")
-                            else:
-                                attribute_name_string = "default_value_here"  # Set a default value
-                                print("No match found, using default value")
-                            
+                                
+                    if "text()=" in expression:
+                        match = re.search(r"\\\\(.*?)\[")
+                        
+                        if match:
+                            tag_name_string = match.group(1).strip()
+                        
+                    if "@" in expression:    
                         for element in result:
                             attr_value = element.get(attribute_name_string)
                             if attr_value and attr_value.strip():  # Check if not None or empty
                                 current_file_results[f"Filter {attribute_name_string}"] = attr_value
-
+                                
+                    if "text()=" in expression:
+                        for element in result:
+                            tag_value = element.get(tag_name_string)
+                            if tag_value and tag_value.strip():  # Check if not None or empty
+                                current_file_results[f"Filter {tag_name_string}"] = tag_value
+                        
                     else:
                         current_file_results[f"Filter {matching_filters.index(expression) + 1}"] = expression
 
@@ -353,11 +363,7 @@ frame_pandas_output = sg.Frame("CSV Conversion Output", layout_pandas_output, ex
 # ========== END Layout for Pandas Conversion END ========== #
 
 # ========== START Layout for XML Evaluation START ========== #
-layout_listbox_matching_filter = [[sg.Listbox(values=matching_filters_listbox, size=(60, 5), enable_events=True,
-                                              expand_x=True, right_click_menu=MENU_RIGHT_CLICK_DELETE,
-                                              key="-MATCHING_FILTER_LIST-")]]
-
-layout_xml_eval = [[sg.Menu(MENU_DEFINITION)],
+layout_xml_evaluation = [[sg.Menu(MENU_DEFINITION)],
                    [sg.Text("Select a Folder that contains XML Files:", pad=5)],
                    [sg.Input(size=(36, 2), font="Arial 10", expand_x=True, key="-FOLDER_EVALUATION_INPUT-"),
                     sg.FolderBrowse(button_text="Browse Folder", target="-FOLDER_EVALUATION_INPUT-"),
@@ -373,10 +379,15 @@ layout_xml_eval = [[sg.Menu(MENU_DEFINITION)],
                              expand_x=True, key="-XML_ATTRIBUTE_NAME-"), sg.Text("Att Value:"),
                     sg.Combo(attribute_value, size=(15, 1), disabled=True, enable_events=True, auto_size_text=False,
                              expand_x=True, key="-XML_ATTRIBUTE_VALUE-", pad=5)],
+                   [sg.Text("XPath Function:"),sg.Radio("Default", group_id=1, default=True, key="-RADIO_DEFAULT-"),sg.Radio("Contains", group_id=1, key="-RADIO_CONTAINS-"), sg.Radio("Starts-with", group_id=1, key="-RADIO_STARTSWITH-")],
                    [sg.Text("XPath Expression:"), sg.Input(size=(14, 1), expand_x=True, key="-XPATH_EXPRESSION-"),
-                    sg.Button("Build XPath", key="-XPATH_BUILD_MATCHING-")],
+                    sg.Button("Build XPath", key="-BUILD_XPATH-")],
                    [sg.Text("Add XPath Expressions to look for and match in XML Files:", expand_x=True),
                     sg.Button("Add XPath Filter", key="-ADD_TO_MATCHING-")]]
+
+layout_listbox_matching_filter = [[sg.Listbox(values=matching_filters_listbox, size=(60, 4), enable_events=True,
+                                              expand_x=True, right_click_menu=MENU_RIGHT_CLICK_DELETE,
+                                              key="-MATCHING_FILTER_LIST-")]]
 
 layout_export_evaluation = [[sg.Text("Select a Path where you want to save the XML Evaluation:")],
                             [sg.Input(expand_x=True, font="Arial 10", key="-FOLDER_EVALUATION_OUTPUT-"),
@@ -384,18 +395,18 @@ layout_export_evaluation = [[sg.Text("Select a Path where you want to save the X
                                        target="-FOLDER_EVALUATION_OUTPUT-"),
                              sg.Button("Export", key="-EXPORT_AS_CSV-")]]
 
+layout_program_output = [[sg.Multiline(size=(62, 5), key="-OUTPUT_WINDOW_MAIN-", pad=10, disabled=True)]]
+
 layout_xml_output = [
     [sg.Multiline(size=(58, 30), write_only=False, horizontal_scroll=True, key="-OUTPUT_XML_FILE-", pad=5)],
     [sg.Text("Progress:"),
      sg.ProgressBar(max_value=100, size=(20, 18), orientation="h", expand_x=True, key='-PROGRESS_BAR-', pad=11)]]
 
-layout_output_main = [[sg.Multiline(size=(62, 6), key="-OUTPUT_WINDOW_MAIN-", pad=5, disabled=True)]]
-
-frame_xml_eval = sg.Frame("XML Filters for Evaluation", layout_xml_eval, title_color="#FFC857", expand_x=True)
+frame_xml_eval = sg.Frame("XML folder selection and XPath builder", layout_xml_evaluation, title_color="#FFC857", expand_x=True)
 frame_export_evaluation = sg.Frame("Export Evaluation result as a CSV File", layout_export_evaluation,
                                    title_color="#FFC857", expand_x=True)
 frame_xml_output = sg.Frame("XML Output", layout_xml_output, title_color="#FFC857", expand_x=True)
-frame_output_main = sg.Frame("Program Output", layout_output_main, title_color="#FFC857", expand_x=True)
+frame_output_main = sg.Frame("Program Output", layout_program_output, title_color="#FFC857", expand_x=True)
 frame_listbox_matching_filter = sg.Frame("Filters to match in XML files", layout_listbox_matching_filter,
                                          title_color="#FFC857", expand_x=True)
 # ========== END Layout for XML Evaluation END ========== #
@@ -471,6 +482,11 @@ while True:
     # XPath input element for XML matching 
     xpath_expression_input = values["-XPATH_EXPRESSION-"]
     xpath_expression = ""
+    
+    # Radio button elements
+    radio_default = values["-RADIO_DEFAULT-"]
+    radio_contains = values["-RADIO_CONTAINS-"]
+    radio_startswith = values["-RADIO_STARTSWITH-"]
 
     # RegEx matching for only XML files
     file_path_regex = r'\.xml$'
@@ -577,27 +593,49 @@ while True:
         except Exception as e:
             window["-OUTPUT_WINDOW_MAIN-"].update(f"Exception in Program: {e}")
 
-    elif event == "-XPATH_BUILD_MATCHING-":
+    elif event == "-BUILD_XPATH-":
         try:
-            if not tag_name_combobox:
-                window["-OUTPUT_WINDOW_MAIN-"].update(
-                    "To start building a XPath expression, select a Tag Name first from the combobox.")
-            else:
-                xpath_expression = "//" + tag_name_combobox
-
-            if tag_value_combobox:
-                xpath_expression += f"[text()='{tag_value_combobox}']"
-
-            if attribute_name_combobox:
-                if attribute_value_combobox:
-                    xpath_expression += f"[@{attribute_name_combobox}='{attribute_value_combobox}']"
+            if radio_default: # If Radio Button DEFAULT is selected
+                if not tag_name_combobox:
+                    window["-OUTPUT_WINDOW_MAIN-"].update(
+                        "To start building a XPath expression, select a Tag Name first from the combobox.")
                 else:
-                    xpath_expression += f"[@{attribute_name_combobox}]"
+                    xpath_expression = "//" + tag_name_combobox
 
-            window["-XPATH_EXPRESSION-"].update(xpath_expression)
+                if tag_value_combobox:
+                    xpath_expression += f"[text()='{tag_value_combobox}']"
 
-            if xpath_expression != "":
-                window["-OUTPUT_WINDOW_MAIN-"].update(f"Final XPath expression: {xpath_expression}")
+                if attribute_name_combobox:
+                    if attribute_value_combobox:
+                        xpath_expression += f"[@{attribute_name_combobox}='{attribute_value_combobox}']"
+                    else:
+                        xpath_expression += f"[@{attribute_name_combobox}]"
+
+                window["-XPATH_EXPRESSION-"].update(xpath_expression)
+
+                if xpath_expression != "":
+                    window["-OUTPUT_WINDOW_MAIN-"].update(f"Final XPath expression: {xpath_expression}")
+            #TODO Continue Code here!!!       
+            if radio_contains: # If Radio Button CONTAINS is selected
+                if not tag_name_combobox:
+                    window["-OUTPUT_WINDOW_MAIN-"].update(
+                        "To start building a XPath expression, select a Tag Name first from the combobox.")
+                else:
+                    xpath_expression = "//" + tag_name_combobox
+
+                if tag_value_combobox:
+                    xpath_expression += f"[text()='{tag_value_combobox}']"
+
+                if attribute_name_combobox:
+                    if attribute_value_combobox:
+                        xpath_expression += f"[contains(@{attribute_name_combobox},'{attribute_value_combobox}')]"
+                    else:
+                        xpath_expression += f"[@{attribute_name_combobox}]"
+
+                window["-XPATH_EXPRESSION-"].update(xpath_expression)
+
+                if xpath_expression != "":
+                    window["-OUTPUT_WINDOW_MAIN-"].update(f"Final XPath expression: {xpath_expression}")
 
         except NameError:
             window["-OUTPUT_WINDOW_MAIN-"].update("Name 'parsed_xml_file' is not defined")
