@@ -20,7 +20,6 @@ def convert_csv_file(input_file, output_file, input_ext, output_ext,):
         output_file (str): Folder Path where the Converted CSV File should be saved
         input_ext (str): CSV Extension Suffix
         output_ext (str): To be converted to Extension Type Suffix
-        csv_delimiter (str): CSV Delimiter selection via the Combobox element
     """
     try:
         window["-CONVERT_CSV_FILE-"].update(disabled=True)
@@ -73,7 +72,6 @@ def read_csv_data(csv_file):
 
     Args:
         csv_file (str): Path to CSV File
-        csv_delimiter (str): CSV Delimiter
     Raises:
         ValueError: ValueError Exception gets risen if no input folder has been set
 
@@ -206,58 +204,49 @@ def evaluate_xml_files_matching(folder_path, matching_filters):
 
                 total_matches = 0  # Initialize total matches for the file
                 current_file_results = {"Filename": os.path.splitext(filename)[0]}
-                
                 print(f"LENGTH OF MATCHING FILTERS LIST: {len(matching_filters)}")
-                if len(matching_filters) == 1:
-                
-                    for expression in matching_filters:
-                        result = tree.xpath(expression)
-                        total_matches += len(result)
 
-                        if "@" in expression:
-                            # Code for handling attribute expressions
-                            match = re.search(r"@([^=]+)=", expression)
+                for expression in matching_filters:
+                    result = tree.xpath(expression)
+                    total_matches += len(result)
+                    if "@" in expression:
+                        # Code for handling attribute expressions
+                        match = re.search(r"@([^=]+)=", expression)
+                        if match:
+                            attribute_name_string = match.group(1).strip()
+                            print(f"Attribute_name_string in @ = {attribute_name_string}")
+                            for element in result:
+                                attr_value = element.get(attribute_name_string)
+                                print(f"Attribute Value in @ - = {attr_value}")
+                                if attr_value and attr_value.strip():  # Check if not None or empty
+                                    current_file_results[f"Filter {attribute_name_string} "] = attr_value
+                        else:
+                            match = re.search(r"@([^=]+),", expression)
                             if match:
                                 attribute_name_string = match.group(1).strip()
-                                print(f"Attribute_name_string in @ = {attribute_name_string}")
-                                current_file_results.setdefault(f"Filter {attribute_name_string}", [])
+                                print(f"Attribute_name_string in @ , {attribute_name_string}")
                                 for element in result:
                                     attr_value = element.get(attribute_name_string)
-                                    print(f"Attribute Value in @ - = {attr_value}")
+                                    print(f"Attribute Value in @ - , {attr_value}")
                                     if attr_value and attr_value.strip():  # Check if not None or empty
                                         current_file_results[f"Filter {attribute_name_string}"] = attr_value
-                            else:
-                                match = re.search(r"@([^=]+),", expression)
-                                if match:
-                                    attribute_name_string = match.group(1).strip()
-                                    print(f"Attribute_name_string in @ , {attribute_name_string}")
-                                    current_file_results.setdefault(f"Filter {attribute_name_string}", [])
-                                    for element in result:
-                                        attr_value = element.get(attribute_name_string)
-                                        print(f"Attribute Value in @ - , {attr_value}")
-                                        if attr_value and attr_value.strip():  # Check if not None or empty
-                                            current_file_results[f"Filter {attribute_name_string}"] = attr_value
 
-                        if "text()=" in expression:
-                            # Code for handling text() expressions
-                            match = re.search(r"//(.*?)\[", expression)
-                            if match:
-                                tag_name_string = match.group(1).strip()
-                                print(f"Tag_name_string: {tag_name_string}")
-                                for element in result:
-                                    tag_value = element.text
-                                    print(f"Tag value: {tag_value}")
-                                    if tag_value and tag_value.strip():  # Check if not None or empty
-                                        current_file_results[f"Filter {tag_name_string}"] = tag_value
+                    if "text()=" in expression:
+                        # Code for handling text() expressions
+                        match = re.search(r"//(.*?)\[", expression)
+                        if match:
+                            tag_name_string = match.group(1).strip()
+                            print(f"Tag_name_string: {tag_name_string}")
+                            for element in result:
+                                tag_value = element.text
+                                print(f"Tag value: {tag_value}")
+                                if tag_value and tag_value.strip():  # Check if not None or empty
+                                    current_file_results[f"Filter {tag_name_string}"] = tag_value
 
-                    current_file_results["Total Matching Tags"] = total_matches
-                    
-            if len(matching_filters) > 1:
-            #TODO Continue Extending Dictionary if Listbox has more than 1 XPath filter in it
-                # Write Code Below
+                current_file_results["Total Matching Tags"] = total_matches
+
                 if total_matches > 0:
                     final_results.append(current_file_results)
-                    
                 total_sum_matches += total_matches
                 total_matching_files += 1 if total_matches > 0 else 0
 
@@ -402,7 +391,7 @@ layout_xml_evaluation = [[sg.Menu(MENU_DEFINITION)],
                              expand_x=True, key="-XML_ATTRIBUTE_NAME-"), sg.Text("Att Value:"),
                     sg.Combo(attribute_value, size=(15, 1), disabled=True, enable_events=True, auto_size_text=False,
                              expand_x=True, key="-XML_ATTRIBUTE_VALUE-", pad=5)],
-                   [sg.Text("XPath Function:"),sg.Radio("Default", group_id=1, default=True, key="-RADIO_DEFAULT-"),sg.Radio("Contains", group_id=1, key="-RADIO_CONTAINS-"), sg.Radio("Starts-with", group_id=1, key="-RADIO_STARTSWITH-")],
+                   [sg.Text("XPath Function:"),sg.Radio("Equals", group_id=1, default=True, key="-RADIO_DEFAULT-"),sg.Radio("Contains", group_id=1, key="-RADIO_CONTAINS-"), sg.Radio("Starts-with", group_id=1, key="-RADIO_STARTSWITH-")],
                    [sg.Text("XPath Expression:"), sg.Input(size=(14, 1), expand_x=True, key="-XPATH_EXPRESSION-"),
                     sg.Button("Build XPath", key="-BUILD_XPATH-")],
                    [sg.Text("Add XPath Expressions to look for and match in XML Files:", expand_x=True),
