@@ -11,9 +11,8 @@ xml_32px = b"iVBORw0KGgoAAAANSUhEUgAAACAAAAAgCAYAAABzenr0AAAABHNCSVQICAgIfAhkiAA
 logo = "./images/logo.png"
 pandas_font = "Calibri 13 bold"
 
-
-# Generic conversion function for CSV Files
-def convert_csv_file(input_file, output_file, input_ext, output_ext):
+# ========== FUNCTIONS ========== #
+def convert_csv_file(input_file, output_file, input_ext, output_ext,):
     """Converts the selected CSV File to the supported extension types with the Pandas module
 
     Args:
@@ -21,14 +20,21 @@ def convert_csv_file(input_file, output_file, input_ext, output_ext):
         output_file (str): Folder Path where the Converted CSV File should be saved
         input_ext (str): CSV Extension Suffix
         output_ext (str): To be converted to Extension Type Suffix
+        csv_delimiter (str): CSV Delimiter selection via the Combobox element
     """
     try:
         window["-CONVERT_CSV_FILE-"].update(disabled=True)
+        
+        with open(input_file) as file: # Get Delimiter
+            sample = file.read(4096)
+            sniffer = csv.Sniffer()
+            get_delimiter = sniffer.sniff(sample).delimiter
+            print(f"Delimiter: {get_delimiter}")
 
         if not values["-CHECKBOX_WRITE_INDEX_COLUMN-"]:
-            csv_df = pd.read_csv(input_file, delimiter=";", encoding="utf-8", index_col=0)
+            csv_df = pd.read_csv(input_file, delimiter=get_delimiter, encoding="utf-8", index_col=0)
         else:
-            csv_df = pd.read_csv(input_file, delimiter=";", encoding="utf-8")
+            csv_df = pd.read_csv(input_file, delimiter=get_delimiter, encoding="utf-8")
 
         # Mapping of csv file to corresponding write functions
         CONVERSION_FUNCTIONS = {
@@ -62,13 +68,12 @@ def convert_csv_file(input_file, output_file, input_ext, output_ext):
         window["-CONVERT_CSV_FILE-"].update(disabled=False)
 
 
-# Read csv file data in Pandas DataFrame       
 def read_csv_data(csv_file):
     """Reads CSV File and displays it's data as a DataFrame
 
     Args:
         csv_file (str): Path to CSV File
-
+        csv_delimiter (str): CSV Delimiter
     Raises:
         ValueError: ValueError Exception gets risen if no input folder has been set
 
@@ -78,10 +83,15 @@ def read_csv_data(csv_file):
     try:
         file_suffix_in_input = Path(csv_file).suffix.upper().strip(".")
 
+        with open(csv_file) as file: # Get Delimiter
+            sample = file.read(4096)
+            sniffer = csv.Sniffer()
+            get_delimiter = sniffer.sniff(sample).delimiter
+            
         if not values["-CHECKBOX_WRITE_INDEX_COLUMN-"]:
-            csv_df = pd.read_csv(input_file, delimiter=";", encoding="utf-8", index_col=0)
+            csv_df = pd.read_csv(input_file, delimiter=get_delimiter, encoding="utf-8", index_col=0)
         else:
-            csv_df = pd.read_csv(input_file, delimiter=";", encoding="utf-8")
+            csv_df = pd.read_csv(input_file, delimiter=get_delimiter, encoding="utf-8")
 
         if file_suffix_in_input == "":
             raise ValueError("Error: Input is empty. Cannot read nothing!")
@@ -98,7 +108,7 @@ def read_csv_data(csv_file):
 
 
 def parse_xml(xml_file):
-    """Reads XML File and adds elements to the Tag Name ComboBox GUI element
+    """Reads XML file and adds elements to the tag name Combobox GUI element
 
     Args:
         xml_file (str): Single XML File
@@ -159,14 +169,14 @@ def get_attribute_values(xml_file, tag, attribute):
 
 
 def evaluate_xml_files_matching(folder_path, matching_filters):
-    """Evaluates and searches for matches in XML Files
+    """Evaluates and searches for matches in XML files
 
     Args:
-        folder_path (str): Folder path where one or more XML Files are located
+        folder_path (str): Folder path where one or more XML files are located
         matching_filters (list): Added XPath filters in the ListBox GUI element
 
     Returns:
-        list: Returns list of added Filter to match to and evaluate one or multiple XML Files
+        list: Returns list of added filter to match to and evaluate one or multiple XML Files
     """
     final_results = []
     total_files = sum(1 for filename in os.listdir(folder_path) if filename.endswith('.xml'))
@@ -196,49 +206,58 @@ def evaluate_xml_files_matching(folder_path, matching_filters):
 
                 total_matches = 0  # Initialize total matches for the file
                 current_file_results = {"Filename": os.path.splitext(filename)[0]}
+                
+                print(f"LENGTH OF MATCHING FILTERS LIST: {len(matching_filters)}")
+                if len(matching_filters) == 1:
+                
+                    for expression in matching_filters:
+                        result = tree.xpath(expression)
+                        total_matches += len(result)
 
-                for expression in matching_filters:
-                    result = tree.xpath(expression)
-                    total_matches += len(result)
-
-                    if "@" in expression:
-                        match = re.search(r"@([^=]+)=", expression)
-                        
-                        if match:
-                            attribute_name_string = match.group(1).strip()
-                            
-                        else:
-                            match = re.search(r"@([^=]+),", expression) # Grabs string between @ and , Example: @filter1, >>> filter1
-                            
+                        if "@" in expression:
+                            # Code for handling attribute expressions
+                            match = re.search(r"@([^=]+)=", expression)
                             if match:
                                 attribute_name_string = match.group(1).strip()
-                                
-                    if "text()=" in expression:
-                        match = re.search(r"\\\\(.*?)\[")
-                        
-                        if match:
-                            tag_name_string = match.group(1).strip()
-                        
-                    if "@" in expression:    
-                        for element in result:
-                            attr_value = element.get(attribute_name_string)
-                            if attr_value and attr_value.strip():  # Check if not None or empty
-                                current_file_results[f"Filter {attribute_name_string}"] = attr_value
-                                
-                    if "text()=" in expression:
-                        for element in result:
-                            tag_value = element.get(tag_name_string)
-                            if tag_value and tag_value.strip():  # Check if not None or empty
-                                current_file_results[f"Filter {tag_name_string}"] = tag_value
-                        
-                    else:
-                        current_file_results[f"Filter {matching_filters.index(expression) + 1}"] = expression
+                                print(f"Attribute_name_string in @ = {attribute_name_string}")
+                                current_file_results.setdefault(f"Filter {attribute_name_string}", [])
+                                for element in result:
+                                    attr_value = element.get(attribute_name_string)
+                                    print(f"Attribute Value in @ - = {attr_value}")
+                                    if attr_value and attr_value.strip():  # Check if not None or empty
+                                        current_file_results[f"Filter {attribute_name_string}"] = attr_value
+                            else:
+                                match = re.search(r"@([^=]+),", expression)
+                                if match:
+                                    attribute_name_string = match.group(1).strip()
+                                    print(f"Attribute_name_string in @ , {attribute_name_string}")
+                                    current_file_results.setdefault(f"Filter {attribute_name_string}", [])
+                                    for element in result:
+                                        attr_value = element.get(attribute_name_string)
+                                        print(f"Attribute Value in @ - , {attr_value}")
+                                        if attr_value and attr_value.strip():  # Check if not None or empty
+                                            current_file_results[f"Filter {attribute_name_string}"] = attr_value
 
-                current_file_results["Total Matching Tags"] = total_matches
+                        if "text()=" in expression:
+                            # Code for handling text() expressions
+                            match = re.search(r"//(.*?)\[", expression)
+                            if match:
+                                tag_name_string = match.group(1).strip()
+                                print(f"Tag_name_string: {tag_name_string}")
+                                for element in result:
+                                    tag_value = element.text
+                                    print(f"Tag value: {tag_value}")
+                                    if tag_value and tag_value.strip():  # Check if not None or empty
+                                        current_file_results[f"Filter {tag_name_string}"] = tag_value
 
+                    current_file_results["Total Matching Tags"] = total_matches
+                    
+            if len(matching_filters) > 1:
+            #TODO Continue Extending Dictionary if Listbox has more than 1 XPath filter in it
+                # Write Code Below
                 if total_matches > 0:
                     final_results.append(current_file_results)
-
+                    
                 total_sum_matches += total_matches
                 total_matching_files += 1 if total_matches > 0 else 0
 
@@ -248,19 +267,18 @@ def evaluate_xml_files_matching(folder_path, matching_filters):
         pass
 
 
-
 def export_evaluation_as_csv(csv_output_path, folder_path, matching_filters):
-    """Export found XML Files and it's matches in a single CSV File
+    """Export found XML files and it's matches in a single CSV file
 
     Args:
-        csv_output_path (str): Folder Path where the Evaluation should be exported 
-        folder_path (str): Folder Path where one or more XML Files are located
+        csv_output_path (str): Folder Path where the evaluation should be exported to
+        folder_path (str): Folder Path where one or more XML files are located
         matching_filters (list): Added XPath filters in the ListBox GUI element
     """
     try:
         window["-EXPORT_AS_CSV-"].update(disabled=True)
         matching_results, total_matches_found, total_matching_files = evaluate_xml_files_matching(folder_path,
-                                                                                                  matching_filters)
+                                                                                     matching_filters)
 
         # Save matching results to CSV file
         if matching_results is not None:  # Check if matching results exist
@@ -273,7 +291,7 @@ def export_evaluation_as_csv(csv_output_path, folder_path, matching_filters):
 
                 # Write matching results
                 for match in matching_results:
-                    if match is not None:
+                    if match is not None: # If None, skip
                         writer.writerow(match)
                 csvfile.close()
 
@@ -295,6 +313,11 @@ def export_evaluation_as_csv(csv_output_path, folder_path, matching_filters):
 
 def is_duplicate(xpath_expression):
     return xpath_expression in matching_filters_listbox
+
+
+# def is_valid_xpath(xpath_expression_input):
+#    pattern = r'^//?[\w-]+(?:\[@[\w-]+(?:=[^\]]+)?\])*(?:/[\w-]+)*$'
+#    return re.match(pattern, xpath_expression_input) is not None
 
 
 my_custom_theme = {
@@ -331,7 +354,7 @@ tag_name = []
 tag_value = []
 attribute_name = []
 attribute_value = []
-# Listbox Lists
+# Listbox List
 matching_filters_listbox = []
 
 # ========== START Layout for Pandas Conversion START ========== #
@@ -354,7 +377,7 @@ layout_pandas_conversion = [[sg.Text("CSV Converter", font="Calibri 36 bold unde
                             [sg.Image(source=logo, expand_x=True, expand_y=True)]]
 
 layout_pandas_output = [
-    [sg.Multiline(size=(58, 32), key="-OUTPUT_WINDOW_CSV-", disabled=True, horizontal_scroll=True)]]
+    [sg.Multiline(size=(59, 32), key="-OUTPUT_WINDOW_CSV-", disabled=True, horizontal_scroll=True)]]
 
 frame_pandas = sg.Frame("CSV Conversion to different file type", layout_pandas_conversion, expand_x=True, expand_y=True,
                         title_color="#FFC857")
@@ -469,9 +492,9 @@ while True:
     input_ext = Path(input_file).suffix.lower().strip(".")
     output_ext = Path(output_file).suffix.lower().strip(".")
 
-    # BrowseFolder and Save As input elements
-    evaluation_input_folder = values["-FOLDER_EVALUATION_INPUT-"]
-    evaluation_output_folder = values["-FOLDER_EVALUATION_OUTPUT-"]
+    # Browse Folder and Save As input elements
+    evaluation_input_folder = values["-FOLDER_EVALUATION_INPUT-"] # Browse Folder
+    evaluation_output_folder = values["-FOLDER_EVALUATION_OUTPUT-"] # Save As
 
     # XML Combobox element values
     tag_name_combobox = values["-XML_TAG_NAME-"]
@@ -505,7 +528,7 @@ while True:
                 window["-MATCHING_FILTER_LIST-"].update(values=matching_filters_listbox)
 
         except UnboundLocalError:
-            window["-OUTPUT_WINDOW_MAIN-"].update("ERROR: To delete a Filter from the Listbox, select it first.")
+            window["-OUTPUT_WINDOW_MAIN-"].update("ERROR: To delete a filter from the Listbox, select it first.")
 
     elif event == "XPath Syntax Help::XPathSyntaxURL":
         webbrowser.open("https://www.w3schools.com/xml/xpath_syntax.asp")
@@ -536,6 +559,7 @@ while True:
                     window["-XML_TAG_VALUE-"].update(disabled=False, values=tag_value_list)
                     attribute_name_list = get_attributes(eval_input_file, tag)
                     window["-XML_ATTRIBUTE_NAME-"].update(values=attribute_name_list)
+                    
                     for attribute_name in attribute_name_list:
                         attribute_value_list = get_attribute_values(eval_input_file, tag, attribute_name)
                         window["-XML_ATTRIBUTE_VALUE-"].update(values=attribute_value_list)
@@ -555,8 +579,8 @@ while True:
             window["-XML_ATTRIBUTE_NAME-"].update(values=attributes)
             values_xml = get_tag_values(eval_input_file, selected_tag)
             window["-XML_TAG_VALUE-"].update(values=values_xml)
+            
             # Disable tag value combo box if there are no values for the selected tag
-
             if not values_xml or all(value.strip() == '' for value in values_xml if value is not None):
                 window["-XML_TAG_VALUE-"].update(disabled=True, values="")
             else:
@@ -593,63 +617,65 @@ while True:
         except Exception as e:
             window["-OUTPUT_WINDOW_MAIN-"].update(f"Exception in Program: {e}")
 
-    elif event == "-BUILD_XPATH-":
+    elif event in ("-BUILD_XPATH-", "-RADIO_DEFAULT-", "-RADIO_CONTAINS-", "-RADIO_STARTSWITH-"):
         try:
-            if radio_default: # If Radio Button DEFAULT is selected
-                if not tag_name_combobox:
-                    window["-OUTPUT_WINDOW_MAIN-"].update(
-                        "To start building a XPath expression, select a Tag Name first from the combobox.")
-                else:
-                    xpath_expression = "//" + tag_name_combobox
+            # Initialize XPath expression
+            xpath_expression = "//" + tag_name_combobox if tag_name_combobox else ""
 
+            # Determine XPath criteria based on selected radio button
+            if radio_default:
+                xpath_criteria = []
                 if tag_value_combobox:
-                    xpath_expression += f"[text()='{tag_value_combobox}']"
-
+                    xpath_criteria.append(f"text()='{tag_value_combobox}'")
                 if attribute_name_combobox:
                     if attribute_value_combobox:
-                        xpath_expression += f"[@{attribute_name_combobox}='{attribute_value_combobox}']"
+                        xpath_criteria.append(f"@{attribute_name_combobox}='{attribute_value_combobox}'")
                     else:
-                        xpath_expression += f"[@{attribute_name_combobox}]"
+                        xpath_criteria.append(f"@{attribute_name_combobox}")
 
-                window["-XPATH_EXPRESSION-"].update(xpath_expression)
-
-                if xpath_expression != "":
-                    window["-OUTPUT_WINDOW_MAIN-"].update(f"Final XPath expression: {xpath_expression}")
-            #TODO Continue Code here!!!       
-            if radio_contains: # If Radio Button CONTAINS is selected
-                if not tag_name_combobox:
-                    window["-OUTPUT_WINDOW_MAIN-"].update(
-                        "To start building a XPath expression, select a Tag Name first from the combobox.")
-                else:
-                    xpath_expression = "//" + tag_name_combobox
-
+            elif radio_contains:
+                xpath_criteria = []
                 if tag_value_combobox:
-                    xpath_expression += f"[text()='{tag_value_combobox}']"
-
+                    xpath_criteria.append(f"contains(text(), '{tag_value_combobox}')")
                 if attribute_name_combobox:
                     if attribute_value_combobox:
-                        xpath_expression += f"[contains(@{attribute_name_combobox},'{attribute_value_combobox}')]"
+                        xpath_criteria.append(f"contains(@{attribute_name_combobox}, '{attribute_value_combobox}')")
                     else:
-                        xpath_expression += f"[@{attribute_name_combobox}]"
+                        xpath_criteria.append(f"@{attribute_name_combobox}")
 
-                window["-XPATH_EXPRESSION-"].update(xpath_expression)
+            elif radio_startswith:
+                xpath_criteria = []
+                if tag_value_combobox:
+                    xpath_criteria.append(f"starts-with(text(), '{tag_value_combobox}')")
+                if attribute_name_combobox:
+                    if attribute_value_combobox:
+                        xpath_criteria.append(f"starts-with(@{attribute_name_combobox}, '{attribute_value_combobox}')")
+                    else:
+                        xpath_criteria.append(f"@{attribute_name_combobox}")
 
-                if xpath_expression != "":
-                    window["-OUTPUT_WINDOW_MAIN-"].update(f"Final XPath expression: {xpath_expression}")
+            # Append XPath criteria to expression
+            if xpath_criteria:
+                xpath_expression += "[" + " and ".join(xpath_criteria) + "]"
+
+            # Update XPath expression and output window
+            window["-XPATH_EXPRESSION-"].update(xpath_expression)
+            if xpath_expression:
+                window["-OUTPUT_WINDOW_MAIN-"].update(f"Final XPath expression: {xpath_expression}")
 
         except NameError:
             window["-OUTPUT_WINDOW_MAIN-"].update("Name 'parsed_xml_file' is not defined")
+
 
     elif event == "-ADD_TO_MATCHING-":
         try:
             if not xpath_expression_input:
                 window["-OUTPUT_WINDOW_MAIN-"].update("No XPath expression entered.")
 
+            
             elif xpath_expression_input and not is_duplicate(xpath_expression_input):
                 matching_filters_listbox.append(xpath_expression_input)
                 window["-MATCHING_FILTER_LIST-"].update(values=matching_filters_listbox)
                 window["-OUTPUT_WINDOW_MAIN-"].update(f"XPath expression added: {xpath_expression_input}")
-
             elif is_duplicate(xpath_expression_input):
                 window["-OUTPUT_WINDOW_MAIN-"].update(
                     f"Duplicate XPath expression {xpath_expression_input} is already in the list.")
@@ -664,11 +690,11 @@ while True:
                     "Folder Path that contains XML Files is either empty or not a valid path!")
 
             elif not len(matching_filters_listbox) > 0:
-                window["-OUTPUT_WINDOW_MAIN-"].update("No Filters for Matching added, please add one as XPath!")
+                window["-OUTPUT_WINDOW_MAIN-"].update("No filters for matching added, please add one as XPath!")
 
             elif not os.path.exists(os.path.dirname(evaluation_output_folder)):
                 window["-OUTPUT_WINDOW_MAIN-"].update(
-                    "Please select a Output Folder where the Evaluation should be saved as a CSV File!")
+                    "Please select an Output Folder where the evaluation should be saved as a CSV file!")
             else:
                 window.perform_long_operation(
                     lambda: export_evaluation_as_csv(evaluation_output_folder, evaluation_input_folder,
