@@ -174,7 +174,7 @@ def evaluate_xml_files_matching(folder_path, matching_filters):
         matching_filters (list): Added XPath filters in the ListBox GUI element
 
     Returns:
-        list: Returns list of added filter to match to and evaluate one or multiple XML Files
+        list: Returns list of added filter(s) to match to and evaluate one or more XML Files
     """
     final_results = []
     total_files = sum(1 for filename in os.listdir(folder_path) if filename.endswith('.xml'))
@@ -204,49 +204,99 @@ def evaluate_xml_files_matching(folder_path, matching_filters):
 
                 total_matches = 0  # Initialize total matches for the file
                 current_file_results = {"Filename": os.path.splitext(filename)[0]}
-                print(f"LENGTH OF MATCHING FILTERS LIST: {len(matching_filters)}")
+                #print(f"LENGTH OF MATCHING FILTERS LIST: {len(matching_filters)}")
 
-                for expression in matching_filters:
-                    result = tree.xpath(expression)
-                    total_matches += len(result)
-                    if "@" in expression:
-                        # Code for handling attribute expressions
-                        match = re.search(r"@([^=]+)=", expression)
-                        if match:
-                            attribute_name_string = match.group(1).strip()
-                            print(f"Attribute_name_string in @ = {attribute_name_string}")
-                            for element in result:
-                                attr_value = element.get(attribute_name_string)
-                                print(f"Attribute Value in @ - = {attr_value}")
-                                if attr_value and attr_value.strip():  # Check if not None or empty
-                                    current_file_results[f"Filter {attribute_name_string} "] = attr_value
-                        else:
-                            match = re.search(r"@([^=]+),", expression)
-                            if match:
-                                attribute_name_string = match.group(1).strip()
-                                print(f"Attribute_name_string in @ , {attribute_name_string}")
-                                for element in result:
-                                    attr_value = element.get(attribute_name_string)
-                                    print(f"Attribute Value in @ - , {attr_value}")
-                                    if attr_value and attr_value.strip():  # Check if not None or empty
-                                        current_file_results[f"Filter {attribute_name_string}"] = attr_value
+                if len(matching_filters) == 1:
+                
+                    for expression in matching_filters:
+                        result = tree.xpath(expression)
+                        total_matches += len(result)
+                        
+                        if result:
+                        
+                            if "@" in expression:
+                                # Code for handling attribute expressions
+                                match = re.search(r"@([^=]+)=", expression)
+                                if match:
+                                    attribute_name_string = match.group(1).strip() # Id, Description, Name etc (Attribute Name of Selected Tag)
+                                    for element in result:
+                                        attr_value = element.get(attribute_name_string)
+                                        print(f"Attribute Value in @ - = {attr_value}")
+                                        if attr_value and attr_value.strip():  # Check if not None or empty
+                                            current_file_results[f"Filter {attribute_name_string}"] = attr_value
+                                else:
+                                    match = re.search(r"@([^=]+),", expression)
+                                    if match:
+                                        attribute_name_string = match.group(1).strip()
+                                        for element in result:
+                                            attr_value = element.get(attribute_name_string)
+                                            print(f"Attribute Value in @ - , {attr_value}")
+                                            if attr_value and attr_value.strip():  # Check if not None or empty
+                                                current_file_results[f"Filter {attribute_name_string}"] = attr_value
 
-                    if "text()=" in expression:
-                        # Code for handling text() expressions
-                        match = re.search(r"//(.*?)\[", expression)
-                        if match:
-                            tag_name_string = match.group(1).strip()
-                            print(f"Tag_name_string: {tag_name_string}")
-                            for element in result:
-                                tag_value = element.text
-                                print(f"Tag value: {tag_value}")
-                                if tag_value and tag_value.strip():  # Check if not None or empty
-                                    current_file_results[f"Filter {tag_name_string}"] = tag_value
+                            if "text()=" in expression:
+                                # Code for handling text() expressions
+                                match = re.search(r"//(.*?)\[", expression)
+                                if match:
+                                    tag_name_string = match.group(1).strip()
+                                    print(f"Tag_name_string: {tag_name_string}")
+                                    for element in result:
+                                        tag_value = element.text
+                                        print(f"Tag value: {tag_value}")
+                                        if tag_value and tag_value.strip():  # Check if not None or empty
+                                            current_file_results[f"Filter {tag_name_string}"] = tag_value
 
-                current_file_results["Total Matching Tags"] = total_matches
+                        current_file_results["Total Matching Tags"] = total_matches
+
+                if len(matching_filters) > 1:
+                    
+                    attribute_matches_dic = {}
+                    tag_matches_dic = {}
+                    
+                    for expression in matching_filters:
+                        result = tree.xpath(expression)
+                        matches_count = len(result)
+                        total_matches += len(result)
+                        
+                        if result:
+                        
+                            if "@" in expression: # Code for handling attribute expressions
+                                match = re.search(r"@([^=]+)=", expression)
+                                if match:
+                                    attribute_name_string = match.group(1).strip()
+                                    for element in result:
+                                        attr_value = element.get(attribute_name_string)
+                                        if attr_value and attr_value.strip():  # Check if not None or empty
+                                            attribute_matches_dic[f"{attribute_name_string}={attr_value}"] = matches_count
+
+                                else:
+                                    match = re.search(r"@([^=]+),", expression)
+                                    if match:
+                                        attribute_name_string = match.group(1).strip()
+                                        for element in result:
+                                            attr_value = element.get(attribute_name_string)
+                                            if attr_value and attr_value.strip():  # Check if not None or empty
+                                                attribute_matches_dic[f"{attribute_name_string}={attr_value}"] = matches_count
+
+                                for attribute, attr_count in attribute_matches_dic.items():
+                                    current_file_results[f"Filter {attribute} Matches"] = attr_count
+                                
+                            elif "text()=" in expression:
+                                # Code for handling text() expressions
+                                match = re.search(r"//(.*?)\[", expression)
+                                if match:
+                                    tag_name_string = match.group(1).strip()
+                                    for element in result:
+                                        tag_value = element.text
+                                        if tag_value and tag_value.strip():  # Check if not None or empty
+                                            tag_matches_dic[f"{tag_name_string} {tag_value}"] = matches_count
+
+                                for tag, tag_count in tag_matches_dic.items():
+                                    current_file_results[f"Filter {tag} Matches"] = tag_count
 
                 if total_matches > 0:
                     final_results.append(current_file_results)
+                    
                 total_sum_matches += total_matches
                 total_matching_files += 1 if total_matches > 0 else 0
 
@@ -254,6 +304,18 @@ def evaluate_xml_files_matching(folder_path, matching_filters):
 
     except ZeroDivisionError:
         pass
+
+
+def replace_empty_with_zero(value):
+    """_summary_
+
+    Args:
+        value (str): Values of matches which will be written in the appropriate column name
+
+    Returns:
+        str: Returns 0 as value for CSV rows, which are empty
+    """
+    return value if value != '' else '0'
 
 
 def export_evaluation_as_csv(csv_output_path, folder_path, matching_filters):
@@ -272,6 +334,7 @@ def export_evaluation_as_csv(csv_output_path, folder_path, matching_filters):
         # Save matching results to CSV file
         if matching_results is not None:  # Check if matching results exist
             headers = [key for key in {key: None for dic in matching_results for key in dic}]
+            print("Headers:", headers)
 
             with open(csv_output_path, "w", newline="", encoding="utf-8") as csvfile:
                 fieldnames = headers
@@ -281,7 +344,9 @@ def export_evaluation_as_csv(csv_output_path, folder_path, matching_filters):
                 # Write matching results
                 for match in matching_results:
                     if match is not None: # If None, skip
-                        writer.writerow(match)
+                        match_with_zeroes = {header: replace_empty_with_zero(match.get(header, '')) for header in headers}
+                        print("Match with zeroes:", match_with_zeroes)
+                        writer.writerow(match_with_zeroes)
                 csvfile.close()
 
             window["-OUTPUT_WINDOW_MAIN-"].update(
@@ -302,11 +367,6 @@ def export_evaluation_as_csv(csv_output_path, folder_path, matching_filters):
 
 def is_duplicate(xpath_expression):
     return xpath_expression in matching_filters_listbox
-
-
-# def is_valid_xpath(xpath_expression_input):
-#    pattern = r'^//?[\w-]+(?:\[@[\w-]+(?:=[^\]]+)?\])*(?:/[\w-]+)*$'
-#    return re.match(pattern, xpath_expression_input) is not None
 
 
 my_custom_theme = {
