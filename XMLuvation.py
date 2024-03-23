@@ -11,8 +11,9 @@ xml_32px = b"iVBORw0KGgoAAAANSUhEUgAAACAAAAAgCAYAAABzenr0AAAABHNCSVQICAgIfAhkiAA
 logo = "./images/logo.png"
 pandas_font = "Calibri 13 bold"
 
+
 # ========== FUNCTIONS ========== #
-def convert_csv_file(input_file, output_file, input_ext, output_ext,):
+def convert_csv_file(input_file, output_file, input_ext, output_ext, ):
     """Converts the selected CSV File to the supported extension types with the Pandas module
 
     Args:
@@ -23,8 +24,8 @@ def convert_csv_file(input_file, output_file, input_ext, output_ext,):
     """
     try:
         window["-CONVERT_CSV_FILE-"].update(disabled=True)
-        
-        with open(input_file) as file: # Get Delimiter
+
+        with open(input_file) as file:  # Get Delimiter
             sample = file.read(4096)
             sniffer = csv.Sniffer()
             get_delimiter = sniffer.sniff(sample).delimiter
@@ -81,11 +82,11 @@ def read_csv_data(csv_file):
     try:
         file_suffix_in_input = Path(csv_file).suffix.upper().strip(".")
 
-        with open(csv_file) as file: # Get Delimiter
+        with open(csv_file) as file:  # Get Delimiter
             sample = file.read(4096)
             sniffer = csv.Sniffer()
             get_delimiter = sniffer.sniff(sample).delimiter
-            
+
         if not values["-CHECKBOX_WRITE_INDEX_COLUMN-"]:
             csv_df = pd.read_csv(input_file, delimiter=get_delimiter, encoding="utf-8", index_col=0)
         else:
@@ -196,7 +197,8 @@ def evaluate_xml_files_matching(folder_path, matching_filters):
                     tree = ET.parse(file_path)
                 except ET.XMLSyntaxError as e:
                     if "Document is empty" in str(e):
-                        window["-OUTPUT_WINDOW_MAIN-"].update(f"Error processing {filename}\nError: XML File is Empty, skipping file...")
+                        window["-OUTPUT_WINDOW_MAIN-"].update(
+                            f"Error processing {filename}\nError: XML File is Empty, skipping file...")
                         continue  # Skip processing this file
                     else:
                         window["-OUTPUT_WINDOW_MAIN-"].update(f"XMLSyntaxError occurred: {e}")
@@ -204,21 +206,22 @@ def evaluate_xml_files_matching(folder_path, matching_filters):
 
                 total_matches = 0  # Initialize total matches for the file
                 current_file_results = {"Filename": os.path.splitext(filename)[0]}
-                #print(f"LENGTH OF MATCHING FILTERS LIST: {len(matching_filters)}")
+                # print(f"LENGTH OF MATCHING FILTERS LIST: {len(matching_filters)}")
 
                 if len(matching_filters) == 1:
-                
+
                     for expression in matching_filters:
                         result = tree.xpath(expression)
                         total_matches += len(result)
-                        
+
                         if result:
-                        
+
                             if "@" in expression:
                                 # Code for handling attribute expressions
                                 match = re.search(r"@([^=]+)=", expression)
                                 if match:
-                                    attribute_name_string = match.group(1).strip() # Id, Description, Name etc (Attribute Name of Selected Tag)
+                                    attribute_name_string = match.group(
+                                        1).strip()  # Id, Description, Name etc (Attribute Name of Selected Tag)
                                     for element in result:
                                         attr_value = element.get(attribute_name_string)
                                         print(f"Attribute Value in @ - = {attr_value}")
@@ -249,25 +252,26 @@ def evaluate_xml_files_matching(folder_path, matching_filters):
                         current_file_results["Total Matching Tags"] = total_matches
 
                 if len(matching_filters) > 1:
-                    
+
                     attribute_matches_dic = {}
                     tag_matches_dic = {}
-                    
+
                     for expression in matching_filters:
                         result = tree.xpath(expression)
                         matches_count = len(result)
                         total_matches += len(result)
-                        
+
                         if result:
-                        
-                            if "@" in expression: # Code for handling attribute expressions
+
+                            if "@" in expression:  # Code for handling attribute expressions
                                 match = re.search(r"@([^=]+)=", expression)
                                 if match:
                                     attribute_name_string = match.group(1).strip()
                                     for element in result:
                                         attr_value = element.get(attribute_name_string)
                                         if attr_value and attr_value.strip():  # Check if not None or empty
-                                            attribute_matches_dic[f"{attribute_name_string}={attr_value}"] = matches_count
+                                            attribute_matches_dic[
+                                                f"{attribute_name_string}={attr_value}"] = matches_count
 
                                 else:
                                     match = re.search(r"@([^=]+),", expression)
@@ -276,11 +280,12 @@ def evaluate_xml_files_matching(folder_path, matching_filters):
                                         for element in result:
                                             attr_value = element.get(attribute_name_string)
                                             if attr_value and attr_value.strip():  # Check if not None or empty
-                                                attribute_matches_dic[f"{attribute_name_string}={attr_value}"] = matches_count
+                                                attribute_matches_dic[
+                                                    f"{attribute_name_string}={attr_value}"] = matches_count
 
                                 for attribute, attr_count in attribute_matches_dic.items():
                                     current_file_results[f"Filter {attribute} Matches"] = attr_count
-                                
+
                             elif "text()=" in expression:
                                 # Code for handling text() expressions
                                 match = re.search(r"//(.*?)\[", expression)
@@ -296,7 +301,7 @@ def evaluate_xml_files_matching(folder_path, matching_filters):
 
                 if total_matches > 0:
                     final_results.append(current_file_results)
-                    
+
                 total_sum_matches += total_matches
                 total_matching_files += 1 if total_matches > 0 else 0
 
@@ -329,7 +334,7 @@ def export_evaluation_as_csv(csv_output_path, folder_path, matching_filters):
     try:
         window["-EXPORT_AS_CSV-"].update(disabled=True)
         matching_results, total_matches_found, total_matching_files = evaluate_xml_files_matching(folder_path,
-                                                                                     matching_filters)
+                                                                                                  matching_filters)
 
         # Save matching results to CSV file
         if matching_results is not None:  # Check if matching results exist
@@ -343,14 +348,16 @@ def export_evaluation_as_csv(csv_output_path, folder_path, matching_filters):
 
                 # Write matching results
                 for match in matching_results:
-                    if match is not None: # If None, skip
-                        match_with_zeroes = {header: replace_empty_with_zero(match.get(header, '')) for header in headers}
+                    if match is not None:  # If None, skip
+                        match_with_zeroes = {header: replace_empty_with_zero(match.get(header, '')) for header in
+                                             headers}
                         print("Match with zeroes:", match_with_zeroes)
                         writer.writerow(match_with_zeroes)
                 csvfile.close()
 
             window["-OUTPUT_WINDOW_MAIN-"].update(
-                f"Matches saved to {csv_output_path}\nFound {total_matching_files} files that have a total sum of {total_matches_found} matches.")
+                f"Matches saved to {csv_output_path}\nFound {total_matching_files}"
+                f"files that have a total sum of {total_matches_found} matches.")
             window["-EXPORT_AS_CSV-"].update(disabled=False)
             window['-PROGRESS_BAR-'].update(0)
         else:
@@ -436,26 +443,35 @@ frame_pandas_output = sg.Frame("CSV Conversion Output", layout_pandas_output, ex
 
 # ========== START Layout for XML Evaluation START ========== #
 layout_xml_evaluation = [[sg.Menu(MENU_DEFINITION)],
-                   [sg.Text("Select a Folder that contains XML Files:", pad=5)],
-                   [sg.Input(size=(36, 2), font="Arial 10", expand_x=True, key="-FOLDER_EVALUATION_INPUT-"),
-                    sg.FolderBrowse(button_text="Browse Folder", target="-FOLDER_EVALUATION_INPUT-"),
-                    sg.Button("Read XML", key="-READ_XML-")],
-                   [sg.Text("Get XML Tag and Attribute Names/Values for XPath generation:", pad=5)],
-                   [sg.Text("Tag name:"),
-                    sg.Combo(tag_name, size=(15, 1), disabled=True, auto_size_text=False, enable_events=True,
-                             enable_per_char_events=True, expand_x=True, key="-XML_TAG_NAME-"), sg.Text("Tag Value:"),
-                    sg.Combo(tag_value, size=(15, 1), disabled=True, enable_events=True, enable_per_char_events=True,
-                             auto_size_text=False, expand_x=True, key="-XML_TAG_VALUE-")],
-                   [sg.Text("Att name:"),
-                    sg.Combo(attribute_name, size=(15, 1), disabled=True, auto_size_text=False, enable_events=True,
-                             expand_x=True, key="-XML_ATTRIBUTE_NAME-"), sg.Text("Att Value:"),
-                    sg.Combo(attribute_value, size=(15, 1), disabled=True, enable_events=True, auto_size_text=False,
-                             expand_x=True, key="-XML_ATTRIBUTE_VALUE-", pad=5)],
-                   [sg.Text("XPath Function:"),sg.Radio("Equals", group_id=1, default=True, key="-RADIO_DEFAULT-"),sg.Radio("Contains", group_id=1, key="-RADIO_CONTAINS-"), sg.Radio("Starts-with", group_id=1, key="-RADIO_STARTSWITH-")],
-                   [sg.Text("XPath Expression:"), sg.Input(size=(14, 1), expand_x=True, key="-XPATH_EXPRESSION-"),
-                    sg.Button("Build XPath", key="-BUILD_XPATH-")],
-                   [sg.Text("Add XPath Expressions to look for and match in XML Files:", expand_x=True),
-                    sg.Button("Add XPath Filter", key="-ADD_TO_MATCHING-")]]
+                         [sg.Text("Select a Folder that contains XML Files:", pad=5)],
+                         [sg.Input(size=(36, 2), font="Arial 10", expand_x=True, key="-FOLDER_EVALUATION_INPUT-"),
+                          sg.FolderBrowse(button_text="Browse Folder", target="-FOLDER_EVALUATION_INPUT-"),
+                          sg.Button("Read XML", key="-READ_XML-")],
+                         [sg.Text("Get XML Tag and Attribute Names/Values for XPath generation:", pad=5)],
+                         [sg.Text("Tag name:"),
+                          sg.Combo(tag_name, size=(15, 1), disabled=True, auto_size_text=False, enable_events=True,
+                                   enable_per_char_events=True, expand_x=True, key="-XML_TAG_NAME-"),
+                          sg.Text("Tag Value:"),
+                          sg.Combo(tag_value, size=(15, 1), disabled=True, enable_events=True,
+                                   enable_per_char_events=True,
+                                   auto_size_text=False, expand_x=True, key="-XML_TAG_VALUE-")],
+                         [sg.Text("Att name:"),
+                          sg.Combo(attribute_name, size=(15, 1), disabled=True, auto_size_text=False,
+                                   enable_events=True,
+                                   expand_x=True, key="-XML_ATTRIBUTE_NAME-"), sg.Text("Att Value:"),
+                          sg.Combo(attribute_value, size=(15, 1), disabled=True, enable_events=True,
+                                   auto_size_text=False,
+                                   expand_x=True, key="-XML_ATTRIBUTE_VALUE-", pad=5)],
+                         [sg.Text("Function:"),
+                          sg.Radio("Equals", group_id=1, default=True, key="-RADIO_DEFAULT-"),
+                          sg.Radio("Contains", group_id=1, key="-RADIO_CONTAINS-"),
+                          sg.Radio("Starts-with", group_id=1, key="-RADIO_STARTSWITH-"),
+                          sg.Radio("Greater", group_id=1, key="-RADIO_GREATER-"),
+                          sg.Radio("Smaller", group_id=1, key="-RADIO_SMALLER-")],
+                         [sg.Text("XPath Expression:"), sg.Input(size=(14, 1), expand_x=True, key="-XPATH_EXPRESSION-"),
+                          sg.Button("Build XPath", key="-BUILD_XPATH-")],
+                         [sg.Text("Add XPath Expressions to look for and match in XML Files:", expand_x=True),
+                          sg.Button("Add XPath Filter", key="-ADD_TO_MATCHING-")]]
 
 layout_listbox_matching_filter = [[sg.Listbox(values=matching_filters_listbox, size=(60, 4), enable_events=True,
                                               expand_x=True, right_click_menu=MENU_RIGHT_CLICK_DELETE,
@@ -474,7 +490,8 @@ layout_xml_output = [
     [sg.Text("Progress:"),
      sg.ProgressBar(max_value=100, size=(20, 18), orientation="h", expand_x=True, key='-PROGRESS_BAR-', pad=11)]]
 
-frame_xml_eval = sg.Frame("XML folder selection and XPath builder", layout_xml_evaluation, title_color="#FFC857", expand_x=True)
+frame_xml_eval = sg.Frame("XML folder selection and XPath builder", layout_xml_evaluation, title_color="#FFC857",
+                          expand_x=True)
 frame_export_evaluation = sg.Frame("Export Evaluation result as a CSV File", layout_export_evaluation,
                                    title_color="#FFC857", expand_x=True)
 frame_xml_output = sg.Frame("XML Output", layout_xml_output, title_color="#FFC857", expand_x=True)
@@ -542,8 +559,8 @@ while True:
     output_ext = Path(output_file).suffix.lower().strip(".")
 
     # Browse Folder and Save As input elements
-    evaluation_input_folder = values["-FOLDER_EVALUATION_INPUT-"] # Browse Folder
-    evaluation_output_folder = values["-FOLDER_EVALUATION_OUTPUT-"] # Save As
+    evaluation_input_folder = values["-FOLDER_EVALUATION_INPUT-"]  # Browse Folder
+    evaluation_output_folder = values["-FOLDER_EVALUATION_OUTPUT-"]  # Save As
 
     # XML Combobox element values
     tag_name_combobox = values["-XML_TAG_NAME-"]
@@ -554,11 +571,13 @@ while True:
     # XPath input element for XML matching 
     xpath_expression_input = values["-XPATH_EXPRESSION-"]
     xpath_expression = ""
-    
+
     # Radio button elements
     radio_default = values["-RADIO_DEFAULT-"]
     radio_contains = values["-RADIO_CONTAINS-"]
     radio_startswith = values["-RADIO_STARTSWITH-"]
+    radio_greater = values["-RADIO_GREATER-"]
+    radio_smaller = values["-RADIO_SMALLER-"]
 
     # RegEx matching for only XML files
     file_path_regex = r'\.xml$'
@@ -608,7 +627,7 @@ while True:
                     window["-XML_TAG_VALUE-"].update(disabled=False, values=tag_value_list)
                     attribute_name_list = get_attributes(eval_input_file, tag)
                     window["-XML_ATTRIBUTE_NAME-"].update(values=attribute_name_list)
-                    
+
                     for attribute_name in attribute_name_list:
                         attribute_value_list = get_attribute_values(eval_input_file, tag, attribute_name)
                         window["-XML_ATTRIBUTE_VALUE-"].update(values=attribute_value_list)
@@ -628,7 +647,7 @@ while True:
             window["-XML_ATTRIBUTE_NAME-"].update(values=attributes)
             values_xml = get_tag_values(eval_input_file, selected_tag)
             window["-XML_TAG_VALUE-"].update(values=values_xml)
-            
+
             # Disable tag value combo box if there are no values for the selected tag
             if not values_xml or all(value.strip() == '' for value in values_xml if value is not None):
                 window["-XML_TAG_VALUE-"].update(disabled=True, values="")
@@ -666,7 +685,7 @@ while True:
         except Exception as e:
             window["-OUTPUT_WINDOW_MAIN-"].update(f"Exception in Program: {e}")
 
-    elif event in ("-BUILD_XPATH-", "-RADIO_DEFAULT-", "-RADIO_CONTAINS-", "-RADIO_STARTSWITH-"):
+    elif event in ("-BUILD_XPATH-", "-RADIO_DEFAULT-", "-RADIO_CONTAINS-", "-RADIO_STARTSWITH-", "-RADIO_GREATER-", "-RADIO_SMALLER-"):
         try:
             # Initialize XPath expression
             xpath_expression = "//" + tag_name_combobox if tag_name_combobox else ""
@@ -702,6 +721,26 @@ while True:
                     else:
                         xpath_criteria.append(f"@{attribute_name_combobox}")
 
+            elif radio_greater:
+                xpath_criteria = []
+                if tag_value_combobox:
+                    xpath_criteria.append(f"[text() > {tag_value_combobox}]")
+                if attribute_name_combobox:
+                    if attribute_value_combobox:
+                        xpath_criteria.append(f"[@{attribute_name_combobox} > {attribute_value_combobox}")
+                    else:
+                        xpath_criteria.append(f"@{attribute_name_combobox}")
+
+            elif radio_smaller:
+                xpath_criteria = []
+                if tag_value_combobox:
+                    xpath_criteria.append(f"[text() < {tag_value_combobox}]")
+                if attribute_name_combobox:
+                    if attribute_value_combobox:
+                        xpath_criteria.append(f"[@{attribute_name_combobox} < {attribute_value_combobox}")
+                    else:
+                        xpath_criteria.append(f"@{attribute_name_combobox}")
+
             # Append XPath criteria to expression
             if xpath_criteria:
                 xpath_expression += "[" + " and ".join(xpath_criteria) + "]"
@@ -720,7 +759,7 @@ while True:
             if not xpath_expression_input:
                 window["-OUTPUT_WINDOW_MAIN-"].update("No XPath expression entered.")
 
-            
+
             elif xpath_expression_input and not is_duplicate(xpath_expression_input):
                 matching_filters_listbox.append(xpath_expression_input)
                 window["-MATCHING_FILTER_LIST-"].update(values=matching_filters_listbox)
