@@ -398,7 +398,7 @@ font = ("Calibri", 13)
 FILE_TYPE_XML = (("XML (Extensible Markup Language)", ".xml"),)
 MENU_RIGHT_CLICK_DELETE = ["&Right", ["&Delete", "&Delete All"]]
 MENU_DEFINITION = [["&File", ["&Open Output Folder::OpenOutputFolder", "---", "E&xit"]],
-                   ["&Help", ["&XPath Syntax Help::XPathSyntaxURL"]]]
+                   ["&Help", ["&XPath Help::XPathSyntaxURL", "XPath Cheat Sheet::XPathCheatSheet"]]]
 # Constants for Pandas Conversion
 FILE_TYPES_INPUT = (("CSV (Comma Separated Value)", ".csv"),)
 FILE_TYPES_OUTPUT = (
@@ -598,14 +598,20 @@ while True:
         except UnboundLocalError:
             window["-OUTPUT_WINDOW_MAIN-"].update("ERROR: To delete a filter from the Listbox, select it first.")
 
-    elif event == "XPath Syntax Help::XPathSyntaxURL":
+    elif event == "XPath Help::XPathSyntaxURL":
         webbrowser.open("https://www.w3schools.com/xml/xpath_syntax.asp")
+    
+    elif event == "XPath Cheat Sheet::XPathCheatSheet":
+        excel_sheet = "./cheatsheet/XPath_Syntax.xlsx"
+        read = pd.read_excel(excel_sheet, index_col=0)
+        sg.popup_scrolled(read, title="XPath Syntax", modal=False)
 
     elif event == "Open Output Folder::OpenOutputFolder":
         output_folder = evaluation_output_folder
-        directory_path = os.path.dirname(output_folder)
-        windows_path = directory_path.replace("/", "\\")
-        os.startfile(windows_path)
+        if output_folder:
+            directory_path = os.path.dirname(output_folder)
+            windows_path = directory_path.replace("/", "\\")
+            os.startfile(windows_path)
 
     elif event == "-READ_XML-":
         eval_input_file = sg.popup_get_file("Select a XML file to fill out the Name/Value boxes.",
