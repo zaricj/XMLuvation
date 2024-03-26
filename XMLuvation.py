@@ -192,17 +192,18 @@ def evaluate_xml_files_matching(folder_path, matching_filters):
                 # Update progress bar after processing each file
                 current_progress += progress_increment
                 window['-PROGRESS_BAR-'].update(round(current_progress, 2))
+                window["-OUTPUT_WINDOW_MAIN-"].update(f"Processing {filename}")
 
                 try:
                     tree = ET.parse(file_path)
                 except ET.XMLSyntaxError as e:
                     if "Document is empty" in str(e):
                         window["-OUTPUT_WINDOW_MAIN-"].update(
-                            f"Error processing {filename}\nError: XML File is Empty, skipping file...")
+                            f"Error processing {filename}\nXML File is empty, skipping file...")
                         continue  # Skip processing this file
                     else:
                         window["-OUTPUT_WINDOW_MAIN-"].update(f"XMLSyntaxError occurred: {e}")
-                        continue  # Skip processing this file
+                        continue
 
                 total_matches = 0  # Initialize total matches for the file
                 current_file_results = {"Filename": os.path.splitext(filename)[0]}
@@ -224,7 +225,7 @@ def evaluate_xml_files_matching(folder_path, matching_filters):
                                         1).strip()  # Id, Description, Name etc (Attribute Name of Selected Tag)
                                     for element in result:
                                         attr_value = element.get(attribute_name_string)
-                                        print(f"Attribute Value in @ - = {attr_value}")
+                                        #print(f"Attribute Value in @ - = {attr_value}") # Uselful print if a filename has multiple filter in it for match
                                         if attr_value and attr_value.strip():  # Check if not None or empty
                                             current_file_results[f"Filter {attribute_name_string}"] = attr_value
                                 else:
@@ -233,7 +234,7 @@ def evaluate_xml_files_matching(folder_path, matching_filters):
                                         attribute_name_string = match.group(1).strip()
                                         for element in result:
                                             attr_value = element.get(attribute_name_string)
-                                            print(f"Attribute Value in @ - , {attr_value}")
+                                            #print(f"Attribute Value in @ - , {attr_value}") # Uselful print if a filename has multiple filter in it for match
                                             if attr_value and attr_value.strip():  # Check if not None or empty
                                                 current_file_results[f"Filter {attribute_name_string}"] = attr_value
 
@@ -339,7 +340,7 @@ def export_evaluation_as_csv(csv_output_path, folder_path, matching_filters):
         # Save matching results to CSV file
         if matching_results is not None:  # Check if matching results exist
             headers = [key for key in {key: None for dic in matching_results for key in dic}]
-            print("Headers:", headers)
+            #print("Headers:", headers)
 
             with open(csv_output_path, "w", newline="", encoding="utf-8") as csvfile:
                 fieldnames = headers
@@ -349,14 +350,14 @@ def export_evaluation_as_csv(csv_output_path, folder_path, matching_filters):
                 # Write matching results
                 for match in matching_results:
                     if match is not None:  # If None, skip
-                        match_with_zeroes = {header: replace_empty_with_zero(match.get(header, '')) for header in
+                        matches = {header: replace_empty_with_zero(match.get(header, '')) for header in
                                              headers}
-                        print("Match with zeroes:", match_with_zeroes)
-                        writer.writerow(match_with_zeroes)
+                        #print("Matches:", matches)
+                        writer.writerow(matches)
                 csvfile.close()
 
             window["-OUTPUT_WINDOW_MAIN-"].update(
-                f"Matches saved to {csv_output_path}\nFound {total_matching_files}"
+                f"Matches saved to {csv_output_path}\nFound {total_matching_files} "
                 f"files that have a total sum of {total_matches_found} matches.")
             window["-EXPORT_AS_CSV-"].update(disabled=False)
             window['-PROGRESS_BAR-'].update(0)
@@ -430,7 +431,7 @@ layout_pandas_conversion = [[sg.Text("CSV Converter", font="Calibri 36 bold unde
                                            target="-FILE_OUTPUT-", key="-SAVE_AS_BUTTON-"),
                              sg.Button("Convert", key="-CONVERT_CSV_FILE-", expand_x=True)],
                             [sg.Checkbox("Write Index Column?", default=False, key="-CHECKBOX_WRITE_INDEX_COLUMN-")],
-                            [sg.Image(source=logo, expand_x=True, expand_y=True)]]
+                            [sg.Image(source=logo, expand_x=True, expand_y=True, key="-IMAGE-")]]
 
 layout_pandas_output = [
     [sg.Multiline(size=(59, 32), key="-OUTPUT_WINDOW_CSV-", disabled=True, horizontal_scroll=True)]]
@@ -603,8 +604,17 @@ while True:
     
     elif event == "XPath Cheat Sheet::XPathCheatSheet":
         excel_sheet = "./cheatsheet/XPath_Syntax.xlsx"
-        read = pd.read_excel(excel_sheet, index_col=0)
-        sg.popup_scrolled(read, title="XPath Syntax", modal=False)
+        read = pd.read_excel(excel_sheet).to_dict()
+        
+        table = pd.DataFrame(read)
+        head = list(read)
+        values = table.values.tolist()
+        # Set column widths for empty record of table
+        layout_table = [[sg.Table(values=values, headings=head, auto_size_columns=False,
+        col_widths=list(map(lambda x:len(x)+1, head)), expand_x=True, expand_y=True, justification="left")]]
+        
+        window2 = sg.Window('Sample excel file',  layout_table, resizable=True, size=(1200,600), font="Calibri 13")
+        event, value = window2.read()
 
     elif event == "Open Output Folder::OpenOutputFolder":
         output_folder = evaluation_output_folder
@@ -612,6 +622,10 @@ while True:
             directory_path = os.path.dirname(output_folder)
             windows_path = directory_path.replace("/", "\\")
             os.startfile(windows_path)
+    
+    elif event == "-IMAGE-":
+    # update the animation in the window
+        window['-IMAGE-'].update_animation(logo,  time_between_frames=100)
 
     elif event == "-READ_XML-":
         eval_input_file = sg.popup_get_file("Select a XML file to fill out the Name/Value boxes.",
@@ -730,20 +744,20 @@ while True:
             elif radio_greater:
                 xpath_criteria = []
                 if tag_value_combobox:
-                    xpath_criteria.append(f"[text() > {tag_value_combobox}]")
+                    xpath_criteria.append(f"text() > {tag_value_combobox}")
                 if attribute_name_combobox:
                     if attribute_value_combobox:
-                        xpath_criteria.append(f"[@{attribute_name_combobox} > {attribute_value_combobox}")
+                        xpath_criteria.append(f"@{attribute_name_combobox} > {attribute_value_combobox}")
                     else:
                         xpath_criteria.append(f"@{attribute_name_combobox}")
 
             elif radio_smaller:
                 xpath_criteria = []
                 if tag_value_combobox:
-                    xpath_criteria.append(f"[text() < {tag_value_combobox}]")
+                    xpath_criteria.append(f"text() < {tag_value_combobox}")
                 if attribute_name_combobox:
                     if attribute_value_combobox:
-                        xpath_criteria.append(f"[@{attribute_name_combobox} < {attribute_value_combobox}")
+                        xpath_criteria.append(f"@{attribute_name_combobox} < {attribute_value_combobox}")
                     else:
                         xpath_criteria.append(f"@{attribute_name_combobox}")
 
