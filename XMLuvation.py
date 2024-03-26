@@ -428,17 +428,17 @@ attribute_value = []
 matching_filters_listbox = []
 
 # ========== START Layout for Pandas Conversion START ========== #
-layout_pandas_conversion = [[sg.Text("CSV Converter", font="Calibri 36 bold underline", text_color="#FFC857", pad=10,
+layout_pandas_conversion = [[sg.Text("CSV Converter", font="Calibri 36 bold underline", text_color="#578fff", pad=10,
                                      justification="center", grab=True)],
                             [sg.Text(
                                 "Convert CSV File to a different file type with the Pandas module\nSupported output file types: Excel, Markdown. HTML and JSON",
                                 justification="center")],
                             [sg.HSep(pad=10)],
-                            [sg.Text("Select a CSV file for conversion:")],
+                            [sg.Text("Choose a CSV file for conversion:")],
                             [sg.Input(size=(44, 1), key="-FILE_INPUT-"),
                              sg.FileBrowse(file_types=FILE_TYPES_INPUT, size=(8, 1)),
                              sg.Button("Read CSV", size=(7, 1), key="-READ_FILE-")],
-                            [sg.Text("Select folder and output file type of selected CSV file:")],
+                            [sg.Text("Choose where to save output of CSV file:")],
                             [sg.Input(size=(44, 1), key="-FILE_OUTPUT-"),
                              sg.FileSaveAs(button_text="Save as", size=(7, 1), file_types=FILE_TYPES_OUTPUT,
                                            target="-FILE_OUTPUT-", key="-SAVE_AS_BUTTON-"),
@@ -450,14 +450,14 @@ layout_pandas_output = [
     [sg.Multiline(size=(59, 32), key="-OUTPUT_WINDOW_CSV-", disabled=True, horizontal_scroll=True)]]
 
 frame_pandas = sg.Frame("CSV Conversion to different file type", layout_pandas_conversion, expand_x=True, expand_y=True,
-                        title_color="#FFC857")
+                        title_color="#FFC857", font="Calibri 13 bold")
 frame_pandas_output = sg.Frame("CSV Conversion Output", layout_pandas_output, expand_x=True, expand_y=True,
-                               title_color="#FFC857")
+                               title_color="#FFC857", font="Calibri 13 bold")
 # ========== END Layout for Pandas Conversion END ========== #
 
 # ========== START Layout for XML Evaluation START ========== #
 layout_xml_evaluation = [[sg.Menu(MENU_DEFINITION)],
-                         [sg.Text("Select a Folder that contains XML Files:", pad=5)],
+                         [sg.Text("Choose a Folder that contains XML Files:", pad=5)],
                          [sg.Input(size=(36, 2), font="Arial 10", expand_x=True, key="-FOLDER_EVALUATION_INPUT-"),
                           sg.FolderBrowse(button_text="Browse Folder", target="-FOLDER_EVALUATION_INPUT-"),
                           sg.Button("Read XML", key="-READ_XML-")],
@@ -491,7 +491,7 @@ layout_listbox_matching_filter = [[sg.Listbox(values=matching_filters_listbox, s
                                               expand_x=True, right_click_menu=MENU_RIGHT_CLICK_DELETE,
                                               key="-MATCHING_FILTER_LIST-")]]
 
-layout_export_evaluation = [[sg.Text("Select a Path where you want to save the XML Evaluation:")],
+layout_export_evaluation = [[sg.Text("Choose a folder where you want to save the XML Evaluation:")],
                             [sg.Input(expand_x=True, font="Arial 10", key="-FOLDER_EVALUATION_OUTPUT-"),
                              sg.SaveAs(button_text="Save as", file_types=(("Comma Separated Value (.csv)", ".csv"),),
                                        target="-FOLDER_EVALUATION_OUTPUT-"),
@@ -505,13 +505,13 @@ layout_xml_output = [
      sg.ProgressBar(max_value=100, size=(20, 18), orientation="h", expand_x=True, key='-PROGRESS_BAR-', pad=11)]]
 
 frame_xml_eval = sg.Frame("XML folder selection and XPath builder", layout_xml_evaluation, title_color="#FFC857",
-                          expand_x=True)
+                          expand_x=True, font="Calibri 13 bold")
 frame_export_evaluation = sg.Frame("Export Evaluation result as a CSV File", layout_export_evaluation,
-                                   title_color="#FFC857", expand_x=True)
-frame_xml_output = sg.Frame("XML Output", layout_xml_output, title_color="#FFC857", expand_x=True)
-frame_output_main = sg.Frame("Program Output", layout_program_output, title_color="#FFC857", expand_x=True)
+                                   title_color="#FFC857", expand_x=True, font="Calibri 13 bold")
+frame_xml_output = sg.Frame("XML Output", layout_xml_output, title_color="#FFC857", expand_x=True, font="Calibri 13 bold")
+frame_output_main = sg.Frame("Program Output", layout_program_output, title_color="#FFC857", expand_x=True, font="Calibri 13 bold")
 frame_listbox_matching_filter = sg.Frame("Filters to match in XML files", layout_listbox_matching_filter,
-                                         title_color="#FFC857", expand_x=True)
+                                         title_color="#FFC857", expand_x=True, font="Calibri 13 bold")
 # ========== END Layout for XML Evaluation END ========== #
 
 # layout = [[sg.Column(layout=[[frame_xml_eval], [frame_listbox_matching_filter],[frame_export_evaluation],[frame_output_main]], expand_y=True),sg.Column([[frame_xml_output]], expand_y=True)]] # DEPRACTED
