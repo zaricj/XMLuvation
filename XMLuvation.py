@@ -377,6 +377,19 @@ def is_duplicate(xpath_expression):
     return xpath_expression in matching_filters_listbox
 
 
+my_custom_darker_theme = {
+    "BACKGROUND": "#191e26",
+    "TEXT": "white",
+    "INPUT": "#36373d",
+    "TEXT_INPUT": "white",
+    "SCROLL": "#36373d",
+    "BUTTON": ("#FFC857", "#36373d"),
+    "PROGRESS": ("#FFC857", "#ABABAB"),
+    "BORDER": 2,
+    "SLIDER_DEPTH": 1,
+    "PROGRESS_DEPTH": 1,
+}
+
 my_custom_theme = {
     "BACKGROUND": "#2d3039",
     "TEXT": "white",
@@ -391,7 +404,7 @@ my_custom_theme = {
 }
 
 # Add your dictionary to the PySimpleGUI themes
-sg.theme_add_new("MyTheme", my_custom_theme)
+sg.theme_add_new("MyTheme", my_custom_darker_theme)
 sg.theme("MyTheme")
 font = ("Calibri", 13)
 
