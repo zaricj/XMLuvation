@@ -378,7 +378,7 @@ def is_duplicate(xpath_expression):
 
 
 my_custom_darker_theme = {
-    "BACKGROUND": "#191e26",
+    "BACKGROUND": "#17171C",
     "TEXT": "white",
     "INPUT": "#36373d",
     "TEXT_INPUT": "white",
@@ -395,7 +395,7 @@ my_custom_theme = {
     "TEXT": "white",
     "INPUT": "#535360",
     "TEXT_INPUT": "white",
-    "SCROLL": "#333",
+    "SCROLL": "#535360",
     "BUTTON": ("#FFC857", "#626271"),
     "PROGRESS": ("#FFC857", "#ABABAB"),
     "BORDER": 2,
@@ -404,7 +404,7 @@ my_custom_theme = {
 }
 
 # Add your dictionary to the PySimpleGUI themes
-sg.theme_add_new("MyTheme", my_custom_darker_theme)
+sg.theme_add_new("MyTheme", my_custom_theme)
 sg.theme("MyTheme")
 font = ("Calibri", 13)
 
@@ -559,7 +559,7 @@ layout = [
     ]
 ]
 
-window = sg.Window("XMLuvation", layout, font=font, icon=xml_32px, finalize=True)
+window = sg.Window("XMLuvation", layout, font=font, icon=xml_32px, resizable=True, finalize=True)
 
 while True:
     event, values = window.read()
