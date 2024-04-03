@@ -720,6 +720,9 @@ while True:
 
     elif event in ("-BUILD_XPATH-", "-RADIO_DEFAULT-", "-RADIO_CONTAINS-", "-RADIO_STARTSWITH-", "-RADIO_GREATER-", "-RADIO_SMALLER-"):
         try:
+            if len(values["-XPATH_EXPRESSION-"]) == 0:
+                window["-OUTPUT_WINDOW_MAIN-"].update("Please select a XML Tag/Attribute and/or it's value")
+                
             # Initialize XPath expression
             xpath_expression = "//" + tag_name_combobox if tag_name_combobox else ""
 
