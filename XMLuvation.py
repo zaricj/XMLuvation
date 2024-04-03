@@ -411,7 +411,7 @@ font = ("Calibri", 13)
 # Constants
 FILE_TYPE_XML = (("XML (Extensible Markup Language)", ".xml"),)
 MENU_RIGHT_CLICK_DELETE = ["&Right", ["&Delete", "&Delete All"]]
-MENU_DEFINITION = [["&File", ["&Open Output Folder::OpenOutputFolder", "---", "E&xit"]],
+MENU_DEFINITION = [["&File", ["&Open Output Folder::OpenOutputFolder", "Clear Output::ClearOutput", "---", "E&xit"]],
                    ["&Help", ["&XPath Help::XPathSyntaxURL", "XPath Cheat Sheet::XPathCheatSheet"]]]
 # Constants for Pandas Conversion
 FILE_TYPES_INPUT = (("CSV (Comma Separated Value)", ".csv"),)
@@ -626,7 +626,7 @@ while True:
         layout_table = [[sg.Table(values=values, headings=head, auto_size_columns=False,
         col_widths=list(map(lambda x:len(x)+1, head)), expand_x=True, expand_y=True, justification="left")]]
         
-        window2 = sg.Window('Sample excel file',  layout_table, resizable=True, size=(1200,600), font="Calibri 13")
+        window2 = sg.Window('XPath Cheat Sheet',  layout_table, resizable=True, size=(1200,600), font="Calibri 13", grab_anywhere=True)
         event, value = window2.read()
 
     elif event == "Open Output Folder::OpenOutputFolder":
@@ -635,6 +635,9 @@ while True:
             directory_path = os.path.dirname(output_folder)
             windows_path = directory_path.replace("/", "\\")
             os.startfile(windows_path)
+    
+    elif event == "Clear Output::ClearOutput":
+        window["-OUTPUT_WINDOW_MAIN-"].update("")
     
     elif event == "-IMAGE-":
     # update the animation in the window
