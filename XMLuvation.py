@@ -428,7 +428,7 @@ attribute_value = []
 matching_filters_listbox = []
 
 # ========== START Layout for Pandas Conversion START ========== #
-layout_pandas_conversion = [[sg.Text("CSV Converter", font="Calibri 36 bold underline", text_color="#578fff", pad=10,
+layout_pandas_conversion = [[sg.Text("CSV Converter", font="Calibri 36 bold underline", text_color="#FFC857", pad=10,
                                      justification="center", grab=True)],
                             [sg.Text(
                                 "Convert CSV File to a different file type with the Pandas module\nSupported output file types: Excel, Markdown. HTML and JSON",
@@ -544,7 +544,7 @@ layout = [
                             layout=[
                                 [frame_pandas]
                             ],
-                            expand_y=True
+                            expand_y=True,
                         ),
                         sg.Column(
                             layout=[
