@@ -207,53 +207,50 @@ def evaluate_xml_files_matching(folder_path, matching_filters):
 
                 total_matches = 0  # Initialize total matches for the file
                 current_file_results = {"Filename": os.path.splitext(filename)[0]}
-                # print(f"LENGTH OF MATCHING FILTERS LIST: {len(matching_filters)}")
 
                 if len(matching_filters) == 1: # Check if there is only one filter added to the ListBox GUI element
 
-                    for expression in matching_filters:
-                        result = tree.xpath(expression)
-                        total_matches += len(result)
+                    expression = matching_filters[0]
+                    result = tree.xpath(expression)
+                    total_matches += len(result)
 
-                        if result:
-                            # Code for handling attribute expressions
-                            if "@" in expression:
-                                # Searches for matches that explicitly end with '=' in the attribute name 
-                                match = re.search(r"@([^=]+)=", expression)
+                    if result:
+                        # Code for handling attribute expressions
+                        if "@" in expression:
+                            # Searches for matches that explicitly end with '=' in the attribute name 
+                            match = re.search(r"@([^=]+)=", expression)
+                            if match:
+                                attribute_name_string = match.group(1).strip()  # Id, Description, Name etc (Attribute Name of Selected Tag)
+                                for element in result:
+                                    attr_value = element.get(attribute_name_string)
+                                    #print(f"Attribute Value in @ - = {attr_value}") # Uselful print if a filename has multiple filter in it for match
+                                    if attr_value and attr_value.strip():  # Check if not None or empty
+                                        current_file_results[f"Filter {attribute_name_string}"] = attr_value
+                            else:
+                                # Searches for matches that explicitly end with ',' in the attribute name
+                                match = re.search(r"@([^=]+),", expression)
                                 if match:
-                                    attribute_name_string = match.group(
-                                        1).strip()  # Id, Description, Name etc (Attribute Name of Selected Tag)
+                                    attribute_name_string = match.group(1).strip()
                                     for element in result:
                                         attr_value = element.get(attribute_name_string)
-                                        #print(f"Attribute Value in @ - = {attr_value}") # Uselful print if a filename has multiple filter in it for match
+                                        #print(f"Attribute Value in @ - , {attr_value}") # Uselful print if a filename has multiple filter in it for match
                                         if attr_value and attr_value.strip():  # Check if not None or empty
                                             current_file_results[f"Filter {attribute_name_string}"] = attr_value
-                                else:
-                                    # Searches for matches that explicitly end with ',' in the attribute name
-                                    match = re.search(r"@([^=]+),", expression)
-                                    if match:
-                                        attribute_name_string = match.group(1).strip()
-                                        for element in result:
-                                            attr_value = element.get(attribute_name_string)
-                                            #print(f"Attribute Value in @ - , {attr_value}") # Uselful print if a filename has multiple filter in it for match
-                                            if attr_value and attr_value.strip():  # Check if not None or empty
-                                                current_file_results[f"Filter {attribute_name_string}"] = attr_value
-                            # Code for handling elemet tag values
-                            if "text()=" in expression:
-                                # Searches for matches that explicitly end with '[' in the element value
-                                match = re.search(r"//(.*?)\[", expression)
-                                if match:
-                                    tag_name_string = match.group(1).strip()
-                                    print(f"Tag_name_string: {tag_name_string}")
+                                            
+                        # Code for handling elemet tag values
+                        elif "text()=" in expression:
+                            # Searches for matches that explicitly end with '[' in the element value
+                            match = re.search(r"//(.*?)\[", expression)
+                            if match:
+                                tag_name_string = match.group(1).strip()
+                                tag_value = element.text
+                                if tag_value and tag_value.strip():  # Check if not None or empty
                                     for element in result:
-                                        tag_value = element.text
-                                        print(f"Tag value: {tag_value}")
-                                        if tag_value and tag_value.strip():  # Check if not None or empty
-                                            current_file_results[f"Filter {tag_name_string}"] = tag_value
+                                        current_file_results[f"Filter {tag_name_string}"] = tag_value
+                                        
+                    current_file_results["Total Matching Tags"] = total_matches
 
-                        current_file_results["Total Matching Tags"] = total_matches
-
-                if len(matching_filters) > 1: # Check if there are more than one Filters added to the ListBox GUI element. This statement writes the CSV Headers differently, that's why it's implemented
+                elif len(matching_filters) > 1: # Check if there are more than one Filters added to the ListBox GUI element. This statement writes the CSV Headers differently, that's why it's implemented
 
                     attribute_matches_dic = {}
                     tag_matches_dic = {}
@@ -288,6 +285,7 @@ def evaluate_xml_files_matching(folder_path, matching_filters):
 
                                 for attribute, attr_count in attribute_matches_dic.items():
                                     current_file_results[f"Filter {attribute} Matches"] = attr_count
+                                    
                             # Code for handling elemet tag values
                             elif "text()=" in expression:
                                 # Searches for matches that explicitly end with '[' in the element value
@@ -305,8 +303,8 @@ def evaluate_xml_files_matching(folder_path, matching_filters):
                 if total_matches > 0:
                     final_results.append(current_file_results)
 
-                total_sum_matches += total_matches # Total matches found in all expressions
-                total_matching_files += 1 if total_matches > 0 else 0 # Total found fIles that contain at least 1 matching expression, else 0
+                    total_sum_matches += total_matches # Total matches found in all expressions
+                    total_matching_files += 1 if total_matches > 0 else 0 # Total found fIles that contain at least 1 matching expression, else 0
 
         return final_results, total_sum_matches, total_matching_files
 
@@ -828,7 +826,7 @@ while True:
 
             elif not os.path.exists(os.path.dirname(evaluation_output_folder)):
                 window["-OUTPUT_WINDOW_MAIN-"].update(
-                    "Please select an Output Folder where the evaluation should be saved as a CSV file!")
+                    "Please choose where you want to save the Evaluation as a CSV File!")
             else:
                 window.perform_long_operation(
                     lambda: export_evaluation_as_csv(evaluation_output_folder, evaluation_input_folder,
