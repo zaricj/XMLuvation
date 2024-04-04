@@ -1,4 +1,5 @@
 # XMLuvation - XML Parsing and Evaluation Tool for Matching XPath Expressions
+![Logo_Full_Transparent_Cropped](https://github.com/zaricj/XMLuvation/assets/93329694/d9ea10b0-30e7-412e-b3ee-f2d75806e134)![xml_transparent_150x150](https://github.com/zaricj/XMLuvation/assets/93329694/7abe5b04-b8fc-41da-9e70-c3254067841c)![Geis Logo Transparent](https://github.com/zaricj/XMLuvation/assets/93329694/7fb55018-6ac4-4f31-adfa-35fd0e6b33af)
 
 ## Overview
 XMLuvation is a Python application designed to parse and evaluate XML files. It provides a user-friendly interface for performing various operations such as reading XML files, filtering XML content based on XPath Expressions and look for matches in a single or multiple XML Files in a specified Folder, exporting the evaluation results to a CSV file.
