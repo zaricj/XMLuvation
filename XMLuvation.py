@@ -59,7 +59,7 @@ def convert_csv_file(input_file, output_file, input_ext, output_ext, ):
         window["-CONVERT_CSV_FILE-"].update(disabled=False)
 
     except FileNotFoundError:
-        window["-OUTPUT_WINDOW_CSV-"].update(f"{input_ext.upper()} File not found!", text_color="#ff4545",
+        window["-OUTPUT_WINDOW_CSV-"].update(f"{input_ext.upper()} File not found.", text_color="#ff4545",
                                              font=pandas_font)
         window["-CONVERT_CSV_FILE-"].update(disabled=False)
 
@@ -93,7 +93,7 @@ def read_csv_data(csv_file):
             csv_df = pd.read_csv(input_file, delimiter=get_delimiter, encoding="utf-8")
 
         if file_suffix_in_input == "":
-            raise ValueError("Error: Input is empty. Cannot read nothing!")
+            raise ValueError("Error: Input is empty. Cannot read nothing.")
 
         if csv_df is not None:
             window["-OUTPUT_WINDOW_CSV-"].update(csv_df, text_color="white")
@@ -385,9 +385,9 @@ def is_duplicate(xpath_expression):
 custom_theme_darker = {
     "BACKGROUND": "#1c1c1c",
     "TEXT": "white",
-    "INPUT": "#2b2b2b",
+    "INPUT": "#3f3f3f",
     "TEXT_INPUT": "white",
-    "SCROLL": "#2b2b2b",
+    "SCROLL": "#3f3f3f",
     "BUTTON": ("#FFC857", "#303030"),
     "PROGRESS": ("#FFC857", "#ABABAB"),
     "BORDER": 2,
@@ -640,6 +640,8 @@ while True:
             directory_path = os.path.dirname(output_folder)
             windows_path = directory_path.replace("/", "\\")
             os.startfile(windows_path)
+        elif not output_folder:
+            window["-OUTPUT_WINDOW_MAIN-"].update("No output folder selected where CSV export will be.")
     
     elif event == "Clear Output::ClearOutput":
         window["-OUTPUT_WINDOW_MAIN-"].update("")
@@ -819,14 +821,14 @@ while True:
         try:
             if not os.path.exists(os.path.dirname(evaluation_input_folder)):
                 window["-OUTPUT_WINDOW_MAIN-"].update(
-                    "Folder Path that contains XML Files is either empty or not a valid path!")
+                    "Folder Path that contains XML Files is either empty or not a valid path.")
 
             elif not len(matching_filters_listbox) > 0:
-                window["-OUTPUT_WINDOW_MAIN-"].update("No filters for matching added, please add one as XPath!")
+                window["-OUTPUT_WINDOW_MAIN-"].update("No filters for matching added, please add one as XPath.")
 
             elif not os.path.exists(os.path.dirname(evaluation_output_folder)):
                 window["-OUTPUT_WINDOW_MAIN-"].update(
-                    "Please choose where you want to save the Evaluation as a CSV File!")
+                    "Please choose where you want to save the Evaluation as a CSV File.")
             else:
                 window.perform_long_operation(
                     lambda: export_evaluation_as_csv(evaluation_output_folder, evaluation_input_folder,
