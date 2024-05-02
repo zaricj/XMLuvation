@@ -7,9 +7,9 @@ import PySimpleGUI as sg
 import pandas as pd
 from lxml import etree as ET
 
-xml_32px = b"iVBORw0KGgoAAAANSUhEUgAAACAAAAAgCAYAAABzenr0AAAABHNCSVQICAgIfAhkiAAAAAlwSFlzAAAOxAAADsQBlSsOGwAAA8pJREFUWIXtVl1oHFUYPefOJpNkQ9omJps11mIZKkiTaQmEarMtguKDL4ot9adCQUVU0pBSRRBEpSiJUKlYxPTnrVUEhT5UCaKYbkqlVM0mNBTZaoNtuhuX/Ehbd5LZ+/mw2dnZNWm6NIhgztOd+X7OuWcu9xtgGcv4v4NL0eRcK8qaKu2dBNYpxWjDqcGv/lUByYj9KsgeABCRTIXo+pUDw5O3UquWQgCInfklRm+VfEkEJLY0NwNsyYuR46XU374Dwme8pYhkkClJQGCxhFSbVeOWBzug8ApEv9QYHT7hEQIcB5/KPZP4WURVJiN2UoscV4bbHeofSdys/4KHcHKrvdIRdkKkk+SqLKEcaTwVez6XM9a+fquhAt97gjJ6rxCzSqkD2RfylwZ6DTjdDdELV+fj+ccnmGpvXpVst99xNC4ReCtHDgDQ+M2fazDgtz9jiPGpoVQ8vz1WKrJTYF5MROwDfzxw750LOjC16b5apyywR8AOkjUFWSITEBy8YUy9e0//aBoAfrEssyYcvOoJFPk2FI09JIAxHmnpEuEeKoYL20haAYfSs+i++4fYFU/AxP0b18wE9E8kawsL9BUl2C+G2xvqH7nmjyU224/T4JeeORn9XPj00FGv1rLMVDi4KwPsJWkVbSgNyGOh6FBfAADcgPswadTm4+JQpCs14R5ZPzIyU2zbnHd++9Nm+toXBeF43EEcnwhwKLHZ3qYMfASwPhtkhRZ5BECfAgABfy8oJk1QvVFfV9aZarMKPweAida1K0g8mt8RTtb++Ot0cd7ngJGItGynwuseeY5DMAXMHcKG6NA3FP0mIPkbjGgC2eOa1aPJSMu+sXbLa+BUVW8DWeETcMzfXCzLTETsF7dE7AuK6jOSG/NBcbToXk64+7M0PlxsXbsiWFW9G2BXwenPklwH9BOh6FBfItLyHakenAtMTo9dD6+Lxx0ASG2ymzLlOANwdUG5iAPgaBnc9+qi5z3H570HUm1WjTaDuwXogv9giv5gxpH95aa6BNIAAK3lcHgg9kIuJdm+4WUoHPQRp5XIYWdGulefHb5czDXvTXjH2fifAPal2qwPdUWwQwRdIOsgiuUmngRheA2K7adMEwREbmiRXoMzPQ0D819CCzownyOzZtV2pdyT1OVfC7FhbneXP47G1rwN6FzuudbWsrsq3V2SkRPhM0Pji/Uu6X8gO/mMGOfqROP9xoHB10rpUYzSpqFWT9MnmjJ77GbpSy8AaMstRDAYOn0+drsCFh3HfhhaPSvQO7SirhKUNPeXsYz/LP4Gk8OElv5Vn3MAAAAASUVORK5CYII="
-logo = "./images/logo.png"
-pandas_font = "Calibri 13 bold"
+PROGRAM_ICON = b"iVBORw0KGgoAAAANSUhEUgAAACAAAAAgCAYAAABzenr0AAAABHNCSVQICAgIfAhkiAAAAAlwSFlzAAAOxAAADsQBlSsOGwAAA8pJREFUWIXtVl1oHFUYPefOJpNkQ9omJps11mIZKkiTaQmEarMtguKDL4ot9adCQUVU0pBSRRBEpSiJUKlYxPTnrVUEhT5UCaKYbkqlVM0mNBTZaoNtuhuX/Ehbd5LZ+/mw2dnZNWm6NIhgztOd+X7OuWcu9xtgGcv4v4NL0eRcK8qaKu2dBNYpxWjDqcGv/lUByYj9KsgeABCRTIXo+pUDw5O3UquWQgCInfklRm+VfEkEJLY0NwNsyYuR46XU374Dwme8pYhkkClJQGCxhFSbVeOWBzug8ApEv9QYHT7hEQIcB5/KPZP4WURVJiN2UoscV4bbHeofSdys/4KHcHKrvdIRdkKkk+SqLKEcaTwVez6XM9a+fquhAt97gjJ6rxCzSqkD2RfylwZ6DTjdDdELV+fj+ccnmGpvXpVst99xNC4ReCtHDgDQ+M2fazDgtz9jiPGpoVQ8vz1WKrJTYF5MROwDfzxw750LOjC16b5apyywR8AOkjUFWSITEBy8YUy9e0//aBoAfrEssyYcvOoJFPk2FI09JIAxHmnpEuEeKoYL20haAYfSs+i++4fYFU/AxP0b18wE9E8kawsL9BUl2C+G2xvqH7nmjyU224/T4JeeORn9XPj00FGv1rLMVDi4KwPsJWkVbSgNyGOh6FBfAADcgPswadTm4+JQpCs14R5ZPzIyU2zbnHd++9Nm+toXBeF43EEcnwhwKLHZ3qYMfASwPhtkhRZ5BECfAgABfy8oJk1QvVFfV9aZarMKPweAida1K0g8mt8RTtb++Ot0cd7ngJGItGynwuseeY5DMAXMHcKG6NA3FP0mIPkbjGgC2eOa1aPJSMu+sXbLa+BUVW8DWeETcMzfXCzLTETsF7dE7AuK6jOSG/NBcbToXk64+7M0PlxsXbsiWFW9G2BXwenPklwH9BOh6FBfItLyHakenAtMTo9dD6+Lxx0ASG2ymzLlOANwdUG5iAPgaBnc9+qi5z3H570HUm1WjTaDuwXogv9giv5gxpH95aa6BNIAAK3lcHgg9kIuJdm+4WUoHPQRp5XIYWdGulefHb5czDXvTXjH2fifAPal2qwPdUWwQwRdIOsgiuUmngRheA2K7adMEwREbmiRXoMzPQ0D819CCzownyOzZtV2pdyT1OVfC7FhbneXP47G1rwN6FzuudbWsrsq3V2SkRPhM0Pji/Uu6X8gO/mMGOfqROP9xoHB10rpUYzSpqFWT9MnmjJ77GbpSy8AaMstRDAYOn0+drsCFh3HfhhaPSvQO7SirhKUNPeXsYz/LP4Gk8OElv5Vn3MAAAAASUVORK5CYII="
+LOGO = "./images/logo.png"
+PANDAS_FONT = "Calibri 13 bold"
 
 
 # ========== FUNCTIONS ========== #
@@ -25,7 +25,7 @@ def convert_csv_file(input_file, output_file, input_ext, output_ext, ):
     try:
         window["-CONVERT_CSV_FILE-"].update(disabled=True)
 
-        with open(input_file) as file:  # Get Delimiter
+        with open(input_file, encoding="utf-8") as file:  # Get Delimiter
             sample = file.read(4096)
             sniffer = csv.Sniffer()
             get_delimiter = sniffer.sniff(sample).delimiter
@@ -48,23 +48,23 @@ def convert_csv_file(input_file, output_file, input_ext, output_ext, ):
         read_func, write_func = CONVERSION_FUNCTIONS.get((input_ext, output_ext), (None, None))
 
         if read_func is None or write_func is None:
-            window["-OUTPUT_WINDOW_CSV-"].update("Unsupported conversion!", text_color="#ff4545", font=pandas_font)
+            window["-OUTPUT_WINDOW_CSV-"].update("Unsupported conversion!", text_color="#ff4545", font=PANDAS_FONT)
             return
 
         csv_df = read_func
         write_func(csv_df, output_file)
         window["-OUTPUT_WINDOW_CSV-"].update(
             f"Successfully converted {Path(input_file).stem} {input_ext.upper()} to {Path(output_file).stem} {output_ext.upper()}",
-            text_color="#51e98b", font=pandas_font)
+            text_color="#51e98b", font=PANDAS_FONT)
         window["-CONVERT_CSV_FILE-"].update(disabled=False)
 
     except FileNotFoundError:
         window["-OUTPUT_WINDOW_CSV-"].update(f"{input_ext.upper()} File not found.", text_color="#ff4545",
-                                             font=pandas_font)
+                                             font=PANDAS_FONT)
         window["-CONVERT_CSV_FILE-"].update(disabled=False)
 
     except Exception as e:
-        window["-OUTPUT_WINDOW_CSV-"].update(f"ERROR: {e}", text_color="#ff4545", font=pandas_font)
+        window["-OUTPUT_WINDOW_CSV-"].update(f"ERROR: {e}", text_color="#ff4545", font=PANDAS_FONT)
         window["-CONVERT_CSV_FILE-"].update(disabled=False)
 
 
@@ -88,9 +88,9 @@ def read_csv_data(csv_file):
             get_delimiter = sniffer.sniff(sample).delimiter
 
         if not values["-CHECKBOX_WRITE_INDEX_COLUMN-"]:
-            csv_df = pd.read_csv(input_file, delimiter=get_delimiter, encoding="utf-8", index_col=0)
+            csv_df = pd.read_csv(input_file_gui, delimiter=get_delimiter, encoding="utf-8", index_col=0)
         else:
-            csv_df = pd.read_csv(input_file, delimiter=get_delimiter, encoding="utf-8")
+            csv_df = pd.read_csv(input_file_gui, delimiter=get_delimiter, encoding="utf-8")
 
         if file_suffix_in_input == "":
             raise ValueError("Error: Input is empty. Cannot read nothing.")
@@ -102,7 +102,7 @@ def read_csv_data(csv_file):
             return None, []
 
     except FileNotFoundError as e:
-        window["-OUTPUT_WINDOW_CSV-"].update(f"ERROR: {e}", text_color="#ff4545", font=pandas_font)
+        window["-OUTPUT_WINDOW_CSV-"].update(f"ERROR: {e}", text_color="#ff4545", font=PANDAS_FONT)
         return None, []
 
 
@@ -127,12 +127,12 @@ def parse_xml(xml_file):
         window["-OUTPUT_WINDOW_MAIN-"].update(f"Exception in program: {e}")
 
 
-def get_tag_values(xml_file, tag):
+def get_tag_values(xml_file, tag_name):
     try:
         tree = ET.parse(xml_file)
         root = tree.getroot()
         tag_value = []
-        for element in root.iter(tag):  # Add Parameter in Function later for root.iter(parameter)
+        for element in root.iter(tag_name):  # Add Parameter in Function later for root.iter(parameter)
             tag_value.append(element.text)
         if not tag:
             pass
@@ -141,24 +141,24 @@ def get_tag_values(xml_file, tag):
         pass
 
 
-def get_attributes(xml_file, tag):
+def get_attributes(xml_file, tag_name):
     try:
         tree = ET.parse(xml_file)
         root = tree.getroot()
         attributes = []
-        for element in root.iter(tag):
+        for element in root.iter(tag_name):
             attributes.extend(element.attrib.keys())
         return list(set(attributes))
     except ValueError:
         pass
 
 
-def get_attribute_values(xml_file, tag, attribute):
+def get_attribute_values(xml_file, tag_name, attribute):
     try:
         tree = ET.parse(xml_file)
         root = tree.getroot()
         attribute_value_list = []
-        for element in root.iter(tag):
+        for element in root.iter(tag_name):
             attribute_value = element.attrib.get(attribute)
             if attribute_value is not None:
                 attribute_value_list.append(attribute_value)
@@ -425,10 +425,10 @@ FILE_TYPES_OUTPUT = (
     ("JSON (JavaScript Object Notation)", ".json"))
 
 # Combobox Lists
-tag_name = []
-tag_value = []
-attribute_name = []
-attribute_value = []
+tag_name_list = []
+tag_value_list = []
+attribute_name_list = []
+attribute_value_list = []
 # Listbox List
 matching_filters_listbox = []
 
@@ -449,7 +449,7 @@ layout_pandas_conversion = [[sg.Text("CSV Converter", font="Calibri 36 bold unde
                                            target="-FILE_OUTPUT-", key="-SAVE_AS_BUTTON-"),
                              sg.Button("Convert", key="-CONVERT_CSV_FILE-", expand_x=True)],
                             [sg.Checkbox("Write Index Column?", default=False, key="-CHECKBOX_WRITE_INDEX_COLUMN-")],
-                            [sg.Image(source=logo, expand_x=True, expand_y=True, key="-IMAGE-")]]
+                            [sg.Image(source=LOGO, expand_x=True, expand_y=True, key="-IMAGE-")]]
 
 layout_pandas_output = [
     [sg.Multiline(size=(59, 32), key="-OUTPUT_WINDOW_CSV-", disabled=True, horizontal_scroll=True)]]
@@ -468,17 +468,17 @@ layout_xml_evaluation = [[sg.Menu(MENU_DEFINITION)],
                           sg.Button("Read XML", key="-READ_XML-")],
                          [sg.Text("Get XML Tag and Attribute Names/Values for XPath generation:", pad=5)],
                          [sg.Text("Tag name:"),
-                          sg.Combo(tag_name, size=(15, 1), disabled=True, auto_size_text=False, enable_events=True,
+                          sg.Combo(tag_name_list, size=(15, 1), disabled=True, auto_size_text=False, enable_events=True,
                                    enable_per_char_events=True, expand_x=True, key="-XML_TAG_NAME-"),
                           sg.Text("Tag Value:"),
-                          sg.Combo(tag_value, size=(15, 1), disabled=True, enable_events=True,
+                          sg.Combo(tag_value_list, size=(15, 1), disabled=True, enable_events=True,
                                    enable_per_char_events=True,
                                    auto_size_text=False, expand_x=True, key="-XML_TAG_VALUE-")],
                          [sg.Text("Att name:"),
-                          sg.Combo(attribute_name, size=(15, 1), disabled=True, auto_size_text=False,
+                          sg.Combo(attribute_name_list, size=(15, 1), disabled=True, auto_size_text=False,
                                    enable_events=True,
                                    expand_x=True, key="-XML_ATTRIBUTE_NAME-"), sg.Text("Att Value:"),
-                          sg.Combo(attribute_value, size=(15, 1), disabled=True, enable_events=True,
+                          sg.Combo(attribute_value_list, size=(15, 1), disabled=True, enable_events=True,
                                    auto_size_text=False,
                                    expand_x=True, key="-XML_ATTRIBUTE_VALUE-", pad=5)],
                          [sg.Text("Function:"),
@@ -564,7 +564,7 @@ layout = [
     ]
 ]
 
-window = sg.Window("XMLuvation", layout, font=font, icon=xml_32px, resizable=True, finalize=True)
+window = sg.Window("XMLuvation", layout, font=font, icon=PROGRAM_ICON, resizable=True, finalize=True)
 
 while True:
     event, values = window.read()
@@ -572,10 +572,10 @@ while True:
         break
 
     # Pandas related variables
-    input_file = values["-FILE_INPUT-"]
-    output_file = values["-FILE_OUTPUT-"]
-    input_ext = Path(input_file).suffix.lower().strip(".")
-    output_ext = Path(output_file).suffix.lower().strip(".")
+    input_file_gui = values["-FILE_INPUT-"]
+    output_file_gui = values["-FILE_OUTPUT-"]
+    input_ext_gui = Path(input_file_gui).suffix.lower().strip(".")
+    output_ext_gui = Path(output_file_gui).suffix.lower().strip(".")
 
     # Browse Folder and Save As input elements
     evaluation_input_folder = values["-FOLDER_EVALUATION_INPUT-"]  # Browse Folder 
@@ -645,10 +645,6 @@ while True:
     
     elif event == "Clear Output::ClearOutput":
         window["-OUTPUT_WINDOW_MAIN-"].update("")
-    
-    elif event == "-IMAGE-":
-    # update the animation in the window
-        window['-IMAGE-'].update_animation(logo,  time_between_frames=100)
 
     elif event == "-READ_XML-":
         eval_input_file = sg.popup_get_file("Select a XML file to fill out the Name/Value boxes.",
@@ -677,11 +673,11 @@ while True:
                         break  # Only need to get attributes and values for the first tag
 
     elif event == "-CONVERT_CSV_FILE-":
-        window.perform_long_operation(lambda: convert_csv_file(input_file, output_file, input_ext, output_ext),
+        window.perform_long_operation(lambda: convert_csv_file(input_file_gui, output_file_gui, input_ext_gui, output_ext_gui),
                                       "-OUTPUT_WINDOW_CSV-")
 
     elif event == "-READ_FILE-":
-        window.perform_long_operation(lambda: read_csv_data(input_file), "-OUTPUT_WINDOW_CSV-")
+        window.perform_long_operation(lambda: read_csv_data(input_file_gui), "-OUTPUT_WINDOW_CSV-")
 
     elif event == "-XML_TAG_NAME-":
         try:
