@@ -134,7 +134,7 @@ def get_tag_values(xml_file, tag_name):
         tag_value = []
         for element in root.iter(tag_name):  # Add Parameter in Function later for root.iter(parameter)
             tag_value.append(element.text)
-        if not tag:
+        if not tag_name:
             pass
         return list(set(tag_value))
     except ValueError:
@@ -245,8 +245,14 @@ def evaluate_xml_files_matching(folder_path, matching_filters):
                                 tag_name_string = match.group(1).strip()
                                 tag_value = element.text
                                 if tag_value and tag_value.strip():  # Check if not None or empty
-                                    for element in result:
-                                        current_file_results[f"Filter {tag_name_string}"] = tag_value
+                                    current_file_results[f"Filter {tag_name_string}"] = tag_value
+                                        
+                        elif "/text()" in expression:
+                                # Extract the tag name from the XPath expression
+                                tag_name = expression.split("/")[-2]
+                                tag_value = result[0].strip()
+                                if tag_value:
+                                    current_file_results[f"Filter {tag_name}"] = tag_value
                                         
                     current_file_results["Total Matching Tags"] = total_matches
 
@@ -261,6 +267,7 @@ def evaluate_xml_files_matching(folder_path, matching_filters):
                         total_matches += len(result)
 
                         if result:
+                            
                             # Code for handling attribute expressions
                             if "@" in expression:
                                 # Searches for matches that explicitly end with '=' in the attribute name 
@@ -299,6 +306,17 @@ def evaluate_xml_files_matching(folder_path, matching_filters):
 
                                 for tag, tag_count in tag_matches_dic.items():
                                     current_file_results[f"Filter {tag} Matches"] = tag_count
+                            
+                            elif "/text()" in expression:
+                                # Extract the tag name from the XPath expression
+                                tag_name_string = expression.split("/")[-2]
+                                tag_value = result[0].strip()
+                                if tag_value:
+                                    tag_matches_dic[f"{tag_name_string}"] = tag_value
+                                    
+                                for tag, tag_count in tag_matches_dic.items():
+                                    current_file_results[f"Filter {tag_name_string}"] = tag_value
+
 
                 if total_matches > 0:
                     final_results.append(current_file_results)
