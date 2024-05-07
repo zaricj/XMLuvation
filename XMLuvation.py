@@ -8,7 +8,7 @@ import pandas as pd
 from lxml import etree as ET
 
 PROGRAM_ICON = b"iVBORw0KGgoAAAANSUhEUgAAACAAAAAgCAYAAABzenr0AAAABHNCSVQICAgIfAhkiAAAAAlwSFlzAAAOxAAADsQBlSsOGwAAA8pJREFUWIXtVl1oHFUYPefOJpNkQ9omJps11mIZKkiTaQmEarMtguKDL4ot9adCQUVU0pBSRRBEpSiJUKlYxPTnrVUEhT5UCaKYbkqlVM0mNBTZaoNtuhuX/Ehbd5LZ+/mw2dnZNWm6NIhgztOd+X7OuWcu9xtgGcv4v4NL0eRcK8qaKu2dBNYpxWjDqcGv/lUByYj9KsgeABCRTIXo+pUDw5O3UquWQgCInfklRm+VfEkEJLY0NwNsyYuR46XU374Dwme8pYhkkClJQGCxhFSbVeOWBzug8ApEv9QYHT7hEQIcB5/KPZP4WURVJiN2UoscV4bbHeofSdys/4KHcHKrvdIRdkKkk+SqLKEcaTwVez6XM9a+fquhAt97gjJ6rxCzSqkD2RfylwZ6DTjdDdELV+fj+ccnmGpvXpVst99xNC4ReCtHDgDQ+M2fazDgtz9jiPGpoVQ8vz1WKrJTYF5MROwDfzxw750LOjC16b5apyywR8AOkjUFWSITEBy8YUy9e0//aBoAfrEssyYcvOoJFPk2FI09JIAxHmnpEuEeKoYL20haAYfSs+i++4fYFU/AxP0b18wE9E8kawsL9BUl2C+G2xvqH7nmjyU224/T4JeeORn9XPj00FGv1rLMVDi4KwPsJWkVbSgNyGOh6FBfAADcgPswadTm4+JQpCs14R5ZPzIyU2zbnHd++9Nm+toXBeF43EEcnwhwKLHZ3qYMfASwPhtkhRZ5BECfAgABfy8oJk1QvVFfV9aZarMKPweAida1K0g8mt8RTtb++Ot0cd7ngJGItGynwuseeY5DMAXMHcKG6NA3FP0mIPkbjGgC2eOa1aPJSMu+sXbLa+BUVW8DWeETcMzfXCzLTETsF7dE7AuK6jOSG/NBcbToXk64+7M0PlxsXbsiWFW9G2BXwenPklwH9BOh6FBfItLyHakenAtMTo9dD6+Lxx0ASG2ymzLlOANwdUG5iAPgaBnc9+qi5z3H570HUm1WjTaDuwXogv9giv5gxpH95aa6BNIAAK3lcHgg9kIuJdm+4WUoHPQRp5XIYWdGulefHb5czDXvTXjH2fifAPal2qwPdUWwQwRdIOsgiuUmngRheA2K7adMEwREbmiRXoMzPQ0D819CCzownyOzZtV2pdyT1OVfC7FhbneXP47G1rwN6FzuudbWsrsq3V2SkRPhM0Pji/Uu6X8gO/mMGOfqROP9xoHB10rpUYzSpqFWT9MnmjJ77GbpSy8AaMstRDAYOn0+drsCFh3HfhhaPSvQO7SirhKUNPeXsYz/LP4Gk8OElv5Vn3MAAAAASUVORK5CYII="
-LOGO = "./images/logo.png"
+LOGO = "./images/logo_psg.png"
 PANDAS_FONT = "Calibri 13 bold"
 
 
@@ -87,11 +87,19 @@ def read_csv_data(csv_file):
             sniffer = csv.Sniffer()
             get_delimiter = sniffer.sniff(sample).delimiter
 
-        if not values["-CHECKBOX_WRITE_INDEX_COLUMN-"]:
-            csv_df = pd.read_csv(input_file_gui, delimiter=get_delimiter, encoding="utf-8", index_col=0)
-        else:
-            csv_df = pd.read_csv(input_file_gui, delimiter=get_delimiter, encoding="utf-8")
-
+        try:
+            if not values["-CHECKBOX_WRITE_INDEX_COLUMN-"]:
+                csv_df = pd.read_csv(input_file_gui, delimiter=get_delimiter, encoding="utf-8", index_col=0)
+            else:
+                csv_df = pd.read_csv(input_file_gui, delimiter=get_delimiter, encoding="utf-8")
+                
+        except UnicodeDecodeError:
+            
+            if not values["-CHECKBOX_WRITE_INDEX_COLUMN-"]:
+                csv_df = pd.read_csv(input_file_gui, delimiter=get_delimiter, encoding="ansi", index_col=0)
+            else:
+                csv_df = pd.read_csv(input_file_gui, delimiter=get_delimiter, encoding="ansi")
+                
         if file_suffix_in_input == "":
             raise ValueError("Error: Input is empty. Cannot read nothing.")
 
@@ -429,6 +437,7 @@ custom_theme = {
 # Add your dictionary to the PySimpleGUI themes
 sg.theme_add_new("MyTheme", custom_theme)
 sg.theme("MyTheme")
+FRAME_TITLE_COLOR = "#FFC857"
 font = ("Calibri", 13)
 
 # Constants
@@ -473,9 +482,9 @@ layout_pandas_output = [
     [sg.Multiline(size=(59, 32), key="-OUTPUT_WINDOW_CSV-", disabled=True, horizontal_scroll=True)]]
 
 frame_pandas = sg.Frame("CSV Conversion to different file type", layout_pandas_conversion, expand_x=True, expand_y=True,
-                        title_color="#FFC857", font="Calibri 13 bold")
+                        title_color=FRAME_TITLE_COLOR, font="Calibri 13 bold")
 frame_pandas_output = sg.Frame("CSV Conversion Output", layout_pandas_output, expand_x=True, expand_y=True,
-                               title_color="#FFC857", font="Calibri 13 bold")
+                               title_color=FRAME_TITLE_COLOR, font="Calibri 13 bold")
 # ========== END Layout for Pandas Conversion END ========== #
 
 # ========== START Layout for XML Evaluation START ========== #
@@ -527,14 +536,14 @@ layout_xml_output = [
     [sg.Text("Progress:"),
      sg.ProgressBar(max_value=100, size=(20, 18), orientation="h", expand_x=True, key='-PROGRESS_BAR-', pad=11)]]
 
-frame_xml_eval = sg.Frame("XML folder selection and XPath builder", layout_xml_evaluation, title_color="#FFC857",
+frame_xml_eval = sg.Frame("XML folder selection and XPath builder", layout_xml_evaluation, title_color=FRAME_TITLE_COLOR,
                           expand_x=True, font="Calibri 13 bold")
 frame_export_evaluation = sg.Frame("Export Evaluation result as a CSV File", layout_export_evaluation,
-                                   title_color="#FFC857", expand_x=True, font="Calibri 13 bold")
-frame_xml_output = sg.Frame("XML Output", layout_xml_output, title_color="#FFC857", expand_x=True, font="Calibri 13 bold")
-frame_output_main = sg.Frame("Program Output", layout_program_output, title_color="#FFC857", expand_x=True, font="Calibri 13 bold")
+                                   title_color=FRAME_TITLE_COLOR, expand_x=True, font="Calibri 13 bold")
+frame_xml_output = sg.Frame("XML Output", layout_xml_output, title_color=FRAME_TITLE_COLOR, expand_x=True, font="Calibri 13 bold")
+frame_output_main = sg.Frame("Program Output", layout_program_output, title_color=FRAME_TITLE_COLOR, expand_x=True, font="Calibri 13 bold")
 frame_listbox_matching_filter = sg.Frame("Filters to match in XML files", layout_listbox_matching_filter,
-                                         title_color="#FFC857", expand_x=True, font="Calibri 13 bold")
+                                         title_color=FRAME_TITLE_COLOR, expand_x=True, font="Calibri 13 bold")
 # ========== END Layout for XML Evaluation END ========== #
 
 # layout = [[sg.Column(layout=[[frame_xml_eval], [frame_listbox_matching_filter],[frame_export_evaluation],[frame_output_main]], expand_y=True),sg.Column([[frame_xml_output]], expand_y=True)]] # DEPRACTED
