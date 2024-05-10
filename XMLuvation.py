@@ -2,6 +2,7 @@ import csv
 import os
 import re
 import webbrowser
+import cProfile
 from pathlib import Path
 import PySimpleGUI as sg
 import pandas as pd
@@ -175,31 +176,31 @@ def get_attribute_values(xml_file, tag_name, attribute):
         pass
 
 
-def evaluate_xml_files_matching(folder_path, matching_filters):
+def evaluate_xml_files_matching(folder_cotaining_xml_files, matching_filters):
     """Evaluates and searches for matches in XML files
 
     Args:
-        folder_path (str): Folder path where one or more XML files are located
+        folder_cotaining_xml_files (str): Folder path where one or more XML files are located
         matching_filters (list): Added XPath filters in the ListBox GUI element
 
     Returns:
         list: Returns list of added filter(s) to match to and evaluateXML Files, based on amount of XML files found in selected folder
     """
     final_results = []
-    total_files = sum(1 for filename in os.listdir(folder_path) if filename.endswith('.xml'))
+    total_files = sum(1 for filename in os.listdir(folder_cotaining_xml_files) if filename.endswith(".xml"))
     progress_increment = 100 / total_files
     current_progress = 0
-    window['-PROGRESS_BAR-'].update(current_progress)
+    window["-PROGRESS_BAR-"].update(current_progress)
     total_sum_matches = 0
     total_matching_files = 0
 
     try:
-        for filename in os.listdir(folder_path):
-            if filename.endswith('.xml'):
-                file_path = os.path.join(folder_path, filename)
+        for filename in os.listdir(folder_cotaining_xml_files):
+            if filename.endswith(".xml"):
+                file_path = os.path.join(folder_cotaining_xml_files, filename)
                 # Update progress bar after processing each file
                 current_progress += progress_increment
-                window['-PROGRESS_BAR-'].update(round(current_progress, 2))
+                window["-PROGRESS_BAR-"].update(round(current_progress, 2))
                 window["-OUTPUT_WINDOW_MAIN-"].update(f"Processing {filename}")
 
                 try:
@@ -223,10 +224,9 @@ def evaluate_xml_files_matching(folder_path, matching_filters):
                     total_matches += len(result)
 
                     if result:
-                        # Code for handling attribute expressions
-                        if "@" in expression:
-                            # Searches for matches that explicitly end with '=' in the attribute name 
-                            match = re.search(r"@([^=]+)=", expression)
+                        
+                        if "@" in expression: # Code for handling attribute expressions
+                            match = re.search(r"@([^=]+)=", expression)  # Searches for matches that explicitly end with '=' in the attribute name 
                             if match:
                                 attribute_name_string = match.group(1).strip()  # Id, Description, Name etc (Attribute Name of Selected Tag)
                                 for element in result:
@@ -235,8 +235,7 @@ def evaluate_xml_files_matching(folder_path, matching_filters):
                                     if attr_value and attr_value.strip():  # Check if not None or empty
                                         current_file_results[f"Filter {attribute_name_string}"] = attr_value
                             else:
-                                # Searches for matches that explicitly end with ',' in the attribute name
-                                match = re.search(r"@([^=]+),", expression)
+                                match = re.search(r"@([^=]+),", expression)  # Searches for matches that explicitly end with ',' in the attribute name
                                 if match:
                                     attribute_name_string = match.group(1).strip()
                                     for element in result:
@@ -245,15 +244,14 @@ def evaluate_xml_files_matching(folder_path, matching_filters):
                                         if attr_value and attr_value.strip():  # Check if not None or empty
                                             current_file_results[f"Filter {attribute_name_string}"] = attr_value
                                             
-                        # Code for handling elemet tag values
-                        elif "text()=" in expression:
-                            # Searches for matches that explicitly end with '[' in the element value
-                            match = re.search(r"//(.*?)\[", expression)
+                        elif "text()" in expression: # Code for handling elemet tag values
+                            match = re.search(r"//(.*?)\[", expression) # Searches for matches that explicitly end with '[' in the element value
                             if match:
                                 tag_name_string = match.group(1).strip()
-                                tag_value = element.text
-                                if tag_value and tag_value.strip():  # Check if not None or empty
-                                    current_file_results[f"Filter {tag_name_string}"] = tag_value
+                                for element in result:
+                                    tag_value = element.text
+                                    if tag_value and tag_value.strip():  # Check if not None or empty
+                                        current_file_results[f"Filter {tag_name_string}"] = tag_value
                                         
                         elif "/text()" in expression:
                                 # Extract the tag name from the XPath expression
@@ -276,10 +274,8 @@ def evaluate_xml_files_matching(folder_path, matching_filters):
 
                         if result:
                             
-                            # Code for handling attribute expressions
-                            if "@" in expression:
-                                # Searches for matches that explicitly end with '=' in the attribute name 
-                                match = re.search(r"@([^=]+)=", expression)
+                            if "@" in expression: # Code for handling attribute expressions
+                                match = re.search(r"@([^=]+)=", expression) # Searches for matches that explicitly end with '=' in the attribute name 
                                 if match:
                                     attribute_name_string = match.group(1).strip()
                                     for element in result:
@@ -288,8 +284,7 @@ def evaluate_xml_files_matching(folder_path, matching_filters):
                                             attribute_matches_dic[
                                                 f"{attribute_name_string}={attr_value}"] = matches_count
                                 else:
-                                    # Searches for matches that explicitly end with ',' in the attribute name
-                                    match = re.search(r"@([^=]+),", expression)
+                                    match = re.search(r"@([^=]+),", expression) # Searches for matches that explicitly end with ',' in the attribute name
                                     if match:
                                         attribute_name_string = match.group(1).strip()
                                         for element in result:
@@ -301,10 +296,8 @@ def evaluate_xml_files_matching(folder_path, matching_filters):
                                 for attribute, attr_count in attribute_matches_dic.items():
                                     current_file_results[f"Filter {attribute} Matches"] = attr_count
                                     
-                            # Code for handling elemet tag values
-                            elif "text()=" in expression:
-                                # Searches for matches that explicitly end with '[' in the element value
-                                match = re.search(r"//(.*?)\[", expression)
+                            elif "text()" in expression: # Code for handling elemet tag values
+                                match = re.search(r"//(.*?)\[", expression) # Searches for matches that explicitly end with '[' in the element value
                                 if match:
                                     tag_name_string = match.group(1).strip()
                                     for element in result:
@@ -325,13 +318,12 @@ def evaluate_xml_files_matching(folder_path, matching_filters):
                                 for tag, tag_count in tag_matches_dic.items():
                                     current_file_results[f"Filter {tag_name_string}"] = tag_value
 
-
                 if total_matches > 0:
                     final_results.append(current_file_results)
 
                     total_sum_matches += total_matches # Total matches found in all expressions
                     total_matching_files += 1 if total_matches > 0 else 0 # Total found fIles that contain at least 1 matching expression, else 0
-
+        
         return final_results, total_sum_matches, total_matching_files
 
     except ZeroDivisionError:
@@ -350,17 +342,18 @@ def replace_empty_with_zero(value):
     return value if value != '' else '0'
 
 
-def export_evaluation_as_csv(csv_output_path, folder_path, matching_filters):
+def export_evaluation_as_csv(csv_output_path, folder_containing_xml_files, matching_filters):
     """Export found XML files and it's matches in a single CSV file
 
     Args:
         csv_output_path (str): Folder Path where the evaluation should be exported to
-        folder_path (str): Folder Path where one or more XML files are located
+        folder_containing_xml_files (str): Folder Path where one or more XML files are located
         matching_filters (list): Added XPath filters in the ListBox GUI element
     """
     try:
         window["-EXPORT_AS_CSV-"].update(disabled=True)
-        matching_results, total_matches_found, total_matching_files = evaluate_xml_files_matching(folder_path,
+
+        matching_results, total_matches_found, total_matching_files = evaluate_xml_files_matching(folder_containing_xml_files,
                                                                                                   matching_filters)
 
         # Save matching results to CSV file
@@ -753,9 +746,6 @@ while True:
 
     elif event in ("-BUILD_XPATH-", "-RADIO_DEFAULT-", "-RADIO_CONTAINS-", "-RADIO_STARTSWITH-", "-RADIO_GREATER-", "-RADIO_SMALLER-"):
         try:
-            if len(values["-XPATH_EXPRESSION-"]) == 0:
-                window["-OUTPUT_WINDOW_MAIN-"].update("Please select a XML Tag/Attribute and/or it's value")
-                
             # Initialize XPath expression
             xpath_expression = "//" + tag_name_combobox if tag_name_combobox else ""
 
@@ -812,12 +802,10 @@ while True:
 
             # Append XPath criteria to expression
             if xpath_criteria:
-                xpath_expression += "[" + " and ".join(xpath_criteria) + "]"
+                xpath_expression += "[" + "".join(xpath_criteria) + "]"
 
             # Update XPath expression and output window
             window["-XPATH_EXPRESSION-"].update(xpath_expression)
-            if xpath_expression:
-                window["-OUTPUT_WINDOW_MAIN-"].update(f"Final XPath expression: {xpath_expression}")
 
         except NameError:
             window["-OUTPUT_WINDOW_MAIN-"].update("Name 'parsed_xml_file' is not defined")
@@ -844,7 +832,7 @@ while True:
         try:
             if not os.path.exists(os.path.dirname(evaluation_input_folder)):
                 window["-OUTPUT_WINDOW_MAIN-"].update(
-                    "Folder Path that contains XML Files is either empty or not a valid path.")
+                    "Input folder directory for XML files is either not set or is not a valid path.")
 
             elif not len(matching_filters_listbox) > 0:
                 window["-OUTPUT_WINDOW_MAIN-"].update("No filters for matching added, please add one as XPath.")
