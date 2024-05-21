@@ -2,7 +2,6 @@ import csv
 import os
 import re
 import webbrowser
-import cProfile
 from pathlib import Path
 import PySimpleGUI as sg
 import pandas as pd
@@ -177,15 +176,6 @@ def get_attribute_values(xml_file, tag_name, attribute):
 
 
 def evaluate_xml_files_matching(folder_cotaining_xml_files, matching_filters):
-    """Evaluates and searches for matches in XML files
-
-    Args:
-        folder_cotaining_xml_files (str): Folder path where one or more XML files are located
-        matching_filters (list): Added XPath filters in the ListBox GUI element
-
-    Returns:
-        list: Returns list of added filter(s) to match to and evaluateXML Files, based on amount of XML files found in selected folder
-    """
     final_results = []
     total_files = sum(1 for filename in os.listdir(folder_cotaining_xml_files) if filename.endswith(".xml"))
     progress_increment = 100 / total_files
@@ -198,7 +188,6 @@ def evaluate_xml_files_matching(folder_cotaining_xml_files, matching_filters):
         for filename in os.listdir(folder_cotaining_xml_files):
             if filename.endswith(".xml"):
                 file_path = os.path.join(folder_cotaining_xml_files, filename)
-                # Update progress bar after processing each file
                 current_progress += progress_increment
                 window["-PROGRESS_BAR-"].update(round(current_progress, 2))
                 window["-OUTPUT_WINDOW_MAIN-"].update(f"Processing {filename}")
@@ -207,63 +196,67 @@ def evaluate_xml_files_matching(folder_cotaining_xml_files, matching_filters):
                     tree = ET.parse(file_path)
                 except ET.XMLSyntaxError as e:
                     if "Document is empty" in str(e):
-                        window["-OUTPUT_WINDOW_MAIN-"].update(
-                            f"Error processing {filename}\nXML File is empty, skipping file...")
-                        continue  # Skip processing this file
+                        window["-OUTPUT_WINDOW_MAIN-"].update(f"Error processing {filename}\nXML File is empty, skipping file...")
+                        continue
                     else:
                         window["-OUTPUT_WINDOW_MAIN-"].update(f"XMLSyntaxError occurred: {e}")
                         continue
 
-                total_matches = 0  # Initialize total matches for the file
+                total_matches = 0
                 current_file_results = {"Filename": os.path.splitext(filename)[0]}
 
-                if len(matching_filters) == 1: # Check if there is only one filter added to the ListBox GUI element
-
+                if len(matching_filters) == 1:
                     expression = matching_filters[0]
                     result = tree.xpath(expression)
                     total_matches += len(result)
 
                     if result:
                         
-                        if "@" in expression: # Code for handling attribute expressions
-                            match = re.search(r"@([^=]+)=", expression)  # Searches for matches that explicitly end with '=' in the attribute name 
+                        if "[@" in expression:
+                            match = re.search(r"@([^=]+)=", expression)
                             if match:
-                                attribute_name_string = match.group(1).strip()  # Id, Description, Name etc (Attribute Name of Selected Tag)
+                                attribute_name_string = match.group(1).strip()
                                 for element in result:
                                     attr_value = element.get(attribute_name_string)
-                                    #print(f"Attribute Value in @ - = {attr_value}") # Uselful print if a filename has multiple filter in it for match
-                                    if attr_value and attr_value.strip():  # Check if not None or empty
+                                    if attr_value and attr_value.strip():
                                         current_file_results[f"Filter {attribute_name_string}"] = attr_value
+                                current_file_results["Total Matching Tags"] = total_matches
+
                             else:
-                                match = re.search(r"@([^=]+),", expression)  # Searches for matches that explicitly end with ',' in the attribute name
+                                match = re.search(r"@([^=]+),", expression)
                                 if match:
                                     attribute_name_string = match.group(1).strip()
                                     for element in result:
                                         attr_value = element.get(attribute_name_string)
-                                        #print(f"Attribute Value in @ - , {attr_value}") # Uselful print if a filename has multiple filter in it for match
-                                        if attr_value and attr_value.strip():  # Check if not None or empty
+                                        if attr_value and attr_value.strip():
                                             current_file_results[f"Filter {attribute_name_string}"] = attr_value
-                                            
-                        elif "text()" in expression: # Code for handling elemet tag values
-                            match = re.search(r"//(.*?)\[", expression) # Searches for matches that explicitly end with '[' in the element value
+                                    current_file_results["Total Matching Tags"] = total_matches
+
+                        elif "/@" in expression:
+                            attribute_name_string = expression.split("@")[-1]
+                            attr_value = result[0].strip()
+                            current_file_results[f"Filter {attribute_name_string}"] = []
+                            for element in result:
+                                if attr_value and attr_value.strip():
+                                    current_file_results[f"Filter {attribute_name_string}"].append(attr_value)
+
+                        elif "text()=" in expression:
+                            match = re.search(r"//(.*?)\[", expression)
                             if match:
                                 tag_name_string = match.group(1).strip()
                                 for element in result:
                                     tag_value = element.text
-                                    if tag_value and tag_value.strip():  # Check if not None or empty
+                                    if tag_value and tag_value.strip():
                                         current_file_results[f"Filter {tag_name_string}"] = tag_value
-                                        
+                                current_file_results["Total Matching Tags"] = total_matches
+
                         elif "/text()" in expression:
-                                # Extract the tag name from the XPath expression
-                                tag_name = expression.split("/")[-2]
-                                tag_value = result[0].strip()
-                                if tag_value:
-                                    current_file_results[f"Filter {tag_name}"] = tag_value
-                                        
-                    current_file_results["Total Matching Tags"] = total_matches
+                            tag_name_string = expression.split("/")[-2]
+                            tag_value = result[0].strip()
+                            if tag_value:
+                                current_file_results[f"Filter {tag_name_string}"] = tag_value
 
-                elif len(matching_filters) > 1: # Check if there are more than one Filters added to the ListBox GUI element. This statement writes the CSV Headers differently, that's why it's implemented
-
+                elif len(matching_filters) > 1:
                     attribute_matches_dic = {}
                     tag_matches_dic = {}
 
@@ -273,57 +266,61 @@ def evaluate_xml_files_matching(folder_cotaining_xml_files, matching_filters):
                         total_matches += len(result)
 
                         if result:
-                            
-                            if "@" in expression: # Code for handling attribute expressions
-                                match = re.search(r"@([^=]+)=", expression) # Searches for matches that explicitly end with '=' in the attribute name 
+                            if "@" in expression:
+                                match = re.search(r"@([^=]+)=", expression)
                                 if match:
                                     attribute_name_string = match.group(1).strip()
                                     for element in result:
                                         attr_value = element.get(attribute_name_string)
-                                        if attr_value and attr_value.strip():  # Check if not None or empty
-                                            attribute_matches_dic[
-                                                f"{attribute_name_string}={attr_value}"] = matches_count
+                                        if attr_value and attr_value.strip():
+                                            attribute_matches_dic[f"{attribute_name_string}={attr_value}"] = matches_count
                                 else:
-                                    match = re.search(r"@([^=]+),", expression) # Searches for matches that explicitly end with ',' in the attribute name
+                                    match = re.search(r"@([^=]+),", expression)
                                     if match:
                                         attribute_name_string = match.group(1).strip()
                                         for element in result:
                                             attr_value = element.get(attribute_name_string)
-                                            if attr_value and attr_value.strip():  # Check if not None or empty
-                                                attribute_matches_dic[
-                                                    f"{attribute_name_string}={attr_value}"] = matches_count
+                                            if attr_value and attr_value.strip():
+                                                attribute_matches_dic[f"{attribute_name_string}={attr_value}"] = matches_count
 
                                 for attribute, attr_count in attribute_matches_dic.items():
                                     current_file_results[f"Filter {attribute} Matches"] = attr_count
-                                    
-                            elif "text()" in expression: # Code for handling elemet tag values
-                                match = re.search(r"//(.*?)\[", expression) # Searches for matches that explicitly end with '[' in the element value
+
+                            elif "/@" in expression:
+                                attr_name = expression.split("@")[-1]
+                                attr_value = result[0].strip()
+                                if attr_value and attr_value.strip():
+                                    attribute_matches_dic[f"{attr_name}"] = attr_value
+
+                                for attribute, attr_count in attribute_matches_dic.items():
+                                    current_file_results[f"Filter {attr_name}"] = attr_value
+
+                            elif "text()=" in expression:
+                                match = re.search(r"//(.*?)\[", expression)
                                 if match:
                                     tag_name_string = match.group(1).strip()
                                     for element in result:
                                         tag_value = element.text
-                                        if tag_value and tag_value.strip():  # Check if not None or empty
+                                        if tag_value and tag_value.strip():
                                             tag_matches_dic[f"{tag_name_string} {tag_value}"] = matches_count
 
                                 for tag, tag_count in tag_matches_dic.items():
                                     current_file_results[f"Filter {tag} Matches"] = tag_count
-                            
+
                             elif "/text()" in expression:
-                                # Extract the tag name from the XPath expression
                                 tag_name_string = expression.split("/")[-2]
                                 tag_value = result[0].strip()
                                 if tag_value:
                                     tag_matches_dic[f"{tag_name_string}"] = tag_value
-                                    
+
                                 for tag, tag_count in tag_matches_dic.items():
                                     current_file_results[f"Filter {tag_name_string}"] = tag_value
 
                 if total_matches > 0:
                     final_results.append(current_file_results)
+                    total_sum_matches += total_matches
+                    total_matching_files += 1 if total_matches > 0 else 0
 
-                    total_sum_matches += total_matches # Total matches found in all expressions
-                    total_matching_files += 1 if total_matches > 0 else 0 # Total found fIles that contain at least 1 matching expression, else 0
-        
         return final_results, total_sum_matches, total_matching_files
 
     except ZeroDivisionError:
