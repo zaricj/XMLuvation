@@ -181,144 +181,84 @@ def get_attribute_values(xml_file, tag_name, attribute):
 
 def evaluate_xml_files_matching(folder_cotaining_xml_files, matching_filters):
     final_results = []
-    total_files = sum(1 for filename in os.listdir(folder_cotaining_xml_files) if filename.endswith(".xml"))
-    progress_increment = 100 / total_files
-    current_progress = 0
-    window["-PROGRESS_BAR-"].update(current_progress)
     total_sum_matches = 0
     total_matching_files = 0
-    # //TODO Add for other functions search for example contains, starts-with etc for text() and probably @! 
+
     try:
-        for filename in os.listdir(folder_cotaining_xml_files):
-            if filename.endswith(".xml"):
-                file_path = os.path.join(folder_cotaining_xml_files, filename)
-                current_progress += progress_increment
-                window["-PROGRESS_BAR-"].update(round(current_progress, 2))
-                window["-OUTPUT_WINDOW_MAIN-"].update(f"Processing {filename}")
+        # Calculate total number of XML files
+        xml_files = [filename for filename in os.listdir(folder_cotaining_xml_files) if filename.endswith(".xml")]
+        total_files = len(xml_files)
+        if total_files == 0:
+            return final_results, total_sum_matches, total_matching_files
 
-                try:
-                    tree = ET.parse(file_path)
-                except ET.XMLSyntaxError as e:
-                    if "Document is empty" in str(e):
-                        window["-OUTPUT_WINDOW_MAIN-"].update(f"Error processing {filename}\nXML File is empty, skipping file...")
-                        continue
-                    else:
-                        window["-OUTPUT_WINDOW_MAIN-"].update(f"XMLSyntaxError occurred: {e}")
-                        continue
-                
-                try:
-                    total_matches = 0
-                    current_file_results = {"Filename": os.path.splitext(filename)[0]}
+        # Calculate progress bar increment
+        progress_increment = 100 / total_files
+        current_progress = 0
 
-                    if len(matching_filters) == 1: # For only 1 filter in listbox element of GUI
-                        expression = matching_filters[0]
-                        result = tree.xpath(expression)
-                        total_matches += len(result)
+        for filename in xml_files:
+            file_path = os.path.join(folder_cotaining_xml_files, filename)
+            current_progress += progress_increment
+            window["-PROGRESS_BAR-"].update(round(current_progress, 2))
+            window["-OUTPUT_WINDOW_MAIN-"].update(f"Processing {filename}")
 
-                        if result:
+            try:
+                tree = ET.parse(file_path)
+            except ET.XMLSyntaxError as e:
+                if "Document is empty" in str(e):
+                    window["-OUTPUT_WINDOW_MAIN-"].update(f"Error processing {filename}\nXML File is empty, skipping file...")
+                    continue
+                else:
+                    window["-OUTPUT_WINDOW_MAIN-"].update(f"XMLSyntaxError occurred: {e}")
+                    continue
+            except Exception as e:
+                window["-OUTPUT_WINDOW_MAIN-"].update(f"ERROR: {e}")
+                continue
 
-                            if "[@" in expression:
-                                match = re.search(r"@([^=]+)=", expression)
-                                if match:
-                                    attribute_name_string = match.group(1).strip()
-                                    for element in result:
-                                        attr_value = element.get(attribute_name_string)
-                                        if attr_value and attr_value.strip():
-                                            current_file_results[f"Filter {attribute_name_string}"] = attr_value
-                                    current_file_results["Total Matching Tags"] = total_matches
+            total_matches = 0
+            current_file_results = {"Filename": os.path.splitext(filename)[0]}
 
-                                else:
-                                    match = re.search(r"@([^=]+),", expression)
-                                    if match:
-                                        attribute_name_string = match.group(1).strip()
-                                        for element in result:
-                                            attr_value = element.get(attribute_name_string)
-                                            if attr_value and attr_value.strip():
-                                                current_file_results[f"Filter {attribute_name_string}"] = attr_value
-                                        current_file_results["Total Matching Tags"] = total_matches
+            for expression in matching_filters:
+                result = tree.xpath(expression)
+                matches_count = len(result)
+                total_matches += matches_count
 
-                            elif "/@" in expression or "/text()" in expression:
-                                for element in result:
-                                    current_file_results[f"Filter {expression.split("/")[-2]}"] = element.strip()
-                                    final_results.append(current_file_results.copy())
+                if matches_count > 0:
+                    if "[@" in expression:
+                        match = re.search(r"@([^=]+)[=,]", expression)
+                        if match:
+                            attribute_name_string = match.group(1).strip()
+                            for element in result:
+                                attr_value = element.get(attribute_name_string)
+                                if attr_value and attr_value.strip():
+                                    current_file_results[f"Attribute {attribute_name_string}={attr_value} Matches"] = matches_count
 
-                            elif "text()=" in expression:
-                                match = re.search(r"//(.*?)\[", expression)
-                                if match:
-                                    tag_name_string = match.group(1).strip()
-                                    for element in result:
-                                        tag_value = element.text
-                                        if tag_value and tag_value.strip():
-                                            current_file_results[f"Filter {tag_name_string}"] = tag_value
-                                    current_file_results["Total Matching Tags"] = total_matches
+                    elif "/@" in expression:
+                        attr_name = expression.split("@")[-1]
+                        attr_value = result[0].strip() if result else ''
+                        if attr_value and attr_value.strip():
+                            current_file_results[f"Attribute {attr_name} Value"] = attr_value
 
-                    elif len(matching_filters) > 1: # For more than 1 filter in listbox element of GUI
-                        attribute_matches_dic = {}
-                        tag_matches_dic = {}
+                    elif "text()=" in expression:
+                        match = re.search(r"//(.*?)\[", expression)
+                        if match:
+                            tag_name_string = match.group(1).strip()
+                            for element in result:
+                                tag_value = element.text
+                                if tag_value and tag_value.strip():
+                                    current_file_results[f"Filter {tag_name_string} {tag_value} Matches"] = matches_count
 
-                        for expression in matching_filters:
-                            result = tree.xpath(expression)
-                            matches_count = len(result)
-                            total_matches += len(result)
+                    elif "/text()" in expression:
+                        tag_name_string = expression.split("/")[-2]
+                        tag_value = result[0].strip() if result else ''
+                        if tag_value:
+                            current_file_results[f"Filter {tag_name_string} Value"] = tag_value
+                else:
+                    window["-OUTPUT_WINDOW_MAIN-"].update("No matches have been found.")
 
-                            if result:
-
-                                if "[@" in expression:
-                                    match = re.search(r"@([^=]+)=", expression)
-                                    if match:
-                                        attribute_name_string = match.group(1).strip()
-                                        for element in result:
-                                            attr_value = element.get(attribute_name_string)
-                                            if attr_value and attr_value.strip():
-                                                attribute_matches_dic[f"{attribute_name_string}={attr_value}"] = matches_count
-                                    else:
-                                        match = re.search(r"@([^=]+),", expression)
-                                        if match:
-                                            attribute_name_string = match.group(1).strip()
-                                            for element in result:
-                                                attr_value = element.get(attribute_name_string)
-                                                if attr_value and attr_value.strip():
-                                                    attribute_matches_dic[f"{attribute_name_string}={attr_value}"] = matches_count
-
-                                    for attribute, attr_count in attribute_matches_dic.items():
-                                        current_file_results[f"Filter {attribute} Matches"] = attr_count
-
-                                elif "/@" in expression:
-                                    attr_name = expression.split("@")[-1]
-                                    attr_value = result[0].strip()
-                                    if attr_value and attr_value.strip():
-                                        attribute_matches_dic[f"{attr_name}"] = attr_value
-
-                                    for attribute, attr_count in attribute_matches_dic.items():
-                                        current_file_results[f"Filter {attr_name}"] = attr_value
-
-                                elif "text()=" in expression:
-                                    match = re.search(r"//(.*?)\[", expression)
-                                    if match:
-                                        tag_name_string = match.group(1).strip()
-                                        for element in result:
-                                            tag_value = element.text
-                                            if tag_value and tag_value.strip():
-                                                tag_matches_dic[f"{tag_name_string} {tag_value}"] = matches_count
-
-                                    for tag, tag_count in tag_matches_dic.items():
-                                        current_file_results[f"Filter {tag} Matches"] = tag_count
-
-                                elif "/text()" in expression:
-                                    tag_name_string = expression.split("/")[-2]
-                                    tag_value = result[0].strip()
-                                    if tag_value:
-                                        tag_matches_dic[f"{tag_name_string}"] = tag_value
-
-                                    for tag, tag_count in tag_matches_dic.items():
-                                        current_file_results[f"Filter {tag_name_string}"] = tag_value
-                except Exception as e:
-                    window["-OUTPUT_WINDOW_MAIN-"].update(f"ERROR: {e}")   
-                    
-                if total_matches > 0:
-                    final_results.append(current_file_results)
-                    total_sum_matches += total_matches
-                    total_matching_files += 1 if total_matches > 0 else 0
+            if total_matches > 0:
+                final_results.append(current_file_results)
+                total_sum_matches += total_matches
+                total_matching_files += 1
 
         return final_results, total_sum_matches, total_matching_files
 
@@ -352,7 +292,7 @@ def export_evaluation_as_csv(csv_output_path, folder_containing_xml_files, match
                                                                                                   matching_filters)
 
         # Save matching results to CSV file
-        if matching_results is not None:  # Check if matching results exist
+        if matching_results:  # Check if matching results exist
             headers = [key for key in {key: None for dic in matching_results for key in dic}]
             #print("Headers:", headers)
 
@@ -579,7 +519,7 @@ layout = [
     ]
 ]
 
-window = sg.Window(f"XMLuvation v1.2.0 © 2024 by Jovan Zaric", layout, font=font, icon=PROGRAM_ICON, resizable=True, finalize=True)
+window = sg.Window(f"XMLuvation v0.9 © 2024 by Jovan Zaric", layout, font=font, icon=PROGRAM_ICON, resizable=True, finalize=True)
 
 while True:
     event, values = window.read()
