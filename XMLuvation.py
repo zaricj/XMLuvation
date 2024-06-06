@@ -236,7 +236,9 @@ def evaluate_xml_files_matching(folder_cotaining_xml_files, matching_filters):
                         attr_name = expression.split("@")[-1]
                         attr_value = result[0].strip() if result else ''
                         if attr_value and attr_value.strip():
-                            current_file_results[f"Attribute {attr_name} Value"] = attr_value
+                            for match in result:
+                                current_file_results = {"Filename": os.path.splitext(filename)[0]}
+                                current_file_results[f"Attribute {attr_name} Value"] = attr_value
 
                     elif "text()=" in expression:
                         match = re.search(r"//(.*?)\[", expression)
@@ -251,7 +253,9 @@ def evaluate_xml_files_matching(folder_cotaining_xml_files, matching_filters):
                         tag_name_string = expression.split("/")[-2]
                         tag_value = result[0].strip() if result else ''
                         if tag_value:
-                            current_file_results[f"Filter {tag_name_string} Value"] = tag_value
+                            for match in result:
+                                current_file_results = {"Filename": os.path.splitext(filename)[0]}
+                                current_file_results[f"Filter {tag_name_string} Value"] = tag_value
                 else:
                     window["-OUTPUT_WINDOW_MAIN-"].update("No matches have been found.")
 
@@ -259,10 +263,13 @@ def evaluate_xml_files_matching(folder_cotaining_xml_files, matching_filters):
                 final_results.append(current_file_results)
                 total_sum_matches += total_matches
                 total_matching_files += 1
+            
+            else:
+                return None
 
         return final_results, total_sum_matches, total_matching_files
 
-    except ZeroDivisionError:
+    except ValueError:
         pass
 
 def replace_empty_with_zero(value):
@@ -274,7 +281,7 @@ def replace_empty_with_zero(value):
     Returns:
         str: Returns 0 as value for CSV rows, which are empty
     """
-    return value if value != '' else 'NaN'
+    return value if value != '' else 'NULL'
 
 
 def export_evaluation_as_csv(csv_output_path, folder_containing_xml_files, matching_filters):
