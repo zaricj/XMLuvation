@@ -356,22 +356,23 @@ custom_theme_darker = {
     "PROGRESS_DEPTH": 1,
 }
 
-custom_theme = {
-    "BACKGROUND": "#2d3039",
-    "TEXT": "white",
-    "INPUT": "#535360",
-    "TEXT_INPUT": "white",
-    "SCROLL": "#535360",
-    "BUTTON": ("#FFC857", "#626271"),
-    "PROGRESS": ("#FFC857", "#ABABAB"),
+custom_theme_yellow = {
+   "BACKGROUND": "#31353d",
+   "TEXT": "#FFFFFF",
+   "INPUT": "#4d5157",
+   "TEXT_INPUT": "#FFFFFF",
+   "SCROLL": "#e2e3e3",
+   "BUTTON": ("#FFC857", "#4d5157"),
+   "PROGRESS": ("#FFC857", "#abacac"),
     "BORDER": 2,
     "SLIDER_DEPTH": 1,
     "PROGRESS_DEPTH": 1,
 }
 
 # Add your dictionary to the PySimpleGUI themes
-sg.theme_add_new("MyTheme", custom_theme)
+sg.theme_add_new("MyTheme", custom_theme_yellow)
 sg.theme("MyTheme")
+
 FRAME_TITLE_COLOR = "#FFC857"
 font = ("Calibri", 13)
 
@@ -462,7 +463,7 @@ layout_export_evaluation = [[sg.Text("Choose a folder where you want to save the
                             [sg.Input(expand_x=True, font="Arial 10", key="-FOLDER_EVALUATION_OUTPUT-"),
                              sg.SaveAs(button_text="Save as", file_types=(("Comma Separated Value (.csv)", ".csv"),),
                                        target="-FOLDER_EVALUATION_OUTPUT-"),
-                             sg.Button("Export", key="-EXPORT_AS_CSV-")]]
+                              sg.Button("Export", key="-EXPORT_AS_CSV-")]]
 
 layout_program_output = [[sg.Multiline(size=(62, 5), key="-OUTPUT_WINDOW_MAIN-", pad=10, disabled=True)]]
 
