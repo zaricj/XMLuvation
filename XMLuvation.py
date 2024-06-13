@@ -343,6 +343,22 @@ def is_duplicate(xpath_expression):
     return xpath_expression in matching_filters_listbox
 
 
+def statusbar_update_total_xml_files(filepath):
+    try:
+        if os.path.isfile(filepath):
+            files = [filepath]
+        elif os.path.isdir(filepath):
+            files = [os.path.join(filepath, f) for f in os.listdir(filepath) if f.endswith(".xml")]
+            window["-STATUSBAR-"].update(value=f"Total XML files found: {len(files)}")
+            window.refresh()
+        else:
+            window["-STATUSBAR-"].update(value="")
+            pass
+    except TypeError:
+        pass
+    except FileNotFoundError:
+        pass
+
 custom_theme_darker = {
     "BACKGROUND": "#1c1c1c",
     "TEXT": "white",
@@ -392,6 +408,7 @@ tag_name_list = []
 tag_value_list = []
 attribute_name_list = []
 attribute_value_list = []
+
 # Listbox List
 matching_filters_listbox = []
 
@@ -425,8 +442,8 @@ frame_pandas_output = sg.Frame("CSV Conversion Output", layout_pandas_output, ex
 
 # ========== START Layout for XML Evaluation START ========== #
 layout_xml_evaluation = [[sg.Menu(MENU_DEFINITION)],
-                         [sg.Text("Choose a Folder that contains XML Files:", pad=5)],
-                         [sg.Input(size=(36, 2), font="Arial 10", expand_x=True, key="-FOLDER_EVALUATION_INPUT-"),
+                         [sg.Text("Choose a Folder that contains XML Files:", pad=5), sg.StatusBar("", key="-STATUSBAR-", expand_x=True, auto_size_text=True, font="Calibri 14 bold", size=(10,1))],
+                         [sg.Input(size=(36, 2), font="Arial 10", enable_events=True, expand_x=True, key="-FOLDER_EVALUATION_INPUT-"),
                           sg.FolderBrowse(button_text="Browse Folder", target="-FOLDER_EVALUATION_INPUT-"),
                           sg.Button("Read XML", key="-READ_XML-")],
                          [sg.Text("Get XML Tag and Attribute Names/Values for XPath generation:", pad=5)],
@@ -529,6 +546,8 @@ layout = [
 
 window = sg.Window(f"XMLuvation v0.9 © 2024 by Jovan Zaric", layout, font=font, icon=PROGRAM_ICON, resizable=True, finalize=True)
 
+input_checked = False
+
 while True:
     event, values = window.read()
     if event == sg.WIN_CLOSED or event == "Exit":
@@ -608,6 +627,12 @@ while True:
     
     elif event == "Clear Output::ClearOutput":
         window["-OUTPUT_WINDOW_MAIN-"].update("")
+        
+    elif event == "-FOLDER_EVALUATION_INPUT-":
+        if not input_checked and len(evaluation_input_folder) > 0:
+            input_checked = True
+            window.perform_long_operation(lambda: statusbar_update_total_xml_files(evaluation_input_folder), "-OUTPUT_WINDOW_MAIN-")
+            input_checked = False
 
     elif event == "-READ_XML-":
         eval_input_file = sg.popup_get_file("Select a XML file to fill out the Name/Value boxes.",
