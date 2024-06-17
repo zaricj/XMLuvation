@@ -2,15 +2,16 @@ import csv
 import os
 import re
 import webbrowser
+import pywinstyles
 from pathlib import Path
 import PySimpleGUI as sg
 import pandas as pd
 from lxml import etree as ET
 
+
 PROGRAM_ICON = b"iVBORw0KGgoAAAANSUhEUgAAACAAAAAgCAYAAABzenr0AAAABHNCSVQICAgIfAhkiAAAAAlwSFlzAAAOxAAADsQBlSsOGwAAA8pJREFUWIXtVl1oHFUYPefOJpNkQ9omJps11mIZKkiTaQmEarMtguKDL4ot9adCQUVU0pBSRRBEpSiJUKlYxPTnrVUEhT5UCaKYbkqlVM0mNBTZaoNtuhuX/Ehbd5LZ+/mw2dnZNWm6NIhgztOd+X7OuWcu9xtgGcv4v4NL0eRcK8qaKu2dBNYpxWjDqcGv/lUByYj9KsgeABCRTIXo+pUDw5O3UquWQgCInfklRm+VfEkEJLY0NwNsyYuR46XU374Dwme8pYhkkClJQGCxhFSbVeOWBzug8ApEv9QYHT7hEQIcB5/KPZP4WURVJiN2UoscV4bbHeofSdys/4KHcHKrvdIRdkKkk+SqLKEcaTwVez6XM9a+fquhAt97gjJ6rxCzSqkD2RfylwZ6DTjdDdELV+fj+ccnmGpvXpVst99xNC4ReCtHDgDQ+M2fazDgtz9jiPGpoVQ8vz1WKrJTYF5MROwDfzxw750LOjC16b5apyywR8AOkjUFWSITEBy8YUy9e0//aBoAfrEssyYcvOoJFPk2FI09JIAxHmnpEuEeKoYL20haAYfSs+i++4fYFU/AxP0b18wE9E8kawsL9BUl2C+G2xvqH7nmjyU224/T4JeeORn9XPj00FGv1rLMVDi4KwPsJWkVbSgNyGOh6FBfAADcgPswadTm4+JQpCs14R5ZPzIyU2zbnHd++9Nm+toXBeF43EEcnwhwKLHZ3qYMfASwPhtkhRZ5BECfAgABfy8oJk1QvVFfV9aZarMKPweAida1K0g8mt8RTtb++Ot0cd7ngJGItGynwuseeY5DMAXMHcKG6NA3FP0mIPkbjGgC2eOa1aPJSMu+sXbLa+BUVW8DWeETcMzfXCzLTETsF7dE7AuK6jOSG/NBcbToXk64+7M0PlxsXbsiWFW9G2BXwenPklwH9BOh6FBfItLyHakenAtMTo9dD6+Lxx0ASG2ymzLlOANwdUG5iAPgaBnc9+qi5z3H570HUm1WjTaDuwXogv9giv5gxpH95aa6BNIAAK3lcHgg9kIuJdm+4WUoHPQRp5XIYWdGulefHb5czDXvTXjH2fifAPal2qwPdUWwQwRdIOsgiuUmngRheA2K7adMEwREbmiRXoMzPQ0D819CCzownyOzZtV2pdyT1OVfC7FhbneXP47G1rwN6FzuudbWsrsq3V2SkRPhM0Pji/Uu6X8gO/mMGOfqROP9xoHB10rpUYzSpqFWT9MnmjJ77GbpSy8AaMstRDAYOn0+drsCFh3HfhhaPSvQO7SirhKUNPeXsYz/LP4Gk8OElv5Vn3MAAAAASUVORK5CYII="
 LOGO = "./images/logo.png"
 PANDAS_FONT = "Calibri 13 bold"
-GEIS_LOGO = b"iVBORw0KGgoAAAANSUhEUgAAACAAAAAgCAMAAABEpIrGAAABdFBMVEUAAABrBQgsAwQOAQEKAAEEAABwBQn93gMHAgH+4AL83AR7Bwr90wT+5mUWAQIjBQJDHhEfDwhJa1+sqi383GJjBQhZAwd1BgkdAgJIAwb8swZrgE5eeFXpzQ6MlT5BZmN4ikhmBQiGCAw4BAVOBQa0PgohFAnYrlG3gzXuagvLvR3Ytjq7sib5ogibaCfcujvVoTbizBH2qwb5sQbcwD34wFnoRBHzkEfw1Qv7wwXnYTqBCAuUBgyHQQfYRA0RCAPzihVyLBl1OyF1UCPUxBk4YGfuexNGNBbRgTNQb1zwu1r6yQWtdz7coy/VRSTzngvajy3ZmUb2pAj20V7vXhHnQBv1nii8UQr9ygVdMgRsSCY1Fw/pLRKqKyXbigjteUi/lzNQKwOLGwr6pQfGHBrUIhCuSgkwGAKFSgbOIA/rSDHCbgjgZxzjjwjSYC2PKQmTmTvCoDSYnDjfVR19Yy/tUxTXrDn4vQa8YAAsAAgABQRrAwHYHNQvAAABlElEQVQ4y9VSV1vCMBSlbZqWtLTQAgXZe8uoTMUFThwMxb333vr3rfh9PMTxrCdPyTlJzj336nR/DGFjmP2FHtuMzEcWajOmH0S2nT2z2WAwd1oLz8bvRNbt6fHLYj6viQzzkejkFi6oDiB1vL2y2i0WOwZzvjKB8dTaOsPoUaOsrrx0K5XWrBETkKM8+oSLLxeWXh/CmGAj90EySfnRW0LLi0ODuM3DFKMBJZ0ej/tttZmexHghVGay2brDMeWe87afMokZTHB2g2TJ7ZWcc265lGsORU14CrGsdO+UphxJl54v3H61cKfWPbLkleOIQY3pTLqG9+GKLzk8zrie0SpRrxOZLymcHPGuuEvfCyK2lNjHLVDB89Bo7mgAaZVqKaQHv2kWEA+40G4sxauF2ajxh5FgRXv19OJ4IvzbWLEiSeNnoj1gowICEEjBRlM0RQoCSVIA9O8QPj8HRyDh95F2O4QKx3H+YZ/F2n8hqEBIcFAZDoqEhYAjCkEQ0GK19L+iAc2Cj0XrAAC2ANXbAFb3X/AOjv42gIYbqvQAAAAASUVORK5CYII="
 
 
 # ========== FUNCTIONS ========== #
@@ -61,7 +62,7 @@ def convert_csv_file(input_file, output_file, input_ext, output_ext, ):
 
     except FileNotFoundError:
         window["-OUTPUT_WINDOW_CSV-"].update(f"{input_ext.upper()} File not found.", text_color="#ff4545",
-                                             font=PANDAS_FONT)
+                                            font=PANDAS_FONT)
         window["-CONVERT_CSV_FILE-"].update(disabled=False)
 
     except Exception as e:
@@ -90,16 +91,16 @@ def read_csv_data(csv_file):
 
         try:
             if not values["-CHECKBOX_WRITE_INDEX_COLUMN-"]:
-                csv_df = pd.read_csv(input_file_gui, delimiter=get_delimiter, encoding="utf-8", index_col=0)
+                csv_df = pd.read_csv(input_file_pandas, delimiter=get_delimiter, encoding="utf-8", index_col=0)
             else:
-                csv_df = pd.read_csv(input_file_gui, delimiter=get_delimiter, encoding="utf-8")
+                csv_df = pd.read_csv(input_file_pandas, delimiter=get_delimiter, encoding="utf-8")
                 
         except UnicodeDecodeError:
             
             if not values["-CHECKBOX_WRITE_INDEX_COLUMN-"]:
-                csv_df = pd.read_csv(input_file_gui, delimiter=get_delimiter, encoding="ansi", index_col=0)
+                csv_df = pd.read_csv(input_file_pandas, delimiter=get_delimiter, encoding="ansi", index_col=0)
             else:
-                csv_df = pd.read_csv(input_file_gui, delimiter=get_delimiter, encoding="ansi")
+                csv_df = pd.read_csv(input_file_pandas, delimiter=get_delimiter, encoding="ansi")
                 
         if file_suffix_in_input == "":
             raise ValueError("Error: Input is empty. Cannot read nothing.")
@@ -296,7 +297,7 @@ def export_evaluation_as_csv(csv_output_path, folder_containing_xml_files, match
         window["-EXPORT_AS_CSV-"].update(disabled=True)
 
         matching_results, total_matches_found, total_matching_files = evaluate_xml_files_matching(folder_containing_xml_files,
-                                                                                                  matching_filters)
+                                                                                                matching_filters)
 
         # Save matching results to CSV file
         if matching_results:  # Check if matching results exist
@@ -311,8 +312,7 @@ def export_evaluation_as_csv(csv_output_path, folder_containing_xml_files, match
                 # Write matching results
                 for match in matching_results:
                     if match is not None:  # If None, skip
-                        matches = {header: replace_empty_with_zero(match.get(header, '')) for header in
-                                             headers}
+                        matches = {header: replace_empty_with_zero(match.get(header, '')) for header in headers}
                         #print("Matches:", matches)
                         writer.writerow(matches)
 
@@ -359,27 +359,14 @@ def statusbar_update_total_xml_files(filepath):
     except FileNotFoundError:
         pass
 
-custom_theme_darker = {
-    "BACKGROUND": "#1c1c1c",
-    "TEXT": "white",
-    "INPUT": "#3f3f3f",
-    "TEXT_INPUT": "white",
-    "SCROLL": "#3f3f3f",
-    "BUTTON": ("#FFC857", "#303030"),
-    "PROGRESS": ("#FFC857", "#ABABAB"),
-    "BORDER": 2,
-    "SLIDER_DEPTH": 1,
-    "PROGRESS_DEPTH": 1,
-}
-
 custom_theme_yellow = {
-   "BACKGROUND": "#31353d",
-   "TEXT": "#FFFFFF",
-   "INPUT": "#4d5157",
-   "TEXT_INPUT": "#FFFFFF",
-   "SCROLL": "#e2e3e3",
-   "BUTTON": ("#FFC857", "#4d5157"),
-   "PROGRESS": ("#FFC857", "#abacac"),
+    "BACKGROUND": "#31353d",
+    "TEXT": "#FFFFFF",
+    "INPUT": "#4d5157",
+    "TEXT_INPUT": "#FFFFFF",
+    "SCROLL": "#e2e3e3",
+    "BUTTON": ("#FFC857", "#4d5157"),
+    "PROGRESS": ("#FFC857", "#abacac"),
     "BORDER": 2,
     "SLIDER_DEPTH": 1,
     "PROGRESS_DEPTH": 1,
@@ -391,12 +378,15 @@ sg.theme("MyTheme")
 
 FRAME_TITLE_COLOR = "#FFC857"
 font = ("Calibri", 13)
+font_input_elements = ("Calibri", 12)
 
 # Constants
 FILE_TYPE_XML = (("XML (Extensible Markup Language)", ".xml"),)
 MENU_RIGHT_CLICK_DELETE = ["&Right", ["&Delete", "&Delete All"]]
-MENU_DEFINITION = [["&File", ["&Open Output Folder::OpenOutputFolder", "Clear Output::ClearOutput", "---", "E&xit"]],
-                   ["&Help", ["&XPath Help::XPathSyntaxURL", "XPath Cheat Sheet::XPathCheatSheet"]]]
+MENU_DEFINITION = [["&File", ["&Open Output Folder::OpenOutputFolder", "&Open Input Folder::OpenInputFolder", "---", "Clear Output::ClearOutput", "---", "E&xit"]],
+                    ["&Help", ["&XPath Help::XPathSyntaxURL", "XPath Cheat Sheet::XPathCheatSheet"]],
+                    ["&GoTo", ["&Lobster Test::LobsterTest", "&Lobster Prod::LobsterProd"]]]
+
 # Constants for Pandas Conversion
 FILE_TYPES_INPUT = (("CSV (Comma Separated Value)", ".csv"),)
 FILE_TYPES_OUTPUT = (
@@ -414,20 +404,20 @@ matching_filters_listbox = []
 
 # ========== START Layout for Pandas Conversion START ========== #
 layout_pandas_conversion = [[sg.Text("CSV Converter", font="Calibri 36 bold underline", text_color="#FFC857", pad=10,
-                                     justification="center", grab=True)],
+                                justification="center", grab=True)],
                             [sg.Text(
                                 "Convert CSV File to a different file type with the Pandas module\nSupported output file types: Excel, Markdown. HTML and JSON",
                                 justification="center")],
                             [sg.HSep(pad=10)],
                             [sg.Text("Choose a CSV file for conversion:")],
                             [sg.Input(size=(44, 1), key="-FILE_INPUT-"),
-                             sg.FileBrowse(file_types=FILE_TYPES_INPUT, size=(8, 1)),
-                             sg.Button("Read CSV", size=(7, 1), key="-READ_FILE-")],
+                            sg.FileBrowse(file_types=FILE_TYPES_INPUT, size=(8, 1)),
+                            sg.Button("Read CSV", size=(7, 1), key="-READ_FILE-")],
                             [sg.Text("Choose where to save output of CSV file:")],
                             [sg.Input(size=(44, 1), key="-FILE_OUTPUT-"),
-                             sg.FileSaveAs(button_text="Save as", size=(7, 1), file_types=FILE_TYPES_OUTPUT,
-                                           target="-FILE_OUTPUT-", key="-SAVE_AS_BUTTON-"),
-                             sg.Button("Convert", key="-CONVERT_CSV_FILE-", expand_x=True)],
+                            sg.FileSaveAs(button_text="Save as", size=(7, 1), file_types=FILE_TYPES_OUTPUT,
+                                target="-FILE_OUTPUT-", key="-SAVE_AS_BUTTON-"),
+                            sg.Button("Convert", key="-CONVERT_CSV_FILE-", expand_x=True)],
                             [sg.Checkbox("Write Index Column?", default=False, key="-CHECKBOX_WRITE_INDEX_COLUMN-")],
                             [sg.Image(source=LOGO, expand_x=True, expand_y=True, key="-IMAGE-")]]
 
@@ -437,66 +427,66 @@ layout_pandas_output = [
 frame_pandas = sg.Frame("CSV Conversion to different file type", layout_pandas_conversion, expand_x=True, expand_y=True,
                         title_color=FRAME_TITLE_COLOR, font="Calibri 13 bold")
 frame_pandas_output = sg.Frame("CSV Conversion Output", layout_pandas_output, expand_x=True, expand_y=True,
-                               title_color=FRAME_TITLE_COLOR, font="Calibri 13 bold")
+                                title_color=FRAME_TITLE_COLOR, font="Calibri 13 bold")
 # ========== END Layout for Pandas Conversion END ========== #
 
 # ========== START Layout for XML Evaluation START ========== #
 layout_xml_evaluation = [[sg.Menu(MENU_DEFINITION)],
-                         [sg.Text("Choose a Folder that contains XML Files:", pad=5), sg.StatusBar("", key="-STATUSBAR-", expand_x=True, auto_size_text=True, font="Calibri 14 bold", size=(10,1))],
-                         [sg.Input(size=(36, 2), font="Arial 10", enable_events=True, expand_x=True, key="-FOLDER_EVALUATION_INPUT-"),
-                          sg.FolderBrowse(button_text="Browse Folder", target="-FOLDER_EVALUATION_INPUT-"),
-                          sg.Button("Read XML", key="-READ_XML-")],
-                         [sg.Text("Get XML Tag and Attribute Names/Values for XPath generation:", pad=5)],
-                         [sg.Text("Tag name:"),
-                          sg.Combo(tag_name_list, size=(15, 1), disabled=True, auto_size_text=False, enable_events=True,
-                                   enable_per_char_events=True, expand_x=True, key="-XML_TAG_NAME-"),
-                          sg.Text("Tag Value:"),
-                          sg.Combo(tag_value_list, size=(15, 1), disabled=True, enable_events=True,
-                                   enable_per_char_events=True,
-                                   auto_size_text=False, expand_x=True, key="-XML_TAG_VALUE-")],
-                         [sg.Text("Att name:"),
-                          sg.Combo(attribute_name_list, size=(15, 1), disabled=True, auto_size_text=False,
-                                   enable_events=True,
-                                   expand_x=True, key="-XML_ATTRIBUTE_NAME-"), sg.Text("Att Value:"),
-                          sg.Combo(attribute_value_list, size=(15, 1), disabled=True, enable_events=True,
-                                   auto_size_text=False,
-                                   expand_x=True, key="-XML_ATTRIBUTE_VALUE-", pad=5)],
-                         [sg.Text("Function:"),
-                          sg.Radio("Equals", group_id=1, default=True, key="-RADIO_DEFAULT-"),
-                          sg.Radio("Contains", group_id=1, key="-RADIO_CONTAINS-"),
-                          sg.Radio("Starts-with", group_id=1, key="-RADIO_STARTSWITH-"),
-                          sg.Radio("Greater", group_id=1, key="-RADIO_GREATER-"),
-                          sg.Radio("Smaller", group_id=1, key="-RADIO_SMALLER-")],
-                         [sg.Text("XPath Expression:"), sg.Input(size=(14, 1), expand_x=True, key="-XPATH_EXPRESSION-"),
-                          sg.Button("Build XPath", key="-BUILD_XPATH-")],
-                         [sg.Text("Add XPath Expressions to look for and match in XML Files:", expand_x=True),
-                          sg.Button("Add XPath Filter", key="-ADD_TO_MATCHING-")]]
+                        [sg.Text("Choose a Folder that contains XML Files:", pad=5), sg.StatusBar("", key="-STATUSBAR-", expand_x=True, auto_size_text=True, font="Calibri 14 bold", size=(10,1))],
+                        [sg.Input(size=(36, 2), font=font_input_elements, enable_events=True, expand_x=True, key="-FOLDER_EVALUATION_INPUT-"),
+                        sg.FolderBrowse(button_text="Browse Folder", target="-FOLDER_EVALUATION_INPUT-"),
+                        sg.Button("Read XML", key="-READ_XML-")],
+                        [sg.Text("Get XML Tag and Attribute Names/Values for XPath generation:", pad=5)],
+                        [sg.Text("Tag name:"),
+                        sg.Combo(tag_name_list, size=(15, 1), disabled=True, auto_size_text=False, enable_events=True,
+                                enable_per_char_events=True, expand_x=True, key="-XML_TAG_NAME-"),
+                        sg.Text("Tag Value:"),
+                        sg.Combo(tag_value_list, size=(15, 1), disabled=True, enable_events=True,
+                                enable_per_char_events=True,
+                                auto_size_text=False, expand_x=True, key="-XML_TAG_VALUE-")],
+                        [sg.Text("Att name:"),
+                        sg.Combo(attribute_name_list, size=(15, 1), disabled=True, auto_size_text=False,
+                                enable_events=True,
+                                expand_x=True, key="-XML_ATTRIBUTE_NAME-"), sg.Text("Att Value:"),
+                        sg.Combo(attribute_value_list, size=(15, 1), disabled=True, enable_events=True,
+                                auto_size_text=False,
+                                expand_x=True, key="-XML_ATTRIBUTE_VALUE-", pad=5)],
+                        [sg.Text("Function:"),
+                        sg.Radio("Equals", group_id=1, default=True, key="-RADIO_DEFAULT-"),
+                        sg.Radio("Contains", group_id=1, key="-RADIO_CONTAINS-"),
+                        sg.Radio("Starts-with", group_id=1, key="-RADIO_STARTSWITH-"),
+                        sg.Radio("Greater", group_id=1, key="-RADIO_GREATER-"),
+                        sg.Radio("Smaller", group_id=1, key="-RADIO_SMALLER-")],
+                        [sg.Text("XPath Expression:"), sg.Input(size=(14, 1), font=font_input_elements, expand_x=True, key="-XPATH_EXPRESSION-"),
+                        sg.Button("Build XPath", key="-BUILD_XPATH-")],
+                        [sg.Text("Add XPath Expressions to list to look for in XML Files:", expand_x=True),
+                        sg.Button("Add XPath Filter", key="-ADD_TO_MATCHING-")]]
 
 layout_listbox_matching_filter = [[sg.Listbox(values=matching_filters_listbox, size=(60, 4), enable_events=True,
-                                              expand_x=True, right_click_menu=MENU_RIGHT_CLICK_DELETE,
-                                              key="-MATCHING_FILTER_LIST-")]]
+                                            expand_x=True, right_click_menu=MENU_RIGHT_CLICK_DELETE,
+                                            key="-MATCHING_FILTER_LIST-")]]
 
 layout_export_evaluation = [[sg.Text("Choose a folder where you want to save the XML Evaluation:")],
-                            [sg.Input(expand_x=True, font="Arial 10", key="-FOLDER_EVALUATION_OUTPUT-"),
-                             sg.SaveAs(button_text="Save as", file_types=(("Comma Separated Value (.csv)", ".csv"),),
-                                       target="-FOLDER_EVALUATION_OUTPUT-"),
-                              sg.Button("Export", key="-EXPORT_AS_CSV-")]]
+                            [sg.Input(expand_x=True, font=font_input_elements, key="-FOLDER_EVALUATION_OUTPUT-"),
+                            sg.SaveAs(button_text="Save as", file_types=(("Comma Separated Value (.csv)", ".csv"),),
+                                    target="-FOLDER_EVALUATION_OUTPUT-"),
+                            sg.Button("Export", key="-EXPORT_AS_CSV-")]]
 
 layout_program_output = [[sg.Multiline(size=(62, 5), key="-OUTPUT_WINDOW_MAIN-", pad=10, disabled=True)]]
 
 layout_xml_output = [
     [sg.Multiline(size=(58, 30), write_only=False, horizontal_scroll=True, key="-OUTPUT_XML_FILE-", pad=5)],
     [sg.Text("Progress:"),
-     sg.ProgressBar(max_value=100, size=(20, 18), orientation="h", expand_x=True, key='-PROGRESS_BAR-', pad=11)]]
+    sg.ProgressBar(max_value=100, size=(20, 18), orientation="h", expand_x=True, key='-PROGRESS_BAR-', pad=11)]]
 
 frame_xml_eval = sg.Frame("XML folder selection and XPath builder", layout_xml_evaluation, title_color=FRAME_TITLE_COLOR,
-                          expand_x=True, font="Calibri 13 bold")
+                        expand_x=True, font="Calibri 13 bold")
 frame_export_evaluation = sg.Frame("Export evaluation result as a CSV File", layout_export_evaluation,
-                                   title_color=FRAME_TITLE_COLOR, expand_x=True, font="Calibri 13 bold")
+                                title_color=FRAME_TITLE_COLOR, expand_x=True, font="Calibri 13 bold")
 frame_xml_output = sg.Frame("XML Output", layout_xml_output, title_color=FRAME_TITLE_COLOR, expand_x=True, font="Calibri 13 bold")
 frame_output_main = sg.Frame("Program Output", layout_program_output, title_color=FRAME_TITLE_COLOR, expand_x=True, font="Calibri 13 bold")
 frame_listbox_matching_filter = sg.Frame("List of filters to match in XML files", layout_listbox_matching_filter,
-                                         title_color=FRAME_TITLE_COLOR, expand_x=True, font="Calibri 13 bold")
+                                        title_color=FRAME_TITLE_COLOR, expand_x=True, font="Calibri 13 bold")
 # ========== END Layout for XML Evaluation END ========== #
 
 # layout = [[sg.Column(layout=[[frame_xml_eval], [frame_listbox_matching_filter],[frame_export_evaluation],[frame_output_main]], expand_y=True),sg.Column([[frame_xml_output]], expand_y=True)]] # DEPRACTED
@@ -544,7 +534,8 @@ layout = [
     ]
 ]
 
-window = sg.Window(f"XMLuvation v0.9 © 2024 by Jovan Zaric", layout, font=font, icon=PROGRAM_ICON, resizable=True, finalize=True)
+window = sg.Window(f"XMLuvation v0.9 © 2024 by Jovan Zaric", layout, font=font, icon=PROGRAM_ICON, finalize=True)
+pywinstyles.apply_style(window,"mica")
 
 input_checked = False
 
@@ -554,10 +545,10 @@ while True:
         break
 
     # Pandas related variables
-    input_file_gui = values["-FILE_INPUT-"]
-    output_file_gui = values["-FILE_OUTPUT-"]
-    input_ext_gui = Path(input_file_gui).suffix.lower().strip(".")
-    output_ext_gui = Path(output_file_gui).suffix.lower().strip(".")
+    input_file_pandas = values["-FILE_INPUT-"]
+    output_file_pandas = values["-FILE_OUTPUT-"]
+    input_extension_pandas = Path(input_file_pandas).suffix.lower().strip(".")
+    output_extension_pandas = Path(output_file_pandas).suffix.lower().strip(".")
 
     # Browse Folder and Save As input elements
     evaluation_input_folder = values["-FOLDER_EVALUATION_INPUT-"]  # Browse Folder 
@@ -623,10 +614,26 @@ while True:
             windows_path = directory_path.replace("/", "\\")
             os.startfile(windows_path)
         elif not output_folder:
-            window["-OUTPUT_WINDOW_MAIN-"].update("No output folder selected where CSV export will be.")
+            window["-OUTPUT_WINDOW_MAIN-"].update("No output folder set where the CSV export will be.")
+        
+    elif event == "Open Input Folder::OpenInputFolder":
+        input_folder = evaluation_input_folder
+        if input_folder:
+            directory_path = os.path.dirname(input_folder)
+            windows_path = directory_path.replace("/","\\")
+            os.startfile(windows_path)
+        elif not input_folder:
+            window["-OUTPUT_WINDOW_MAIN-"].update("No input folder set where XML files are located.")
     
     elif event == "Clear Output::ClearOutput":
         window["-OUTPUT_WINDOW_MAIN-"].update("")
+        
+    elif event == "Lobster Test::LobsterTest":
+        window.write_event_value(key="-FOLDER_EVALUATION_INPUT-",value="//nesist02/ProfilileXMLExport")
+        window["-FOLDER_EVALUATION_INPUT-"].update("//nesist02/ProfilileXMLExport")
+    elif event == "Lobster Prod::LobsterProd":
+        window.write_event_value(key="-FOLDER_EVALUATION_INPUT-",value="//nesis002/ProfilileXMLExport")
+        window["-FOLDER_EVALUATION_INPUT-"].update("//nesis002/ProfilileXMLExport")
         
     elif event == "-FOLDER_EVALUATION_INPUT-":
         if not input_checked and len(evaluation_input_folder) > 0:
@@ -661,11 +668,11 @@ while True:
                         break  # Only need to get attributes and values for the first tag
 
     elif event == "-CONVERT_CSV_FILE-":
-        window.perform_long_operation(lambda: convert_csv_file(input_file_gui, output_file_gui, input_ext_gui, output_ext_gui),
+        window.perform_long_operation(lambda: convert_csv_file(input_file_pandas, output_file_pandas, input_extension_pandas, output_extension_pandas),
                                       "-OUTPUT_WINDOW_CSV-")
 
     elif event == "-READ_FILE-":
-        window.perform_long_operation(lambda: read_csv_data(input_file_gui), "-OUTPUT_WINDOW_CSV-")
+        window.perform_long_operation(lambda: read_csv_data(input_file_pandas), "-OUTPUT_WINDOW_CSV-")
 
     elif event == "-XML_TAG_NAME-":
         try:
