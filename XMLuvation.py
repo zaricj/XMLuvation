@@ -182,95 +182,148 @@ def get_attribute_values(xml_file, tag_name, attribute):
 
 def evaluate_xml_files_matching(folder_cotaining_xml_files, matching_filters):
     final_results = []
+    total_files = sum(1 for filename in os.listdir(folder_cotaining_xml_files) if filename.endswith(".xml"))
+    progress_increment = 100 / total_files
+    current_progress = 0
+    window["-PROGRESS_BAR-"].update(current_progress)
     total_sum_matches = 0
     total_matching_files = 0
-
+    # //TODO Add for other functions search for example contains, starts-with etc for text() and probably @! 
     try:
-        # Calculate total number of XML files
-        xml_files = [filename for filename in os.listdir(folder_cotaining_xml_files) if filename.endswith(".xml")]
-        total_files = len(xml_files)
-        if total_files == 0:
-            return final_results, total_sum_matches, total_matching_files
+        for filename in os.listdir(folder_cotaining_xml_files):
+            if filename.endswith(".xml"):
+                file_path = os.path.join(folder_cotaining_xml_files, filename)
+                current_progress += progress_increment
+                window["-PROGRESS_BAR-"].update(round(current_progress, 2))
+                window["-OUTPUT_WINDOW_MAIN-"].update(f"Processing {filename}")
 
-        # Calculate progress bar increment
-        progress_increment = 100 / total_files
-        current_progress = 0
+                try:
+                    tree = ET.parse(file_path)
+                except ET.XMLSyntaxError as e:
+                    if "Document is empty" in str(e):
+                        window["-OUTPUT_WINDOW_MAIN-"].update(f"Error processing {filename}\nXML File is empty, skipping file...")
+                        continue
+                    else:
+                        window["-OUTPUT_WINDOW_MAIN-"].update(f"XMLSyntaxError occurred: {e}")
+                        continue
+                
+                try:
+                    total_matches = 0
+                    current_file_results = {"Filename": os.path.splitext(filename)[0]}
 
-        for filename in xml_files:
-            file_path = os.path.join(folder_cotaining_xml_files, filename)
-            current_progress += progress_increment
-            window["-PROGRESS_BAR-"].update(round(current_progress, 2))
-            window["-OUTPUT_WINDOW_MAIN-"].update(f"Processing {filename}")
+                    if len(matching_filters) == 1: # For only 1 filter in listbox element of GUI
+                        expression = matching_filters[0]
+                        result = tree.xpath(expression)
+                        total_matches += len(result)
 
-            try:
-                tree = ET.parse(file_path)
-            except ET.XMLSyntaxError as e:
-                if "Document is empty" in str(e):
-                    window["-OUTPUT_WINDOW_MAIN-"].update(f"Error processing {filename}\nXML File is empty, skipping file...")
-                    continue
-                else:
-                    window["-OUTPUT_WINDOW_MAIN-"].update(f"XMLSyntaxError occurred: {e}")
-                    continue
-            except Exception as e:
-                window["-OUTPUT_WINDOW_MAIN-"].update(f"ERROR: {e}")
-                continue
+                        if result:
 
-            total_matches = 0
-            current_file_results = {"Filename": os.path.splitext(filename)[0]}
+                            if "[@" in expression:
+                                match = re.search(r"@([^=]+)=", expression)
+                                if match:
+                                    attribute_name_string = match.group(1).strip()
+                                    for element in result:
+                                        attr_value = element.get(attribute_name_string)
+                                        if attr_value and attr_value.strip():
+                                            current_file_results[f"Filter {attribute_name_string}"] = attr_value
+                                    current_file_results["Total Matching Tags"] = total_matches
 
-            for expression in matching_filters:
-                result = tree.xpath(expression)
-                matches_count = len(result)
-                total_matches += matches_count
+                                else:
+                                    match = re.search(r"@([^=]+),", expression)
+                                    if match:
+                                        attribute_name_string = match.group(1).strip()
+                                        for element in result:
+                                            attr_value = element.get(attribute_name_string)
+                                            if attr_value and attr_value.strip():
+                                                current_file_results[f"Filter {attribute_name_string}"] = attr_value
+                                        current_file_results["Total Matching Tags"] = total_matches
 
-                if matches_count > 0:
-                    if "[@" in expression:
-                        match = re.search(r"@([^=]+)[=,]", expression)
-                        if match:
-                            attribute_name_string = match.group(1).strip()
-                            for element in result:
-                                attr_value = element.get(attribute_name_string)
-                                if attr_value and attr_value.strip():
-                                    current_file_results[f"Attribute {attribute_name_string}={attr_value} Matches"] = matches_count
+                            elif "/@" in expression or "/text()" in expression:
+                                for element in result:
+                                    current_file_results[f"Filter {expression.split("/")[-2]}"] = element.strip()
+                                    final_results.append(current_file_results.copy())
 
-                    elif "/@" in expression:
-                        attr_name = expression.split("@")[-1]
-                        attr_value = result[0].strip() if result else ''
-                        if attr_value and attr_value.strip():
-                            for match in result:
-                                current_file_results = {"Filename": os.path.splitext(filename)[0]}
-                                current_file_results[f"Attribute {attr_name} Value"] = attr_value
+                            elif "text()=" in expression:
+                                match = re.search(r"//(.*?)\[", expression)
+                                if match:
+                                    tag_name_string = match.group(1).strip()
+                                    for element in result:
+                                        tag_value = element.text
+                                        if tag_value and tag_value.strip():
+                                            current_file_results[f"Filter {tag_name_string}"] = tag_value
+                                    current_file_results["Total Matching Tags"] = total_matches
 
-                    elif "text()=" in expression:
-                        match = re.search(r"//(.*?)\[", expression)
-                        if match:
-                            tag_name_string = match.group(1).strip()
-                            for element in result:
-                                tag_value = element.text
-                                if tag_value and tag_value.strip():
-                                    current_file_results[f"Filter {tag_name_string} {tag_value} Matches"] = matches_count
+                    elif len(matching_filters) > 1: # For more than 1 filter in listbox element of GUI
+                        attribute_matches_dic = {}
+                        tag_matches_dic = {}
 
-                    elif "/text()" in expression:
-                        tag_name_string = expression.split("/")[-2]
-                        tag_value = result[0].strip() if result else ''
-                        if tag_value:
-                            for match in result:
-                                current_file_results = {"Filename": os.path.splitext(filename)[0]}
-                                current_file_results[f"Filter {tag_name_string} Value"] = tag_value
-                else:
-                    window["-OUTPUT_WINDOW_MAIN-"].update("No matches have been found.")
+                        for expression in matching_filters:
+                            result = tree.xpath(expression)
+                            matches_count = len(result)
+                            total_matches += len(result)
 
-            if total_matches > 0:
-                final_results.append(current_file_results)
-                total_sum_matches += total_matches
-                total_matching_files += 1
-            
-            else:
-                return None
+                            if result:
+
+                                if "[@" in expression:
+                                    match = re.search(r"@([^=]+)=", expression)
+                                    if match:
+                                        attribute_name_string = match.group(1).strip()
+                                        for element in result:
+                                            attr_value = element.get(attribute_name_string)
+                                            if attr_value and attr_value.strip():
+                                                attribute_matches_dic[f"{attribute_name_string}={attr_value}"] = matches_count
+                                    else:
+                                        match = re.search(r"@([^=]+),", expression)
+                                        if match:
+                                            attribute_name_string = match.group(1).strip()
+                                            for element in result:
+                                                attr_value = element.get(attribute_name_string)
+                                                if attr_value and attr_value.strip():
+                                                    attribute_matches_dic[f"{attribute_name_string}={attr_value}"] = matches_count
+
+                                    for attribute, attr_count in attribute_matches_dic.items():
+                                        current_file_results[f"Filter {attribute} Matches"] = attr_count
+
+                                elif "/@" in expression:
+                                    attr_name = expression.split("@")[-1]
+                                    attr_value = result[0].strip()
+                                    if attr_value and attr_value.strip():
+                                        attribute_matches_dic[f"{attr_name}"] = attr_value
+
+                                    for attribute, attr_count in attribute_matches_dic.items():
+                                        current_file_results[f"Filter {attr_name}"] = attr_value
+
+                                elif "text()=" in expression:
+                                    match = re.search(r"//(.*?)\[", expression)
+                                    if match:
+                                        tag_name_string = match.group(1).strip()
+                                        for element in result:
+                                            tag_value = element.text
+                                            if tag_value and tag_value.strip():
+                                                tag_matches_dic[f"{tag_name_string} {tag_value}"] = matches_count
+
+                                    for tag, tag_count in tag_matches_dic.items():
+                                        current_file_results[f"Filter {tag} Matches"] = tag_count
+
+                                elif "/text()" in expression:
+                                    tag_name_string = expression.split("/")[-2]
+                                    tag_value = result[0].strip()
+                                    if tag_value:
+                                        tag_matches_dic[f"{tag_name_string}"] = tag_value
+
+                                    for tag, tag_count in tag_matches_dic.items():
+                                        current_file_results[f"Filter {tag_name_string}"] = tag_value
+                except Exception as e:
+                    window["-OUTPUT_WINDOW_MAIN-"].update(f"ERROR: {e}")   
+                    
+                if total_matches > 0:
+                    final_results.append(current_file_results)
+                    total_sum_matches += total_matches
+                    total_matching_files += 1 if total_matches > 0 else 0
 
         return final_results, total_sum_matches, total_matching_files
 
-    except ValueError:
+    except ZeroDivisionError:
         pass
 
 def replace_empty_with_zero(value):
@@ -282,7 +335,7 @@ def replace_empty_with_zero(value):
     Returns:
         str: Returns 0 as value for CSV rows, which are empty
     """
-    return value if value != '' else 'NULL'
+    return value if value != '' else 'NaN'
 
 
 def export_evaluation_as_csv(csv_output_path, folder_containing_xml_files, matching_filters):
@@ -295,6 +348,7 @@ def export_evaluation_as_csv(csv_output_path, folder_containing_xml_files, match
     """
     try:
         window["-EXPORT_AS_CSV-"].update(disabled=True)
+        window["-INPUT_FOLDER_BROWSE-"].update(disabled=True)
 
         matching_results, total_matches_found, total_matching_files = evaluate_xml_files_matching(folder_containing_xml_files,
                                                                                                 matching_filters)
@@ -320,15 +374,18 @@ def export_evaluation_as_csv(csv_output_path, folder_containing_xml_files, match
                 f"Matches saved to {csv_output_path}\nFound {total_matching_files} "
                 f"files that have a total sum of {total_matches_found} matches.")
             window["-EXPORT_AS_CSV-"].update(disabled=False)
+            window["-INPUT_FOLDER_BROWSE-"].update(disabled=False)
             window['-PROGRESS_BAR-'].update(0)
         else:
             window["-OUTPUT_WINDOW_MAIN-"].update("No matches found.")
             window["-EXPORT_AS_CSV-"].update(disabled=False)
+            window["-INPUT_FOLDER_BROWSE-"].update(disabled=False)
             window['-PROGRESS_BAR-'].update(0)
 
     except TypeError as e:
         window["-OUTPUT_WINDOW_MAIN-"].update(f"Exception in program: {e}")
         window["-EXPORT_AS_CSV-"].update(disabled=False)
+        window["-INPUT_FOLDER_BROWSE-"].update(disabled=False)
         window['-PROGRESS_BAR-'].update(0)
 
 
@@ -434,7 +491,7 @@ frame_pandas_output = sg.Frame("CSV Conversion Output", layout_pandas_output, ex
 layout_xml_evaluation = [[sg.Menu(MENU_DEFINITION)],
                         [sg.Text("Choose a Folder that contains XML Files:", pad=5), sg.StatusBar("", key="-STATUSBAR-", expand_x=True, auto_size_text=True, font="Calibri 14 bold", size=(10,1))],
                         [sg.Input(size=(36, 2), font=font_input_elements, enable_events=True, expand_x=True, key="-FOLDER_EVALUATION_INPUT-"),
-                        sg.FolderBrowse(button_text="Browse Folder", target="-FOLDER_EVALUATION_INPUT-"),
+                        sg.FolderBrowse(button_text="Browse Folder", target="-FOLDER_EVALUATION_INPUT-",key="-INPUT_FOLDER_BROWSE-"),
                         sg.Button("Read XML", key="-READ_XML-")],
                         [sg.Text("Get XML Tag and Attribute Names/Values for XPath generation:", pad=5)],
                         [sg.Text("Tag name:"),
@@ -540,7 +597,9 @@ pywinstyles.apply_style(window,"mica")
 input_checked = False
 
 while True:
+    
     event, values = window.read()
+    
     if event == sg.WIN_CLOSED or event == "Exit":
         break
 
@@ -604,7 +663,7 @@ while True:
         layout_table = [[sg.Table(values=values, headings=head, auto_size_columns=False,
         col_widths=list(map(lambda x:len(x)+1, head)), expand_x=True, expand_y=True, justification="left")]]
         
-        window2 = sg.Window('XPath Cheat Sheet',  layout_table, resizable=True, size=(1200,600), font="Calibri 13", grab_anywhere=True)
+        window2 = sg.Window('XPath Cheat Sheet',  layout_table, resizable=True, size=(1200,600), font="Calibri 16", grab_anywhere=True)
         event, value = window2.read()
 
     elif event == "Open Output Folder::OpenOutputFolder":
@@ -669,7 +728,7 @@ while True:
 
     elif event == "-CONVERT_CSV_FILE-":
         window.perform_long_operation(lambda: convert_csv_file(input_file_pandas, output_file_pandas, input_extension_pandas, output_extension_pandas),
-                                      "-OUTPUT_WINDOW_CSV-")
+                                    "-OUTPUT_WINDOW_CSV-")
 
     elif event == "-READ_FILE-":
         window.perform_long_operation(lambda: read_csv_data(input_file_pandas), "-OUTPUT_WINDOW_CSV-")
@@ -818,7 +877,7 @@ while True:
             else:
                 window.perform_long_operation(
                     lambda: export_evaluation_as_csv(evaluation_output_folder, evaluation_input_folder,
-                                                     matching_filters_listbox), "-OUTPUT_WINDOW_MAIN-")
+                                                    matching_filters_listbox), "-OUTPUT_WINDOW_MAIN-")
         except Exception as e:
             window["-OUTPUT_WINDOW_MAIN-"].update(f"Error exporting CSV: {e}")
 

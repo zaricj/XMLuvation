@@ -2,3 +2,5 @@ lxml==5.1.0
 pandas==2.2.2
 PySimpleGUI==5.0.4
 pywinstyles==1.8
+tabulate
+openpyxl==1.1.0
