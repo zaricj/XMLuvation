@@ -1,3 +1,5 @@
 testing_redundacy.py
 webapp.html
 .venv
+.vscode
+isolate_me.py
