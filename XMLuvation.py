@@ -65,8 +65,10 @@ def convert_csv_file(input_file, output_file, input_ext, output_ext, ):
                                             font=PANDAS_FONT)
         window["-CONVERT_CSV_FILE-"].update(disabled=False)
 
-    except Exception as e:
-        window["-OUTPUT_WINDOW_CSV-"].update(f"ERROR: {e}", text_color="#ff4545", font=PANDAS_FONT)
+    except Exception as ex:
+        template = "An exception of type {0} occurred. Arguments: {1!r}"
+        message = template.format(type(ex).__name__, ex.args)
+        window["-OUTPUT_WINDOW_CSV-"].update(f"ERROR: {message}", text_color="#ff4545", font=PANDAS_FONT)
         window["-CONVERT_CSV_FILE-"].update(disabled=False)
 
 
@@ -136,8 +138,10 @@ def parse_xml(xml_file):
         tags_to_list = list(tags_to_set)
         # Add Elements to ComboBox List
         window["-XML_TAG_NAME-"].update(values=tags_to_list)
-    except Exception as e:
-        window["-OUTPUT_WINDOW_MAIN-"].update(f"Exception in program: {e}")
+    except Exception as ex:
+        template = "An exception of type {0} occurred. Arguments: {1!r}"
+        message = template.format(type(ex).__name__, ex.args)
+        window["-OUTPUT_WINDOW_MAIN-"].update(f"Exception in program: {message}")
 
 
 def get_tag_values(xml_file, tag_name):
@@ -225,8 +229,7 @@ def evaluate_xml_files_matching(folder_cotaining_xml_files, matching_filters):
                                     for element in result:
                                         attr_value = element.get(attribute_name_string)
                                         if attr_value and attr_value.strip():
-                                            current_file_results[f"Filter {attribute_name_string}"] = attr_value
-                                    current_file_results["Total Matching Tags"] = total_matches
+                                            current_file_results[f"Attribute {attribute_name_string} Value {attr_value} Matches"] = total_matches
 
                                 else:
                                     match = re.search(r"@([^=]+),", expression)
@@ -235,13 +238,14 @@ def evaluate_xml_files_matching(folder_cotaining_xml_files, matching_filters):
                                         for element in result:
                                             attr_value = element.get(attribute_name_string)
                                             if attr_value and attr_value.strip():
-                                                current_file_results[f"Filter {attribute_name_string}"] = attr_value
-                                        current_file_results["Total Matching Tags"] = total_matches
+                                                current_file_results[f"Attribute {attribute_name_string} Value {attr_value} Matches"] = total_matches
 
-                            elif "/@" in expression or "/text()" in expression:
-                                for element in result:
-                                    current_file_results[f"Filter {expression.split("/")[-2]}"] = element.strip()
-                                    final_results.append(current_file_results.copy())
+                            elif "/@" in expression:
+                                attribute_name_string = f"Attribute {expression.split("/")[-2]} Value"
+                                if attribute_name_string not in current_file_results:
+                                    current_file_results[attribute_name_string] = []
+                                    for element in result:
+                                        current_file_results[attribute_name_string].append(element.strip())
 
                             elif "text()=" in expression:
                                 match = re.search(r"//(.*?)\[", expression)
@@ -250,8 +254,15 @@ def evaluate_xml_files_matching(folder_cotaining_xml_files, matching_filters):
                                     for element in result:
                                         tag_value = element.text
                                         if tag_value and tag_value.strip():
-                                            current_file_results[f"Filter {tag_name_string}"] = tag_value
-                                    current_file_results["Total Matching Tags"] = total_matches
+                                            current_file_results[f"Tag {tag_name_string} Value {tag_value} Matches"] = total_matches
+
+                            elif "/text()" in expression:
+                                tag_name_string = f"Tag {expression.split("/")[-2]} Value"
+                                if tag_name_string not in current_file_results:
+                                    current_file_results[tag_name_string] = []
+                                    for element in result:
+                                        current_file_results[tag_name_string].append(element.strip())
+
 
                     elif len(matching_filters) > 1: # For more than 1 filter in listbox element of GUI
                         attribute_matches_dic = {}
@@ -282,7 +293,7 @@ def evaluate_xml_files_matching(folder_cotaining_xml_files, matching_filters):
                                                     attribute_matches_dic[f"{attribute_name_string}={attr_value}"] = matches_count
 
                                     for attribute, attr_count in attribute_matches_dic.items():
-                                        current_file_results[f"Filter {attribute} Matches"] = attr_count
+                                        current_file_results[f"Attribute {attribute} Matches"] = attr_count
 
                                 elif "/@" in expression:
                                     attr_name = expression.split("@")[-1]
@@ -291,7 +302,7 @@ def evaluate_xml_files_matching(folder_cotaining_xml_files, matching_filters):
                                         attribute_matches_dic[f"{attr_name}"] = attr_value
 
                                     for attribute, attr_count in attribute_matches_dic.items():
-                                        current_file_results[f"Filter {attr_name}"] = attr_value
+                                        current_file_results[f"Attribute {attr_name} Value"] = attr_value
 
                                 elif "text()=" in expression:
                                     match = re.search(r"//(.*?)\[", expression)
@@ -303,18 +314,22 @@ def evaluate_xml_files_matching(folder_cotaining_xml_files, matching_filters):
                                                 tag_matches_dic[f"{tag_name_string} {tag_value}"] = matches_count
 
                                     for tag, tag_count in tag_matches_dic.items():
-                                        current_file_results[f"Filter {tag} Matches"] = tag_count
+                                        current_file_results[f"Tag {tag} Matches"] = tag_count
 
                                 elif "/text()" in expression:
                                     tag_name_string = expression.split("/")[-2]
                                     tag_value = result[0].strip()
                                     if tag_value:
                                         tag_matches_dic[f"{tag_name_string}"] = tag_value
-
+                                        
                                     for tag, tag_count in tag_matches_dic.items():
-                                        current_file_results[f"Filter {tag_name_string}"] = tag_value
-                except Exception as e:
-                    window["-OUTPUT_WINDOW_MAIN-"].update(f"ERROR: {e}")   
+                                        current_file_results[f"Tag {tag_name_string} Value"] = tag_value
+                                        
+                except Exception as ex:
+                    template = "An exception of type {0} occurred. Arguments: {1!r}"
+                    message = template.format(type(ex).__name__, ex.args)
+                    window["-OUTPUT_WINDOW_MAIN-"].update(f"ERROR: {message}")
+                    break
                     
                 if total_matches > 0:
                     final_results.append(current_file_results)
@@ -383,7 +398,7 @@ def export_evaluation_as_csv(csv_output_path, folder_containing_xml_files, match
             window['-PROGRESS_BAR-'].update(0)
 
     except TypeError as e:
-        window["-OUTPUT_WINDOW_MAIN-"].update(f"Exception in program: {e}")
+        window["-OUTPUT_WINDOW_MAIN-"].update(f"TypeError Exception in program: {e}")
         window["-EXPORT_AS_CSV-"].update(disabled=False)
         window["-INPUT_FOLDER_BROWSE-"].update(disabled=False)
         window['-PROGRESS_BAR-'].update(0)
@@ -754,8 +769,10 @@ while True:
             else:
                 window["-XML_ATTRIBUTE_NAME-"].update(disabled=False)
 
-        except Exception as e:
-            window["-OUTPUT_WINDOW_MAIN-"].update(f"Exception in Program {e}")
+        except Exception as ex:
+            template = "An exception of type {0} occurred. Arguments: {1!r}"
+            message = template.format(type(ex).__name__, ex.args)
+            window["-OUTPUT_WINDOW_MAIN-"].update(f"ERROR: {message}")
 
     elif event == "-XML_ATTRIBUTE_NAME-":
         try:
@@ -775,8 +792,10 @@ while True:
             if not values_xml:
                 window["-XML_TAG_VALUE-"].update(disabled=True, values="")
 
-        except Exception as e:
-            window["-OUTPUT_WINDOW_MAIN-"].update(f"Exception in Program: {e}")
+        except Exception as ex:
+            template = "An exception of type {0} occurred. Arguments: {1!r}"
+            message = template.format(type(ex).__name__, ex.args)
+            window["-OUTPUT_WINDOW_MAIN-"].update(f"ERROR: {message}")
 
     elif event in ("-BUILD_XPATH-", "-RADIO_DEFAULT-", "-RADIO_CONTAINS-", "-RADIO_STARTSWITH-", "-RADIO_GREATER-", "-RADIO_SMALLER-"):
         try:
@@ -859,8 +878,10 @@ while True:
                 window["-OUTPUT_WINDOW_MAIN-"].update(
                     f"Duplicate XPath expression {xpath_expression_input} is already in the list.")
 
-        except Exception as e:
-            window["-OUTPUT_WINDOW_MAIN-"].update(f"Error adding filter: {e}")
+        except Exception as ex:
+            template = "An exception of type {0} occurred. Arguments: {1!r}"
+            message = template.format(type(ex).__name__, ex.args)
+            window["-OUTPUT_WINDOW_MAIN-"].update(f"Error adding filter: {message}")
 
     elif event == "-EXPORT_AS_CSV-":
         try:
@@ -878,7 +899,9 @@ while True:
                 window.perform_long_operation(
                     lambda: export_evaluation_as_csv(evaluation_output_folder, evaluation_input_folder,
                                                     matching_filters_listbox), "-OUTPUT_WINDOW_MAIN-")
-        except Exception as e:
-            window["-OUTPUT_WINDOW_MAIN-"].update(f"Error exporting CSV: {e}")
+        except Exception as ex:
+            template = "An exception of type {0} occurred. Arguments: {1!r}"
+            message = template.format(type(ex).__name__, ex.args)
+            window["-OUTPUT_WINDOW_MAIN-"].update(f"Error exporting CSV: {message}")
 
 window.close()  # Kill Program
