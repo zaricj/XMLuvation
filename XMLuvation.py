@@ -3,11 +3,11 @@ import os
 import re
 import webbrowser
 import pywinstyles
-from pathlib import Path
 import PySimpleGUI as sg
 import pandas as pd
+import pywinstyles
 from lxml import etree as ET
-
+from pathlib import Path
 
 PROGRAM_ICON = b"iVBORw0KGgoAAAANSUhEUgAAACAAAAAgCAYAAABzenr0AAAABHNCSVQICAgIfAhkiAAAAAlwSFlzAAAOxAAADsQBlSsOGwAAA8pJREFUWIXtVl1oHFUYPefOJpNkQ9omJps11mIZKkiTaQmEarMtguKDL4ot9adCQUVU0pBSRRBEpSiJUKlYxPTnrVUEhT5UCaKYbkqlVM0mNBTZaoNtuhuX/Ehbd5LZ+/mw2dnZNWm6NIhgztOd+X7OuWcu9xtgGcv4v4NL0eRcK8qaKu2dBNYpxWjDqcGv/lUByYj9KsgeABCRTIXo+pUDw5O3UquWQgCInfklRm+VfEkEJLY0NwNsyYuR46XU374Dwme8pYhkkClJQGCxhFSbVeOWBzug8ApEv9QYHT7hEQIcB5/KPZP4WURVJiN2UoscV4bbHeofSdys/4KHcHKrvdIRdkKkk+SqLKEcaTwVez6XM9a+fquhAt97gjJ6rxCzSqkD2RfylwZ6DTjdDdELV+fj+ccnmGpvXpVst99xNC4ReCtHDgDQ+M2fazDgtz9jiPGpoVQ8vz1WKrJTYF5MROwDfzxw750LOjC16b5apyywR8AOkjUFWSITEBy8YUy9e0//aBoAfrEssyYcvOoJFPk2FI09JIAxHmnpEuEeKoYL20haAYfSs+i++4fYFU/AxP0b18wE9E8kawsL9BUl2C+G2xvqH7nmjyU224/T4JeeORn9XPj00FGv1rLMVDi4KwPsJWkVbSgNyGOh6FBfAADcgPswadTm4+JQpCs14R5ZPzIyU2zbnHd++9Nm+toXBeF43EEcnwhwKLHZ3qYMfASwPhtkhRZ5BECfAgABfy8oJk1QvVFfV9aZarMKPweAida1K0g8mt8RTtb++Ot0cd7ngJGItGynwuseeY5DMAXMHcKG6NA3FP0mIPkbjGgC2eOa1aPJSMu+sXbLa+BUVW8DWeETcMzfXCzLTETsF7dE7AuK6jOSG/NBcbToXk64+7M0PlxsXbsiWFW9G2BXwenPklwH9BOh6FBfItLyHakenAtMTo9dD6+Lxx0ASG2ymzLlOANwdUG5iAPgaBnc9+qi5z3H570HUm1WjTaDuwXogv9giv5gxpH95aa6BNIAAK3lcHgg9kIuJdm+4WUoHPQRp5XIYWdGulefHb5czDXvTXjH2fifAPal2qwPdUWwQwRdIOsgiuUmngRheA2K7adMEwREbmiRXoMzPQ0D819CCzownyOzZtV2pdyT1OVfC7FhbneXP47G1rwN6FzuudbWsrsq3V2SkRPhM0Pji/Uu6X8gO/mMGOfqROP9xoHB10rpUYzSpqFWT9MnmjJ77GbpSy8AaMstRDAYOn0+drsCFh3HfhhaPSvQO7SirhKUNPeXsYz/LP4Gk8OElv5Vn3MAAAAASUVORK5CYII="
 LOGO = "./images/logo.png"
@@ -182,21 +182,62 @@ def get_attribute_values(xml_file, tag_name, attribute):
         return list(set(attribute_value_list))
     except ValueError:
         pass
+    
+    
+def is_valid_xpath(expression):
+    # Define valid patterns
+    valid_patterns = [
+        r"^/[\w]+$",  # /xml_element
+        r"^//[\w]+$",  # //xml_element
+        r"^//[\w]+\[@[\w]+\]$",  # //xml_element[@attribute]
+        r"^//[\w]+\[@[\w]+='[^']*'\]$",  # //xml_element[@attribute='value']
+        r"^//[\w]+\[@[\w]+!='[^']*'\]$",  # //xml_element[@attribute!='value']
+        r"^//[\w]+\[@[\w]+='[^']*' and @[\w]+='[^']*'\]$",  # //xml_element[@attribute1='value1' and @attribute2='value2']
+        r"^//[\w]+\[contains\(@[\w]+, '[^']*'\)\]$",  # //xml_element[contains(@attribute, 'substring')]
+        r"^//[\w]+\[starts-with\(@[\w]+, '[^']*'\)\]$",  # //xml_element[starts-with(@attribute, 'substring')]
+        r"^//[\w]+\[text\(\)='[^']*'\]$",  # //xml_element[text()='value']
+        r"^//[\w]+\[contains\(text\(\), '[^']*'\)\]$",  # //xml_element[contains(text(), 'substring')]
+        r"^//[\w]+\[starts-with\(text\(\), '[^']*'\)\]$",  # //xml_element[starts-with(text(), 'substring')]
+        r"^//[\w]+\[number\(@[\w]+\) > [0-9]+\]$",  # //xml_element[number(@attribute) > 10]
+        r"^//[\w]+\[number\(@[\w]+\) < [0-9]+\]$",  # //xml_element[number(@attribute) < 10]
+        r"^//[\w]+/[\w]+/text\(\)$",  # //xml_element/xml_element/text()
+        r"^//[\w]+/[\w]+\[@[\w]+\]/text\(\)$",  # //xml_element/xml_element[@attribute]/text()
+        r"^//[\w]+/[\w]+\[@[\w]+='[^']*'\]/text\(\)$",  # //xml_element/xml_element[@attribute='value']/text()
+        r"^//[\w]+/[\w]+$",  # //xml_element/xml_element
+        r"^//[\w]+/[\w]+/[\w]+$",  # //xml_element/xml_element/xml_element
+    ]
+
+    # Check if expression matches any pattern
+    return any(re.match(pattern, expression) for pattern in valid_patterns)
+        
+
+def extract_values_from_xml(tree, xpath_expressions):
+    try:
+        valid_expressions = [xpath for xpath in xpath_expressions if is_valid_xpath(xpath)]
+        print(f"Valid XPath expressions: {valid_expressions}")
+        
+        extracted_values = [tree.xpath(xpath) for xpath in valid_expressions]
+        return extracted_values
+    
+    except ET.XPathSyntaxError as ex:
+        template = "An exception of type {0} occurred. Arguments: {1!r}"
+        message = template.format(type(ex).__name__, ex.args)
+        window["-OUTPUT_WINDOW_MAIN-"].update(f"ERROR: {message}")
 
 
-def evaluate_xml_files_matching(folder_cotaining_xml_files, matching_filters):
+def evaluate_xml_files_matching(folder_containing_xml_files, matching_filters):
     final_results = []
-    total_files = sum(1 for filename in os.listdir(folder_cotaining_xml_files) if filename.endswith(".xml"))
+    total_files = sum(1 for filename in os.listdir(folder_containing_xml_files) if filename.endswith(".xml"))
     progress_increment = 100 / total_files
     current_progress = 0
-    window["-PROGRESS_BAR-"].update(current_progress)
     total_sum_matches = 0
     total_matching_files = 0
-    # //TODO Add for other functions search for example contains, starts-with etc for text() and probably @! 
+    window["-PROGRESS_BAR-"].update(current_progress)
+
     try:
-        for filename in os.listdir(folder_cotaining_xml_files):
+        for filename in os.listdir(folder_containing_xml_files):
             if filename.endswith(".xml"):
-                file_path = os.path.join(folder_cotaining_xml_files, filename)
+                file_path = os.path.join(folder_containing_xml_files, filename)
                 current_progress += progress_increment
                 window["-PROGRESS_BAR-"].update(round(current_progress, 2))
                 window["-OUTPUT_WINDOW_MAIN-"].update(f"Processing {filename}")
@@ -210,18 +251,19 @@ def evaluate_xml_files_matching(folder_cotaining_xml_files, matching_filters):
                     else:
                         window["-OUTPUT_WINDOW_MAIN-"].update(f"XMLSyntaxError occurred: {e}")
                         continue
-                
+
                 try:
                     total_matches = 0
                     current_file_results = {"Filename": os.path.splitext(filename)[0]}
 
-                    if len(matching_filters) == 1: # For only 1 filter in listbox element of GUI
+                    extracted_values = extract_values_from_xml(tree, matching_filters)
+
+                    if len(matching_filters) == 1:
                         expression = matching_filters[0]
                         result = tree.xpath(expression)
                         total_matches += len(result)
 
                         if result:
-
                             if "[@" in expression:
                                 match = re.search(r"@([^=]+)=", expression)
                                 if match:
@@ -241,7 +283,7 @@ def evaluate_xml_files_matching(folder_cotaining_xml_files, matching_filters):
                                                 current_file_results[f"Attribute {attribute_name_string} Value {attr_value} Matches"] = total_matches
 
                             elif "/@" in expression:
-                                attribute_name_string = f"Attribute {expression.split("/")[-2]} Value"
+                                attribute_name_string = f"Attribute {expression.split('/')[-2]} Value"
                                 if attribute_name_string not in current_file_results:
                                     current_file_results[attribute_name_string] = []
                                     for element in result:
@@ -257,82 +299,64 @@ def evaluate_xml_files_matching(folder_cotaining_xml_files, matching_filters):
                                             current_file_results[f"Tag {tag_name_string} Value {tag_value} Matches"] = total_matches
 
                             elif "/text()" in expression:
-                                tag_name_string = f"Tag {expression.split("/")[-2]} Value"
+                                tag_name_string = f"Tag {expression.split('/')[-2]} Value"
                                 if tag_name_string not in current_file_results:
                                     current_file_results[tag_name_string] = []
                                     for element in result:
                                         current_file_results[tag_name_string].append(element.strip())
 
+                            final_results.append(current_file_results)
+                            
+                    elif len(matching_filters) > 1:
+                        combined_data = list(zip(*extracted_values))
 
-                    elif len(matching_filters) > 1: # For more than 1 filter in listbox element of GUI
-                        attribute_matches_dic = {}
-                        tag_matches_dic = {}
-
-                        for expression in matching_filters:
-                            result = tree.xpath(expression)
-                            matches_count = len(result)
-                            total_matches += len(result)
-
-                            if result:
+                        for row in combined_data:
+                            result = {"Filename": os.path.splitext(filename)[0]}
+                            for idx, value in enumerate(row):
+                                expression = matching_filters[idx]
+                                if isinstance(value, ET._Element):
+                                    value = value.text if value.text else value.get(expression.split('@')[-1])
 
                                 if "[@" in expression:
                                     match = re.search(r"@([^=]+)=", expression)
                                     if match:
                                         attribute_name_string = match.group(1).strip()
-                                        for element in result:
-                                            attr_value = element.get(attribute_name_string)
-                                            if attr_value and attr_value.strip():
-                                                attribute_matches_dic[f"{attribute_name_string}={attr_value}"] = matches_count
+                                        if value and value.strip():
+                                            result[f"Attribute {attribute_name_string}"] = value.strip()
                                     else:
                                         match = re.search(r"@([^=]+),", expression)
                                         if match:
                                             attribute_name_string = match.group(1).strip()
-                                            for element in result:
-                                                attr_value = element.get(attribute_name_string)
-                                                if attr_value and attr_value.strip():
-                                                    attribute_matches_dic[f"{attribute_name_string}={attr_value}"] = matches_count
-
-                                    for attribute, attr_count in attribute_matches_dic.items():
-                                        current_file_results[f"Attribute {attribute} Matches"] = attr_count
-
+                                            if value and value.strip():
+                                                result[f"Attribute {attribute_name_string}"] = value.strip()
                                 elif "/@" in expression:
-                                    attr_name = expression.split("@")[-1]
-                                    attr_value = result[0].strip()
-                                    if attr_value and attr_value.strip():
-                                        attribute_matches_dic[f"{attr_name}"] = attr_value
-
-                                    for attribute, attr_count in attribute_matches_dic.items():
-                                        current_file_results[f"Attribute {attr_name} Value"] = attr_value
-
+                                    attribute_name_string = f"Attribute {expression.split('/')[-2]}"
+                                    if value and value.strip():
+                                        result[attribute_name_string] = value.strip()
                                 elif "text()=" in expression:
                                     match = re.search(r"//(.*?)\[", expression)
                                     if match:
                                         tag_name_string = match.group(1).strip()
-                                        for element in result:
-                                            tag_value = element.text
-                                            if tag_value and tag_value.strip():
-                                                tag_matches_dic[f"{tag_name_string} {tag_value}"] = matches_count
-
-                                    for tag, tag_count in tag_matches_dic.items():
-                                        current_file_results[f"Tag {tag} Matches"] = tag_count
-
+                                        if value and value.strip():
+                                            result[f"Tag {tag_name_string}"] = value.strip()
                                 elif "/text()" in expression:
-                                    tag_name_string = expression.split("/")[-2]
-                                    tag_value = result[0].strip()
-                                    if tag_value:
-                                        tag_matches_dic[f"{tag_name_string}"] = tag_value
-                                        
-                                    for tag, tag_count in tag_matches_dic.items():
-                                        current_file_results[f"Tag {tag_name_string} Value"] = tag_value
-                                        
+                                    tag_name_string = f"Tag {expression.split('/')[-2]}"
+                                    if value and value.strip():
+                                        result[tag_name_string] = value.strip()
+                                else:
+                                    if value and value.strip():
+                                        result[f"Tag {idx + 1}"] = value.strip()
+
+                            final_results.append(result)
+                            total_matches += 1
+
                 except Exception as ex:
                     template = "An exception of type {0} occurred. Arguments: {1!r}"
                     message = template.format(type(ex).__name__, ex.args)
                     window["-OUTPUT_WINDOW_MAIN-"].update(f"ERROR: {message}")
                     break
-                    
+
                 if total_matches > 0:
-                    final_results.append(current_file_results)
                     total_sum_matches += total_matches
                     total_matching_files += 1 if total_matches > 0 else 0
 
@@ -340,6 +364,7 @@ def evaluate_xml_files_matching(folder_cotaining_xml_files, matching_filters):
 
     except ZeroDivisionError:
         pass
+
 
 def replace_empty_with_zero(value):
     """_summary_
@@ -350,7 +375,7 @@ def replace_empty_with_zero(value):
     Returns:
         str: Returns 0 as value for CSV rows, which are empty
     """
-    return value if value != '' else 'NaN'
+    return value if value != '' else ''
 
 
 def export_evaluation_as_csv(csv_output_path, folder_containing_xml_files, matching_filters):
@@ -456,8 +481,8 @@ font_input_elements = ("Calibri", 12)
 FILE_TYPE_XML = (("XML (Extensible Markup Language)", ".xml"),)
 MENU_RIGHT_CLICK_DELETE = ["&Right", ["&Delete", "&Delete All"]]
 MENU_DEFINITION = [["&File", ["&Open Output Folder::OpenOutputFolder", "&Open Input Folder::OpenInputFolder", "---", "Clear Output::ClearOutput", "---", "E&xit"]],
-                    ["&Help", ["&XPath Help::XPathSyntaxURL", "XPath Cheat Sheet::XPathCheatSheet"]],
-                    ["&GoTo", ["&Lobster Test::LobsterTest", "&Lobster Prod::LobsterProd"]]]
+                    ["&Paths", ["&Lobster Test System::LobsterTest", "&Lobster Prod System::LobsterProd"]],
+                    ["&Help", ["&XPath Help::XPathSyntaxURL", "XPath Cheat Sheet::XPathCheatSheet"]]]
 
 # Constants for Pandas Conversion
 FILE_TYPES_INPUT = (("CSV (Comma Separated Value)", ".csv"),)
@@ -607,8 +632,7 @@ layout = [
 ]
 
 window = sg.Window(f"XMLuvation v0.9 © 2024 by Jovan Zaric", layout, font=font, icon=PROGRAM_ICON, finalize=True)
-pywinstyles.apply_style(window,"mica")
-
+pywinstyles.change_header_color(window.TKroot, color="#4d5157") 
 input_checked = False
 
 while True:
@@ -702,10 +726,11 @@ while True:
     elif event == "Clear Output::ClearOutput":
         window["-OUTPUT_WINDOW_MAIN-"].update("")
         
-    elif event == "Lobster Test::LobsterTest":
+    elif event == "Lobster Test System::LobsterTest":
         window.write_event_value(key="-FOLDER_EVALUATION_INPUT-",value="//nesist02/ProfilileXMLExport")
         window["-FOLDER_EVALUATION_INPUT-"].update("//nesist02/ProfilileXMLExport")
-    elif event == "Lobster Prod::LobsterProd":
+        
+    elif event == "Lobster Prod System::LobsterProd":
         window.write_event_value(key="-FOLDER_EVALUATION_INPUT-",value="//nesis002/ProfilileXMLExport")
         window["-FOLDER_EVALUATION_INPUT-"].update("//nesis002/ProfilileXMLExport")
         
@@ -866,17 +891,24 @@ while True:
 
     elif event == "-ADD_TO_MATCHING-":
         try:
+            print(xpath_expression_input)
             if not xpath_expression_input:
                 window["-OUTPUT_WINDOW_MAIN-"].update("No XPath expression entered.")
-
-
+            
             elif xpath_expression_input and not is_duplicate(xpath_expression_input):
-                matching_filters_listbox.append(xpath_expression_input)
-                window["-MATCHING_FILTER_LIST-"].update(values=matching_filters_listbox)
-                window["-OUTPUT_WINDOW_MAIN-"].update(f"XPath expression added: {xpath_expression_input}")
+                validate = is_valid_xpath(xpath_expression_input)
+                print(validate)
+                if validate:
+                    matching_filters_listbox.append(xpath_expression_input)
+                    window["-MATCHING_FILTER_LIST-"].update(values=matching_filters_listbox)
+                    window["-OUTPUT_WINDOW_MAIN-"].update(f"XPath expression added: {xpath_expression_input}")
+                else:
+                    window["-OUTPUT_WINDOW_MAIN-"].update("Not a valid XPath Expression.")
+                    continue
             elif is_duplicate(xpath_expression_input):
                 window["-OUTPUT_WINDOW_MAIN-"].update(
                     f"Duplicate XPath expression {xpath_expression_input} is already in the list.")
+            
 
         except Exception as ex:
             template = "An exception of type {0} occurred. Arguments: {1!r}"
