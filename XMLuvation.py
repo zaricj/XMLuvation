@@ -254,17 +254,6 @@ def is_valid_xpath(expression):
     return any(re.match(pattern, expression) for pattern in valid_patterns)
 
 
-def extract_values_from_xml(tree, xpath_expressions):
-    try:
-        extracted_values = [tree.xpath(xpath) for xpath in xpath_expressions]
-        return extracted_values
-
-    except ET.XPathSyntaxError as ex:
-        template = "An exception of type {0} occurred. Arguments: {1!r}"
-        message = template.format(type(ex).__name__, ex.args)
-        window["-OUTPUT_WINDOW_MAIN-"].update(f"ERROR: {message}")
-
-
 def evaluate_xml_files_matching(folder_containing_xml_files, matching_filters):
     final_results = []
     total_files = sum(
@@ -304,14 +293,13 @@ def evaluate_xml_files_matching(folder_containing_xml_files, matching_filters):
                     total_matches = 0
                     current_file_results = {"Filename": os.path.splitext(filename)[0]}
 
-                    extracted_values = extract_values_from_xml(tree, matching_filters)
-
                     if len(matching_filters) == 1:
                         expression = matching_filters[0]
                         result = tree.xpath(expression)
                         total_matches += len(result)
 
                         if result:
+                            
                             if "[@" in expression:
                                 match = re.search(r"@([^=]+)=", expression)
                                 if match:
@@ -362,52 +350,67 @@ def evaluate_xml_files_matching(folder_containing_xml_files, matching_filters):
                                         )
 
                             final_results.append(current_file_results)
-
-                    elif len(matching_filters) > 1:
-                        combined_data = list(zip(*extracted_values))
-                        # //TODO Fix this Part the variable "value" is a <Element Filter> object, can't have strip and also it writes the value wrong, ex: Attribute id Value <Element Filter at 0x1a74..> Matches: 0
-                        for row in combined_data:
+                            
+                        else:
+                            pass
+                        
+                    elif len(matching_filters) > 1: # //TODO Fix this Part the variable "value" is a <Element Filter> object, can't have strip and also it writes the value wrong, ex: Attribute id Value <Element Filter at 0x1a74..> Matches: 0
+                        for expression in matching_filters:
+                            result = tree.xpath(expression)
+                            matches_count = len(result)
+                            total_matches += len(result)
                             current_file_results = {"Filename": os.path.splitext(filename)[0]}
-                            for idx, value in enumerate(row):
-                                expression = matching_filters[idx]
+                            
+                            if result:
                                         
                                 if "[@" in expression:
                                     match = re.search(r"@([^=]+)=", expression)
                                     if match:
                                         attribute_name_string = match.group(1).strip()
-                                        if value is not None:
-                                            current_file_results[f"Attribute {attribute_name_string} Value {value} Matches"] = total_matches
-                                            
+                                        for element in result:
+                                            attribute_value_string = element.get(attribute_name_string)
+                                            if attribute_value_string and attribute_value_string.strip():
+                                                current_file_results[f"Attribute {attribute_name_string} Value {attribute_value_string} Matches"] = matches_count
+
                                     else:
                                         match = re.search(r"@([^=]+),", expression)
                                         if match:
                                             attribute_name_string = match.group(1).strip()
-                                            if value is not None:
-                                                current_file_results[f"Attribute {attribute_name_string} Value {value} Matches"] = total_matches
-                                                
+                                            for element in result:
+                                                attribute_value_string = element.get(attribute_name_string)
+                                                if attribute_value_string and attribute_value_string.strip():
+                                                    current_file_results[f"Attribute {attribute_name_string} Value {attribute_value_string} Matches"] = matches_count
+
+
                                 elif "/@" in expression:
                                     attribute_name_string = (f"Attribute {expression.split('@')[-1]} Value")
-                                    if value is not None:
-                                        current_file_results[attribute_name_string] = value
-                                        
+                                    attribute_value_string = result[0].split("@")[-1]
+                                    if attribute_value_string and attribute_value_string.strip():
+                                        current_file_results[attribute_name_string] = attribute_value_string
+
                                 elif "text()=" in expression:
                                     match = re.search(r"//(.*?)\[", expression)
                                     if match:
                                         tag_name_string = match.group(1).strip()
-                                        if value is not None:
-                                            current_file_results[f"Tag {tag_name_string} Value {value} Matches"] = total_matches
-                                            
+                                        for element in result:
+                                            tag_value_string = element.text
+                                            if tag_value_string and tag_value_string.strip():
+                                                current_file_results[f"Tag {tag_name_string} Value {tag_value_string} Matches"] = matches_count
+
                                 elif "/text()" in expression:
                                     tag_name_string = f"Tag {expression.split('@')[-1]} Value"
-                                    if value is not None:
-                                        current_file_results[tag_name_string] = value
-                                        
-                                else:
-                                    if value is not None:
-                                        current_file_results[f"Tag {idx + 1}"] = value
+                                    tag_value_string = result[0].strip()
+                                    if tag_value_string and tag_value_string.strip():
+                                        current_file_results[tag_name_string] = tag_value_string
 
-                                final_results.append(current_file_results)
-                                total_matches += 1
+                                #else:
+                                #    if value is not None:
+                                #        current_file_results[f"Tag {idx + 1}"] = value
+                            else:
+                                pass
+                                
+                            final_results.append(current_file_results)
+                            total_matches += 1
 
                 except Exception as ex:
                     template = "An exception of type {0} occurred. Arguments: {1!r}"
@@ -434,7 +437,7 @@ def replace_empty_with_zero(value):
     Returns:
         str: Returns 0 as value for CSV rows, which are empty
     """
-    return value if value != "" else ""
+    return value if value != "" else "NULL"
 
 
 def export_evaluation_as_csv(
@@ -911,7 +914,7 @@ layout = [
 ]
 
 window = sg.Window(
-    f"XMLuvation v0.9 © 2024 by Jovan Zaric",
+    f"XMLuvation v0.9.4 © 2024 by Jovan Zaric",
     layout,
     font=FONT,
     icon=PROGRAM_ICON,
