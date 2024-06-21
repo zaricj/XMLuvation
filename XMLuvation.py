@@ -246,6 +246,8 @@ def is_valid_xpath(expression):
         r"^//[\w]+/[\w]+\[@[\w]+='[^']*'\]/text\(\)$",  # //xml_element/xml_element[@attribute='value']/text()
         r"^//[\w]+/[\w]+$",  # //xml_element/xml_element
         r"^//[\w]+/[\w]+/[\w]+$",  # //xml_element/xml_element/xml_element
+        r"^//[\w]+/text\(\)$",  # //xml_element/text()
+        r"^//[\w]+/@[\w]+$",  # //xml_element/@attribute
     ]
 
     # Check if expression matches any pattern
@@ -317,9 +319,7 @@ def evaluate_xml_files_matching(folder_containing_xml_files, matching_filters):
                                     for element in result:
                                         attr_value = element.get(attribute_name_string)
                                         if attr_value and attr_value.strip():
-                                            current_file_results[
-                                                f"Attribute {attribute_name_string} Value {attr_value} Matches"
-                                            ] = total_matches
+                                            current_file_results[f"Attribute {attribute_name_string} Value {attr_value} Matches"] = total_matches
 
                                 else:
                                     match = re.search(r"@([^=]+),", expression)
@@ -330,14 +330,10 @@ def evaluate_xml_files_matching(folder_containing_xml_files, matching_filters):
                                                 attribute_name_string
                                             )
                                             if attr_value and attr_value.strip():
-                                                current_file_results[
-                                                    f"Attribute {attribute_name_string} Value {attr_value} Matches"
-                                                ] = total_matches
+                                                current_file_results[f"Attribute {attribute_name_string} Value {attr_value} Matches"] = total_matches
 
                             elif "/@" in expression:
-                                attribute_name_string = (
-                                    f"Attribute {expression.split('/')[-2]} Value"
-                                )
+                                attribute_name_string = (f"Attribute {expression.split('@')[-1]} Value")
                                 if attribute_name_string not in current_file_results:
                                     current_file_results[attribute_name_string] = []
                                     for element in result:
@@ -352,9 +348,7 @@ def evaluate_xml_files_matching(folder_containing_xml_files, matching_filters):
                                     for element in result:
                                         tag_value = element.text
                                         if tag_value and tag_value.strip():
-                                            current_file_results[
-                                                f"Tag {tag_name_string} Value {tag_value} Matches"
-                                            ] = total_matches
+                                            current_file_results[f"Tag {tag_name_string} Value {tag_value} Matches"] = total_matches
 
                             elif "/text()" in expression:
                                 tag_name_string = (
@@ -371,60 +365,49 @@ def evaluate_xml_files_matching(folder_containing_xml_files, matching_filters):
 
                     elif len(matching_filters) > 1:
                         combined_data = list(zip(*extracted_values))
-
+                        # //TODO Fix this Part the variable "value" is a <Element Filter> object, can't have strip and also it writes the value wrong, ex: Attribute id Value <Element Filter at 0x1a74..> Matches: 0
                         for row in combined_data:
-                            result = {"Filename": os.path.splitext(filename)[0]}
+                            current_file_results = {"Filename": os.path.splitext(filename)[0]}
                             for idx, value in enumerate(row):
                                 expression = matching_filters[idx]
-                                if isinstance(value, ET._Element):
-                                    value = (
-                                        value.text
-                                        if value.text
-                                        else value.get(expression.split("@")[-1])
-                                    )
-
+                                        
                                 if "[@" in expression:
                                     match = re.search(r"@([^=]+)=", expression)
                                     if match:
                                         attribute_name_string = match.group(1).strip()
-                                        if value and value.strip():
-                                            result[
-                                                f"Attribute {attribute_name_string}"
-                                            ] = value.strip()
+                                        if value is not None:
+                                            current_file_results[f"Attribute {attribute_name_string} Value {value} Matches"] = total_matches
+                                            
                                     else:
                                         match = re.search(r"@([^=]+),", expression)
                                         if match:
-                                            attribute_name_string = match.group(
-                                                1
-                                            ).strip()
-                                            if value and value.strip():
-                                                result[
-                                                    f"Attribute {attribute_name_string}"
-                                                ] = value.strip()
+                                            attribute_name_string = match.group(1).strip()
+                                            if value is not None:
+                                                current_file_results[f"Attribute {attribute_name_string} Value {value} Matches"] = total_matches
+                                                
                                 elif "/@" in expression:
-                                    attribute_name_string = (
-                                        f"Attribute {expression.split('/')[-2]}"
-                                    )
-                                    if value and value.strip():
-                                        result[attribute_name_string] = value.strip()
+                                    attribute_name_string = (f"Attribute {expression.split('@')[-1]} Value")
+                                    if value is not None:
+                                        current_file_results[attribute_name_string] = value
+                                        
                                 elif "text()=" in expression:
                                     match = re.search(r"//(.*?)\[", expression)
                                     if match:
                                         tag_name_string = match.group(1).strip()
-                                        if value and value.strip():
-                                            result[f"Tag {tag_name_string}"] = (
-                                                value.strip()
-                                            )
+                                        if value is not None:
+                                            current_file_results[f"Tag {tag_name_string} Value {value} Matches"] = total_matches
+                                            
                                 elif "/text()" in expression:
-                                    tag_name_string = f"Tag {expression.split('/')[-2]}"
-                                    if value and value.strip():
-                                        result[tag_name_string] = value.strip()
+                                    tag_name_string = f"Tag {expression.split('@')[-1]} Value"
+                                    if value is not None:
+                                        current_file_results[tag_name_string] = value
+                                        
                                 else:
-                                    if value and value.strip():
-                                        result[f"Tag {idx + 1}"] = value.strip()
+                                    if value is not None:
+                                        current_file_results[f"Tag {idx + 1}"] = value
 
-                            final_results.append(result)
-                            total_matches += 1
+                                final_results.append(current_file_results)
+                                total_matches += 1
 
                 except Exception as ex:
                     template = "An exception of type {0} occurred. Arguments: {1!r}"
