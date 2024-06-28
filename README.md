@@ -49,7 +49,9 @@ This project is licensed under the MIT License.
 
 ## Screenshot
 ##### Main View
-![image](https://github.com/zaricj/XMLuvation/assets/93329694/b1d309bf-a95f-4fb9-ae82-6501095dc450)
+![image](https://github.com/zaricj/XMLuvation/assets/93329694/ab775ec5-e1df-4a25-93ac-c3fe41d35ee6)
+
 ##### CSV Conversion View
-![image](https://github.com/zaricj/XMLuvation/assets/93329694/bbaaad65-2732-4198-bd8a-8b637f73f989)
+![image](https://github.com/zaricj/XMLuvation/assets/93329694/876daa4b-d480-4601-a56b-23fcc553009e)
+
 
