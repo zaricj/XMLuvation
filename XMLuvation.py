@@ -5,13 +5,13 @@ import webbrowser
 import pywinstyles
 import FreeSimpleGUI as sg
 import pandas as pd
-import pywinstyles
 from lxml import etree as ET
 from pathlib import Path
 
 PROGRAM_ICON = "_internal/icon/xml_32px.ico"
 LOGO = "_internal/images/logo.png"
 PANDAS_FONT = "Calibri 13 bold"
+
 
 # ========== FUNCTIONS ========== #
 def convert_csv_file(
@@ -122,7 +122,6 @@ def read_csv_data(csv_file):
                 )
 
         except UnicodeDecodeError:
-
             if not values["-CHECKBOX_WRITE_INDEX_COLUMN-"]:
                 csv_df = pd.read_csv(
                     input_file_pandas,
@@ -319,7 +318,9 @@ def evaluate_xml_files_matching(folder_containing_xml_files, matching_filters):
                                     for element in result:
                                         attr_value = element.get(attribute_name_string)
                                         if attr_value and attr_value.strip():
-                                            current_file_results[f"Attribute {attribute_name_string} Value {attr_value} Matches"] = total_matches
+                                            current_file_results[
+                                                f"Attribute {attribute_name_string} Value {attr_value} Matches"
+                                            ] = total_matches
 
                                 else:
                                     match = re.search(r"@([^=]+),", expression)
@@ -330,10 +331,14 @@ def evaluate_xml_files_matching(folder_containing_xml_files, matching_filters):
                                                 attribute_name_string
                                             )
                                             if attr_value and attr_value.strip():
-                                                current_file_results[f"Attribute {attribute_name_string} Value {attr_value} Matches"] = total_matches
+                                                current_file_results[
+                                                    f"Attribute {attribute_name_string} Value {attr_value} Matches"
+                                                ] = total_matches
 
                             elif "/@" in expression:
-                                attribute_name_string = (f"Attribute {expression.split('@')[-1]} Value")
+                                attribute_name_string = (
+                                    f"Attribute {expression.split('@')[-1]} Value"
+                                )
                                 if attribute_name_string not in current_file_results:
                                     current_file_results[attribute_name_string] = []
                                     for element in result:
@@ -348,7 +353,9 @@ def evaluate_xml_files_matching(folder_containing_xml_files, matching_filters):
                                     for element in result:
                                         tag_value = element.text
                                         if tag_value and tag_value.strip():
-                                            current_file_results[f"Tag {tag_name_string} Value {tag_value} Matches"] = total_matches
+                                            current_file_results[
+                                                f"Tag {tag_name_string} Value {tag_value} Matches"
+                                            ] = total_matches
 
                             elif "/text()" in expression:
                                 tag_name_string = (
@@ -367,41 +374,57 @@ def evaluate_xml_files_matching(folder_containing_xml_files, matching_filters):
                         combined_data = list(zip(*extracted_values))
                         # //TODO Fix this Part the variable "value" is a <Element Filter> object, can't have strip and also it writes the value wrong, ex: Attribute id Value <Element Filter at 0x1a74..> Matches: 0
                         for row in combined_data:
-                            current_file_results = {"Filename": os.path.splitext(filename)[0]}
+                            current_file_results = {
+                                "Filename": os.path.splitext(filename)[0]
+                            }
                             for idx, value in enumerate(row):
                                 expression = matching_filters[idx]
-                                        
+
                                 if "[@" in expression:
                                     match = re.search(r"@([^=]+)=", expression)
                                     if match:
                                         attribute_name_string = match.group(1).strip()
                                         if value is not None:
-                                            current_file_results[f"Attribute {attribute_name_string} Value {value} Matches"] = total_matches
-                                            
+                                            current_file_results[
+                                                f"Attribute {attribute_name_string} Value {value} Matches"
+                                            ] = total_matches
+
                                     else:
                                         match = re.search(r"@([^=]+),", expression)
                                         if match:
-                                            attribute_name_string = match.group(1).strip()
+                                            attribute_name_string = match.group(
+                                                1
+                                            ).strip()
                                             if value is not None:
-                                                current_file_results[f"Attribute {attribute_name_string} Value {value} Matches"] = total_matches
-                                                
+                                                current_file_results[
+                                                    f"Attribute {attribute_name_string} Value {value} Matches"
+                                                ] = total_matches
+
                                 elif "/@" in expression:
-                                    attribute_name_string = (f"Attribute {expression.split('@')[-1]} Value")
+                                    attribute_name_string = (
+                                        f"Attribute {expression.split('@')[-1]} Value"
+                                    )
                                     if value is not None:
-                                        current_file_results[attribute_name_string] = value
-                                        
+                                        current_file_results[attribute_name_string] = (
+                                            value
+                                        )
+
                                 elif "text()=" in expression:
                                     match = re.search(r"//(.*?)\[", expression)
                                     if match:
                                         tag_name_string = match.group(1).strip()
                                         if value is not None:
-                                            current_file_results[f"Tag {tag_name_string} Value {value} Matches"] = total_matches
-                                            
+                                            current_file_results[
+                                                f"Tag {tag_name_string} Value {value} Matches"
+                                            ] = total_matches
+
                                 elif "/text()" in expression:
-                                    tag_name_string = f"Tag {expression.split('@')[-1]} Value"
+                                    tag_name_string = (
+                                        f"Tag {expression.split('@')[-1]} Value"
+                                    )
                                     if value is not None:
                                         current_file_results[tag_name_string] = value
-                                        
+
                                 else:
                                     if value is not None:
                                         current_file_results[f"Tag {idx + 1}"] = value
@@ -568,7 +591,7 @@ MENU_DEFINITION = [
         [
             "&Open Input Folder::OpenInputFolder",
             "&Open Output Folder::OpenOutputFolder",
-        ]
+        ],
     ],
     [
         "&Paths",
@@ -620,7 +643,7 @@ layout_pandas_conversion = [
         sg.FileBrowse(file_types=FILE_TYPES_INPUT, size=(8, 1)),
         sg.Button("Read CSV", size=(7, 1), key="-READ_FILE-"),
     ],
-    [sg.Text("Choose where to save output of CSV file:")],
+    [sg.Text("Choose where to save output of CSV file")],
     [
         sg.Input(size=(44, 1), key="-FILE_OUTPUT-"),
         sg.FileSaveAs(
@@ -643,7 +666,7 @@ layout_pandas_conversion = [
 layout_pandas_output = [
     [
         sg.Multiline(
-            size=(59, 32),
+            size=(59, 34),
             key="-OUTPUT_WINDOW_CSV-",
             disabled=True,
         )
@@ -672,7 +695,7 @@ frame_pandas_output = sg.Frame(
 layout_xml_evaluation = [
     [sg.Menu(MENU_DEFINITION)],
     [
-        sg.Text("Choose a Folder that contains XML Files:", pad=5),
+        sg.Text("Choose a Folder that contains XML Files", pad=5),
         sg.StatusBar(
             "",
             key="-STATUSBAR-",
@@ -691,13 +714,13 @@ layout_xml_evaluation = [
             key="-FOLDER_EVALUATION_INPUT-",
         ),
         sg.FolderBrowse(
-            button_text="Browse Folder",
+            button_text="Browse",
             target="-FOLDER_EVALUATION_INPUT-",
             key="-INPUT_FOLDER_BROWSE-",
         ),
         sg.Button("Read XML", key="-READ_XML-"),
     ],
-    [sg.Text("Get XML Tag and Attribute Names/Values for XPath generation:", pad=5)],
+    [sg.Text("Get XML Tag and Attribute Names/Values for XPath generation", pad=5)],
     [
         sg.Text("Tag name:"),
         sg.Combo(
@@ -763,15 +786,15 @@ layout_xml_evaluation = [
         ),
         sg.Button("Build XPath", key="-BUILD_XPATH-"),
     ],
+]
+
+layout_listbox_matching_filter = [
     [
         sg.Text(
             "Add XPath Expressions to list to look for in XML Files:", expand_x=True
         ),
-        sg.Button("Add XPath Filter", key="-ADD_TO_MATCHING-"),
+        sg.Button("Add XPath Filter", key="-ADD_TO_MATCHING-", expand_x=True),
     ],
-]
-
-layout_listbox_matching_filter = [
     [
         sg.Listbox(
             values=matching_filters_listbox,
@@ -781,11 +804,11 @@ layout_listbox_matching_filter = [
             right_click_menu=MENU_RIGHT_CLICK_DELETE,
             key="-MATCHING_FILTER_LIST-",
         )
-    ]
+    ],
 ]
 
 layout_export_evaluation = [
-    [sg.Text("Choose a folder where you want to save the XML Evaluation:")],
+    [sg.Text("Choose a folder where you want to save the XML Evaluation")],
     [
         sg.Input(
             expand_x=True, font=FONT_FOR_TEXTINPUT, key="-FOLDER_EVALUATION_OUTPUT-"
@@ -800,13 +823,21 @@ layout_export_evaluation = [
 ]
 
 layout_program_output = [
-    [sg.Multiline(size=(62, 5), key="-OUTPUT_WINDOW_MAIN-", pad=10, horizontal_scroll=True, disabled=True)]
+    [
+        sg.Multiline(
+            size=(62, 5),
+            key="-OUTPUT_WINDOW_MAIN-",
+            pad=10,
+            horizontal_scroll=True,
+            disabled=True,
+        )
+    ]
 ]
 
 layout_xml_output = [
     [
         sg.Multiline(
-            size=(58, 30),
+            size=(58, 31),
             write_only=False,
             horizontal_scroll=True,
             key="-OUTPUT_XML_FILE-",
@@ -821,7 +852,7 @@ layout_xml_output = [
             orientation="h",
             expand_x=True,
             key="-PROGRESS_BAR-",
-            pad=11,
+            pad=10,
         ),
     ],
 ]
@@ -911,7 +942,7 @@ layout = [
 ]
 
 window = sg.Window(
-    f"XMLuvation v0.9 © 2024 by Jovan Zaric",
+    "XMLuvation v0.9 © 2024 by Jovan Zaric",
     layout,
     font=FONT,
     icon=PROGRAM_ICON,
@@ -921,7 +952,6 @@ pywinstyles.change_header_color(window.TKroot, color="#4d5157")
 input_checked = False
 
 while True:
-
     event, values = window.read()
 
     if event == sg.WIN_CLOSED or event == "Exit":
