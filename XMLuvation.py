@@ -35,7 +35,7 @@ def convert_csv_file(
             sample = file.read(4096)
             sniffer = csv.Sniffer()
             get_delimiter = sniffer.sniff(sample).delimiter
-            # print(f"Delimiter: {get_delimiter}")
+            # window["-OUTPUT_WINDOW_MAIN-"].update(f"Delimiter: {get_delimiter}")
 
         if not values["-CHECKBOX_WRITE_INDEX_COLUMN-"]:
             csv_df = pd.read_csv(
@@ -247,6 +247,7 @@ def is_valid_xpath(expression):
         r"^//[\w]+/[\w]+/[\w]+$",  # //xml_element/xml_element/xml_element
         r"^//[\w]+/text\(\)$",  # //xml_element/text()
         r"^//[\w]+/@[\w]+$",  # //xml_element/@attribute
+        r"^//[\w]+/[\w]+\[text\(\)='[^']*'\]$",  # //xml_tag_name/another_xml_tag_name[text()='some_value']
     ]
 
     # Check if expression matches any pattern
@@ -287,18 +288,17 @@ def evaluate_xml_files_matching(folder_containing_xml_files, matching_filters):
                             f"XMLSyntaxError occurred: {e}"
                         )
                         continue
-
+                    
                 try:
+
                     total_matches = 0
                     current_file_results = {"Filename": os.path.splitext(filename)[0]}
 
-                    if len(matching_filters) == 1:
-                        expression = matching_filters[0]
+                    for expression in matching_filters:
                         result = tree.xpath(expression)
                         total_matches += len(result)
 
                         if result:
-                            
                             if "[@" in expression:
                                 match = re.search(r"@([^=]+)=", expression)
                                 if match:
@@ -306,33 +306,27 @@ def evaluate_xml_files_matching(folder_containing_xml_files, matching_filters):
                                     for element in result:
                                         attr_value = element.get(attribute_name_string)
                                         if attr_value and attr_value.strip():
-                                            current_file_results[
-                                                f"Attribute {attribute_name_string} Value {attr_value} Matches"
-                                            ] = total_matches
-
+                                            if f"Attribute {attribute_name_string} Value" not in current_file_results:
+                                                current_file_results[f"Attribute {attribute_name_string} Value"] = []
+                                            current_file_results[f"Attribute {attribute_name_string} Value"].append(attr_value)
+                            
                                 else:
                                     match = re.search(r"@([^=]+),", expression)
                                     if match:
                                         attribute_name_string = match.group(1).strip()
                                         for element in result:
-                                            attr_value = element.get(
-                                                attribute_name_string
-                                            )
+                                            attr_value = element.get(attribute_name_string)
                                             if attr_value and attr_value.strip():
-                                                current_file_results[
-                                                    f"Attribute {attribute_name_string} Value {attr_value} Matches"
-                                                ] = total_matches
-
+                                                if f"Attribute {attribute_name_string} Value" not in current_file_results:
+                                                    current_file_results[f"Attribute {attribute_name_string} Value"] = []
+                                                current_file_results[f"Attribute {attribute_name_string} Value"].append(attr_value)
+                                                
                             elif "/@" in expression:
-                                attribute_name_string = (
-                                    f"Attribute {expression.split('@')[-1]} Value"
-                                )
+                                attribute_name_string = f"Attribute {expression.split('@')[-1]} Value"
                                 if attribute_name_string not in current_file_results:
                                     current_file_results[attribute_name_string] = []
-                                    for element in result:
-                                        current_file_results[
-                                            attribute_name_string
-                                        ].append(element.strip())
+                                for element in result:
+                                    current_file_results[attribute_name_string].append(element.strip())
 
                             elif "text()=" in expression:
                                 match = re.search(r"//(.*?)\[", expression)
@@ -341,137 +335,44 @@ def evaluate_xml_files_matching(folder_containing_xml_files, matching_filters):
                                     for element in result:
                                         tag_value = element.text
                                         if tag_value and tag_value.strip():
-                                            current_file_results[
-                                                f"Tag {tag_name_string} Value {tag_value} Matches"
-                                            ] = total_matches
+                                            if f"Tag {tag_name_string} Value" not in current_file_results:
+                                                current_file_results[f"Tag {tag_name_string} Value"] = []
+                                            current_file_results[f"Tag {tag_name_string} Value"].append(tag_value)
 
                             elif "/text()" in expression:
-                                tag_name_string = (
-                                    f"Tag {expression.split('/')[-2]} Value"
-                                )
+                                tag_name_string = f"Tag {expression.split('/')[-2]} Value"
                                 if tag_name_string not in current_file_results:
                                     current_file_results[tag_name_string] = []
-                                    for element in result:
-                                        current_file_results[tag_name_string].append(
-                                            element.strip()
-                                        )
-
-                            final_results.append(current_file_results)
-                            
-                        else:
-                            pass
-                        
-                    elif len(matching_filters) > 1: # //TODO Fix this Part the variable "value" is a <Element Filter> object, can't have strip and also it writes the value wrong, ex: Attribute id Value <Element Filter at 0x1a74..> Matches: 0
-                        for expression in matching_filters:
-                            result = tree.xpath(expression)
-                            matches_count = len(result)
-                            total_matches += len(result)
-                            current_file_results = {"Filename": os.path.splitext(filename)[0]}
-                            
-                            if result:
-                                        
-                                if "[@" in expression:
-                                    match = re.search(r"@([^=]+)=", expression)
-                                    if match:
-                                        attribute_name_string = match.group(1).strip()
-                                        for element in result:
-                                            attribute_value_string = element.get(attribute_name_string)
-                                            if attribute_value_string and attribute_value_string.strip():
-                                                current_file_results[f"Attribute {attribute_name_string} Value {attribute_value_string} Matches"] = matches_count
-
-                                    else:
-                                        match = re.search(r"@([^=]+),", expression)
-                                        if match:
-                                            attribute_name_string = match.group(1).strip()
-                                            for element in result:
-                                                attribute_value_string = element.get(attribute_name_string)
-                                                if attribute_value_string and attribute_value_string.strip():
-                                                    current_file_results[f"Attribute {attribute_name_string} Value {attribute_value_string} Matches"] = matches_count
-
-
-                                elif "/@" in expression:
-                                    attribute_name_string = (f"Attribute {expression.split('@')[-1]} Value")
-                                    attribute_value_string = result[0].split("@")[-1]
-                                    if attribute_value_string and attribute_value_string.strip():
-                                        current_file_results[attribute_name_string] = attribute_value_string
-
-                                elif "text()=" in expression:
-                                    match = re.search(r"//(.*?)\[", expression)
-                                    if match:
-                                        tag_name_string = match.group(1).strip()
-                                        for element in result:
-                                            tag_value_string = element.text
-                                            if tag_value_string and tag_value_string.strip():
-                                                current_file_results[f"Tag {tag_name_string} Value {tag_value_string} Matches"] = matches_count
-
-                                elif "/text()" in expression:
-                                    tag_name_string = f"Tag {expression.split('@')[-1]} Value"
-                                    tag_value_string = result[0].strip()
-                                    if tag_value_string and tag_value_string.strip():
-                                        current_file_results[tag_name_string] = tag_value_string
-
-                                #else:
-                                #    if value is not None:
-                                #        current_file_results[f"Tag {idx + 1}"] = value
-                            else:
-                                pass
-                                
-                            final_results.append(current_file_results)
-                            total_matches += 1
-
+                                for element in result:
+                                    current_file_results[tag_name_string].append(element.strip())
+                                    
                 except Exception as ex:
                     template = "An exception of type {0} occurred. Arguments: {1!r}"
                     message = template.format(type(ex).__name__, ex.args)
                     window["-OUTPUT_WINDOW_MAIN-"].update(f"ERROR: {message}")
                     break
-
+                
                 if total_matches > 0:
                     total_sum_matches += total_matches
-                    total_matching_files += 1 if total_matches > 0 else 0
+                    total_matching_files += 1
+                    final_results.append(current_file_results)
 
         return final_results, total_sum_matches, total_matching_files
 
     except ZeroDivisionError:
         pass
 
-
-def replace_empty_with_zero(value):
-    """_summary_
-
-    Args:
-        value (str): Values of matches which will be written in the appropriate column name
-
-    Returns:
-        str: Returns 0 as value for CSV rows, which are empty
-    """
-    return value if value != "" else "NULL"
-
-
-def export_evaluation_as_csv(
-    csv_output_path, folder_containing_xml_files, matching_filters
-):
-    """Export found XML files and it's matches in a single CSV file
-
-    Args:
-        csv_output_path (str): Folder Path where the evaluation should be exported to
-        folder_containing_xml_files (str): Folder Path where one or more XML files are located
-        matching_filters (list): Added XPath filters in the ListBox GUI element
-    """
+def export_evaluation_as_csv(csv_output_path, folder_containing_xml_files, matching_filters):
     try:
-        window["-EXPORT_AS_CSV-"].update(disabled=True)
-        window["-INPUT_FOLDER_BROWSE-"].update(disabled=True)
-
         matching_results, total_matches_found, total_matching_files = (
             evaluate_xml_files_matching(folder_containing_xml_files, matching_filters)
         )
 
         # Save matching results to CSV file
-        if matching_results:  # Check if matching results exist
+        if matching_results:
             headers = [
                 key for key in {key: None for dic in matching_results for key in dic}
             ]
-            # print("Headers:", headers)
-
             with open(csv_output_path, "w", newline="", encoding="utf-8") as csvfile:
                 fieldnames = headers
                 writer = csv.DictWriter(csvfile, fieldnames=fieldnames, delimiter=";")
@@ -479,13 +380,18 @@ def export_evaluation_as_csv(
 
                 # Write matching results
                 for match in matching_results:
-                    if match is not None:  # If None, skip
-                        matches = {
-                            header: replace_empty_with_zero(match.get(header, ""))
-                            for header in headers
-                        }
-                        # print("Matches:", matches)
-                        writer.writerow(matches)
+                    filename = match["Filename"]
+                    results = {key: match[key] for key in match if key != "Filename"}
+                    max_len = max(len(v) if isinstance(v, list) else 1 for v in results.values())
+                    for i in range(max_len):
+                        row = {"Filename": filename}
+                        for key in results:
+                            value = results[key]
+                            if isinstance(value, list):
+                                row[key] = value[i] if i < len(value) else ""
+                            else:
+                                row[key] = value
+                        writer.writerow(row)
 
             window["-OUTPUT_WINDOW_MAIN-"].update(
                 f"Matches saved to {csv_output_path}\nFound {total_matching_files} "
@@ -929,7 +835,7 @@ layout = [
 ]
 
 window = sg.Window(
-    f"XMLuvation v0.9.4 © 2024 by Jovan Zaric",
+    "XMLuvation v0.9.4 © 2024 by Jovan Zaric",
     layout,
     font=FONT,
     icon=PROGRAM_ICON,
