@@ -306,9 +306,9 @@ def evaluate_xml_files_matching(folder_containing_xml_files, matching_filters):
                                     for element in result:
                                         attr_value = element.get(attribute_name_string)
                                         if attr_value and attr_value.strip():
-                                            if f"Attribute {attribute_name_string} Value" not in current_file_results:
-                                                current_file_results[f"Attribute {attribute_name_string} Value"] = []
-                                            current_file_results[f"Attribute {attribute_name_string} Value"].append(attr_value)
+                                            if f"Attribute {attribute_name_string} Value {attr_value} Matches" not in current_file_results:
+                                                current_file_results[f"Attribute {attribute_name_string} Value {attr_value} Matches"] = []
+                                            current_file_results[f"Attribute {attribute_name_string} Value {attr_value} Matches"].append(total_matches)
                             
                                 else:
                                     match = re.search(r"@([^=]+),", expression)
@@ -328,16 +328,16 @@ def evaluate_xml_files_matching(folder_containing_xml_files, matching_filters):
                                 for element in result:
                                     current_file_results[attribute_name_string].append(element.strip())
 
-                            elif "text()=" in expression:
+                            elif "[text()=" in expression:
                                 match = re.search(r"//(.*?)\[", expression)
                                 if match:
                                     tag_name_string = match.group(1).strip()
                                     for element in result:
                                         tag_value = element.text
                                         if tag_value and tag_value.strip():
-                                            if f"Tag {tag_name_string} Value" not in current_file_results:
-                                                current_file_results[f"Tag {tag_name_string} Value"] = []
-                                            current_file_results[f"Tag {tag_name_string} Value"].append(tag_value)
+                                            if f"Tag {tag_name_string} Value {tag_value} Matches" not in current_file_results:
+                                                current_file_results[f"Tag {tag_name_string} Value {tag_value} Matches"] = []
+                                            current_file_results[f"Tag {tag_name_string} Value {tag_value} Matches"].append(total_matches)
 
                             elif "/text()" in expression:
                                 tag_name_string = f"Tag {expression.split('/')[-2]} Value"
