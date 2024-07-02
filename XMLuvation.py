@@ -288,30 +288,27 @@ def evaluate_xml_files_matching(folder_containing_xml_files, matching_filters):
                             f"XMLSyntaxError occurred: {e}"
                         )
                         continue
-                    
+                
                 try:
-
                     total_matches = 0
                     current_file_results = {"Filename": os.path.splitext(filename)[0]}
+                    special_case_results = []
 
                     for expression in matching_filters:
                         result = tree.xpath(expression)
-                        total_matches += len(result)
-
-                        if result:
-                            if "[@" in expression:
-                                match = re.search(r"@([^=]+)=", expression)
-                                if match:
-                                    attribute_name_string = match.group(1).strip()
-                                    for element in result:
-                                        attr_value = element.get(attribute_name_string)
-                                        if attr_value and attr_value.strip():
-                                            if f"Attribute {attribute_name_string} Value {attr_value} Matches" not in current_file_results:
-                                                current_file_results[f"Attribute {attribute_name_string} Value {attr_value} Matches"] = []
-                                            current_file_results[f"Attribute {attribute_name_string} Value {attr_value} Matches"].append(total_matches)
-                            
-                                else:
-                                    match = re.search(r"@([^=]+),", expression)
+                        match_count = len(result)
+                        total_matches += match_count
+            
+                        if match_count:
+                            if "[@" in expression or "[text()=" in expression:
+                                special_case_results.append({
+                                    "Filename": os.path.splitext(filename)[0],
+                                    "Expression": expression,
+                                    "Matches": match_count
+                                })
+                            else:
+                                if "[@" in expression:
+                                    match = re.search(r"@([^=]+)=", expression)
                                     if match:
                                         attribute_name_string = match.group(1).strip()
                                         for element in result:
@@ -320,47 +317,62 @@ def evaluate_xml_files_matching(folder_containing_xml_files, matching_filters):
                                                 if f"Attribute {attribute_name_string} Value" not in current_file_results:
                                                     current_file_results[f"Attribute {attribute_name_string} Value"] = []
                                                 current_file_results[f"Attribute {attribute_name_string} Value"].append(attr_value)
-                                                
-                            elif "/@" in expression:
-                                attribute_name_string = f"Attribute {expression.split('@')[-1]} Value"
-                                if attribute_name_string not in current_file_results:
-                                    current_file_results[attribute_name_string] = []
-                                for element in result:
-                                    current_file_results[attribute_name_string].append(element.strip())
-
-                            elif "[text()=" in expression:
-                                match = re.search(r"//(.*?)\[", expression)
-                                if match:
-                                    tag_name_string = match.group(1).strip()
+                                
+                                    else:
+                                        match = re.search(r"@([^=]+),", expression)
+                                        if match:
+                                            attribute_name_string = match.group(1).strip()
+                                            for element in result:
+                                                attr_value = element.get(attribute_name_string)
+                                                if attr_value and attr_value.strip():
+                                                    if f"Attribute {attribute_name_string} Value" not in current_file_results:
+                                                        current_file_results[f"Attribute {attribute_name_string} Value"] = []
+                                                    current_file_results[f"Attribute {attribute_name_string} Value"].append(attr_value)
+                                                    
+                                elif "/@" in expression:
+                                    attribute_name_string = f"Attribute {expression.split('@')[-1]} Value"
+                                    if attribute_name_string not in current_file_results:
+                                        current_file_results[attribute_name_string] = []
                                     for element in result:
-                                        tag_value = element.text
-                                        if tag_value and tag_value.strip():
-                                            if f"Tag {tag_name_string} Value {tag_value} Matches" not in current_file_results:
-                                                current_file_results[f"Tag {tag_name_string} Value {tag_value} Matches"] = []
-                                            current_file_results[f"Tag {tag_name_string} Value {tag_value} Matches"].append(total_matches)
+                                        current_file_results[attribute_name_string].append(element.strip())
 
-                            elif "/text()" in expression:
-                                tag_name_string = f"Tag {expression.split('/')[-2]} Value"
-                                if tag_name_string not in current_file_results:
-                                    current_file_results[tag_name_string] = []
-                                for element in result:
-                                    current_file_results[tag_name_string].append(element.strip())
-                                    
+                                elif "[text()=" in expression:
+                                    match = re.search(r"//(.*?)\[", expression)
+                                    if match:
+                                        tag_name_string = match.group(1).strip()
+                                        for element in result:
+                                            tag_value = element.text
+                                            if tag_value and tag_value.strip():
+                                                if f"Tag {tag_name_string} Value" not in current_file_results:
+                                                    current_file_results[f"Tag {tag_name_string} Value"] = []
+                                                current_file_results[f"Tag {tag_name_string} Value"].append(tag_value)
+
+                                elif "/text()" in expression:
+                                    tag_name_string = f"Tag {expression.split('/')[-2]} Value"
+                                    if tag_name_string not in current_file_results:
+                                        current_file_results[tag_name_string] = []
+                                    for element in result:
+                                        current_file_results[tag_name_string].append(element.strip())
+                    
+                    if total_matches > 0:
+                        total_sum_matches += total_matches
+                        total_matching_files += 1
+                        if special_case_results:
+                            final_results.extend(special_case_results)
+                        if current_file_results:
+                            final_results.append(current_file_results)
+
                 except Exception as ex:
                     template = "An exception of type {0} occurred. Arguments: {1!r}"
                     message = template.format(type(ex).__name__, ex.args)
                     window["-OUTPUT_WINDOW_MAIN-"].update(f"ERROR: {message}")
                     break
-                
-                if total_matches > 0:
-                    total_sum_matches += total_matches
-                    total_matching_files += 1
-                    final_results.append(current_file_results)
 
         return final_results, total_sum_matches, total_matching_files
 
     except ZeroDivisionError:
         pass
+    
 
 def export_evaluation_as_csv(csv_output_path, folder_containing_xml_files, matching_filters):
     try:
@@ -380,18 +392,22 @@ def export_evaluation_as_csv(csv_output_path, folder_containing_xml_files, match
 
                 # Write matching results
                 for match in matching_results:
-                    filename = match["Filename"]
-                    results = {key: match[key] for key in match if key != "Filename"}
-                    max_len = max(len(v) if isinstance(v, list) else 1 for v in results.values())
-                    for i in range(max_len):
-                        row = {"Filename": filename}
-                        for key in results:
-                            value = results[key]
-                            if isinstance(value, list):
-                                row[key] = value[i] if i < len(value) else ""
-                            else:
-                                row[key] = value
-                        writer.writerow(row)
+                    if 'Expression' in match:
+                        writer.writerow(match)
+                    else:
+                        filename = match["Filename"]
+                        results = {key: match[key] for key in match if key != "Filename"}
+                        if results:
+                            max_len = max(len(v) if isinstance(v, list) else 1 for v in results.values())
+                            for i in range(max_len):
+                                row = {"Filename": filename}
+                                for key in results:
+                                    value = results[key]
+                                    if isinstance(value, list):
+                                        row[key] = value[i] if i < len(value) else ""
+                                    else:
+                                        row[key] = value
+                                writer.writerow(row)
 
             window["-OUTPUT_WINDOW_MAIN-"].update(
                 f"Matches saved to {csv_output_path}\nFound {total_matching_files} "
@@ -482,8 +498,8 @@ MENU_DEFINITION = [
     [
         "&Open",
         [
-            "&Open Input Folder::OpenInputFolder",
-            "&Open Output Folder::OpenOutputFolder",
+            "&Open XML Input Folder::OpenInputFolder",
+            "&Open CSV Output Folder::OpenOutputFolder",
         ],
     ],
     [
@@ -937,7 +953,7 @@ while True:
         )
         event, value = window2.read()
 
-    elif event == "Open Output Folder::OpenOutputFolder":
+    elif event == "Open CSV Output Folder::OpenOutputFolder":
         output_folder = evaluation_output_folder
         if output_folder:
             directory_path = os.path.dirname(output_folder)
@@ -948,7 +964,7 @@ while True:
                 "No output folder set where the CSV export will be."
             )
 
-    elif event == "Open Input Folder::OpenInputFolder":
+    elif event == "Open XML Input Folder::OpenInputFolder":
         input_folder = evaluation_input_folder
         if input_folder:
             directory_path = os.path.dirname(input_folder)
