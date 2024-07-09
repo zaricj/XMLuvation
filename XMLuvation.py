@@ -255,7 +255,7 @@ def is_valid_xpath(expression):
     return any(re.match(pattern, expression) for pattern in valid_patterns)
 
 
-def evaluate_xml_files_matching(folder_containing_xml_files, matching_filters, window):
+def evaluate_xml_files_matching(folder_containing_xml_files, matching_filters):
     final_results = []
     xml_files = [
         f for f in os.listdir(folder_containing_xml_files) if f.endswith(".xml")
@@ -270,6 +270,7 @@ def evaluate_xml_files_matching(folder_containing_xml_files, matching_filters, w
         window["-PROGRESS_BAR-"].update(
             round((xml_files.index(filename) + 1) * progress_increment, 2)
         )
+        window["-PROGRESSBAR_TEXT-"].update(f"{round((xml_files.index(filename) + 1) * progress_increment, 2)}%")
         window["-OUTPUT_WINDOW_MAIN-"].update(f"Processing {filename}")
 
         try:
@@ -335,7 +336,7 @@ def export_evaluation_as_csv(
     try:
         matching_results, total_matches_found, total_matching_files = (
             evaluate_xml_files_matching(
-                folder_containing_xml_files, matching_filters, window
+                folder_containing_xml_files, matching_filters
             )
         )
 
@@ -377,7 +378,8 @@ def export_evaluation_as_csv(
     finally:
         window["-EXPORT_AS_CSV-"].update(disabled=False)
         window["-INPUT_FOLDER_BROWSE-"].update(disabled=False)
-        window["-PROGRESS_BAR-"].update(0)
+        #window["-PROGRESS_BAR-"].update(0)
+        #window["-PROGRESSBAR_TEXT-"].update("0%")
 
 
 def is_duplicate(xpath_expression):
@@ -700,10 +702,10 @@ layout_xml_output = [
         )
     ],
     [
-        sg.Text("Progress:"),
+        sg.StatusBar("0%",key="-PROGRESSBAR_TEXT-", auto_size_text=True, justification="c"),
         sg.ProgressBar(
             max_value=100,
-            size=(20, 18),
+            size=(38, 18),
             orientation="h",
             expand_x=True,
             key="-PROGRESS_BAR-",
