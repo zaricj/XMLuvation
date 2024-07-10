@@ -250,7 +250,7 @@ def is_valid_xpath(expression):
         r"^//[\w]+/@[\w]+$",  # //xml_element/@attribute
         r"^//[\w]+/[\w]+\[@[\w]+\]$",  # //xml_element/xml_element[@attribute]
         r"^//[\w]+/[\w]+\[text\(\)='[^']*'\]$",  # //xml_tag_name/another_xml_tag_name[text()='some_value']
-        r"^//[\w]+/[\w]+/@[\w]+$"  # //xml_tag/xml_tag/@attribute
+        r"^//[\w]+/[\w]+/@[\w]+$",  # //xml_tag/xml_tag/@attribute
     ]
 
     # Check if expression matches any pattern
@@ -259,7 +259,9 @@ def is_valid_xpath(expression):
 
 def evaluate_xml_files_matching(folder_containing_xml_files, matching_filters):
     final_results = []
-    xml_files = [f for f in os.listdir(folder_containing_xml_files) if f.endswith(".xml")]
+    xml_files = [
+        f for f in os.listdir(folder_containing_xml_files) if f.endswith(".xml")
+    ]
     total_files = len(xml_files)
     progress_increment = 100 / total_files if total_files else 0
     total_sum_matches = 0
@@ -267,15 +269,21 @@ def evaluate_xml_files_matching(folder_containing_xml_files, matching_filters):
 
     for filename in xml_files:
         file_path = os.path.join(folder_containing_xml_files, filename)
-        window["-PROGRESS_BAR-"].update(round((xml_files.index(filename) + 1) * progress_increment, 2))
-        window["-PROGRESSBAR_TEXT-"].update(f"{round((xml_files.index(filename) + 1) * progress_increment, 2)}%")
+        window["-PROGRESS_BAR-"].update(
+            round((xml_files.index(filename) + 1) * progress_increment, 2)
+        )
+        window["-PROGRESSBAR_TEXT-"].update(
+            f"{round((xml_files.index(filename) + 1) * progress_increment, 2)}%"
+        )
         window["-OUTPUT_WINDOW_MAIN-"].update(f"Processing {filename}")
 
         try:
             tree = ET.parse(file_path)
             root = tree.getroot()
         except ET.XMLSyntaxError as e:
-            window["-OUTPUT_WINDOW_MAIN-"].update(f"Error processing {filename}: {str(e)}")
+            window["-OUTPUT_WINDOW_MAIN-"].update(
+                f"Error processing {filename}: {str(e)}"
+            )
             continue
 
         current_file_results = {"Filename": os.path.splitext(filename)[0]}
@@ -287,7 +295,9 @@ def evaluate_xml_files_matching(folder_containing_xml_files, matching_filters):
             file_total_matches += match_count
 
             if match_count:
-                current_file_results[f"Expression: {expression}"] = process_xpath_result(expression, result)
+                current_file_results[f"Expression: {expression}"] = (
+                    process_xpath_result(expression, result)
+                )
 
         if file_total_matches > 0:
             total_sum_matches += file_total_matches
@@ -307,15 +317,22 @@ def process_xpath_result(expression, result):
         match = re.search(r"@([^=]+)", expression)
         if match:
             attribute_name = match.group(1).strip()
-            return [elem.get(attribute_name) for elem in result if elem.get(attribute_name)]
+            return [
+                elem.get(attribute_name) for elem in result if elem.get(attribute_name)
+            ]
     else:
-        return [ET.tostring(elem, encoding='unicode', method='xml').strip() for elem in result]
+        return [
+            ET.tostring(elem, encoding="unicode", method="xml").strip()
+            for elem in result
+        ]
 
 
-def export_evaluation_as_csv(csv_output_path, folder_containing_xml_files, matching_filters):
+def export_evaluation_as_csv(
+    csv_output_path, folder_containing_xml_files, matching_filters
+):
     try:
-        matching_results, total_matches_found, total_matching_files = evaluate_xml_files_matching(
-            folder_containing_xml_files, matching_filters
+        matching_results, total_matches_found, total_matching_files = (
+            evaluate_xml_files_matching(folder_containing_xml_files, matching_filters)
         )
 
         if not matching_results:
@@ -335,13 +352,18 @@ def export_evaluation_as_csv(csv_output_path, folder_containing_xml_files, match
                 headers.append(f"Expression: {expr}")
 
         with open(csv_output_path, "w", newline="", encoding="utf-8") as csvfile:
-            writer = csv.DictWriter(csvfile, fieldnames=headers, delimiter=";", extrasaction="ignore")
+            writer = csv.DictWriter(
+                csvfile, fieldnames=headers, delimiter=";", extrasaction="ignore"
+            )
             writer.writeheader()
 
             for match in matching_results:
                 base_row = {"Filename": match["Filename"]}
-                max_results = max(len(match.get(f"Expression: {expr}", [])) for expr in matching_filters)
-                
+                max_results = max(
+                    len(match.get(f"Expression: {expr}", []))
+                    for expr in matching_filters
+                )
+
                 for i in range(max_results):
                     row = base_row.copy()
                     for expr in matching_filters:
@@ -367,8 +389,8 @@ def export_evaluation_as_csv(csv_output_path, folder_containing_xml_files, match
     finally:
         window["-EXPORT_AS_CSV-"].update(disabled=False)
         window["-INPUT_FOLDER_BROWSE-"].update(disabled=False)
-        #window["-PROGRESS_BAR-"].update(0)
-        #window["-PROGRESSBAR_TEXT-"].update("0%")
+        # window["-PROGRESS_BAR-"].update(0)
+        # window["-PROGRESSBAR_TEXT-"].update("0%")
 
 
 def is_duplicate(xpath_expression):
@@ -524,7 +546,7 @@ frame_pandas = sg.Frame(
     expand_x=True,
     expand_y=True,
     title_color=FRAME_TITLE_COLOR,
-    font="Calibri 13 bold",
+    font="Calibri 13 bold"
 )
 frame_pandas_output = sg.Frame(
     "CSV Conversion Output",
@@ -532,7 +554,7 @@ frame_pandas_output = sg.Frame(
     expand_x=True,
     expand_y=True,
     title_color=FRAME_TITLE_COLOR,
-    font="Calibri 13 bold",
+    font="Calibri 13 bold"
 )
 # ========== END Layout for Pandas Conversion END ========== #
 
@@ -547,8 +569,8 @@ layout_xml_evaluation = [
             expand_x=True,
             auto_size_text=True,
             font="Calibri 14 bold",
-            size=(10, 1),
-        ),
+            size=(10, 1)
+        )
     ],
     [
         sg.Input(
@@ -556,14 +578,14 @@ layout_xml_evaluation = [
             font=FONT_FOR_TEXTINPUT,
             enable_events=True,
             expand_x=True,
-            key="-FOLDER_EVALUATION_INPUT-",
+            key="-FOLDER_EVALUATION_INPUT-"
         ),
         sg.FolderBrowse(
             button_text="Browse",
             target="-FOLDER_EVALUATION_INPUT-",
-            key="-INPUT_FOLDER_BROWSE-",
+            key="-INPUT_FOLDER_BROWSE-"
         ),
-        sg.Button("Read XML", key="-READ_XML-"),
+        sg.Button("Read XML", key="-READ_XML-")
     ],
     [sg.Text("Get XML Tag and Attribute Names/Values for XPath generation", pad=5)],
     [
@@ -576,7 +598,7 @@ layout_xml_evaluation = [
             enable_events=True,
             enable_per_char_events=True,
             expand_x=True,
-            key="-XML_TAG_NAME-",
+            key="-XML_TAG_NAME-"
         ),
         sg.Text("Tag Value:"),
         sg.Combo(
@@ -587,8 +609,8 @@ layout_xml_evaluation = [
             enable_per_char_events=True,
             auto_size_text=False,
             expand_x=True,
-            key="-XML_TAG_VALUE-",
-        ),
+            key="-XML_TAG_VALUE-"
+        )
     ],
     [
         sg.Text("Att name:"),
@@ -599,7 +621,7 @@ layout_xml_evaluation = [
             auto_size_text=False,
             enable_events=True,
             expand_x=True,
-            key="-XML_ATTRIBUTE_NAME-",
+            key="-XML_ATTRIBUTE_NAME-"
         ),
         sg.Text("Att Value:"),
         sg.Combo(
@@ -610,8 +632,8 @@ layout_xml_evaluation = [
             auto_size_text=False,
             expand_x=True,
             key="-XML_ATTRIBUTE_VALUE-",
-            pad=5,
-        ),
+            pad=5
+        )
     ],
     # TODO = Write functions for the radio buttons, each radio button represents a different logical process for searching for values via XPath, re-enable radio buttons once functions are written
     [
@@ -620,7 +642,7 @@ layout_xml_evaluation = [
         sg.Radio("Contains", group_id=1, key="-RADIO_CONTAINS-", disabled=True),
         sg.Radio("Starts-with", group_id=1, key="-RADIO_STARTSWITH-", disabled=True),
         sg.Radio("Greater", group_id=1, key="-RADIO_GREATER-", disabled=True),
-        sg.Radio("Smaller", group_id=1, key="-RADIO_SMALLER-", disabled=True),
+        sg.Radio("Smaller", group_id=1, key="-RADIO_SMALLER-", disabled=True)
     ],
     [
         sg.Text("XPath Expression:"),
@@ -628,10 +650,10 @@ layout_xml_evaluation = [
             size=(14, 1),
             font=FONT_FOR_TEXTINPUT,
             expand_x=True,
-            key="-XPATH_EXPRESSION-",
+            key="-XPATH_EXPRESSION-"
         ),
-        sg.Button("Build XPath", key="-BUILD_XPATH-"),
-    ],
+        sg.Button("Build XPath", key="-BUILD_XPATH-")
+    ]
 ]
 
 layout_listbox_matching_filter = [
@@ -639,7 +661,7 @@ layout_listbox_matching_filter = [
         sg.Text(
             "Add XPath Expressions to list to look for in XML Files:", expand_x=True
         ),
-        sg.Button("Add XPath Filter", key="-ADD_TO_MATCHING-", expand_x=True),
+        sg.Button("Add XPath Filter", key="-ADD_TO_MATCHING-", expand_x=True)
     ],
     [
         sg.Listbox(
@@ -648,9 +670,9 @@ layout_listbox_matching_filter = [
             enable_events=True,
             expand_x=True,
             right_click_menu=MENU_RIGHT_CLICK_DELETE,
-            key="-MATCHING_FILTER_LIST-",
+            key="-MATCHING_FILTER_LIST-"
         )
-    ],
+    ]
 ]
 
 layout_export_evaluation = [
@@ -662,10 +684,10 @@ layout_export_evaluation = [
         sg.SaveAs(
             button_text="Save as",
             file_types=(("Comma Separated Value (.csv)", ".csv"),),
-            target="-FOLDER_EVALUATION_OUTPUT-",
+            target="-FOLDER_EVALUATION_OUTPUT-"
         ),
-        sg.Button("Export", key="-EXPORT_AS_CSV-"),
-    ],
+        sg.Button("Export", key="-EXPORT_AS_CSV-")
+    ]
 ]
 
 layout_program_output = [
@@ -675,7 +697,7 @@ layout_program_output = [
             key="-OUTPUT_WINDOW_MAIN-",
             pad=10,
             horizontal_scroll=True,
-            disabled=True,
+            disabled=True
         )
     ]
 ]
@@ -687,20 +709,22 @@ layout_xml_output = [
             write_only=False,
             horizontal_scroll=True,
             key="-OUTPUT_XML_FILE-",
-            pad=5,
+            pad=5
         )
     ],
     [
-        sg.StatusBar("0%",key="-PROGRESSBAR_TEXT-", auto_size_text=True, justification="c"),
+        sg.StatusBar(
+            "0%", key="-PROGRESSBAR_TEXT-", auto_size_text=True, justification="c"
+        ),
         sg.ProgressBar(
             max_value=100,
             size=(38, 18),
             orientation="h",
             expand_x=True,
             key="-PROGRESS_BAR-",
-            pad=10,
-        ),
-    ],
+            pad=10
+        )
+    ]
 ]
 
 frame_xml_eval = sg.Frame(
@@ -708,36 +732,36 @@ frame_xml_eval = sg.Frame(
     layout_xml_evaluation,
     title_color=FRAME_TITLE_COLOR,
     expand_x=True,
-    font="Calibri 13 bold",
+    font="Calibri 13 bold"
 )
 frame_export_evaluation = sg.Frame(
     "Export evaluation result as a CSV File",
     layout_export_evaluation,
     title_color=FRAME_TITLE_COLOR,
     expand_x=True,
-    font="Calibri 13 bold",
+    font="Calibri 13 bold"
 )
 frame_xml_output = sg.Frame(
     "XML Output",
     layout_xml_output,
     title_color=FRAME_TITLE_COLOR,
     expand_x=True,
-    font="Calibri 13 bold",
+    font="Calibri 13 bold"
 )
 frame_output_main = sg.Frame(
     "Program Output",
     layout_program_output,
     title_color=FRAME_TITLE_COLOR,
     expand_x=True,
-    font="Calibri 13 bold",
+    font="Calibri 13 bold"
 )
 frame_listbox_matching_filter = sg.Frame(
     "List of filters to match in XML files",
     layout_listbox_matching_filter,
     title_color=FRAME_TITLE_COLOR,
     expand_x=True,
-    font="Calibri 13 bold",
-)
+    font="Calibri 13 bold"
+    )
 # ========== END Layout for XML Evaluation END ========== #
 
 # layout = [[sg.Column(layout=[[frame_xml_eval], [frame_listbox_matching_filter],[frame_export_evaluation],[frame_output_main]], expand_y=True),sg.Column([[frame_xml_output]], expand_y=True)]] # DEPRACTED
@@ -760,8 +784,9 @@ layout = [
                                         [frame_output_main],
                                     ],
                                     expand_y=True,
+                                    expand_x=True
                                 ),
-                                sg.Column(layout=[[frame_xml_output]], expand_y=True),
+                                sg.Column(layout=[[frame_xml_output]], expand_y=True, expand_x=True),
                             ]
                         ],
                     ),
@@ -769,13 +794,8 @@ layout = [
                         "CSV Conversion",
                         [
                             [
-                                sg.Column(layout=[[frame_pandas]], expand_y=True),
-                                sg.Column(
-                                    layout=[[frame_pandas_output]], expand_y=True
-                                ),
-                            ]
-                        ],
-                    ),
+                                sg.Column(layout=[[frame_pandas]], expand_y=True, expand_x=True),
+                                sg.Column(layout=[[frame_pandas_output]], expand_y=True, expand_x=True)]])
                 ]
             ],
             selected_background_color="#FFC857",
@@ -790,6 +810,7 @@ window = sg.Window(
     font=FONT,
     icon=PROGRAM_ICON,
     finalize=True,
+    resizable=True
 )
 pywinstyles.change_header_color(window.TKroot, color="#4d5157")
 input_checked = False
