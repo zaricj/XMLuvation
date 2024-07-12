@@ -1,11 +1,11 @@
 import sys
-from PyQt6.QtWidgets import (QApplication, QMainWindow, QWidget, QVBoxLayout, 
+from PySide6.QtWidgets import (QApplication, QMainWindow, QWidget, QVBoxLayout, 
                              QHBoxLayout, QTabWidget, QGroupBox, QLabel, 
                              QLineEdit, QPushButton, QComboBox, QRadioButton, 
                              QListWidget, QTextEdit, QProgressBar, QStatusBar,
                              QMenuBar, QCheckBox,QMenu)
-from PyQt6.QtGui import QFont, QIcon, QPalette, QColor, QPixmap
-from PyQt6.QtCore import Qt
+from PySide6.QtGui import QFont, QIcon, QPalette, QColor, QPixmap
+from PySide6.QtCore import Qt
 
 class MainWindow(QMainWindow):
     def __init__(self):
