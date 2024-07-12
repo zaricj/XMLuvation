@@ -269,9 +269,8 @@ def evaluate_xml_files_matching(folder_containing_xml_files, matching_filters, w
 
     for filename in xml_files:
         file_path = os.path.join(folder_containing_xml_files, filename)
-        window["-PROGRESS_BAR-"].update(
-            round((xml_files.index(filename) + 1) * progress_increment, 2)
-        )
+        window["-PROGRESS_BAR-"].update(round((xml_files.index(filename) + 1) * progress_increment, 2))
+        window["-PROGRESSBAR_TEXT-"].update(f"{round((xml_files.index(filename) + 1) * progress_increment, 2)}%")
         window["-OUTPUT_WINDOW_MAIN-"].update(f"Processing {filename}")
 
         try:
@@ -379,7 +378,6 @@ def export_evaluation_as_csv(
     finally:
         window["-EXPORT_AS_CSV-"].update(disabled=False)
         window["-INPUT_FOLDER_BROWSE-"].update(disabled=False)
-        window["-PROGRESS_BAR-"].update(0)
 
 
 def is_duplicate(xpath_expression):
