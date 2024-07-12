@@ -257,7 +257,7 @@ def is_valid_xpath(expression):
     return any(re.match(pattern, expression) for pattern in valid_patterns)
 
 
-def evaluate_xml_files_matching(folder_containing_xml_files, matching_filters):
+def evaluate_xml_files_matching(folder_containing_xml_files, matching_filters, window):
     final_results = []
     xml_files = [
         f for f in os.listdir(folder_containing_xml_files) if f.endswith(".xml")
@@ -271,9 +271,6 @@ def evaluate_xml_files_matching(folder_containing_xml_files, matching_filters):
         file_path = os.path.join(folder_containing_xml_files, filename)
         window["-PROGRESS_BAR-"].update(
             round((xml_files.index(filename) + 1) * progress_increment, 2)
-        )
-        window["-PROGRESSBAR_TEXT-"].update(
-            f"{round((xml_files.index(filename) + 1) * progress_increment, 2)}%"
         )
         window["-OUTPUT_WINDOW_MAIN-"].update(f"Processing {filename}")
 
@@ -295,36 +292,43 @@ def evaluate_xml_files_matching(folder_containing_xml_files, matching_filters):
             file_total_matches += match_count
 
             if match_count:
-                current_file_results[f"Expression: {expression}"] = (
-                    process_xpath_result(expression, result)
-                )
+                if "[@" in expression or "[text()=" in expression:
+                    final_results.append(
+                        {
+                            "Filename": os.path.splitext(filename)[0],
+                            "Expression": expression,
+                            "Matches": match_count,
+                        }
+                    )
+                else:
+                    process_xpath_result(expression, result, current_file_results)
 
         if file_total_matches > 0:
             total_sum_matches += file_total_matches
             total_matching_files += 1
-            final_results.append(current_file_results)
+            if current_file_results:
+                final_results.append(current_file_results)
 
     return final_results, total_sum_matches, total_matching_files
 
 
-def process_xpath_result(expression, result):
+def process_xpath_result(expression, result, current_file_results):
     if "/@" in expression:
         attribute_name = expression.split("@")[-1]
-        return [elem.strip() for elem in result if elem.strip()]
+        key = f"Attribute {attribute_name} Value"
+        current_file_results[key] = [elem.strip() for elem in result if elem.strip()]
     elif "/text()" in expression:
-        return [elem.strip() for elem in result if elem.strip()]
+        tag_name = expression.split("/")[-2]
+        key = f"Tag {tag_name} Value"
+        current_file_results[key] = [elem.strip() for elem in result if elem.strip()]
     elif "[@" in expression:
         match = re.search(r"@([^=]+)", expression)
         if match:
             attribute_name = match.group(1).strip()
-            return [
+            key = f"Attribute {attribute_name} Value"
+            current_file_results[key] = [
                 elem.get(attribute_name) for elem in result if elem.get(attribute_name)
             ]
-    else:
-        return [
-            ET.tostring(elem, encoding="unicode", method="xml").strip()
-            for elem in result
-        ]
 
 
 def export_evaluation_as_csv(
@@ -332,24 +336,20 @@ def export_evaluation_as_csv(
 ):
     try:
         matching_results, total_matches_found, total_matching_files = (
-            evaluate_xml_files_matching(folder_containing_xml_files, matching_filters)
+            evaluate_xml_files_matching(
+                folder_containing_xml_files, matching_filters, window
+            )
         )
 
         if not matching_results:
             window["-OUTPUT_WINDOW_MAIN-"].update("No matches found.")
             return
 
-        headers = ["Filename"]
-        for expr in matching_filters:
-            if "/@" in expr:
-                attr_name = expr.split("@")[-1]
-                tag_name = expr.split("/")[-2]
-                headers.append(f"Tag {tag_name} Attribute {attr_name}")
-            elif "/text()" in expr:
-                tag_name = expr.split("/")[-2]
-                headers.append(f"Tag {tag_name} Value")
-            else:
-                headers.append(f"Expression: {expr}")
+        headers = ["Filename"] + [
+            header
+            for header in set(key for dic in matching_results for key in dic)
+            if header != "Filename"
+        ]
 
         with open(csv_output_path, "w", newline="", encoding="utf-8") as csvfile:
             writer = csv.DictWriter(
@@ -358,27 +358,17 @@ def export_evaluation_as_csv(
             writer.writeheader()
 
             for match in matching_results:
-                base_row = {"Filename": match["Filename"]}
-                max_results = max(
-                    len(match.get(f"Expression: {expr}", []))
-                    for expr in matching_filters
-                )
-
-                for i in range(max_results):
-                    row = base_row.copy()
-                    for expr in matching_filters:
-                        results = match.get(f"Expression: {expr}", [])
-                        if "/@" in expr:
-                            attr_name = expr.split("@")[-1]
-                            tag_name = expr.split("/")[-2]
-                            header = f"Tag {tag_name} Attribute {attr_name}"
-                        elif "/text()" in expr:
-                            tag_name = expr.split("/")[-2]
-                            header = f"Tag {tag_name} Value"
-                        else:
-                            header = f"Expression: {expr}"
-                        row[header] = results[i] if i < len(results) else ""
-                    writer.writerow(row)
+                if "Expression" in match:
+                    writer.writerow(match)
+                else:
+                    filename = match["Filename"]
+                    for key, value in match.items():
+                        if key != "Filename":
+                            if isinstance(value, list):
+                                for item in value:
+                                    writer.writerow({"Filename": filename, key: item})
+                            else:
+                                writer.writerow({"Filename": filename, key: value})
 
         window["-OUTPUT_WINDOW_MAIN-"].update(
             f"Matches saved to {csv_output_path}\n"
@@ -389,8 +379,7 @@ def export_evaluation_as_csv(
     finally:
         window["-EXPORT_AS_CSV-"].update(disabled=False)
         window["-INPUT_FOLDER_BROWSE-"].update(disabled=False)
-        # window["-PROGRESS_BAR-"].update(0)
-        # window["-PROGRESSBAR_TEXT-"].update("0%")
+        window["-PROGRESS_BAR-"].update(0)
 
 
 def is_duplicate(xpath_expression):
@@ -893,7 +882,7 @@ while True:
                     col_widths=list(map(lambda x: len(x) + 1, head)),
                     expand_x=True,
                     expand_y=True,
-                    justification="left",
+                    justification="left"
                 )
             ]
         ]
@@ -904,7 +893,7 @@ while True:
             resizable=True,
             size=(1200, 600),
             font="Calibri 16",
-            grab_anywhere=True,
+            grab_anywhere=True
         )
         event, value = window2.read()
 
