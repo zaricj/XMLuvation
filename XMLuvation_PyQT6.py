@@ -6,20 +6,21 @@ from PySide6.QtWidgets import (QApplication, QMainWindow, QWidget, QVBoxLayout,
                              QMenuBar, QCheckBox,QMenu)
 from PySide6.QtGui import QFont, QIcon, QPalette, QColor, QPixmap
 from PySide6.QtCore import Qt
+from qt_material import apply_stylesheet
 
 class MainWindow(QMainWindow):
     def __init__(self):
         super().__init__()
         self.setWindowTitle("XMLuvation v1.0 © 2024 by Jovan Zaric")
-        self.setWindowIcon(QIcon("path_to_icon.png"))  # Replace with actual path
-        self.setGeometry(100, 100, 1200, 800)
+        self.setWindowIcon(QIcon("_internal/icon/xml_32px.ico"))  # Replace with actual path
+        self.setGeometry(100, 100, 1280, 800)
 
         # Set the font
-        font = QFont("Calibri", 10)
+        font = QFont("Calibri", 12)
         self.setFont(font)
 
         # Set the color scheme
-        self.set_dark_theme()
+        #self.set_dark_theme()
 
         # Create the menu bar
         self.create_menu_bar()
@@ -39,22 +40,22 @@ class MainWindow(QMainWindow):
         central_widget.setLayout(main_layout)
         self.setCentralWidget(central_widget)
 
-    def set_dark_theme(self):
-        dark_palette = QPalette()
-        dark_palette.setColor(QPalette.ColorRole.Window, QColor(49, 54, 59))
-        dark_palette.setColor(QPalette.ColorRole.WindowText, Qt.GlobalColor.white)
-        dark_palette.setColor(QPalette.ColorRole.Base, QColor(42, 47, 51))
-        dark_palette.setColor(QPalette.ColorRole.AlternateBase, QColor(53, 58, 63))
-        dark_palette.setColor(QPalette.ColorRole.ToolTipBase, Qt.GlobalColor.white)
-        dark_palette.setColor(QPalette.ColorRole.ToolTipText, Qt.GlobalColor.white)
-        dark_palette.setColor(QPalette.ColorRole.Text, Qt.GlobalColor.white)
-        dark_palette.setColor(QPalette.ColorRole.Button, QColor(53, 58, 63))
-        dark_palette.setColor(QPalette.ColorRole.ButtonText, Qt.GlobalColor.white)
-        dark_palette.setColor(QPalette.ColorRole.BrightText, Qt.GlobalColor.red)
-        dark_palette.setColor(QPalette.ColorRole.Link, QColor(42, 130, 218))
-        dark_palette.setColor(QPalette.ColorRole.Highlight, QColor(42, 130, 218))
-        dark_palette.setColor(QPalette.ColorRole.HighlightedText, Qt.GlobalColor.black)
-        self.setPalette(dark_palette)
+    #def set_dark_theme(self):
+    #    dark_palette = QPalette()
+    #    dark_palette.setColor(QPalette.ColorRole.Window, QColor(49, 54, 59))
+    #    dark_palette.setColor(QPalette.ColorRole.WindowText, Qt.GlobalColor.white)
+    #    dark_palette.setColor(QPalette.ColorRole.Base, QColor(42, 47, 51))
+    #    dark_palette.setColor(QPalette.ColorRole.AlternateBase, QColor(53, 58, 63))
+    #    dark_palette.setColor(QPalette.ColorRole.ToolTipBase, Qt.GlobalColor.white)
+    #    dark_palette.setColor(QPalette.ColorRole.ToolTipText, Qt.GlobalColor.white)
+    #    dark_palette.setColor(QPalette.ColorRole.Text, Qt.GlobalColor.white)
+    #    dark_palette.setColor(QPalette.ColorRole.Button, QColor(53, 58, 63))
+    #    dark_palette.setColor(QPalette.ColorRole.ButtonText, Qt.GlobalColor.white)
+    #    dark_palette.setColor(QPalette.ColorRole.BrightText, Qt.GlobalColor.red)
+    #    dark_palette.setColor(QPalette.ColorRole.Link, QColor(42, 130, 218))
+    #    dark_palette.setColor(QPalette.ColorRole.Highlight, QColor(42, 130, 218))
+    #    dark_palette.setColor(QPalette.ColorRole.HighlightedText, Qt.GlobalColor.black)
+    #    self.setPalette(dark_palette)
 
     def create_menu_bar(self):
         menu_bar = self.menuBar()
@@ -261,5 +262,6 @@ class MainWindow(QMainWindow):
 if __name__ == "__main__":
     app = QApplication(sys.argv)
     window = MainWindow()
+    apply_stylesheet(app, theme='dark_amber.xml')
     window.show()
     sys.exit(app.exec())
