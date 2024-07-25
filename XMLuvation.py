@@ -792,12 +792,12 @@ layout = [
 ]
 
 window = sg.Window(
-    "XMLuvation v1.0 © 2024 by Jovan Zaric",
+    "XMLuvation v1.0 © 2024",
     layout,
     font=FONT,
     icon=PROGRAM_ICON,
     finalize=True,
-    resizable=True
+    resizable=False
 )
 pywinstyles.change_header_color(window.TKroot, color="#4d5157")
 input_checked = False
