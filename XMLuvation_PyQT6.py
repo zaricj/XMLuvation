@@ -1,12 +1,19 @@
-import sys
 from PySide6.QtWidgets import (QApplication, QMainWindow, QWidget, QVBoxLayout, 
                              QHBoxLayout, QTabWidget, QGroupBox, QLabel, 
                              QLineEdit, QPushButton, QComboBox, QRadioButton, 
                              QListWidget, QTextEdit, QProgressBar, QStatusBar,
-                             QMenuBar, QCheckBox,QMenu)
+                             QMenuBar, QCheckBox,QMenu,QFileDialog)
 from PySide6.QtGui import QFont, QIcon, QPalette, QColor, QPixmap
 from PySide6.QtCore import Qt
+import pandas as pd
+from lxml import etree as ET
+from pathlib import Path
 from qt_material import apply_stylesheet
+import sys
+import csv
+import os
+import re
+import webbrowser
 
 class MainWindow(QMainWindow):
     def __init__(self):
@@ -89,29 +96,57 @@ class MainWindow(QMainWindow):
         group = QGroupBox("XML folder selection and XPath builder")
         group.setStyleSheet("QGroupBox { color: #FFC857; }")
         layout = QVBoxLayout()
-
-        layout.addWidget(QLabel("Choose a Folder that contains XML Files"))
+        
+        folder_with_xml_files_and_statusbar_layout = QHBoxLayout()
+        
+        self.total_xml_files_statusbar = QStatusBar()
+        self.setStatusBar(self.total_xml_files_statusbar)
+        self.total_xml_files_statusbar.setSizeGripEnabled(False)
+        
+        
+        folder_with_xml_files_and_statusbar_layout.addWidget(QLabel("Choose a Folder that contains XML Files"))
+        folder_with_xml_files_and_statusbar_layout.addWidget(self.total_xml_files_statusbar)
+        
+        layout.addLayout(folder_with_xml_files_and_statusbar_layout)
+        
+        
+        self.folder_input = QLineEdit()
+        self.browse_button = QPushButton("Browse")
+        self.browse_button.clicked.connect(self.browse_folder)
+        self.read_xml_button = QPushButton("Read XML")
+        self.read_xml_button.clicked.connect(self.read_xml)
         
         folder_layout = QHBoxLayout()
-        folder_layout.addWidget(QLineEdit())
-        folder_layout.addWidget(QPushButton("Browse"))
-        folder_layout.addWidget(QPushButton("Read XML"))
+        folder_layout.addWidget(self.folder_input)
+        folder_layout.addWidget(self.browse_button)
+        folder_layout.addWidget(self.read_xml_button)
         layout.addLayout(folder_layout)
 
         layout.addWidget(QLabel("Get XML Tag and Attribute Names/Values for XPath generation"))
 
         tag_layout = QHBoxLayout()
-        tag_layout.addWidget(QLabel("Tag name:"))
-        tag_layout.addWidget(QComboBox())
-        tag_layout.addWidget(QLabel("Tag Value:"))
-        tag_layout.addWidget(QComboBox())
+        
+        self.tag_name_label = QLabel("Tag name:")
+        self.tag_name_combobox = QComboBox()
+        self.tag_value_label = QLabel("Tag value:")
+        self.tag_value_combobox = QComboBox()
+        
+        self.attribute_name_label = QLabel("Attribute name:")
+        self.attribute_name_combobox = QComboBox()
+        self.attribute_value_label = QLabel("Attribute value:")
+        self.attribute_value_combobox = QComboBox()
+        
+        tag_layout.addWidget(self.tag_name_label)
+        tag_layout.addWidget(self.tag_name_combobox)
+        tag_layout.addWidget(self.tag_value_label)
+        tag_layout.addWidget(self.tag_value_combobox)
         layout.addLayout(tag_layout)
 
         att_layout = QHBoxLayout()
-        att_layout.addWidget(QLabel("Att name:"))
-        att_layout.addWidget(QComboBox())
-        att_layout.addWidget(QLabel("Att Value:"))
-        att_layout.addWidget(QComboBox())
+        att_layout.addWidget(self.attribute_name_label)
+        att_layout.addWidget(self.attribute_name_combobox)
+        att_layout.addWidget(self.attribute_value_label)
+        att_layout.addWidget(self.attribute_value_combobox)
         layout.addLayout(att_layout)
 
         function_layout = QHBoxLayout()
@@ -168,7 +203,9 @@ class MainWindow(QMainWindow):
         group.setStyleSheet("QGroupBox { color: #FFC857; }")
         layout = QVBoxLayout()
 
-        layout.addWidget(QTextEdit())
+        self.program_output = QTextEdit()
+        
+        layout.addWidget(self.program_output)
 
         group.setLayout(layout)
         return group
@@ -178,7 +215,9 @@ class MainWindow(QMainWindow):
         group.setStyleSheet("QGroupBox { color: #FFC857; }")
         layout = QVBoxLayout()
 
-        layout.addWidget(QTextEdit())
+        self.xml_output = QTextEdit() # XML Output
+        
+        layout.addWidget(self.xml_output)
         
         progress_layout = QHBoxLayout()
         progress_layout.addWidget(QLabel("0%"))
@@ -258,6 +297,53 @@ class MainWindow(QMainWindow):
         group.setLayout(layout)
         return group
     
+    
+    def read_xml(self):
+        file_name, _ = QFileDialog.getOpenFileName(self, "Select XML File", "", "XML Files (*.xml)")
+        if file_name:
+            try:
+                tree = ET.parse(file_name)
+                root = tree.getroot()
+                xml_string = ET.tostring(root, pretty_print=True).decode("UTF-8")
+                self.xml_output.setText(xml_string)
+            except Exception as e:
+                self.xml_output.setText(f"Error reading XML file: {str(e)}")
+    
+    def parse_xml(self,xml_file):
+        """Reads XML file and adds elements to the tag name Combobox GUI element
+
+        Args:
+            xml_file (str): Single XML File
+        """
+        try:
+            tree = ET.parse(xml_file)
+            root = tree.getroot()
+            xml_string = ET.tostring(root).decode("UTF-8")  # Converts the read xml file to a string
+            self.xml_output.setText(xml_string)  # Prints the xml file in the output window
+            # Get tags in XML File:
+            tags_xml = [element.tag for element in root.iter()]
+            tags_to_set = set(tags_xml)
+            tags_to_list = list(tags_to_set)
+            # Add Elements to ComboBox List
+           # self.program_output.setText(values=tags_to_list)
+        except Exception as ex:
+            template = "An exception of type {0} occurred. Arguments: {1!r}"
+            message = template.format(type(ex).__name__, ex.args)
+            self.program_output.setText(f"Exception in program: {message}")
+            
+    def browse_folder(self):
+        folder = QFileDialog.getExistingDirectory(self, "Select Directory")
+        if folder:
+            self.folder_input.setText(folder)
+            self.update_xml_file_count(folder)
+
+    def update_xml_file_count(self, folder):
+        try:
+            xml_files = list(Path(folder).glob('*.xml'))
+            file_count = len(xml_files)
+            self.total_xml_files_statusbar.showMessage(f"Total XML files found: {file_count}")
+        except Exception as e:
+            self.total_xml_files_statusbar.showMessage(f"Error counting XML files: {str(e)}")
 
 if __name__ == "__main__":
     app = QApplication(sys.argv)
