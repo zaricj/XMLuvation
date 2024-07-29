@@ -1,19 +1,19 @@
-from PySide6.QtWidgets import (QApplication, QMainWindow, QWidget, QVBoxLayout, 
-                             QHBoxLayout, QTabWidget, QGroupBox, QLabel, 
-                             QLineEdit, QPushButton, QComboBox, QRadioButton, 
-                             QListWidget, QTextEdit, QProgressBar, QStatusBar,
-                             QMenuBar, QCheckBox,QMenu,QFileDialog, QMessageBox)
-from PySide6.QtGui import QFont, QIcon, QPalette, QColor, QPixmap, QAction
-from PySide6.QtCore import Qt
 import pandas as pd
-from lxml import etree as ET
-from pathlib import Path
-from qt_material import apply_stylesheet
 import sys
 import csv
 import os
 import re
 import webbrowser
+from PySide6.QtWidgets import (QApplication, QMainWindow, QWidget, QVBoxLayout, 
+                             QHBoxLayout, QTabWidget, QGroupBox, QLabel, 
+                             QLineEdit, QPushButton, QComboBox, QRadioButton, 
+                             QListWidget, QTextEdit, QProgressBar, QStatusBar,
+                             QMenuBar, QCheckBox,QMenu,QFileDialog, QMessageBox, QTableView)
+from PySide6.QtGui import QFont, QIcon, QPalette, QColor, QPixmap, QAction
+from PySide6.QtCore import Qt, QAbstractTableModel, QVariantAnimation
+from lxml import etree as ET
+from qt_material import apply_stylesheet
+from pathlib import Path
 
 class MainWindow(QMainWindow):
     def __init__(self):
@@ -106,8 +106,8 @@ class MainWindow(QMainWindow):
         help_menu = menu_bar.addMenu("&Help")
         xpath_help_action = QAction("XPath Help", self)
         xpath_help_action.setStatusTip("Open XPath Syntax Help")
-        #xpath_help_action.triggered.connect(self.open_xpath_help)
-        #help_menu.addAction(xpath_help_action)
+        xpath_help_action.triggered.connect(self.open_web_xpath_help)
+        help_menu.addAction(xpath_help_action)
         xpath_cheatsheet_action = QAction("XPath Cheat Sheet", self)
         xpath_cheatsheet_action.setStatusTip("Open XPath Cheat Sheet")
         #xpath_cheatsheet_action.triggered.connect(self.open_xpath_cheatsheet)
@@ -147,7 +147,9 @@ class MainWindow(QMainWindow):
             
     def open_path(self,path):
         self.folder_xml_input.setText(path)
-
+    
+    def open_web_xpath_help(self):
+        webbrowser.open("https://www.w3schools.com/xml/xpath_syntax.asp")
 
     # ======= END FUNCTIONS create_menu_bar ======= #
     
@@ -211,13 +213,17 @@ class MainWindow(QMainWindow):
         
         self.tag_name_label = QLabel("Tag name:")
         self.tag_name_combobox = QComboBox()
+        self.tag_name_combobox.setEditable(True)
         self.tag_value_label = QLabel("Tag value:")
         self.tag_value_combobox = QComboBox()
+        self.tag_value_combobox.setEditable(True)
         
         self.attribute_name_label = QLabel("Attribute name:")
         self.attribute_name_combobox = QComboBox()
+        self.attribute_name_combobox.setEditable(True)
         self.attribute_value_label = QLabel("Attribute value:")
         self.attribute_value_combobox = QComboBox()
+        self.attribute_value_combobox.setEditable(True)
         
         tag_layout.addWidget(self.tag_name_label)
         tag_layout.addWidget(self.tag_name_combobox)
@@ -267,6 +273,54 @@ class MainWindow(QMainWindow):
         except Exception as e:
             self.total_xml_files_statusbar.setStyleSheet("color: #ed2828")
             self.total_xml_files_statusbar.showMessage(f"Error counting XML files: {str(e)}")
+            
+    def parse_xml(self, xml_file):
+        try:
+            tree = ET.parse(xml_file)
+            root = tree.getroot()
+            xml_string = ET.tostring(root).decode("UTF-8")
+            self.xml_output.setText(xml_string)
+
+            # Clear existing items from comboboxes
+            self.tag_name_combobox.clear()
+            self.tag_value_combobox.clear()
+            self.attribute_name_combobox.clear()
+            self.attribute_value_combobox.clear()
+
+            # Get tags, values, attributes, and attribute values
+            tags = set()
+            tag_values = set()
+            attributes = set()
+            attribute_values = set()
+
+            for elem in root.iter():
+                tags.add(elem.tag)
+                if elem.text and elem.text.strip():
+                    tag_values.add(elem.text.strip())
+                for attr, value in elem.attrib.items():
+                    attributes.add(attr)
+                    attribute_values.add(value)
+
+            # Add items to comboboxes
+            self.tag_name_combobox.addItems(sorted(tags))
+            self.tag_value_combobox.addItems(sorted(tag_values))
+            self.attribute_name_combobox.addItems(sorted(attributes))
+            self.attribute_value_combobox.addItems(sorted(attribute_values))
+
+        except Exception as ex:
+            template = "An exception of type {0} occurred. Arguments: {1!r}"
+            message = template.format(type(ex).__name__, ex.args)
+            QMessageBox.critical(self, "Exception in Program", message)
+            
+    def read_xml(self):
+        try:
+            file_name, _ = QFileDialog.getOpenFileName(self, "Select XML File", "", "XML Files (*.xml)")
+            if file_name:
+                self.parse_xml(file_name)
+        except Exception as ex:
+            template = "An exception of type {0} occurred. Arguments: {1!r}"
+            message = template.format(type(ex).__name__, ex.args)
+            QMessageBox.critical(self, f"Exception in Program: {message}")
             
     # ======= END FUNCTIONS create_xml_eval_group ======= #
     
@@ -413,39 +467,7 @@ class MainWindow(QMainWindow):
     
     def clear_output(self):
         self.program_output.clear()
-    
-    def read_xml(self):
-        file_name, _ = QFileDialog.getOpenFileName(self, "Select XML File", "", "XML Files (*.xml)")
-        if file_name:
-            try:
-                tree = ET.parse(file_name)
-                root = tree.getroot()
-                xml_string = ET.tostring(root, pretty_print=True).decode("UTF-8")
-                self.xml_output.setText(xml_string)
-            except Exception as e:
-                self.xml_output.setText(f"Error reading XML file: {str(e)}")
-    
-    def parse_xml(self,xml_file):
-        """Reads XML file and adds elements to the tag name Combobox GUI element
 
-        Args:
-            xml_file (str): Single XML File
-        """
-        try:
-            tree = ET.parse(xml_file)
-            root = tree.getroot()
-            xml_string = ET.tostring(root).decode("UTF-8")  # Converts the read xml file to a string
-            self.xml_output.setText(xml_string)  # Prints the xml file in the output window
-            # Get tags in XML File:
-            tags_xml = [element.tag for element in root.iter()]
-            tags_to_set = set(tags_xml)
-            tags_to_list = list(tags_to_set)
-            # Add Elements to ComboBox List
-           # self.program_output.setText(values=tags_to_list)
-        except Exception as ex:
-            template = "An exception of type {0} occurred. Arguments: {1!r}"
-            message = template.format(type(ex).__name__, ex.args)
-            self.program_output.setText(f"Exception in program: {message}")
 
 if __name__ == "__main__":
     app = QApplication(sys.argv)
