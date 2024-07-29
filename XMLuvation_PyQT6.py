@@ -2,8 +2,8 @@ from PySide6.QtWidgets import (QApplication, QMainWindow, QWidget, QVBoxLayout,
                              QHBoxLayout, QTabWidget, QGroupBox, QLabel, 
                              QLineEdit, QPushButton, QComboBox, QRadioButton, 
                              QListWidget, QTextEdit, QProgressBar, QStatusBar,
-                             QMenuBar, QCheckBox,QMenu,QFileDialog)
-from PySide6.QtGui import QFont, QIcon, QPalette, QColor, QPixmap
+                             QMenuBar, QCheckBox,QMenu,QFileDialog, QMessageBox)
+from PySide6.QtGui import QFont, QIcon, QPalette, QColor, QPixmap, QAction
 from PySide6.QtCore import Qt
 import pandas as pd
 from lxml import etree as ET
@@ -63,15 +63,95 @@ class MainWindow(QMainWindow):
     #    dark_palette.setColor(QPalette.ColorRole.Highlight, QColor(42, 130, 218))
     #    dark_palette.setColor(QPalette.ColorRole.HighlightedText, Qt.GlobalColor.black)
     #    self.setPalette(dark_palette)
+    
 
     def create_menu_bar(self):
         menu_bar = self.menuBar()
         
-        file_menu = menu_bar.addMenu("File")
-        open_menu = menu_bar.addMenu("Open")
-        paths_menu = menu_bar.addMenu("Paths")
-        help_menu = menu_bar.addMenu("Help")
+         # File Menu
+        file_menu = menu_bar.addMenu("&File")
+        clear_action = QAction("Clear Output", self)
+        clear_action.setStatusTip("Clear the output")
+        clear_action.triggered.connect(self.clear_output)
+        file_menu.addAction(clear_action)
+        file_menu.addSeparator()
+        exit_action = QAction("E&xit", self)
+        exit_action.setStatusTip("Exit the application")
+        exit_action.triggered.connect(self.close)
+        file_menu.addAction(exit_action)
 
+        # Open Menu
+        open_menu = menu_bar.addMenu("&Open")
+        open_input_action = QAction("Open XML Input Folder", self)
+        open_input_action.setStatusTip("Open the XML input folder")
+        open_input_action.triggered.connect(self.open_input_folder)
+        open_menu.addAction(open_input_action)
+        open_output_action = QAction("Open CSV Output Folder", self)
+        open_output_action.setStatusTip("Open the CSV output folder")
+        open_output_action.triggered.connect(self.open_output_folder)
+        open_menu.addAction(open_output_action)
+
+        # Path Menu
+        paths_menu = menu_bar.addMenu("&Path")
+        lobster_test_action = QAction("Lobster Test System", self)
+        lobster_test_action.setStatusTip("Open Lobster Test System")
+        lobster_test_action.triggered.connect(lambda: self.open_path("//nesist02/ProfilileXMLExport"))
+        paths_menu.addAction(lobster_test_action)
+        lobster_prod_action = QAction("Lobster Prod System", self)
+        lobster_prod_action.setStatusTip("Open Lobster Prod System")
+        lobster_prod_action.triggered.connect(lambda: self.open_path("//nesis002/ProfilileXMLExport"))
+        paths_menu.addAction(lobster_prod_action)
+
+        # Help Menu
+        help_menu = menu_bar.addMenu("&Help")
+        xpath_help_action = QAction("XPath Help", self)
+        xpath_help_action.setStatusTip("Open XPath Syntax Help")
+        #xpath_help_action.triggered.connect(self.open_xpath_help)
+        #help_menu.addAction(xpath_help_action)
+        xpath_cheatsheet_action = QAction("XPath Cheat Sheet", self)
+        xpath_cheatsheet_action.setStatusTip("Open XPath Cheat Sheet")
+        #xpath_cheatsheet_action.triggered.connect(self.open_xpath_cheatsheet)
+        #help_menu.addAction(xpath_cheatsheet_action)
+        
+    # ======= START FUNCTIONS create_menu_bar ======= #
+    
+    # Open XML input folder function
+    def open_input_folder(self):
+        directory_path = self.folder_xml_input.text()
+        
+        if os.path.exists(directory_path):
+            try:
+                os.startfile(directory_path)
+            except Exception as ex:
+                template = "An exception of type {0} occurred. Arguments: {1!r}"
+                message = template.format(type(ex).__name__, ex.args)
+                QMessageBox.setButtonText(self,"Okay")
+                QMessageBox.critical(self,message)
+        else:
+            QMessageBox.critical(self, "Error", f"Path does not exist or is not a valid path:\n{directory_path}")
+    
+    
+    # Open CSV output folder function
+    def open_output_folder(self):
+        directory_path = self.folder_csv_input.text()
+        
+        if os.path.exists(directory_path):
+            try:
+                os.startfile(directory_path)
+            except Exception as ex:
+                template = "An exception of type {0} occurred. Arguments: {1!r}"
+                message = template.format(type(ex).__name__, ex.args)
+                QMessageBox.critical(self,message)
+        else:
+            QMessageBox.critical(self, "Error", f"Path does not exist or is not a valid path:\n{directory_path}")
+            
+    def open_path(self,path):
+        self.folder_xml_input.setText(path)
+
+
+    # ======= END FUNCTIONS create_menu_bar ======= #
+    
+    
     def create_xml_evaluation_tab(self):
         tab = QWidget()
         layout = QHBoxLayout()
@@ -92,6 +172,7 @@ class MainWindow(QMainWindow):
         tab.setLayout(layout)
         return tab
 
+
     def create_xml_eval_group(self):
         group = QGroupBox("XML folder selection and XPath builder")
         group.setStyleSheet("QGroupBox { color: #FFC857; }")
@@ -102,6 +183,7 @@ class MainWindow(QMainWindow):
         self.total_xml_files_statusbar = QStatusBar()
         self.setStatusBar(self.total_xml_files_statusbar)
         self.total_xml_files_statusbar.setSizeGripEnabled(False)
+        self.total_xml_files_statusbar.setStyleSheet("font-weight: bold; color: #0cd36c")
         
         
         folder_with_xml_files_and_statusbar_layout.addWidget(QLabel("Choose a Folder that contains XML Files"))
@@ -109,15 +191,16 @@ class MainWindow(QMainWindow):
         
         layout.addLayout(folder_with_xml_files_and_statusbar_layout)
         
-        
-        self.folder_input = QLineEdit()
+        # Elements
+        self.folder_xml_input = QLineEdit()
+        self.folder_xml_input.textChanged.connect(self.update_xml_file_count)
         self.browse_button = QPushButton("Browse")
         self.browse_button.clicked.connect(self.browse_folder)
         self.read_xml_button = QPushButton("Read XML")
         self.read_xml_button.clicked.connect(self.read_xml)
         
         folder_layout = QHBoxLayout()
-        folder_layout.addWidget(self.folder_input)
+        folder_layout.addWidget(self.folder_xml_input)
         folder_layout.addWidget(self.browse_button)
         folder_layout.addWidget(self.read_xml_button)
         layout.addLayout(folder_layout)
@@ -166,7 +249,27 @@ class MainWindow(QMainWindow):
 
         group.setLayout(layout)
         return group
+    
+    # ======= START FUNCTIONS create_xml_eval_group ======= #
+    
+    def browse_folder(self):
+        folder = QFileDialog.getExistingDirectory(self, "Select Directory")
+        if folder:
+            self.folder_xml_input.setText(folder)
+            self.update_xml_file_count(folder)
 
+    # Statusbar update function
+    def update_xml_file_count(self, folder):
+        try:
+            xml_files = list(Path(folder).glob('*.xml'))
+            file_count = len(xml_files)
+            self.total_xml_files_statusbar.showMessage(f"Found {file_count} XML Files")
+        except Exception as e:
+            self.total_xml_files_statusbar.setStyleSheet("color: #ed2828")
+            self.total_xml_files_statusbar.showMessage(f"Error counting XML files: {str(e)}")
+            
+    # ======= END FUNCTIONS create_xml_eval_group ======= #
+    
     def create_matching_filter_group(self):
         group = QGroupBox("List of filters to match in XML files")
         group.setStyleSheet("QGroupBox { color: #FFC857; }")
@@ -189,10 +292,15 @@ class MainWindow(QMainWindow):
 
         layout.addWidget(QLabel("Choose a folder where you want to save the XML Evaluation"))
         
+        # Elements
+        self.folder_csv_input = QLineEdit()
+        self.csv_save_as_button = QPushButton("Save as")
+        self.csv_covert_button = QPushButton("Convert")
+        
         export_layout = QHBoxLayout()
-        export_layout.addWidget(QLineEdit())
-        export_layout.addWidget(QPushButton("Save as"))
-        export_layout.addWidget(QPushButton("Export"))
+        export_layout.addWidget(self.folder_csv_input)
+        export_layout.addWidget(self.csv_save_as_button)
+        export_layout.addWidget(self.csv_covert_button)
         layout.addLayout(export_layout)
 
         group.setLayout(layout)
@@ -204,6 +312,7 @@ class MainWindow(QMainWindow):
         layout = QVBoxLayout()
 
         self.program_output = QTextEdit()
+        self.program_output.setReadOnly(True)
         
         layout.addWidget(self.program_output)
 
@@ -215,13 +324,17 @@ class MainWindow(QMainWindow):
         group.setStyleSheet("QGroupBox { color: #FFC857; }")
         layout = QVBoxLayout()
 
+        # Elements
         self.xml_output = QTextEdit() # XML Output
+        self.xml_output.setReadOnly(True)
+        self.progressbar = QProgressBar()
+        self.progressbar.setTextVisible(True)
         
         layout.addWidget(self.xml_output)
         
         progress_layout = QHBoxLayout()
-        progress_layout.addWidget(QLabel("0%"))
-        progress_layout.addWidget(QProgressBar())
+        #progress_layout.addWidget(QLabel("0%"))
+        progress_layout.addWidget(self.progressbar)
         layout.addLayout(progress_layout)
 
         group.setLayout(layout)
@@ -298,6 +411,9 @@ class MainWindow(QMainWindow):
         return group
     
     
+    def clear_output(self):
+        self.program_output.clear()
+    
     def read_xml(self):
         file_name, _ = QFileDialog.getOpenFileName(self, "Select XML File", "", "XML Files (*.xml)")
         if file_name:
@@ -330,20 +446,6 @@ class MainWindow(QMainWindow):
             template = "An exception of type {0} occurred. Arguments: {1!r}"
             message = template.format(type(ex).__name__, ex.args)
             self.program_output.setText(f"Exception in program: {message}")
-            
-    def browse_folder(self):
-        folder = QFileDialog.getExistingDirectory(self, "Select Directory")
-        if folder:
-            self.folder_input.setText(folder)
-            self.update_xml_file_count(folder)
-
-    def update_xml_file_count(self, folder):
-        try:
-            xml_files = list(Path(folder).glob('*.xml'))
-            file_count = len(xml_files)
-            self.total_xml_files_statusbar.showMessage(f"Total XML files found: {file_count}")
-        except Exception as e:
-            self.total_xml_files_statusbar.showMessage(f"Error counting XML files: {str(e)}")
 
 if __name__ == "__main__":
     app = QApplication(sys.argv)
