@@ -61,3 +61,6 @@ This project is licensed under the MIT License.
 
 ##### CSV Conversion View
 ![XMLuvation_P2](https://github.com/zaricj/XMLuvation/assets/93329694/aad72324-2d1a-4c04-bc29-f23e64635b75)
+
+##### PySide6 Rewrite
+![PySide6_XMLuvation](https://github.com/user-attachments/assets/156478b1-0933-4970-99d6-4765bf3e53ee)
