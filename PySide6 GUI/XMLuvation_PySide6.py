@@ -62,13 +62,14 @@ class MainWindow(QMainWindow):
     def initUI(self):
         self.setWindowTitle("XMLuvation v1.0 © 2024 by Jovan Zaric")
         self.setWindowIcon(QIcon("_internal/icon/xml_32px.ico"))  # Replace with actual path
-        self.setGeometry(100, 100, 1280, 800)
+        self.setGeometry(100, 100, 1300, 840)
         self.eval_input_file = None
+        self.xpath_filters = []
         #self.set_dark_theme() # Remove comment to enable custom set DarkTheme Yellowish (Geis) Make sure to remove the qt_material apply_sytelsheet at the bottom under __init__
 
         # Set the font
-        font = QFont("Calibri", 12)
-        self.setFont(font)
+        #font = QFont("Calibri", 12)
+        #self.setFont(font)
 
         # Set the color scheme
         #self.set_dark_theme()
@@ -90,7 +91,6 @@ class MainWindow(QMainWindow):
         central_widget = QWidget()
         central_widget.setLayout(main_layout)
         self.setCentralWidget(central_widget)
-
 
     def set_dark_theme(self):
         dark_palette = QPalette()
@@ -256,6 +256,7 @@ class MainWindow(QMainWindow):
 
         tag_layout = QHBoxLayout()
         
+        # Elements
         self.tag_name_label = QLabel("Tag name:")
         self.tag_name_combobox = QComboBox()
         self.tag_name_combobox.setEditable(True)
@@ -272,6 +273,7 @@ class MainWindow(QMainWindow):
 
         att_layout = QHBoxLayout()
         
+        # Elements
         self.attribute_name_label = QLabel("Attribute name:")
         self.attribute_name_combobox = QComboBox()
         self.attribute_name_combobox.setEditable(True)
@@ -286,21 +288,43 @@ class MainWindow(QMainWindow):
         att_layout.addWidget(self.attribute_value_combobox)
         layout.addLayout(att_layout)
         layout.addSpacerItem(horizontal_spacer)
+        
+        function_layout = QHBoxLayout()
+    
+        # Elements
+        self.radio_button_equals = QRadioButton("Equals")
+        self.radio_button_equals.setChecked(True)
+        self.radio_button_contains = QRadioButton("Contains")
+        self.radio_button_startswith = QRadioButton("Starts-with")
+        self.radio_button_greater = QRadioButton("Greater")
+        self.radio_button_smaller = QRadioButton("Smaller")
+        
+        function_layout.addWidget(QLabel("Function:"))
+        function_layout.addWidget(self.radio_button_equals)
+        function_layout.addWidget(self.radio_button_contains)
+        function_layout.addWidget(self.radio_button_startswith)
+        function_layout.addWidget(self.radio_button_greater)
+        function_layout.addWidget(self.radio_button_smaller)
+        layout.addLayout(function_layout)
+        
         build_xpath_layout = QHBoxLayout()
         
+        build_xpath_layout.addWidget(QLabel("Xpath Expression:"))
         self.xpath_expression_input = QLineEdit()
         self.build_xpath_button = QPushButton("Build Xpath")
+        self.build_xpath_button.clicked.connect(self.build_xpath)
         build_xpath_layout.addWidget(self.xpath_expression_input)
         build_xpath_layout.addWidget(self.build_xpath_button)
         layout.addLayout(build_xpath_layout)
 
         group.setLayout(layout)
         return group
+    
     # ======= START FUNCTIONS FOR create_xml_eval_group ======= #
 
     def on_tag_name_changed(self, selected_tag):
         if not selected_tag:
-            return
+            return []
         try:
             attributes = self.get_attributes(self.eval_input_file, selected_tag)
             self.attribute_name_combobox.clear()
@@ -408,8 +432,6 @@ class MainWindow(QMainWindow):
             self.xml_parser_thread.finished.connect(self.on_xml_parsed)
             self.xml_parser_thread.error.connect(self.on_xml_parse_error)
             self.xml_parser_thread.start()
-            self.program_output.setText("Loading XML file...")
-
         except Exception as ex:
             template = "An exception of type {0} occurred. Arguments: {1!r}"
             message = template.format(type(ex).__name__, ex.args)
@@ -466,6 +488,90 @@ class MainWindow(QMainWindow):
             self.total_xml_files_statusbar.setStyleSheet("color: #ed2828")
             self.total_xml_files_statusbar.showMessage(f"Error counting XML files: {str(e)}")
             
+    def build_xpath(self):
+        try:
+            # Get values from comboboxes
+            tag_name = self.tag_name_combobox.currentText()
+            tag_value = self.tag_value_combobox.currentText()
+            attribute_name = self.attribute_name_combobox.currentText()
+            attribute_value = self.attribute_value_combobox.currentText()
+
+            # Initialize XPath expression
+            xpath_expression = ""
+
+            if tag_name:
+                xpath_expression = f"//{tag_name}"
+
+                if tag_value and not attribute_name:
+                    # Case: Tag Name and Tag Value
+                    xpath_expression += f"[text()='{tag_value}']"
+                elif attribute_name and not tag_value:
+                    # Case: Tag Name and Attribute Name
+                    xpath_expression += f"/@{attribute_name}"
+                elif attribute_name and attribute_value:
+                    # Case: Tag Name, Attribute Name, and Attribute Value
+                    xpath_expression += f"[@{attribute_name}='{attribute_value}']"
+                elif not tag_value and not attribute_name:
+                    # Case: Only Tag Name
+                    xpath_expression += "/text()"
+
+                # Apply additional criteria based on radio buttons
+                if tag_value or attribute_value:
+                    criteria = []
+                    selected_operation = self.get_selected_operation()
+
+                    if tag_value:
+                        criteria.append(self.build_tag_criterion(selected_operation, tag_value))
+                    if attribute_name and attribute_value:
+                        criteria.append(self.build_attribute_criterion(selected_operation, attribute_name, attribute_value))
+
+                    if criteria:
+                        xpath_expression = f"//{tag_name}[{' and '.join(criteria)}]"
+
+            # Update XPath expression input
+            self.xpath_expression_input.setText(xpath_expression)
+
+        except Exception as ex:
+            self.program_output.setText(f"Error building XPath: {str(ex)}")
+
+    def get_selected_operation(self):
+        if self.radio_button_equals.isChecked():
+            return "equals"
+        elif self.radio_button_contains.isChecked():
+            return "contains"
+        elif self.radio_button_startswith.isChecked():
+            return "startswith"
+        elif self.radio_button_greater.isChecked():
+            return "greater"
+        elif self.radio_button_smaller.isChecked():
+            return "smaller"
+        else:
+            return "equals"  # Default to equals if no radio button is checked
+
+    def build_tag_criterion(self, operation, value):
+        if operation == "equals":
+            return f"text()='{value}'"
+        elif operation == "contains":
+            return f"contains(text(), '{value}')"
+        elif operation == "startswith":
+            return f"starts-with(text(), '{value}')"
+        elif operation == "greater":
+            return f"text() > {value}"
+        elif operation == "smaller":
+            return f"text() < {value}"
+
+    def build_attribute_criterion(self, operation, name, value):
+        if operation == "equals":
+            return f"@{name}='{value}'"
+        elif operation == "contains":
+            return f"contains(@{name}, '{value}')"
+        elif operation == "startswith":
+            return f"starts-with(@{name}, '{value}')"
+        elif operation == "greater":
+            return f"@{name} > {value}"
+        elif operation == "smaller":
+            return f"@{name} < {value}"
+
     # ======= END FUNCTIONS FOR create_xml_eval_group ======= #
     
     def create_matching_filter_group(self):
@@ -476,24 +582,50 @@ class MainWindow(QMainWindow):
         spacer = QFrame()
         spacer.setFrameShape(QFrame.HLine)
         spacer.setFrameShadow(QFrame.Sunken)
+        
+        # Elements
+        self.add_xpath_to_list_button = QPushButton("Add Xpath to List")
+        self.add_xpath_to_list_button.clicked.connect(self.add_xpath_expression_to_listbox)
+        self.xpath_listbox = QListWidget()
+        self.xpath_listbox.setMinimumHeight(100)
 
         header_layout = QHBoxLayout()
-        header_layout.addWidget(QLabel("Add XPath Expressions to list to look for in XML Files:"))
-        header_layout.addWidget(QPushButton("Add XPath Filter"))
+        header_layout.addWidget(QLabel("Add XPath Expressions to list to look for in XML files"))
+        header_layout.addWidget(self.add_xpath_to_list_button)
         layout.addLayout(header_layout)
         layout.addWidget(spacer)
-        layout.addWidget(QListWidget())
-
+        layout.addWidget(self.xpath_listbox)
 
         group.setLayout(layout)
         return group
+    
+    # ======= Start FUNCTIONS FOR create_matching_filter_group ======= #
+    
+    def is_duplicate(self, xpath_expression):
+        return xpath_expression in self.xpath_filters
+    
+    def add_xpath_expression_to_listbox(self):
+        xpath_expression = self.xpath_expression_input.text()
+        
+        try:
+            if not xpath_expression:
+                self.program_output.setText("No Xpath expression entered.")
+            elif xpath_expression and not self.is_duplicate(xpath_expression):
+                self.xpath_filters.append(xpath_expression)
+                self.xpath_listbox.addItem(xpath_expression)
+        except Exception as ex:
+            template = f"An expcetion of type {0} occurred. Arguments: {1!r}"
+            message = template.format(type(ex).__name__, ex.args)
+            self.program_output.setText(f"Error adding filter: {message}")
+     
+    # ======= End FUNCTIONS FOR create_matching_filter_group ======= #
 
     def create_export_evaluation_group(self):
         group = QGroupBox("Export evaluation result as a CSV File")
         group.setStyleSheet("QGroupBox { color: #FFC857; }")
         layout = QVBoxLayout()
 
-        layout.addWidget(QLabel("Choose a folder where you want to save the XML Evaluation"))
+        layout.addWidget(QLabel("Choose a folder where you want to save the XML evaluation"))
         
         # Elements
         self.folder_csv_input = QLineEdit()
@@ -582,7 +714,7 @@ class MainWindow(QMainWindow):
         input_layout.addWidget(QPushButton("Read CSV"))
         layout.addLayout(input_layout)
 
-        layout.addWidget(QLabel("Choose where to save output of CSV file"))
+        layout.addWidget(QLabel("Choose where to save the converted CSV file"))
         
         output_layout = QHBoxLayout()
         output_layout.addWidget(QLineEdit())
