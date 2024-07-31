@@ -1,3 +1,11 @@
+from pathlib import Path
+from PySide6.QtWidgets import (QApplication, QMainWindow, QWidget, QVBoxLayout, 
+                             QHBoxLayout, QTabWidget, QGroupBox, QLabel, 
+                             QLineEdit, QPushButton, QComboBox, QRadioButton, 
+                             QListWidget, QTextEdit, QProgressBar, QStatusBar,
+                             QMenuBar, QCheckBox,QMenu,QFileDialog, QMessageBox, QTableView, QFrame, QSpacerItem, QSizePolicy)
+from PySide6.QtGui import QFont, QIcon, QPalette, QColor, QPixmap, QAction
+from PySide6.QtCore import Qt, QAbstractTableModel, QVariantAnimation, QThread, Signal
 import pandas as pd
 import sys
 import csv
@@ -5,16 +13,8 @@ import os
 import re
 import webbrowser
 import time
-from PySide6.QtWidgets import (QApplication, QMainWindow, QWidget, QVBoxLayout, 
-                             QHBoxLayout, QTabWidget, QGroupBox, QLabel, 
-                             QLineEdit, QPushButton, QComboBox, QRadioButton, 
-                             QListWidget, QTextEdit, QProgressBar, QStatusBar,
-                             QMenuBar, QCheckBox,QMenu,QFileDialog, QMessageBox, QTableView)
-from PySide6.QtGui import QFont, QIcon, QPalette, QColor, QPixmap, QAction
-from PySide6.QtCore import Qt, QAbstractTableModel, QVariantAnimation, QThread, Signal
 from lxml import etree as ET
 from qt_material import apply_stylesheet
-from pathlib import Path
 
 class XMLParserThread(QThread):
     finished = Signal(object)
@@ -64,7 +64,7 @@ class MainWindow(QMainWindow):
         self.setWindowIcon(QIcon("_internal/icon/xml_32px.ico"))  # Replace with actual path
         self.setGeometry(100, 100, 1280, 800)
         self.eval_input_file = None
-        #self.set_dark_theme()
+        #self.set_dark_theme() # Remove comment to enable custom set DarkTheme Yellowish (Geis) Make sure to remove the qt_material apply_sytelsheet at the bottom under __init__
 
         # Set the font
         font = QFont("Calibri", 12)
@@ -92,22 +92,22 @@ class MainWindow(QMainWindow):
         self.setCentralWidget(central_widget)
 
 
-    #def set_dark_theme(self):
-    #    dark_palette = QPalette()
-    #    dark_palette.setColor(QPalette.ColorRole.Window, QColor(49, 54, 59))
-    #    dark_palette.setColor(QPalette.ColorRole.WindowText, Qt.GlobalColor.white)
-    #    dark_palette.setColor(QPalette.ColorRole.Base, QColor(42, 47, 51))
-    #    dark_palette.setColor(QPalette.ColorRole.AlternateBase, QColor(53, 58, 63))
-    #    dark_palette.setColor(QPalette.ColorRole.ToolTipBase, Qt.GlobalColor.white)
-    #    dark_palette.setColor(QPalette.ColorRole.ToolTipText, Qt.GlobalColor.white)
-    #    dark_palette.setColor(QPalette.ColorRole.Text, Qt.GlobalColor.white)
-    #    dark_palette.setColor(QPalette.ColorRole.Button, QColor(53, 58, 63))
-    #    dark_palette.setColor(QPalette.ColorRole.ButtonText, Qt.GlobalColor.white)
-    #    dark_palette.setColor(QPalette.ColorRole.BrightText, Qt.GlobalColor.red)
-    #    dark_palette.setColor(QPalette.ColorRole.Link, QColor(42, 130, 218))
-    #    dark_palette.setColor(QPalette.ColorRole.Highlight, QColor(42, 130, 218))
-    #    dark_palette.setColor(QPalette.ColorRole.HighlightedText, Qt.GlobalColor.black)
-    #    self.setPalette(dark_palette)
+    def set_dark_theme(self):
+        dark_palette = QPalette()
+        dark_palette.setColor(QPalette.ColorRole.Window, QColor(49, 54, 59))
+        dark_palette.setColor(QPalette.ColorRole.WindowText, Qt.GlobalColor.white)
+        dark_palette.setColor(QPalette.ColorRole.Base, QColor(42, 47, 51))
+        dark_palette.setColor(QPalette.ColorRole.AlternateBase, QColor(53, 58, 63))
+        dark_palette.setColor(QPalette.ColorRole.ToolTipBase, Qt.GlobalColor.white)
+        dark_palette.setColor(QPalette.ColorRole.ToolTipText, Qt.GlobalColor.white)
+        dark_palette.setColor(QPalette.ColorRole.Text, Qt.GlobalColor.white)
+        dark_palette.setColor(QPalette.ColorRole.Button, QColor(53, 58, 63))
+        dark_palette.setColor(QPalette.ColorRole.ButtonText, Qt.GlobalColor.white)
+        dark_palette.setColor(QPalette.ColorRole.BrightText, Qt.GlobalColor.red)
+        dark_palette.setColor(QPalette.ColorRole.Link, QColor(42, 130, 218))
+        dark_palette.setColor(QPalette.ColorRole.Highlight, QColor(42, 130, 218))
+        dark_palette.setColor(QPalette.ColorRole.HighlightedText, Qt.GlobalColor.black)
+        self.setPalette(dark_palette)
     
 
     def create_menu_bar(self):
@@ -223,9 +223,11 @@ class MainWindow(QMainWindow):
         group = QGroupBox("XML folder selection and XPath builder")
         group.setStyleSheet("QGroupBox { color: #FFC857; }")
         layout = QVBoxLayout()
+        horizontal_spacer = QSpacerItem(40,10, QSizePolicy.Expanding, QSizePolicy.Minimum)
         
         folder_with_xml_files_and_statusbar_layout = QHBoxLayout()
         
+        # Elements
         self.total_xml_files_statusbar = QStatusBar()
         self.setStatusBar(self.total_xml_files_statusbar)
         self.total_xml_files_statusbar.setSizeGripEnabled(False)
@@ -262,6 +264,14 @@ class MainWindow(QMainWindow):
         self.tag_value_combobox = QComboBox()
         self.tag_value_combobox.setEditable(True)
         
+        tag_layout.addWidget(self.tag_name_label)
+        tag_layout.addWidget(self.tag_name_combobox)
+        tag_layout.addWidget(self.tag_value_label)
+        tag_layout.addWidget(self.tag_value_combobox)
+        layout.addLayout(tag_layout)
+
+        att_layout = QHBoxLayout()
+        
         self.attribute_name_label = QLabel("Attribute name:")
         self.attribute_name_combobox = QComboBox()
         self.attribute_name_combobox.setEditable(True)
@@ -270,22 +280,22 @@ class MainWindow(QMainWindow):
         self.attribute_value_combobox = QComboBox()
         self.attribute_value_combobox.setEditable(True)
         
-        tag_layout.addWidget(self.tag_name_label)
-        tag_layout.addWidget(self.tag_name_combobox)
-        tag_layout.addWidget(self.tag_value_label)
-        tag_layout.addWidget(self.tag_value_combobox)
-        layout.addLayout(tag_layout)
-
-        att_layout = QHBoxLayout()
         att_layout.addWidget(self.attribute_name_label)
         att_layout.addWidget(self.attribute_name_combobox)
         att_layout.addWidget(self.attribute_value_label)
         att_layout.addWidget(self.attribute_value_combobox)
         layout.addLayout(att_layout)
+        layout.addSpacerItem(horizontal_spacer)
+        build_xpath_layout = QHBoxLayout()
+        
+        self.xpath_expression_input = QLineEdit()
+        self.build_xpath_button = QPushButton("Build Xpath")
+        build_xpath_layout.addWidget(self.xpath_expression_input)
+        build_xpath_layout.addWidget(self.build_xpath_button)
+        layout.addLayout(build_xpath_layout)
 
         group.setLayout(layout)
         return group
-
     # ======= START FUNCTIONS FOR create_xml_eval_group ======= #
 
     def on_tag_name_changed(self, selected_tag):
@@ -462,13 +472,18 @@ class MainWindow(QMainWindow):
         group = QGroupBox("List of filters to match in XML files")
         group.setStyleSheet("QGroupBox { color: #FFC857; }")
         layout = QVBoxLayout()
+        
+        spacer = QFrame()
+        spacer.setFrameShape(QFrame.HLine)
+        spacer.setFrameShadow(QFrame.Sunken)
 
         header_layout = QHBoxLayout()
         header_layout.addWidget(QLabel("Add XPath Expressions to list to look for in XML Files:"))
         header_layout.addWidget(QPushButton("Add XPath Filter"))
         layout.addLayout(header_layout)
-
+        layout.addWidget(spacer)
         layout.addWidget(QListWidget())
+
 
         group.setLayout(layout)
         return group
