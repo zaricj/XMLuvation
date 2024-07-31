@@ -59,12 +59,18 @@ class MainWindow(QMainWindow):
         super().__init__()
         self.initUI()
         
+        
     def initUI(self):
         self.setWindowTitle("XMLuvation v1.0 © 2024 by Jovan Zaric")
         self.setWindowIcon(QIcon("_internal/icon/xml_32px.ico"))  # Replace with actual path
         self.setGeometry(100, 100, 1300, 840)
         self.eval_input_file = None
         self.xpath_filters = []
+        self.xpath_listbox = QListWidget(self)
+        
+        # Connect the custom context menu for Listbox
+        self.xpath_listbox.setContextMenuPolicy(Qt.CustomContextMenu)
+        self.xpath_listbox.customContextMenuRequested.connect(self.show_context_menu)
         #self.set_dark_theme() # Remove comment to enable custom set DarkTheme Yellowish (Geis) Make sure to remove the qt_material apply_sytelsheet at the bottom under __init__
 
         # Set the font
@@ -91,6 +97,7 @@ class MainWindow(QMainWindow):
         central_widget = QWidget()
         central_widget.setLayout(main_layout)
         self.setCentralWidget(central_widget)
+
 
     def set_dark_theme(self):
         dark_palette = QPalette()
@@ -140,11 +147,11 @@ class MainWindow(QMainWindow):
         paths_menu = menu_bar.addMenu("&Path")
         lobster_test_action = QAction("Lobster Test System", self)
         lobster_test_action.setStatusTip("Open Lobster Test System")
-        lobster_test_action.triggered.connect(lambda: self.open_path("//nesist02/ProfilileXMLExport"))
+        lobster_test_action.triggered.connect(lambda: self.open_path(r"\\nesist02\ProfilileXMLExport"))
         paths_menu.addAction(lobster_test_action)
         lobster_prod_action = QAction("Lobster Prod System", self)
         lobster_prod_action.setStatusTip("Open Lobster Prod System")
-        lobster_prod_action.triggered.connect(lambda: self.open_path("//nesis002/ProfilileXMLExport"))
+        lobster_prod_action.triggered.connect(lambda: self.open_path(r"\\nesis002\ProfilileXMLExport"))
         paths_menu.addAction(lobster_prod_action)
 
         # Help Menu
@@ -170,8 +177,7 @@ class MainWindow(QMainWindow):
             except Exception as ex:
                 template = "An exception of type {0} occurred. Arguments: {1!r}"
                 message = template.format(type(ex).__name__, ex.args)
-                QMessageBox.setButtonText(self,"Okay")
-                QMessageBox.critical(self,message)
+                QMessageBox.critical(self, "Error", message)
         else:
             QMessageBox.critical(self, "Error", f"Path does not exist or is not a valid path:\n{directory_path}")
     
@@ -186,7 +192,7 @@ class MainWindow(QMainWindow):
             except Exception as ex:
                 template = "An exception of type {0} occurred. Arguments: {1!r}"
                 message = template.format(type(ex).__name__, ex.args)
-                QMessageBox.critical(self,message)
+                QMessageBox.critical(self, "Error", message)
         else:
             QMessageBox.critical(self, "Error", f"Path does not exist or is not a valid path:\n{directory_path}")
             
@@ -231,7 +237,7 @@ class MainWindow(QMainWindow):
         self.total_xml_files_statusbar = QStatusBar()
         self.setStatusBar(self.total_xml_files_statusbar)
         self.total_xml_files_statusbar.setSizeGripEnabled(False)
-        self.total_xml_files_statusbar.setStyleSheet("font-weight: bold; color: #0cd36c")
+        self.total_xml_files_statusbar.setStyleSheet("font-size: 20;font-weight: bold; color: #0cd36c")
         
         folder_with_xml_files_and_statusbar_layout.addWidget(QLabel("Choose a Folder that contains XML Files"))
         folder_with_xml_files_and_statusbar_layout.addWidget(self.total_xml_files_statusbar)
@@ -349,11 +355,10 @@ class MainWindow(QMainWindow):
                 self.attribute_value_combobox.clear()
             else:
                 self.attribute_name_combobox.setDisabled(False)
-
         except Exception as ex:
             template = "An exception of type {0} occurred. Arguments: {1!r}"
             message = template.format(type(ex).__name__, ex.args)
-            self.program_output.setText(f"ERROR: {message}")
+            QMessageBox.critical(self,"Exception in Program", message)
 
 
     def on_attribute_name_changed(self, selected_attribute):
@@ -375,11 +380,10 @@ class MainWindow(QMainWindow):
             if not values_xml:
                 self.tag_value_combobox.setDisabled(True)
                 self.tag_value_combobox.clear()
-
         except Exception as ex:
             template = "An exception of type {0} occurred. Arguments: {1!r}"
             message = template.format(type(ex).__name__, ex.args)
-            self.program_output.setText(f"ERROR: {message}")
+            QMessageBox.critical(self,"Exception in Program", message)
 
 
     def get_attributes(self, eval_input_file, selected_tag):
@@ -392,7 +396,9 @@ class MainWindow(QMainWindow):
                 attributes.update(elem.attrib.keys())
             return sorted(attributes)
         except Exception as ex:
-            self.program_output.setText(f"Error getting attributes: {str(ex)}")
+            template = f"An exception of type {0} occurred. Arguments: {1!r}"
+            message = template.format(type(ex).__name__, ex.args)
+            QMessageBox.critical(self,"Error getting attributes", message)
             return []
 
 
@@ -407,7 +413,9 @@ class MainWindow(QMainWindow):
                     values.add(elem.text.strip())
             return sorted(values)
         except Exception as ex:
-            self.program_output.setText(f"Error getting tag values: {str(ex)}")
+            template = f"An exception of type {0} occurred. Arguments: {1!r}"
+            message = template.format(type(ex).__name__, ex.args)
+            QMessageBox.critical(self,"Error getting tag values", message)
             return []
 
 
@@ -422,7 +430,9 @@ class MainWindow(QMainWindow):
                     values.add(elem.attrib[selected_attribute])
             return sorted(values)
         except Exception as ex:
-            self.program_output.setText(f"Error getting attribute values: {str(ex)}")
+            template = f"An exception of type {0} occurred. Arguments: {1!r}"
+            message = template.format(type(ex).__name__, ex.args)
+            QMessageBox.critical(self, "Error getting attribute values", message)
             return []
 
 
@@ -457,7 +467,6 @@ class MainWindow(QMainWindow):
 
     def on_xml_parse_error(self, error_message):
         QMessageBox.critical(self, "Error Parsing XML", error_message)
-        self.program_output.setText(f"Error loading XML file: {error_message}")
                
             
     def read_xml(self):
@@ -484,9 +493,11 @@ class MainWindow(QMainWindow):
             xml_files = list(Path(folder).glob('*.xml'))
             file_count = len(xml_files)
             self.total_xml_files_statusbar.showMessage(f"Found {file_count} XML Files")
-        except Exception as e:
+        except Exception as ex:
+            template = "An exception of type {0} occurred. Arguments: {1!r}"
+            message = template.format(type(ex).__name__, ex.args)
             self.total_xml_files_statusbar.setStyleSheet("color: #ed2828")
-            self.total_xml_files_statusbar.showMessage(f"Error counting XML files: {str(e)}")
+            self.total_xml_files_statusbar.showMessage(f"Error counting XML files: {message}")
             
     def build_xpath(self):
         try:
@@ -530,9 +541,11 @@ class MainWindow(QMainWindow):
 
             # Update XPath expression input
             self.xpath_expression_input.setText(xpath_expression)
-
         except Exception as ex:
-            self.program_output.setText(f"Error building XPath: {str(ex)}")
+            template = f"An exception of type {0} occurred. Arguments {1!r}"
+            message = template.format(type(ex).__name__, ex.args)
+            self.program_output.setText(f"Error building XPath: {message}")
+
 
     def get_selected_operation(self):
         if self.radio_button_equals.isChecked():
@@ -548,6 +561,7 @@ class MainWindow(QMainWindow):
         else:
             return "equals"  # Default to equals if no radio button is checked
 
+
     def build_tag_criterion(self, operation, value):
         if operation == "equals":
             return f"text()='{value}'"
@@ -559,6 +573,7 @@ class MainWindow(QMainWindow):
             return f"text() > {value}"
         elif operation == "smaller":
             return f"text() < {value}"
+
 
     def build_attribute_criterion(self, operation, name, value):
         if operation == "equals":
@@ -585,9 +600,13 @@ class MainWindow(QMainWindow):
         
         # Elements
         self.add_xpath_to_list_button = QPushButton("Add Xpath to List")
+        self.add_xpath_to_list_button.setToolTip("Adds currently entered Xpath Expression to the ListBox")
         self.add_xpath_to_list_button.clicked.connect(self.add_xpath_expression_to_listbox)
-        self.xpath_listbox = QListWidget()
+        self.add_xpath_to_list_button.clicked.connect(self.update_statusbar_xpath_listbox_count)
         self.xpath_listbox.setMinimumHeight(100)
+        self.statusbar_xpath_listbox_count = QStatusBar()
+        self.statusbar_xpath_listbox_count.setSizeGripEnabled(False)
+        self.statusbar_xpath_listbox_count.setStyleSheet("font-weight: bold; color: #ffd740")
 
         header_layout = QHBoxLayout()
         header_layout.addWidget(QLabel("Add XPath Expressions to list to look for in XML files"))
@@ -595,24 +614,73 @@ class MainWindow(QMainWindow):
         layout.addLayout(header_layout)
         layout.addWidget(spacer)
         layout.addWidget(self.xpath_listbox)
+        layout.addWidget(self.statusbar_xpath_listbox_count)
 
         group.setLayout(layout)
         return group
     
     # ======= Start FUNCTIONS FOR create_matching_filter_group ======= #
     
+    def update_statusbar_xpath_listbox_count(self):
+        self.counter = self.xpath_listbox.count()
+        self.statusbar_xpath_listbox_count.showMessage(f"Total number of items in List: {self.counter}", 5000)
+        
+    
+    def remove_selected_items(self):
+        try:
+            for item in self.xpath_listbox.selectedItems():
+                self.xpath_listbox.takeItem(self.xpath_listbox.row(item))
+            for index,item in enumerate(self.xpath_filters,0):
+                self.xpath_filters.pop(index)
+                print(f"variable xpath_filters length: {len(self.xpath_filters) + 1}")
+                self.update_statusbar_xpath_listbox_count()
+        except Exception as ex:
+            template = f"An exception of type {0} occurred. Arguments {1!r}"
+            message = template.format(type(ex).__name__,ex.args)
+            self.program_output.setText(f"Error removing selected item from list: {message}")
+
+
+    def remove_all_items(self):
+        try:
+            self.xpath_listbox.clear()
+            self.xpath_filters.clear()
+            print(len(self.xpath_filters))
+            self.update_statusbar_xpath_listbox_count()
+        except Exception as ex:
+            template = f"An exception of type {0} occurred. Arguments {1!r}"
+            message = template.format(type(ex).__name__,ex.args)
+            self.program_output.setText(f"Error removing all items from list: {message}")
+
+
+    def show_context_menu(self, position):
+        context_menu = QMenu(self)
+        delete_action = QAction("Delete", self)
+        delete_all_action = QAction("Delete All", self)
+
+        context_menu.addAction(delete_action)
+        context_menu.addAction(delete_all_action)
+
+        delete_action.triggered.connect(self.remove_selected_items)
+        delete_all_action.triggered.connect(self.remove_all_items)
+
+        # Show the context menu at the cursor's current position
+        context_menu.exec(self.xpath_listbox.mapToGlobal(position))
+    
+    
     def is_duplicate(self, xpath_expression):
         return xpath_expression in self.xpath_filters
     
+    
     def add_xpath_expression_to_listbox(self):
         xpath_expression = self.xpath_expression_input.text()
-        
         try:
             if not xpath_expression:
                 self.program_output.setText("No Xpath expression entered.")
             elif xpath_expression and not self.is_duplicate(xpath_expression):
                 self.xpath_filters.append(xpath_expression)
                 self.xpath_listbox.addItem(xpath_expression)
+            else:
+                self.program_output.setText(f"Cannot add duplicate XPath Expression: {xpath_expression}")
         except Exception as ex:
             template = f"An expcetion of type {0} occurred. Arguments: {1!r}"
             message = template.format(type(ex).__name__, ex.args)
@@ -625,7 +693,7 @@ class MainWindow(QMainWindow):
         group.setStyleSheet("QGroupBox { color: #FFC857; }")
         layout = QVBoxLayout()
 
-        layout.addWidget(QLabel("Choose a folder where you want to save the XML evaluation"))
+        layout.addWidget(QLabel("Choose a folder where you want to save the evaluation:"))
         
         # Elements
         self.folder_csv_input = QLineEdit()
@@ -641,6 +709,7 @@ class MainWindow(QMainWindow):
         group.setLayout(layout)
         return group
 
+
     def create_program_output_group(self):
         group = QGroupBox("Program Output")
         group.setStyleSheet("QGroupBox { color: #FFC857; }")
@@ -653,6 +722,7 @@ class MainWindow(QMainWindow):
 
         group.setLayout(layout)
         return group
+
 
     def create_xml_output_group(self):
         group = QGroupBox("XML Output")
@@ -675,6 +745,7 @@ class MainWindow(QMainWindow):
         group.setLayout(layout)
         return group
     
+    
     def create_csv_conversion_tab(self):
         tab = QWidget()
         layout = QHBoxLayout()
@@ -691,6 +762,7 @@ class MainWindow(QMainWindow):
         layout.addLayout(right_column, 1)
         tab.setLayout(layout)
         return tab
+
 
     def create_csv_conversion_group(self):
         group = QGroupBox("CSV Conversion to different file type")
@@ -734,6 +806,7 @@ class MainWindow(QMainWindow):
 
         group.setLayout(layout)
         return group
+
 
     def create_csv_output_group(self):
         group = QGroupBox("CSV Conversion Output")
