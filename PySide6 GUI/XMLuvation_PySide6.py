@@ -5,7 +5,7 @@ from PySide6.QtWidgets import (QApplication, QMainWindow, QWidget, QVBoxLayout,
                              QListWidget, QTextEdit, QProgressBar, QStatusBar,
                              QCheckBox,QMenu,QFileDialog, QMessageBox, QFrame, QSpacerItem, QSizePolicy)
 from PySide6.QtGui import QIcon, QPalette, QColor, QPixmap, QAction
-from PySide6.QtCore import Qt, QThread, Signal
+from PySide6.QtCore import Qt, QThread, Signal, Slot
 import sys
 import csv
 import os
@@ -13,6 +13,7 @@ import re
 import webbrowser
 from  datetime import date
 from lxml import etree as ET
+import pandas as pd
 from qt_material import apply_stylesheet
 
 class XMLParserThread(QThread):
@@ -22,6 +23,7 @@ class XMLParserThread(QThread):
     def __init__(self, xml_file):
         super().__init__()
         self.xml_file = xml_file
+          
 
     def run(self):
         try:
@@ -55,6 +57,8 @@ class XMLParserThread(QThread):
 
 class MainWindow(QMainWindow):
     progress_updated = Signal(int)
+    update_input_file_signal = Signal(str)
+    update_output_file_signal = Signal(str)
     
     def __init__(self):
         super().__init__()
@@ -68,7 +72,11 @@ class MainWindow(QMainWindow):
         self.eval_input_file = None
         self.xpath_filters = []
         self.xpath_listbox = QListWidget(self)
+        
+        # Signals and Slots
         self.progress_updated.connect(self.update_progress)
+        self.update_input_file_signal.connect(self.update_input_file)
+        self.update_output_file_signal.connect(self.update_output_file)
         
         # Connect the custom context menu for Listbox
         self.xpath_listbox.setContextMenuPolicy(Qt.CustomContextMenu)
@@ -902,26 +910,42 @@ class MainWindow(QMainWindow):
         layout.addWidget(title_label)
 
         # Description
-        desc_label = QLabel("Convert CSV File to a different file type with the Pandas module.\nSupported output file types: Excel, Markdown, HTML and JSON")
-        layout.addWidget(desc_label)
-
-        layout.addWidget(QLabel("Choose a CSV file for conversion:"))
+        self.desc_label = QLabel("Convert CSV File to a different file type with the Pandas module.\nSupported output file types: Excel, Markdown, HTML and JSON")
+        
+        # Elements
+        self.input_csv_file_conversion = QLineEdit()
+        self.browse_csv_button = QPushButton("Browse")
+        self.browse_csv_button.clicked.connect(self.browse_csv_file)
+        self.read_csv_button = QPushButton("Read CSV")
         
         input_layout = QHBoxLayout()
-        input_layout.addWidget(QLineEdit())
-        input_layout.addWidget(QPushButton("Browse"))
-        input_layout.addWidget(QPushButton("Read CSV"))
-        layout.addLayout(input_layout)
 
+        input_layout.addWidget(self.input_csv_file_conversion)
+        input_layout.addWidget(self.browse_csv_button)
+        input_layout.addWidget(self.read_csv_button)
+        
+        layout.addLayout(input_layout)
+        layout.addWidget(self.desc_label)
+        layout.addWidget(QLabel("Choose a CSV file for conversion:"))
         layout.addWidget(QLabel("Choose where to save the converted CSV file"))
         
+        # Elements
+        self.output_csv_file_conversion = QLineEdit()
+        self.browse_csv_output_button = QPushButton("Browse")
+        self.browse_csv_output_button.clicked.connect(self.csv_save_as)
+        self.convert_csv_button = QPushButton("Convert")
+        self.convert_csv_button.clicked.connect(self.pandas_convert_csv_file)
+        self.checkbox_write_index_column = QCheckBox("Write Index Column?")
+        self.checkbox_write_index_column.setChecked(False)
+        
         output_layout = QHBoxLayout()
-        output_layout.addWidget(QLineEdit())
-        output_layout.addWidget(QPushButton("Browse"))
-        output_layout.addWidget(QPushButton("Convert"))
+        
+        output_layout.addWidget(self.output_csv_file_conversion)
+        output_layout.addWidget(self.browse_csv_output_button)
+        output_layout.addWidget(self.convert_csv_button)
         layout.addLayout(output_layout)
 
-        layout.addWidget(QCheckBox("Write Index Column?"))
+        layout.addWidget(self.checkbox_write_index_column)
 
         # Add logo
         logo_label = QLabel() # "Hans Geis GmbH & Co.KG"
@@ -937,7 +961,88 @@ class MainWindow(QMainWindow):
 
         group.setLayout(layout)
         return group
+    
+    # ======= Start FUNCTIONS FOR create_csv_conversion_group ======= #
+    
+    def browse_csv_file(self):
+        try:
+            file_name, _ = QFileDialog.getOpenFileName(self, "Select CSV File", "", "CSV Files (*.csv)")
+            if file_name:
+                self.input_csv_file_conversion.setText(file_name)
+        except Exception as ex:
+            message = f"An exception of type {type(ex).__name__} occurred. Arguments: {ex.args!r}"
+            QMessageBox.critical(self, "Error", f"Error exporting CSV:\n{message}")
+                  
+    
+    def csv_save_as(self):
+        try:
+            options = QFileDialog.Options()
+            file_types = "Excel File (*.xlsx);;JSON File (*.json);;HTML File (*.html);;Markdown File (*.md)"
+            file_name, _ = QFileDialog.getSaveFileName(self, "Save As", "", file_types, options=options)
+            if file_name:
+                self.output_csv_file_conversion.setText(file_name)
+        except Exception as ex:
+            message = f"An exception of type {type(ex).__name__} occurred. Arguments: {ex.args!r}"
+            QMessageBox.critical(self, "Error", f"Error exporting CSV:\n{message}")
+            
+            
+    @Slot(str)
+    def update_output_file(self, file_name):
+        if hasattr(self, 'output_csv_file_conversion'):
+            self.output_csv_file_conversion.setText(file_name)
+            self.output_csv_file_conversion.repaint()  # Force a repaint
 
+    
+    @Slot(str)
+    def update_input_file(self,file_name):
+        if hasattr(self, "input_csv_file_conversion"):
+            self.input_csv_file_conversion.setText(file_name)
+            self.input_csv_file_conversion.repaint() # Force a repaint
+            
+    
+    def pandas_convert_csv_file(self):
+        csv_input_file = self.input_csv_file_conversion.text()
+        csv_output_file = self.output_csv_file_conversion.text()
+        checkbox = self.checkbox_write_index_column.isChecked()
+        print(checkbox)
+        try:
+            with open(csv_input_file, encoding="utf-8") as file:
+                sample = file.read(4096)
+                sniffer = csv.Sniffer()
+                get_delimiter = sniffer.sniff(sample).delimiter
+            if not checkbox:
+                csv_df = pd.read_csv(csv_input_file, delimiter=get_delimiter, encoding="utf-8", index_col=0)
+            else:
+                csv_df = pd.read_csv(csv_input_file, delimiter=get_delimiter, encoding="utf-8")
+                
+            CONVERSION_FUNCTIONS = {
+                # CSV Conversion
+                ("csv", "html"): (csv_df, pd.DataFrame.to_html),
+                ("csv", "json"): (csv_df, pd.DataFrame.to_json),
+                ("csv", "xlsx"): (csv_df, pd.DataFrame.to_excel),
+                ("csv", "md"): (csv_df, pd.DataFrame.to_markdown),
+            }
+            
+            input_ext = Path(csv_input_file).suffix.lower().strip(".")
+            output_ext = Path(csv_output_file).suffix.lower().strip(".")
+            
+            read_func, write_func = CONVERSION_FUNCTIONS.get(
+            (input_ext, output_ext), (None, None))
+            
+            if read_func is None or write_func is None:
+                QMessageBox.critical(self, "Unsupported Conversion", "Error converting file...")
+                return
+            
+            csv_df = read_func
+            write_func(csv_df, csv_output_file)
+            self.program_output.setText(f"Successfully converted {Path(csv_input_file).stem} {input_ext.upper()} to {Path(csv_output_file).stem} {output_ext.upper()}")
+            
+        except Exception as ex:
+            message = f"An exception of type {type(ex).__name__} occurred. Arguments: {ex.args!r}"
+            QMessageBox.critical(self, "Error", f"Error exporting CSV: {message}")
+            
+
+    # ======= End FUNCTIONS FOR create_csv_conversion_group ======= #
 
     def create_csv_output_group(self):
         group = QGroupBox("CSV Conversion Output")
