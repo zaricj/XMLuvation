@@ -229,7 +229,7 @@ class MainWindow(QMainWindow):
         group = QGroupBox("XML folder selection and XPath builder")
         group.setStyleSheet("QGroupBox { color: #FFC857; }")
         layout = QVBoxLayout()
-        horizontal_spacer = QSpacerItem(40,10, QSizePolicy.Expanding, QSizePolicy.Minimum)
+        self.horizontal_spacer = QSpacerItem(40,10, QSizePolicy.Expanding, QSizePolicy.Minimum)
         
         folder_with_xml_files_and_statusbar_layout = QHBoxLayout()
         
@@ -293,7 +293,7 @@ class MainWindow(QMainWindow):
         att_layout.addWidget(self.attribute_value_label)
         att_layout.addWidget(self.attribute_value_combobox)
         layout.addLayout(att_layout)
-        layout.addSpacerItem(horizontal_spacer)
+        layout.addSpacerItem(self.horizontal_spacer)
         
         function_layout = QHBoxLayout()
     
@@ -827,6 +827,7 @@ class MainWindow(QMainWindow):
 
                 QMessageBox.information(self, "Export Successful", f"Matches saved to {csv_output_path}\n")
                 self.program_output.setText(f"Found {total_matching_files} files that have a total sum of {total_matches_found} matches.")
+                self.progressbar.reset()
             except Exception as ex:
                 message = f"An exception of type {type(ex).__name__} occurred. Arguments: {ex.args!r}"
                 QMessageBox.critical(self, "Error", f"Error exporting CSV: {message}")
@@ -860,12 +861,11 @@ class MainWindow(QMainWindow):
         self.xml_output = QTextEdit() # XML Output
         self.xml_output.setReadOnly(True)
         self.progressbar = QProgressBar()
-        self.progressbar.setTextVisible(True)
+        self.progressbar.setFormat("%p%")  
         
         layout.addWidget(self.xml_output)
-        
+        layout.addSpacerItem(self.horizontal_spacer)
         progress_layout = QHBoxLayout()
-        #progress_layout.addWidget(QLabel("0%"))
         progress_layout.addWidget(self.progressbar)
         layout.addLayout(progress_layout)
 
@@ -957,6 +957,6 @@ class MainWindow(QMainWindow):
 if __name__ == "__main__":
     app = QApplication(sys.argv)
     window = MainWindow()
-    apply_stylesheet(app, theme='my_theme.xml')
+    apply_stylesheet(app, theme='dark_amber.xml') # my_theme.xml is my custom theme
     window.show()
     sys.exit(app.exec())
