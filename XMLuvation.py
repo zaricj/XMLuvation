@@ -410,6 +410,91 @@ def statusbar_update_total_xml_files(filepath):
         pass
     except FileNotFoundError:
         pass
+    
+    
+def get_selected_operation(window):
+    if window["-RADIO_DEFAULT-"].get():
+        return "equals"
+    elif window["-RADIO_CONTAINS-"].get():
+        return "contains"
+    elif window["-RADIO_STARTSWITH-"].get():
+        return "startswith"
+    elif window["-RADIO_GREATER-"].get():
+        return "greater"
+    elif window["-RADIO_SMALLER-"].get():
+        return "smaller"
+    else:
+        return "equals"  # Default to equals if no radio button is checked
+
+
+def build_tag_criterion(operation, value):
+    if operation == "equals":
+        return f"text()='{value}'"
+    elif operation == "contains":
+        return f"contains(text(), '{value}')"
+    elif operation == "startswith":
+        return f"starts-with(text(), '{value}')"
+    elif operation == "greater":
+        return f"text() > {value}"
+    elif operation == "smaller":
+        return f"text() < {value}"
+
+
+def build_attribute_criterion(operation, name, value):
+    if operation == "equals":
+        return f"@{name}='{value}'"
+    elif operation == "contains":
+        return f"contains(@{name}, '{value}')"
+    elif operation == "startswith":
+        return f"starts-with(@{name}, '{value}')"
+    elif operation == "greater":
+        return f"@{name} > {value}"
+    elif operation == "smaller":
+        return f"@{name} < {value}"
+
+
+def build_xpath():
+    try:
+        # Get values from comboboxes
+        tag_name = window["-XML_TAG_NAME-"].get()
+        tag_value = window["-XML_TAG_VALUE-"].get()
+        attribute_name = window["-XML_ATTRIBUTE_NAME-"].get()
+        attribute_value = window["-XML_ATTRIBUTE_VALUE-"].get()
+
+        # Initialize XPath expression
+        xpath_expression = ""
+        if tag_name:
+            xpath_expression = f"//{tag_name}"
+            if tag_value and not attribute_name:
+                # Case: Tag Name and Tag Value
+                xpath_expression += f"[text()='{tag_value}']"
+            elif attribute_name and not tag_value:
+                # Case: Tag Name and Attribute Name
+                xpath_expression += f"/@{attribute_name}"
+            elif attribute_name and attribute_value:
+                # Case: Tag Name, Attribute Name, and Attribute Value
+                xpath_expression += f"[@{attribute_name}='{attribute_value}']"
+            elif not tag_value and not attribute_name:
+                # Case: Only Tag Name
+                xpath_expression += "/text()"
+
+            # Apply additional criteria based on radio buttons
+            if tag_value or attribute_value:
+                criteria = []
+                selected_operation = get_selected_operation(window)
+                if tag_value:
+                    criteria.append(build_tag_criterion(selected_operation, tag_value))
+                if attribute_name and attribute_value:
+                    criteria.append(build_attribute_criterion(selected_operation, attribute_name, attribute_value))
+                if criteria:
+                    xpath_expression = f"//{tag_name}[{' and '.join(criteria)}]"
+
+        # Update XPath expression input
+        window["-XPATH_EXPRESSION-"].update(xpath_expression)
+    except Exception as ex:
+        template = "An exception of type {0} occurred. Arguments:\n{1!r}"
+        message = template.format(type(ex).__name__, ex.args)
+        window["-OUTPUT_WINDOW_MAIN-"].update(f"Error building XPath: {message}")
 
 
 custom_theme_yellow = {
@@ -1046,92 +1131,8 @@ while True:
             message = template.format(type(ex).__name__, ex.args)
             window["-OUTPUT_WINDOW_MAIN-"].update(f"ERROR: {message}")
 
-    elif event in (
-        "-BUILD_XPATH-",
-        "-RADIO_DEFAULT-",
-        "-RADIO_CONTAINS-",
-        "-RADIO_STARTSWITH-",
-        "-RADIO_GREATER-",
-        "-RADIO_SMALLER-",
-    ):
-        try:
-            # Initialize XPath expression
-            xpath_expression = "//" + tag_name_combobox if tag_name_combobox else ""
-
-            # Determine XPath criteria based on selected radio button
-            if radio_default:
-                xpath_criteria = []
-                if tag_value_combobox:
-                    xpath_criteria.append(f"text()='{tag_value_combobox}'")
-                if attribute_name_combobox:
-                    if attribute_value_combobox:
-                        xpath_criteria.append(
-                            f"@{attribute_name_combobox}='{attribute_value_combobox}'"
-                        )
-                    else:
-                        xpath_criteria.append(f"@{attribute_name_combobox}")
-
-            elif radio_contains:
-                xpath_criteria = []
-                if tag_value_combobox:
-                    xpath_criteria.append(f"contains(text(), '{tag_value_combobox}')")
-                if attribute_name_combobox:
-                    if attribute_value_combobox:
-                        xpath_criteria.append(
-                            f"contains(@{attribute_name_combobox}, '{attribute_value_combobox}')"
-                        )
-                    else:
-                        xpath_criteria.append(f"@{attribute_name_combobox}")
-
-            elif radio_startswith:
-                xpath_criteria = []
-                if tag_value_combobox:
-                    xpath_criteria.append(
-                        f"starts-with(text(), '{tag_value_combobox}')"
-                    )
-                if attribute_name_combobox:
-                    if attribute_value_combobox:
-                        xpath_criteria.append(
-                            f"starts-with(@{attribute_name_combobox}, '{attribute_value_combobox}')"
-                        )
-                    else:
-                        xpath_criteria.append(f"@{attribute_name_combobox}")
-
-            elif radio_greater:
-                xpath_criteria = []
-                if tag_value_combobox:
-                    xpath_criteria.append(f"text() > {tag_value_combobox}")
-                if attribute_name_combobox:
-                    if attribute_value_combobox:
-                        xpath_criteria.append(
-                            f"@{attribute_name_combobox} > {attribute_value_combobox}"
-                        )
-                    else:
-                        xpath_criteria.append(f"@{attribute_name_combobox}")
-
-            elif radio_smaller:
-                xpath_criteria = []
-                if tag_value_combobox:
-                    xpath_criteria.append(f"text() < {tag_value_combobox}")
-                if attribute_name_combobox:
-                    if attribute_value_combobox:
-                        xpath_criteria.append(
-                            f"@{attribute_name_combobox} < {attribute_value_combobox}"
-                        )
-                    else:
-                        xpath_criteria.append(f"@{attribute_name_combobox}")
-
-            # Append XPath criteria to expression
-            if xpath_criteria:
-                xpath_expression += "[" + "".join(xpath_criteria) + "]"
-
-            # Update XPath expression and output window
-            window["-XPATH_EXPRESSION-"].update(xpath_expression)
-
-        except NameError:
-            window["-OUTPUT_WINDOW_MAIN-"].update(
-                "Name 'parsed_xml_file' is not defined"
-            )
+    elif event in ("-BUILD_XPATH-", "-RADIO_DEFAULT-", "-RADIO_CONTAINS-", "-RADIO_STARTSWITH-", "-RADIO_GREATER-", "-RADIO_SMALLER-"):
+            build_xpath()
 
     elif event == "-ADD_TO_MATCHING-":
         try:
