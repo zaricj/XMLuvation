@@ -257,7 +257,7 @@ def is_valid_xpath(expression):
     return any(re.match(pattern, expression) for pattern in valid_patterns)
 
 
-def evaluate_xml_files_matching(folder_containing_xml_files, matching_filters, window):
+def evaluate_xml_files_matching(folder_containing_xml_files, matching_filters):
     final_results = []
     xml_files = [
         f for f in os.listdir(folder_containing_xml_files) if f.endswith(".xml")
@@ -336,7 +336,7 @@ def export_evaluation_as_csv(
     try:
         matching_results, total_matches_found, total_matching_files = (
             evaluate_xml_files_matching(
-                folder_containing_xml_files, matching_filters, window
+                folder_containing_xml_files, matching_filters
             )
         )
 
