@@ -3,9 +3,10 @@ from PySide6.QtWidgets import (QApplication, QMainWindow, QWidget, QVBoxLayout,
                              QHBoxLayout, QTabWidget, QGroupBox, QLabel, 
                              QLineEdit, QPushButton, QComboBox, QRadioButton, 
                              QListWidget, QTextEdit, QProgressBar, QStatusBar,
-                             QCheckBox,QMenu,QFileDialog, QMessageBox, QFrame, QSpacerItem, QSizePolicy)
-from PySide6.QtGui import QIcon, QPalette, QColor, QPixmap, QAction
-from PySide6.QtCore import Qt, QThread, Signal, Slot
+                             QCheckBox,QMenu,QFileDialog, QMessageBox, QFrame, 
+                             QSpacerItem, QSizePolicy, QTableView, QHeaderView)
+from PySide6.QtGui import QIcon, QPalette, QColor, QPixmap, QAction, QStandardItemModel, QStandardItem
+from PySide6.QtCore import Qt, QThread, Signal, Slot, QSortFilterProxyModel
 import sys
 import csv
 import os
@@ -99,7 +100,7 @@ class MainWindow(QMainWindow):
         # Create the tab widget
         tab_widget = QTabWidget()
         tab_widget.addTab(self.create_xml_evaluation_tab(), "XML Evaluation")
-        tab_widget.addTab(self.create_csv_conversion_tab(), "CSV Conversion")
+        tab_widget.addTab(self.create_csv_conversion_tab(), "CSV Conversion and Display")
 
         main_layout.addWidget(tab_widget)
 
@@ -176,6 +177,9 @@ class MainWindow(QMainWindow):
         #help_menu.addAction(xpath_cheatsheet_action)
         
     # ======= START FUNCTIONS create_menu_bar ======= #
+    
+    def clear_output(self):
+        self.program_output.clear()
     
     # Open XML input folder function
     def open_input_folder(self):
@@ -888,10 +892,11 @@ class MainWindow(QMainWindow):
         # Left column
         left_column = QVBoxLayout()
         left_column.addWidget(self.create_csv_conversion_group())
+        left_column.addWidget(self.create_csv_conversion_output_group())
 
         # Right column
         right_column = QVBoxLayout()
-        right_column.addWidget(self.create_csv_output_group())
+        right_column.addWidget(self.create_csv_to_table_group())
 
         layout.addLayout(left_column, 1)
         layout.addLayout(right_column, 1)
@@ -900,7 +905,7 @@ class MainWindow(QMainWindow):
 
 
     def create_csv_conversion_group(self):
-        group = QGroupBox("CSV Conversion to different file type")
+        group = QGroupBox("CSV Conversion")
         group.setStyleSheet("QGroupBox { color: #FFC857; }")
         layout = QVBoxLayout()
 
@@ -924,9 +929,9 @@ class MainWindow(QMainWindow):
         input_layout.addWidget(self.browse_csv_button)
         input_layout.addWidget(self.read_csv_button)
         
-        layout.addLayout(input_layout)
         layout.addWidget(self.desc_label)
         layout.addWidget(QLabel("Choose a CSV file for conversion:"))
+        layout.addLayout(input_layout)
         layout.addWidget(QLabel("Choose where to save the converted CSV file"))
         
         # Elements
@@ -948,18 +953,30 @@ class MainWindow(QMainWindow):
         layout.addWidget(self.checkbox_write_index_column)
 
         # Add logo
-        logo_label = QLabel() # "Hans Geis GmbH & Co.KG"
-        #logoqt_label = QLabel()
-        pixmap = QPixmap("_internal/images/logo.png")  # Replace with actual path
-        #pixmapqt = QPixmap("_internal/images/QT6.png")
-        logo_label.setPixmap(pixmap)
-        #logoqt_label.setPixmap(pixmapqt)
-        layout.addWidget(logo_label, alignment=Qt.AlignCenter)
-        #layout.addWidget(logoqt_label, alignment=Qt.AlignCenter)
+        #logo_label = QLabel() # "Hans Geis GmbH & Co.KG"
+        ##logoqt_label = QLabel()
+        #pixmap = QPixmap("_internal/images/logo.png")  # Replace with actual path
+        ##pixmapqt = QPixmap("_internal/images/QT6.png")
+        #logo_label.setPixmap(pixmap)
+        ##logoqt_label.setPixmap(pixmapqt)
+        #layout.addWidget(logo_label, alignment=Qt.AlignCenter)
+        ##layout.addWidget(logoqt_label, alignment=Qt.AlignCenter)
 
         layout.addStretch()  # This will push everything up and fill the empty space at the bottom
 
         group.setLayout(layout)
+        return group
+    
+    def create_csv_conversion_output_group(self):
+        group = QGroupBox("CSV Conversion Output")
+        layout = QVBoxLayout()
+        
+        # Elements
+        self.csv_conversion_output = QTextEdit()
+        
+        layout.addWidget(self.csv_conversion_output)
+        group.setLayout(layout)
+        
         return group
     
     # ======= Start FUNCTIONS FOR create_csv_conversion_group ======= #
@@ -1041,22 +1058,91 @@ class MainWindow(QMainWindow):
             message = f"An exception of type {type(ex).__name__} occurred. Arguments: {ex.args!r}"
             QMessageBox.critical(self, "Error", f"Error exporting CSV: {message}")
             
-
     # ======= End FUNCTIONS FOR create_csv_conversion_group ======= #
 
-    def create_csv_output_group(self):
-        group = QGroupBox("CSV Conversion Output")
+    def create_csv_to_table_group(self):
+        group = QGroupBox("Display CSV into Table")
         group.setStyleSheet("QGroupBox { color: #FFC857; }")
         layout = QVBoxLayout()
 
-        layout.addWidget(QTextEdit())
+        # File selection
+        file_layout = QHBoxLayout()
+        self.csv_file_input = QLineEdit()
+        self.csv_file_input.setPlaceholderText("Select CSV file...")
+        file_button = QPushButton("Browse")
+        file_button.clicked.connect(self.select_csv_file)
+        file_layout.addWidget(self.csv_file_input)
+        file_layout.addWidget(file_button)
+        layout.addLayout(file_layout)
+
+        # Filter controls
+        filter_layout = QHBoxLayout()
+        self.filter_input = QLineEdit()
+        self.filter_input.setPlaceholderText("Enter filter text...")
+        self.filter_input.textChanged.connect(self.filter_table)
+        self.filter_column = QComboBox()
+        self.filter_column.currentIndexChanged.connect(self.filter_table)
+        filter_layout.addWidget(self.filter_column)
+        filter_layout.addWidget(self.filter_input)
+        layout.addLayout(filter_layout)
+
+        # Table view
+        self.table_view = QTableView()
+        self.table_model = QStandardItemModel()
+        self.proxy_model = QSortFilterProxyModel()
+        self.proxy_model.setSourceModel(self.table_model)
+        self.table_view.setModel(self.proxy_model)
+        self.table_view.horizontalHeader().setSectionResizeMode(QHeaderView.Stretch)
+        layout.addWidget(self.table_view)
+
+        # Load CSV button
+        load_button = QPushButton("Load CSV")
+        load_button.clicked.connect(self.load_csv_data)
+        layout.addWidget(load_button)
 
         group.setLayout(layout)
         return group
-    
-    
-    def clear_output(self):
-        self.program_output.clear()
+
+    def select_csv_file(self):
+        file_name, _ = QFileDialog.getOpenFileName(self, "Select CSV File", "", "CSV Files (*.csv)")
+        if file_name:
+            self.csv_file_input.setText(file_name)
+
+    def load_csv_data(self):
+        file_path = self.csv_file_input.text()
+        if not file_path:
+            QMessageBox.warning(self, "Error", "Please select a CSV file first.")
+            return
+
+        try:
+            with open(file_path, 'r') as f:
+                reader = csv.reader(f)
+                headers = next(reader)
+                
+                self.table_model.clear()
+                self.table_model.setHorizontalHeaderLabels(headers)
+                
+                for row in reader:
+                    items = [QStandardItem(field) for field in row]
+                    self.table_model.appendRow(items)
+
+            self.filter_column.clear()
+            self.filter_column.addItems(["All Columns"] + headers)
+            
+            QMessageBox.information(self, "Success", "CSV data loaded successfully.")
+        except Exception as e:
+            QMessageBox.critical(self, "Error", f"Failed to load CSV data: {str(e)}")
+
+    def filter_table(self):
+        filter_text = self.filter_input.text()
+        filter_column = self.filter_column.currentIndex() - 1  # -1 because "All Columns" is at index 0
+
+        if filter_column == -1:  # "All Columns" selected
+            self.proxy_model.setFilterKeyColumn(-1)
+        else:
+            self.proxy_model.setFilterKeyColumn(filter_column)
+
+        self.proxy_model.setFilterRegExp(filter_text)
 
 
 if __name__ == "__main__":
