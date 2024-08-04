@@ -69,7 +69,8 @@ class MainWindow(QMainWindow):
     def initUI(self):
         self.setWindowTitle("XMLuvation v1.0 © 2024 by Jovan Zaric")
         self.setWindowIcon(QIcon("_internal/icon/xml_32px.ico"))  # Replace with actual path
-        self.setGeometry(100, 100, 1300, 840)
+        self.setGeometry(500, 250, 1300, 840)
+        self.saveGeometry()
         self.eval_input_file = None
         self.xpath_filters = []
         self.xpath_listbox = QListWidget(self)
@@ -153,6 +154,15 @@ class MainWindow(QMainWindow):
         open_output_action.setStatusTip("Open the CSV output folder")
         open_output_action.triggered.connect(self.open_output_folder)
         open_menu.addAction(open_output_action)
+        open_menu.addSeparator()
+        open_csv_conversion_input_action = QAction("Open CSV Conversion Input Folder", self)
+        open_csv_conversion_input_action.setStatusTip("Open CSV Conversion Input Folder")
+        open_csv_conversion_input_action.triggered.connect(self.open_conversion_input)
+        open_menu.addAction(open_csv_conversion_input_action)
+        open_csv_conversion_output_action = QAction("Open CSV Conversion Output Folder", self)
+        open_csv_conversion_output_action.setStatusTip("Open CSV Conversion Output Folder")
+        open_csv_conversion_output_action.triggered.connect(self.open_conversion_output)
+        open_menu.addAction(open_csv_conversion_output_action)
 
         # Path Menu
         paths_menu = menu_bar.addMenu("&Path")
@@ -207,9 +217,37 @@ class MainWindow(QMainWindow):
                 QMessageBox.critical(self, "Error", message)
         else:
             QMessageBox.critical(self, "Error", f"Path does not exist or is not a valid path:\n{directory_path}")
+    
+    
+    def open_conversion_input(self):
+        directory_path = self.input_csv_file_conversion.text()
+        dirname = os.path.dirname(directory_path)
+        if os.path.exists(directory_path):
+            try:
+                os.startfile(dirname)
+            except Exception as ex:
+                message = f"An exception of type {type(ex).__name__} occurred. Arguments: {ex.args!r}"
+                QMessageBox.critical(self, "Error", message)
+        else:
+            QMessageBox.critical(self, "Error", f"Path does not exist or is not a valid path:\n{directory_path}")
+            
+            
+    def open_conversion_output(self):
+        directory_path = self.output_csv_file_conversion.text()
+        
+        if os.path.exists(directory_path):
+            try:
+                os.startfile(directory_path)
+            except Exception as ex:
+                message = f"An exception of type {type(ex).__name__} occurred. Arguments: {ex.args!r}"
+                QMessageBox.critical(self, "Error", message)
+        else:
+            QMessageBox.critical(self, "Error", f"Path does not exist or is not a valid path:\n{directory_path}")
+            
             
     def open_path(self,path):
         self.folder_xml_input.setText(path)
+    
     
     def open_web_xpath_help(self):
         webbrowser.open("https://www.w3schools.com/xml/xpath_syntax.asp")
@@ -251,17 +289,18 @@ class MainWindow(QMainWindow):
         self.total_xml_files_statusbar.setSizeGripEnabled(False)
         self.total_xml_files_statusbar.setStyleSheet("font-size: 20;font-weight: bold; color: #0cd36c")
         
-        folder_with_xml_files_and_statusbar_layout.addWidget(QLabel("Choose a folder that contains XML files"))
         folder_with_xml_files_and_statusbar_layout.addWidget(self.total_xml_files_statusbar)
         
         layout.addLayout(folder_with_xml_files_and_statusbar_layout)
         
         # Elements
         self.folder_xml_input = QLineEdit()
+        self.folder_xml_input.setPlaceholderText("Choose a folder that contains XML files...")
         self.folder_xml_input.textChanged.connect(self.update_xml_file_count)
         self.browse_button = QPushButton("Browse")
         self.browse_button.clicked.connect(self.browse_folder)
         self.read_xml_button = QPushButton("Read XML")
+        self.read_xml_button.setToolTip("Parses XML content into the output and fills out the Comboboxes based on the XMLs content.")
         self.read_xml_button.clicked.connect(self.read_xml)
         
         folder_layout = QHBoxLayout()
@@ -270,7 +309,8 @@ class MainWindow(QMainWindow):
         folder_layout.addWidget(self.read_xml_button)
         layout.addLayout(folder_layout)
 
-        layout.addWidget(QLabel("Get XML Tag and Attribute Names/Values for XPath generation"))
+        layout.addWidget(QLabel("Get XML Tag and Attribute Names/Values for XPath generation:"))
+        layout.addSpacerItem(self.horizontal_spacer)
 
         tag_layout = QHBoxLayout()
         
@@ -327,9 +367,10 @@ class MainWindow(QMainWindow):
         
         build_xpath_layout = QHBoxLayout()
         
-        build_xpath_layout.addWidget(QLabel("Xpath Expression:"))
         self.xpath_expression_input = QLineEdit()
+        self.xpath_expression_input.setPlaceholderText("Enter XPath expression or press Build Xpath")
         self.build_xpath_button = QPushButton("Build Xpath")
+        self.build_xpath_button.setToolTip("Builds Xpath expression based on the selected Comboboxes for Tag Name/Value and Attribute Name/Value")
         self.build_xpath_button.clicked.connect(self.build_xpath)
         build_xpath_layout.addWidget(self.xpath_expression_input)
         build_xpath_layout.addWidget(self.build_xpath_button)
@@ -627,7 +668,8 @@ class MainWindow(QMainWindow):
     
     def update_statusbar_xpath_listbox_count(self):
         self.counter = self.xpath_listbox.count()
-        self.statusbar_xpath_listbox_count.showMessage(f"Total number of items in List: {self.counter}", 5000)
+        if self.counter != 0:
+            self.statusbar_xpath_listbox_count.showMessage(f"Total number of items in List: {self.counter}", 5000)
         
     
     def remove_selected_items(self):
@@ -693,14 +735,14 @@ class MainWindow(QMainWindow):
         group = QGroupBox("Export evaluation result as a CSV File")
         group.setStyleSheet("QGroupBox { color: #FFC857; }")
         layout = QVBoxLayout()
-
-        layout.addWidget(QLabel("Choose a folder where you want to save the evaluation"))
         
         # Elements
         self.folder_csv_input = QLineEdit()
+        self.folder_csv_input.setPlaceholderText("Choose a folder where you want to save the evaluation...")
         self.csv_save_as_button = QPushButton("Browse")
         self.csv_save_as_button.clicked.connect(self.choose_save_folder)
         self.csv_covert_button = QPushButton("Convert")
+        self.csv_covert_button.setToolTip("Starts reading the XML file and writes the matches to a CSV file")
         self.csv_covert_button.clicked.connect(self.convert_to_csv)
         
         export_layout = QHBoxLayout()
@@ -919,23 +961,23 @@ class MainWindow(QMainWindow):
         
         # Elements
         self.input_csv_file_conversion = QLineEdit()
+        self.input_csv_file_conversion.setPlaceholderText("Choose a CSV file for conversion...")
         self.browse_csv_button = QPushButton("Browse")
         self.browse_csv_button.clicked.connect(self.browse_csv_file)
-        self.read_csv_button = QPushButton("Read CSV")
         
         input_layout = QHBoxLayout()
 
         input_layout.addWidget(self.input_csv_file_conversion)
         input_layout.addWidget(self.browse_csv_button)
-        input_layout.addWidget(self.read_csv_button)
         
         layout.addWidget(self.desc_label)
-        layout.addWidget(QLabel("Choose a CSV file for conversion:"))
+        layout.addSpacerItem(self.horizontal_spacer)
         layout.addLayout(input_layout)
         layout.addWidget(QLabel("Choose where to save the converted CSV file"))
         
         # Elements
         self.output_csv_file_conversion = QLineEdit()
+        self.output_csv_file_conversion.setPlaceholderText("Choose where to save the converted CSV file...")
         self.browse_csv_output_button = QPushButton("Browse")
         self.browse_csv_output_button.clicked.connect(self.csv_save_as)
         self.convert_csv_button = QPushButton("Convert")
@@ -947,9 +989,11 @@ class MainWindow(QMainWindow):
         
         output_layout.addWidget(self.output_csv_file_conversion)
         output_layout.addWidget(self.browse_csv_output_button)
-        output_layout.addWidget(self.convert_csv_button)
-        layout.addLayout(output_layout)
 
+        layout.addLayout(output_layout)
+        
+        layout.addSpacerItem(self.horizontal_spacer)
+        layout.addWidget(self.convert_csv_button)
         layout.addWidget(self.checkbox_write_index_column)
 
         # Add logo
@@ -1052,7 +1096,7 @@ class MainWindow(QMainWindow):
             
             csv_df = read_func
             write_func(csv_df, csv_output_file)
-            self.program_output.setText(f"Successfully converted {Path(csv_input_file).stem} {input_ext.upper()} to {Path(csv_output_file).stem} {output_ext.upper()}")
+            self.csv_conversion_output.setText(f"Successfully converted {Path(csv_input_file).stem} {input_ext.upper()} to {Path(csv_output_file).stem} {output_ext.upper()}")
             
         except Exception as ex:
             message = f"An exception of type {type(ex).__name__} occurred. Arguments: {ex.args!r}"
@@ -1081,6 +1125,7 @@ class MainWindow(QMainWindow):
         self.filter_input.setPlaceholderText("Enter filter text...")
         self.filter_input.textChanged.connect(self.filter_table)
         self.filter_column = QComboBox()
+        self.filter_column.setMinimumWidth(150)
         self.filter_column.currentIndexChanged.connect(self.filter_table)
         filter_layout.addWidget(self.filter_column)
         filter_layout.addWidget(self.filter_input)
@@ -1142,12 +1187,12 @@ class MainWindow(QMainWindow):
         else:
             self.proxy_model.setFilterKeyColumn(filter_column)
 
-        self.proxy_model.setFilterRegExp(filter_text)
+        self.proxy_model.setFilterFixedString(filter_text)
 
 
 if __name__ == "__main__":
     app = QApplication(sys.argv)
     window = MainWindow()
-    apply_stylesheet(app, theme='dark_amber.xml') # my_theme.xml is my custom theme
+    apply_stylesheet(app, theme="_internal/theme/dark_amber.xml") # my_theme.xml is my custom theme
     window.show()
     sys.exit(app.exec())
