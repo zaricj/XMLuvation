@@ -13,7 +13,7 @@ XMLuvation is a Python application designed to parse and evaluate XML files. It 
 - Export to CSV: Evaluation results can be exported to a CSV file for further analysis or processing, headers are created dynamically based on the added XPath Expression(s).
 - Convert CSV to different filetypes: The CSV Evaluation result can be converted to different filetypes with the help of the Pandas module.
 - Load CSV for display and filter content: Load the CSV file into a table view to display it's content and filter results based on the selected header.
-- User Interface: The application features a simple and intuitive graphical user interface built using the ~PySimpleGUI~ FreeSimpleGUI library.
+- User Interface: The application features a simple and intuitive graphical user interface built using the ~PySimpleGUI~ FreeSimpleGUI library and an alternative GUI using the PySide6 library.
 
 ## Installation
 
