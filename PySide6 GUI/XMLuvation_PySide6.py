@@ -5,14 +5,14 @@ from PySide6.QtWidgets import (QApplication, QMainWindow, QWidget, QVBoxLayout,
                              QListWidget, QTextEdit, QProgressBar, QStatusBar,
                              QCheckBox,QMenu,QFileDialog, QMessageBox, QFrame, 
                              QSpacerItem, QSizePolicy, QTableView, QHeaderView)
-from PySide6.QtGui import QIcon, QPalette, QColor, QPixmap, QAction, QStandardItemModel, QStandardItem
+from PySide6.QtGui import QIcon, QAction, QStandardItemModel, QStandardItem
 from PySide6.QtCore import Qt, QThread, Signal, Slot, QSortFilterProxyModel
 import sys
 import csv
 import os
 import re
 import webbrowser
-from  datetime import date
+from  datetime import datetime
 from lxml import etree as ET
 import pandas as pd
 from qt_material import apply_stylesheet
@@ -55,7 +55,7 @@ class XMLParserThread(QThread):
             self.finished.emit(result)
         except Exception as ex:
             self.error.emit(str(ex))
-
+            
 class MainWindow(QMainWindow):
     progress_updated = Signal(int)
     update_input_file_signal = Signal(str)
@@ -71,6 +71,11 @@ class MainWindow(QMainWindow):
         self.setWindowIcon(QIcon("_internal/icon/xml_32px.ico"))  # Replace with actual path
         self.setGeometry(500, 250, 1300, 840)
         self.saveGeometry()
+        
+        # Theme by qt_material
+        self.current_theme = "_internal/theme/dark_amber.xml" # Sets the global main theme from the file
+        apply_stylesheet(self,self.current_theme)
+        
         self.eval_input_file = None
         self.xpath_filters = []
         self.xpath_listbox = QListWidget(self)
@@ -83,14 +88,6 @@ class MainWindow(QMainWindow):
         # Connect the custom context menu for Listbox
         self.xpath_listbox.setContextMenuPolicy(Qt.CustomContextMenu)
         self.xpath_listbox.customContextMenuRequested.connect(self.show_context_menu)
-        #self.set_dark_theme() # Remove comment to enable custom set DarkTheme Yellowish (Geis) Make sure to remove the qt_material apply_sytelsheet at the bottom under __init__
-
-        # Set the font
-        #font = QFont("Calibri", 12)
-        #self.setFont(font)
-
-        # Set the color scheme
-        #self.set_dark_theme()
 
         # Create the menu bar
         self.create_menu_bar()
@@ -109,24 +106,6 @@ class MainWindow(QMainWindow):
         central_widget = QWidget()
         central_widget.setLayout(main_layout)
         self.setCentralWidget(central_widget)
-
-
-    def set_dark_theme(self):
-        dark_palette = QPalette()
-        dark_palette.setColor(QPalette.ColorRole.Window, QColor(49, 54, 59))
-        dark_palette.setColor(QPalette.ColorRole.WindowText, Qt.GlobalColor.white)
-        dark_palette.setColor(QPalette.ColorRole.Base, QColor(42, 47, 51))
-        dark_palette.setColor(QPalette.ColorRole.AlternateBase, QColor(53, 58, 63))
-        dark_palette.setColor(QPalette.ColorRole.ToolTipBase, Qt.GlobalColor.white)
-        dark_palette.setColor(QPalette.ColorRole.ToolTipText, Qt.GlobalColor.white)
-        dark_palette.setColor(QPalette.ColorRole.Text, Qt.GlobalColor.white)
-        dark_palette.setColor(QPalette.ColorRole.Button, QColor(53, 58, 63))
-        dark_palette.setColor(QPalette.ColorRole.ButtonText, Qt.GlobalColor.white)
-        dark_palette.setColor(QPalette.ColorRole.BrightText, Qt.GlobalColor.red)
-        dark_palette.setColor(QPalette.ColorRole.Link, QColor(42, 130, 218))
-        dark_palette.setColor(QPalette.ColorRole.Highlight, QColor(42, 130, 218))
-        dark_palette.setColor(QPalette.ColorRole.HighlightedText, Qt.GlobalColor.black)
-        self.setPalette(dark_palette)
     
 
     def create_menu_bar(self):
@@ -186,7 +165,22 @@ class MainWindow(QMainWindow):
         #xpath_cheatsheet_action.triggered.connect(self.open_xpath_cheatsheet)
         #help_menu.addAction(xpath_cheatsheet_action)
         
+        # Theme Menu
+        theme_menu = menu_bar.addMenu("&Personalize")
+        personalize_action = QAction("Switch Dark/Light Theme", self)
+        personalize_action.setStatusTip("Change theme to dark")
+        personalize_action.triggered.connect(self.change_theme)
+        theme_menu.addAction(personalize_action)
+        
     # ======= START FUNCTIONS create_menu_bar ======= #
+    
+    def change_theme(self):
+        if self.current_theme == "_internal/theme/dark_amber.xml":
+            self.current_theme = "_internal/theme/light_blue.xml"
+        else:
+            self.current_theme = "_internal/theme/dark_amber.xml"
+        
+        apply_stylesheet(self, self.current_theme)
     
     def clear_output(self):
         self.program_output.clear()
@@ -353,9 +347,13 @@ class MainWindow(QMainWindow):
         self.radio_button_equals = QRadioButton("Equals")
         self.radio_button_equals.setChecked(True)
         self.radio_button_contains = QRadioButton("Contains")
+        self.radio_button_contains.setDisabled(True)
         self.radio_button_startswith = QRadioButton("Starts-with")
+        self.radio_button_startswith.setDisabled(True)
         self.radio_button_greater = QRadioButton("Greater")
+        self.radio_button_greater.setDisabled(True)
         self.radio_button_smaller = QRadioButton("Smaller")
+        self.radio_button_smaller.setDisabled(True)
         
         function_layout.addWidget(QLabel("Function:"))
         function_layout.addWidget(self.radio_button_equals)
@@ -645,7 +643,7 @@ class MainWindow(QMainWindow):
         
         # Elements
         self.add_xpath_to_list_button = QPushButton("Add Xpath to List")
-        self.add_xpath_to_list_button.setToolTip("Adds currently entered Xpath Expression to the ListBox")
+        self.add_xpath_to_list_button.setToolTip("Adds currently entered Xpath expression to the ListBox")
         self.add_xpath_to_list_button.clicked.connect(self.add_xpath_expression_to_listbox)
         self.add_xpath_to_list_button.clicked.connect(self.update_statusbar_xpath_listbox_count)
         self.xpath_listbox.setMinimumHeight(100)
@@ -654,7 +652,7 @@ class MainWindow(QMainWindow):
         self.statusbar_xpath_listbox_count.setStyleSheet("font-weight: bold; color: #ffd740")
 
         header_layout = QHBoxLayout()
-        header_layout.addWidget(QLabel("Add XPath Expressions to list to look for in XML files"))
+        header_layout.addWidget(QLabel("Add XPath expressions to the list to search for in XML files:"))
         header_layout.addWidget(self.add_xpath_to_list_button)
         layout.addLayout(header_layout)
         layout.addWidget(spacer)
@@ -724,7 +722,8 @@ class MainWindow(QMainWindow):
                 self.xpath_filters.append(xpath_expression)
                 self.xpath_listbox.addItem(xpath_expression)
             else:
-                self.program_output.setText(f"Cannot add duplicate XPath Expression: {xpath_expression}")
+                self.program_output.setText(f"Cannot add duplicate XPath expression: {xpath_expression}")
+                QMessageBox.critical(self, "Error adding filter", f"Cannot add duplicate XPath expression:\n{xpath_expression}")
         except Exception as ex:
             message = f"An exception of type {type(ex).__name__} occurred. Arguments: {ex.args!r}"
             self.program_output.setText(f"Error adding filter: {message}")
@@ -741,14 +740,14 @@ class MainWindow(QMainWindow):
         self.folder_csv_input.setPlaceholderText("Choose a folder where you want to save the evaluation...")
         self.csv_save_as_button = QPushButton("Browse")
         self.csv_save_as_button.clicked.connect(self.choose_save_folder)
-        self.csv_covert_button = QPushButton("Convert")
-        self.csv_covert_button.setToolTip("Starts reading the XML file and writes the matches to a CSV file")
-        self.csv_covert_button.clicked.connect(self.convert_to_csv)
+        self.csv_convert_button = QPushButton("Convert")
+        self.csv_convert_button.setToolTip("Starts reading the XML file and writes the matches to a CSV file")
+        self.csv_convert_button.clicked.connect(self.convert_to_csv)
         
         export_layout = QHBoxLayout()
         export_layout.addWidget(self.folder_csv_input)
         export_layout.addWidget(self.csv_save_as_button)
-        export_layout.addWidget(self.csv_covert_button)
+        export_layout.addWidget(self.csv_convert_button)
         layout.addLayout(export_layout)
 
         group.setLayout(layout)
@@ -832,8 +831,11 @@ class MainWindow(QMainWindow):
     def convert_to_csv(self):
         folder_containing_xml_files = self.folder_xml_input.text()
         folder_for_csv_output = self.folder_csv_input.text()
-        today_date = date.today()
-        formatted_today_date = today_date.strftime("%d%m%y")
+        
+        # Date and Time
+        today_date = datetime.now()
+        formatted_today_date = today_date.strftime("%d.%m.%y-%H-%M-%S")
+        
         csv_output_path = os.path.join(self.folder_csv_input.text(), f"Evaluation_Results_{formatted_today_date}.csv")
         matching_filters = self.xpath_filters
 
@@ -973,7 +975,6 @@ class MainWindow(QMainWindow):
         layout.addWidget(self.desc_label)
         layout.addSpacerItem(self.horizontal_spacer)
         layout.addLayout(input_layout)
-        layout.addWidget(QLabel("Choose where to save the converted CSV file"))
         
         # Elements
         self.output_csv_file_conversion = QLineEdit()
@@ -1193,6 +1194,5 @@ class MainWindow(QMainWindow):
 if __name__ == "__main__":
     app = QApplication(sys.argv)
     window = MainWindow()
-    apply_stylesheet(app, theme="_internal/theme/dark_amber.xml") # my_theme.xml is my custom theme
     window.show()
     sys.exit(app.exec())
