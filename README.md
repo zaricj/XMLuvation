@@ -15,10 +15,9 @@ XMLuvation is a Python application designed to parse and evaluate XML files. It 
 - Export to CSV: Evaluation results can be exported to a CSV file for further analysis or processing, headers are created dynamically based on the added XPath Expression(s).
 - Convert CSV to different filetypes: The CSV Evaluation result can be converted to different filetypes with the help of the Pandas module.
 - Load CSV for display and filter content: Load the CSV file into a table view to display it's content and filter results based on the selected header.
-- User Interface: The application features a simple and intuitive graphical user interface built using the ~PySimpleGUI~ FreeSimpleGUI library.
+- User Interface: The application features a simple and intuitive graphical user interface built using the the PySide6 library.
 
 ## Installation
-
 
 To run XMLuvation, you need to have Python installed on your system. The required dependencies are as follows:
 
@@ -35,6 +34,7 @@ To run XMLuvation, you need to have Python installed on your system. The require
 | tabulate | webrowser |
 | openpyxl | |
 | qt_material | |
+| pyside6 | |
 
 ### Install the required dependencies via requirements.txt
 
@@ -50,30 +50,26 @@ To run XMLuvation, you need to have Python installed on your system. The require
 
 ## Additional Information
 
-
 XPath Syntax Help: Access a quick reference guide to XPath syntax for building expressions.
 
 ## Support
-
 
 If you encounter any issues or have any feedback, please feel free to open an issue on the GitHub repository.
 
 ## Credits
 
-XMLuvation was created by me. It utilizes the FreeSimpleGUI library for building the graphical user interface, the lxml library for parsing XML files and Pandas for converting the CSV file.
+XMLuvation was created by me. It utilizes the PySide6 library for building the graphical user interface, the lxml library for parsing XML files and Pandas for converting the CSV file.
 
 ## License
 
-
 This project is licensed under the MIT License.
 
+## Screenshot PySide6
 
 ##### Main View
 
+![XMLuvation_Pyside6_P1](https://github.com/user-attachments/assets/32670ae0-5362-47e8-a8ea-3610d568642b)
 
-![XMLuvation_P1](https://github.com/zaricj/XMLuvation/assets/93329694/093ec68b-066b-4fca-9718-acb59bcb7d84)
+##### CSV Conversion and Table Display View
 
-##### CSV Conversion View
-
-
-![XMLuvation_P2](https://github.com/zaricj/XMLuvation/assets/93329694/aad72324-2d1a-4c04-bc29-f23e64635b75)
+![XMLuvation_Pyside6_P2](https://github.com/user-attachments/assets/fa476b98-80a3-48ff-9205-1d5f16b4d7b5)
