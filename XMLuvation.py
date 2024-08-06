@@ -64,6 +64,9 @@ class MainWindow(QMainWindow):
     def __init__(self):
         super().__init__()
         self.initUI()
+         #Theme by qt_material
+        self.current_theme = "_internal/theme/dark_amber.xml" # Sets the global main theme from the file
+        apply_stylesheet(self,self.current_theme)
         
         
     def initUI(self):
@@ -71,10 +74,6 @@ class MainWindow(QMainWindow):
         self.setWindowIcon(QIcon("_internal/icon/xml_32px.ico"))  # Replace with actual path
         self.setGeometry(500, 250, 1300, 840)
         self.saveGeometry()
-        
-        # Theme by qt_material
-        self.current_theme = "_internal/theme/dark_amber.xml" # Sets the global main theme from the file
-        apply_stylesheet(self,self.current_theme)
         
         self.eval_input_file = None
         self.xpath_filters = []
@@ -770,7 +769,7 @@ class MainWindow(QMainWindow):
 
         for index, filename in enumerate(xml_files):
             file_path = os.path.join(folder_containing_xml_files, filename)
-
+            self.program_output.setText(f"Processing {filename}")
             try:
                 tree = ET.parse(file_path)
                 root = tree.getroot()
@@ -805,6 +804,7 @@ class MainWindow(QMainWindow):
             # Update progress
             progress = int((index + 1) / total_files * 100)
             self.progress_updated.emit(progress)
+            
             
         return final_results, total_sum_matches, total_matching_files
     
@@ -864,7 +864,7 @@ class MainWindow(QMainWindow):
 
                 with open(csv_output_path, "w", newline="", encoding="utf-8") as csvfile:
                     writer = csv.DictWriter(
-                        csvfile, fieldnames=headers, delimiter=";", extrasaction="ignore"
+                        csvfile, fieldnames=headers, delimiter=",", extrasaction="ignore"
                     )
                     writer.writeheader()
 
