@@ -7,15 +7,15 @@ from PySide6.QtWidgets import (QApplication, QMainWindow, QWidget, QVBoxLayout,
                              QSpacerItem, QSizePolicy, QTableView, QHeaderView)
 from PySide6.QtGui import QIcon, QAction, QStandardItemModel, QStandardItem
 from PySide6.QtCore import Qt, QThread, Signal, Slot, QSortFilterProxyModel
+from  datetime import datetime
+from lxml import etree as ET
+from qt_material import apply_stylesheet
 import sys
 import csv
 import os
 import re
 import webbrowser
-from  datetime import datetime
-from lxml import etree as ET
 import pandas as pd
-from qt_material import apply_stylesheet
 
 class XMLParserThread(QThread):
     finished = Signal(object)
@@ -64,7 +64,7 @@ class MainWindow(QMainWindow):
     def __init__(self):
         super().__init__()
         self.initUI()
-         #Theme by qt_material
+        # Theme by qt_material
         self.current_theme = "_internal/theme/dark_amber.xml" # Sets the global main theme from the file
         apply_stylesheet(self,self.current_theme)
         
@@ -183,6 +183,7 @@ class MainWindow(QMainWindow):
     
     def clear_output(self):
         self.program_output.clear()
+        self.csv_conversion_output.clear()
     
     # Open XML input folder function
     def open_input_folder(self):
@@ -711,6 +712,37 @@ class MainWindow(QMainWindow):
     def is_duplicate(self, xpath_expression):
         return xpath_expression in self.xpath_filters
     
+    def validate_xpath_expression(self, xpath_expression):
+        # Define valid patterns
+        valid_patterns = [
+        r"^/[\w]+$",  # /xml_element
+        r"^//[\w]+$",  # //xml_element
+        r"^//[\w]+\[@[\w]+\]$",  # //xml_element[@attribute]
+        r"^//[\w]+\[@[\w]+='[^']*'\]$",  # //xml_element[@attribute='value']
+        r"^//[\w]+\[@[\w]+!='[^']*'\]$",  # //xml_element[@attribute!='value']
+        r"^//[\w]+\[@[\w]+='[^']*' and @[\w]+='[^']*'\]$",  # //xml_element[@attribute1='value1' and @attribute2='value2']
+        r"^//[\w]+\[contains\(@[\w]+, '[^']*'\)\]$",  # //xml_element[contains(@attribute, 'substring')]
+        r"^//[\w]+\[starts-with\(@[\w]+, '[^']*'\)\]$",  # //xml_element[starts-with(@attribute, 'substring')]
+        r"^//[\w]+\[text\(\)='[^']*'\]$",  # //xml_element[text()='value']
+        r"^//[\w]+\[contains\(text\(\), '[^']*'\)\]$",  # //xml_element[contains(text(), 'substring')]
+        r"^//[\w]+\[starts-with\(text\(\), '[^']*'\)\]$",  # //xml_element[starts-with(text(), 'substring')]
+        r"^//[\w]+\[number\(@[\w]+\) > [0-9]+\]$",  # //xml_element[number(@attribute) > 10]
+        r"^//[\w]+\[number\(@[\w]+\) < [0-9]+\]$",  # //xml_element[number(@attribute) < 10]
+        r"^//[\w]+/[\w]+/text\(\)$",  # //xml_element/xml_element/text()
+        r"^//[\w]+/[\w]+\[@[\w]+\]/text\(\)$",  # //xml_element/xml_element[@attribute]/text()
+        r"^//[\w]+/[\w]+\[@[\w]+='[^']*'\]/text\(\)$",  # //xml_element/xml_element[@attribute='value']/text()
+        r"^//[\w]+/[\w]+$",  # //xml_element/xml_element
+        r"^//[\w]+/[\w]+/[\w]+$",  # //xml_element/xml_element/xml_element
+        r"^//[\w]+/text\(\)$",  # //xml_element/text()
+        r"^//[\w]+/@[\w]+$",  # //xml_element/@attribute
+        r"^//[\w]+/[\w]+\[@[\w]+\]$",  # //xml_element/xml_element[@attribute]
+        r"^//[\w]+/[\w]+\[text\(\)='[^']*'\]$",  # //xml_tag_name/another_xml_tag_name[text()='some_value']
+        r"^//[\w]+/[\w]+/@[\w]+$",  # //xml_tag/xml_tag/@attribute
+    ]
+
+        # Check if expression matches any pattern
+        return any(re.match(pattern, xpath_expression) for pattern in valid_patterns)
+  
     
     def add_xpath_expression_to_listbox(self):
         xpath_expression = self.xpath_expression_input.text()
@@ -718,14 +750,20 @@ class MainWindow(QMainWindow):
             if not xpath_expression:
                 self.program_output.setText("No Xpath expression entered.")
             elif xpath_expression and not self.is_duplicate(xpath_expression):
-                self.xpath_filters.append(xpath_expression)
-                self.xpath_listbox.addItem(xpath_expression)
+                validate = self.validate_xpath_expression(xpath_expression)
+                if validate:
+                    self.xpath_filters.append(xpath_expression)
+                    self.xpath_listbox.addItem(xpath_expression)
+                else:
+                    self.program_output.setText("Not a valid Xpath expression!")
+                    QMessageBox.critical(self, "Exception adding filter", f"The entered Xpath expression '{xpath_expression}' is not valid, please try again.")
             else:
                 self.program_output.setText(f"Cannot add duplicate XPath expression: {xpath_expression}")
                 QMessageBox.critical(self, "Error adding filter", f"Cannot add duplicate XPath expression:\n{xpath_expression}")
         except Exception as ex:
             message = f"An exception of type {type(ex).__name__} occurred. Arguments: {ex.args!r}"
             self.program_output.setText(f"Error adding filter: {message}")
+            QMessageBox.critical(self, "Exception adding filter", message)
      
     # ======= End FUNCTIONS FOR create_matching_filter_group ======= #
 
@@ -773,8 +811,8 @@ class MainWindow(QMainWindow):
             try:
                 tree = ET.parse(file_path)
                 root = tree.getroot()
-            except ET.XMLSyntaxError as e:
-                print(f"Error processing {filename}: {str(e)}")
+            except ET.XMLSyntaxError:
+                self.program_output("Error reading XML: XML file is empty, skipping file...")
                 continue
 
             current_file_results = {"Filename": os.path.splitext(filename)[0]}
@@ -886,7 +924,7 @@ class MainWindow(QMainWindow):
                 self.progressbar.reset()
             except Exception as ex:
                 message = f"An exception of type {type(ex).__name__} occurred. Arguments: {ex.args!r}"
-                QMessageBox.critical(self, "Error", f"Error exporting CSV: {message}")
+                QMessageBox.critical(self, "Exception in Program", f"Error exporting CSV: {message}")
         
                 
     def update_progress(self, value):
@@ -985,6 +1023,7 @@ class MainWindow(QMainWindow):
         self.convert_csv_button.clicked.connect(self.pandas_convert_csv_file)
         self.checkbox_write_index_column = QCheckBox("Write Index Column?")
         self.checkbox_write_index_column.setChecked(False)
+        self.checkbox_write_index_column.clicked.connect(self.wrinco_checkbox_info)
         
         output_layout = QHBoxLayout()
         
@@ -1026,6 +1065,31 @@ class MainWindow(QMainWindow):
     
     # ======= Start FUNCTIONS FOR create_csv_conversion_group ======= #
     
+    def wrinco_checkbox_info(self):
+        message_with_index = """
+        Data will look like  this:
+        
+        | Index Header | Header 1 | Header 2   |
+        |-------------------|-------------------|-------------------|
+        | 1                  | Data...        | Data...         |
+        """
+        message_without_index = """
+        Data will look like  this:
+        
+        | Header 1 | Header 2      |
+        |------------------|-------------------|
+        | Data...       | Data...         |
+        """
+        try:
+            if self.checkbox_write_index_column.isChecked():
+                self.csv_conversion_output.setText(message_with_index)
+            else:
+                self.csv_conversion_output.setText(message_without_index)
+        except Exception as ex:
+            message = f"An exception of type {type(ex).__name__} occurred. Arguments: {ex.args!r}"
+            QMessageBox.critical(self, "Exception in Program", f"An error occurred: {message}")
+                
+    
     def browse_csv_file(self):
         try:
             file_name, _ = QFileDialog.getOpenFileName(self, "Select CSV File", "", "CSV Files (*.csv)")
@@ -1033,7 +1097,7 @@ class MainWindow(QMainWindow):
                 self.input_csv_file_conversion.setText(file_name)
         except Exception as ex:
             message = f"An exception of type {type(ex).__name__} occurred. Arguments: {ex.args!r}"
-            QMessageBox.critical(self, "Error", f"Error exporting CSV:\n{message}")
+            QMessageBox.critical(self, "Exception in reading CSV", f"Error reading CSV:\n{message}")
                   
     
     def csv_save_as(self):
@@ -1045,7 +1109,7 @@ class MainWindow(QMainWindow):
                 self.output_csv_file_conversion.setText(file_name)
         except Exception as ex:
             message = f"An exception of type {type(ex).__name__} occurred. Arguments: {ex.args!r}"
-            QMessageBox.critical(self, "Error", f"Error exporting CSV:\n{message}")
+            QMessageBox.critical(self, "Exception exporting CSV", f"Error exporting CSV:\n{message}")
             
             
     @Slot(str)
@@ -1066,7 +1130,6 @@ class MainWindow(QMainWindow):
         csv_input_file = self.input_csv_file_conversion.text()
         csv_output_file = self.output_csv_file_conversion.text()
         checkbox = self.checkbox_write_index_column.isChecked()
-        print(checkbox)
         try:
             with open(csv_input_file, encoding="utf-8") as file:
                 sample = file.read(4096)
@@ -1101,7 +1164,7 @@ class MainWindow(QMainWindow):
             
         except Exception as ex:
             message = f"An exception of type {type(ex).__name__} occurred. Arguments: {ex.args!r}"
-            QMessageBox.critical(self, "Error", f"Error exporting CSV: {message}")
+            QMessageBox.critical(self, "Exception exporting CSV", f"Error exporting CSV: {message}")
             
     # ======= End FUNCTIONS FOR create_csv_conversion_group ======= #
 
