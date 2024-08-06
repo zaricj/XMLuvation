@@ -1,7 +1,8 @@
 # XMLuvation - XML Evaluation Tool that searches for matches based on one or multiple XPath Expressions
 
 
-![python-powered-w-200x80](https://github.com/user-attachments/assets/ff891665-6ac6-4fc3-a12d-39876708c8b3)![Logo_Full_Transparent_Cropped](https://github.com/zaricj/XMLuvation/assets/93329694/d9ea10b0-30e7-412e-b3ee-f2d75806e134)![xml_transparent_150x150](https://github.com/zaricj/XMLuvation/assets/93329694/7abe5b04-b8fc-41da-9e70-c3254067841c)![Geis Logo Transparent](https://github.com/zaricj/XMLuvation/assets/93329694/7fb55018-6ac4-4f31-adfa-35fd0e6b33af)
+![python-powered-w-200x80](https://github.com/user-attachments/assets/ff891665-6ac6-4fc3-a12d-39876708c8b3)![PyQT](https://github.com/user-attachments/assets/cb53a4ce-4d69-4ba1-8abd-3897debf52aa)
+ ![xml_transparent_150x150](https://github.com/zaricj/XMLuvation/assets/93329694/7abe5b04-b8fc-41da-9e70-c3254067841c)![Geis Logo Transparent](https://github.com/zaricj/XMLuvation/assets/93329694/7fb55018-6ac4-4f31-adfa-35fd0e6b33af)
 
 ## Overview
 
@@ -32,8 +33,8 @@ To run XMLuvation, you need to have Python installed on your system. The require
 | lxml | os |
 | pandas | re |
 | tabulate | webrowser |
-| openpyxl | |
-| qt_material | |
+| openpyxl | sys |
+| qt_material | pathlib.path |
 | pyside6 | |
 
 ### Install the required dependencies via requirements.txt
