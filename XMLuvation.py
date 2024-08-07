@@ -613,7 +613,7 @@ layout_pandas_output = [
 ]
 
 frame_pandas = sg.Frame(
-    "CSV Conversion to different file type",
+    "CSV CONVERSION TO DIFFERENT FILETYPE",
     layout_pandas_conversion,
     expand_x=True,
     expand_y=True,
@@ -621,7 +621,7 @@ frame_pandas = sg.Frame(
     font="Calibri 13 bold"
 )
 frame_pandas_output = sg.Frame(
-    "CSV Conversion Output",
+    "CSV CONVERSION OUTPUT",
     layout_pandas_output,
     expand_x=True,
     expand_y=True,
@@ -800,35 +800,35 @@ layout_xml_output = [
 ]
 
 frame_xml_eval = sg.Frame(
-    "XML folder selection and XPath builder",
+    "XML FOLDER SELECTION AND XPATH BUILDER",
     layout_xml_evaluation,
     title_color=FRAME_TITLE_COLOR,
     expand_x=True,
     font="Calibri 13 bold"
 )
 frame_export_evaluation = sg.Frame(
-    "Export evaluation result as a CSV File",
+    "EXPORT EVALUATION RESULT AS CSV FILE",
     layout_export_evaluation,
     title_color=FRAME_TITLE_COLOR,
     expand_x=True,
     font="Calibri 13 bold"
 )
 frame_xml_output = sg.Frame(
-    "XML Output",
+    "XML OUTPUT",
     layout_xml_output,
     title_color=FRAME_TITLE_COLOR,
     expand_x=True,
     font="Calibri 13 bold"
 )
 frame_output_main = sg.Frame(
-    "Program Output",
+    "PROGRAM OUTPUT",
     layout_program_output,
     title_color=FRAME_TITLE_COLOR,
     expand_x=True,
     font="Calibri 13 bold"
 )
 frame_listbox_matching_filter = sg.Frame(
-    "List of filters to match in XML files",
+    "LIST OF FILTERS TO MATCH IN XML FILES",
     layout_listbox_matching_filter,
     title_color=FRAME_TITLE_COLOR,
     expand_x=True,
