@@ -70,7 +70,7 @@ class MainWindow(QMainWindow):
         
         
     def initUI(self):
-        self.setWindowTitle("XMLuvation v1.3")
+        self.setWindowTitle("XMLuvation v1.3.1")
         self.setWindowIcon(QIcon("_internal/icon/xml_32px.ico"))  # Replace with actual path
         self.setGeometry(500, 250, 1300, 840)
         self.saveGeometry()
@@ -161,8 +161,6 @@ class MainWindow(QMainWindow):
         help_menu.addAction(xpath_help_action)
         xpath_cheatsheet_action = QAction("XPath Cheat Sheet", self)
         xpath_cheatsheet_action.setStatusTip("Open XPath Cheat Sheet")
-        #xpath_cheatsheet_action.triggered.connect(self.open_xpath_cheatsheet)
-        #help_menu.addAction(xpath_cheatsheet_action)
         
         # Theme Menu
         theme_menu = menu_bar.addMenu("&Personalize")
@@ -175,7 +173,7 @@ class MainWindow(QMainWindow):
     
     def change_theme(self):
         if self.current_theme == "_internal/theme/dark_amber.xml":
-            self.current_theme = "_internal/theme/light_blue.xml"
+            self.current_theme = "_internal/theme/light_amber.xml"
         else:
             self.current_theme = "_internal/theme/dark_amber.xml"
         
@@ -271,11 +269,10 @@ class MainWindow(QMainWindow):
 
     def create_xml_eval_group(self):
         group = QGroupBox("XML folder selection and XPath builder")
-        group.setStyleSheet("QGroupBox { color: #FFC857; }")
         layout = QVBoxLayout()
         self.horizontal_spacer = QSpacerItem(40,10, QSizePolicy.Expanding, QSizePolicy.Minimum)
         
-        folder_with_xml_files_and_statusbar_layout = QHBoxLayout()
+        xml_input_folder_and_statusbar_layout = QHBoxLayout()
         
         # Elements
         self.total_xml_files_statusbar = QStatusBar()
@@ -283,23 +280,23 @@ class MainWindow(QMainWindow):
         self.total_xml_files_statusbar.setSizeGripEnabled(False)
         self.total_xml_files_statusbar.setStyleSheet("font-size: 20;font-weight: bold; color: #0cd36c")
         
-        folder_with_xml_files_and_statusbar_layout.addWidget(self.total_xml_files_statusbar)
+        xml_input_folder_and_statusbar_layout.addWidget(self.total_xml_files_statusbar)
         
-        layout.addLayout(folder_with_xml_files_and_statusbar_layout)
+        layout.addLayout(xml_input_folder_and_statusbar_layout)
         
         # Elements
         self.folder_xml_input = QLineEdit()
         self.folder_xml_input.setPlaceholderText("Choose a folder that contains XML files...")
         self.folder_xml_input.textChanged.connect(self.update_xml_file_count)
-        self.browse_button = QPushButton("Browse")
-        self.browse_button.clicked.connect(self.browse_folder)
+        self.browse_xml_folder_button = QPushButton("Browse")
+        self.browse_xml_folder_button.clicked.connect(self.browse_folder)
         self.read_xml_button = QPushButton("Read XML")
         self.read_xml_button.setToolTip("Parses XML content into the output and fills out the Comboboxes based on the XMLs content.")
         self.read_xml_button.clicked.connect(self.read_xml)
         
         folder_layout = QHBoxLayout()
         folder_layout.addWidget(self.folder_xml_input)
-        folder_layout.addWidget(self.browse_button)
+        folder_layout.addWidget(self.browse_xml_folder_button)
         folder_layout.addWidget(self.read_xml_button)
         layout.addLayout(folder_layout)
 
@@ -634,7 +631,7 @@ class MainWindow(QMainWindow):
     
     def create_matching_filter_group(self):
         group = QGroupBox("List of filters to match in XML files")
-        group.setStyleSheet("QGroupBox { color: #FFC857; }")
+        
         layout = QVBoxLayout()
         
         spacer = QFrame()
@@ -712,6 +709,7 @@ class MainWindow(QMainWindow):
     def is_duplicate(self, xpath_expression):
         return xpath_expression in self.xpath_filters
     
+    
     def validate_xpath_expression(self, xpath_expression):
         # Define valid patterns
         valid_patterns = [
@@ -769,7 +767,7 @@ class MainWindow(QMainWindow):
 
     def create_export_evaluation_group(self):
         group = QGroupBox("Export evaluation result as a CSV File")
-        group.setStyleSheet("QGroupBox { color: #FFC857; }")
+        
         layout = QVBoxLayout()
         
         # Elements
@@ -843,7 +841,6 @@ class MainWindow(QMainWindow):
             progress = int((index + 1) / total_files * 100)
             self.progress_updated.emit(progress)
             
-            
         return final_results, total_sum_matches, total_matching_files
     
     
@@ -870,6 +867,14 @@ class MainWindow(QMainWindow):
         folder_containing_xml_files = self.folder_xml_input.text()
         folder_for_csv_output = self.folder_csv_input.text()
         
+        self.browse_xml_folder_button.setDisabled(True)
+        self.read_xml_button.setDisabled(True)
+        self.build_xpath_button.setDisabled(True)
+        self.add_xpath_to_list_button.setDisabled(True)
+        self.browse_csv_button.setDisabled(True)
+        self.csv_save_as_button.setDisabled(True)
+        self.csv_convert_button.setDisabled(True)
+        
         # Date and Time
         today_date = datetime.now()
         formatted_today_date = today_date.strftime("%d.%m.%y-%H-%M-%S")
@@ -887,8 +892,6 @@ class MainWindow(QMainWindow):
             try:
                 matching_results, total_matches_found, total_matching_files = self.evaluate_xml_files_matching(
                     folder_containing_xml_files, matching_filters)
-
-                #if self.folder_xml_input
 
                 if not matching_results:
                     QMessageBox.information(self, "No Matches", "No matches found.")
@@ -921,10 +924,24 @@ class MainWindow(QMainWindow):
 
                 QMessageBox.information(self, "Export Successful", f"Matches saved to {csv_output_path}\n")
                 self.program_output.setText(f"Found {total_matching_files} files that have a total sum of {total_matches_found} matches.")
+                self.browse_xml_folder_button.setDisabled(False)
+                self.read_xml_button.setDisabled(False)
+                self.build_xpath_button.setDisabled(False)
+                self.add_xpath_to_list_button.setDisabled(False)
+                self.browse_csv_button.setDisabled(False)
+                self.csv_save_as_button.setDisabled(False)
+                self.csv_convert_button.setDisabled(False)
                 self.progressbar.reset()
             except Exception as ex:
                 message = f"An exception of type {type(ex).__name__} occurred. Arguments: {ex.args!r}"
                 QMessageBox.critical(self, "Exception in Program", f"Error exporting CSV: {message}")
+                self.browse_xml_folder_button.setDisabled(False)
+                self.read_xml_button.setDisabled(False)
+                self.build_xpath_button.setDisabled(False)
+                self.add_xpath_to_list_button.setDisabled(False)
+                self.browse_csv_button.setDisabled(False)
+                self.csv_save_as_button.setDisabled(False)
+                self.csv_convert_button.setDisabled(False)
         
                 
     def update_progress(self, value):
@@ -934,7 +951,7 @@ class MainWindow(QMainWindow):
 
     def create_program_output_group(self):
         group = QGroupBox("Program Output")
-        group.setStyleSheet("QGroupBox { color: #FFC857; }")
+        
         layout = QVBoxLayout()
 
         self.program_output = QTextEdit()
@@ -948,7 +965,7 @@ class MainWindow(QMainWindow):
 
     def create_xml_output_group(self):
         group = QGroupBox("XML Output")
-        group.setStyleSheet("QGroupBox { color: #FFC857; }")
+        
         layout = QVBoxLayout()
 
         # Elements
@@ -988,7 +1005,7 @@ class MainWindow(QMainWindow):
 
     def create_csv_conversion_group(self):
         group = QGroupBox("CSV Conversion")
-        group.setStyleSheet("QGroupBox { color: #FFC857; }")
+        
         layout = QVBoxLayout()
 
         # Title
@@ -1170,7 +1187,7 @@ class MainWindow(QMainWindow):
 
     def create_csv_to_table_group(self):
         group = QGroupBox("Display CSV into Table")
-        group.setStyleSheet("QGroupBox { color: #FFC857; }")
+        
         layout = QVBoxLayout()
 
         # File selection
