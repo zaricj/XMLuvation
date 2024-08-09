@@ -61,6 +61,7 @@ class MainWindow(QMainWindow):
     update_input_file_signal = Signal(str)
     update_output_file_signal = Signal(str)
     
+    
     def __init__(self):
         super().__init__()
         self.initUI()
@@ -74,6 +75,7 @@ class MainWindow(QMainWindow):
         self.setWindowIcon(QIcon("_internal/icon/xml_32px.ico"))  # Replace with actual path
         self.setGeometry(500, 250, 1300, 840)
         self.saveGeometry()
+        
         
         self.eval_input_file = None
         self.xpath_filters = []
@@ -163,14 +165,18 @@ class MainWindow(QMainWindow):
         lobster_prod_action.triggered.connect(lambda: self.open_path(r"\\nesis002\ProfilileXMLExport"))
         paths_menu.addAction(lobster_prod_action)
 
+        
         # Help Menu
         help_menu = menu_bar.addMenu("&Help")
         xpath_help_action = QAction("XPath Help", self)
         xpath_help_action.setStatusTip("Open XPath Syntax Help")
         xpath_help_action.triggered.connect(self.open_web_xpath_help)
         help_menu.addAction(xpath_help_action)
-        xpath_cheatsheet_action = QAction("XPath Cheat Sheet", self)
-        xpath_cheatsheet_action.setStatusTip("Open XPath Cheat Sheet")
+        about = QAction("About", self)
+        about.setStatusTip("About this program")
+        about.triggered.connect(self.about_message)
+        help_menu.addAction(about)
+        #help_menu.addAction(xpath_cheatsheet_action)
         
         # Theme Menu
         theme_menu = menu_bar.addMenu("&Personalize")
@@ -180,6 +186,17 @@ class MainWindow(QMainWindow):
         theme_menu.addAction(personalize_action)
         
     # ======= START FUNCTIONS create_menu_bar ======= #
+    
+    def about_message(self):
+        # About Message
+        program_info = "Name: XMluvation\nVersion: 1.3.1\nCredit: Jovan"
+        about_message = """XMLuvation is a Python application designed to parse and evaluate XML files and use XPath to search for matches which matching results will be saved in a csv file. Radio buttons are disabled for now, this feature will be implemented in a later version."""
+        about_box = QMessageBox()
+        about_box.setText("About this program...")
+        about_box.setInformativeText(about_message)
+        about_box.setDetailedText(program_info)
+        about_box.exec()
+        #self.program_output.setText(about_message)
     
     def change_theme(self):
         if self.current_theme == "_internal/theme/dark_amber.xml":
