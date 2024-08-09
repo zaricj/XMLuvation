@@ -194,7 +194,7 @@ class MainWindow(QMainWindow):
                 message = f"An exception of type {type(ex).__name__} occurred. Arguments: {ex.args!r}"
                 QMessageBox.critical(self, "Error", message)
         else:
-            QMessageBox.critical(self, "Error", f"Path does not exist or is not a valid path:\n{directory_path}")
+            QMessageBox.warning(self, "Error", f"Path does not exist or is not a valid path:\n{directory_path}")
     
     
     # Open CSV output folder function
@@ -208,7 +208,7 @@ class MainWindow(QMainWindow):
                 message = f"An exception of type {type(ex).__name__} occurred. Arguments: {ex.args!r}"
                 QMessageBox.critical(self, "Error", message)
         else:
-            QMessageBox.critical(self, "Error", f"Path does not exist or is not a valid path:\n{directory_path}")
+            QMessageBox.warning(self, "Error", f"Path does not exist or is not a valid path:\n{directory_path}")
     
     
     def open_conversion_input(self):
@@ -221,7 +221,7 @@ class MainWindow(QMainWindow):
                 message = f"An exception of type {type(ex).__name__} occurred. Arguments: {ex.args!r}"
                 QMessageBox.critical(self, "Error", message)
         else:
-            QMessageBox.critical(self, "Error", f"Path does not exist or is not a valid path:\n{directory_path}")
+            QMessageBox.warning(self, "Error", f"Path does not exist or is not a valid path:\n{directory_path}")
             
             
     def open_conversion_output(self):
@@ -234,7 +234,7 @@ class MainWindow(QMainWindow):
                 message = f"An exception of type {type(ex).__name__} occurred. Arguments: {ex.args!r}"
                 QMessageBox.critical(self, "Error", message)
         else:
-            QMessageBox.critical(self, "Error", f"Path does not exist or is not a valid path:\n{directory_path}")
+            QMessageBox.warning(self, "Error", f"Path does not exist or is not a valid path:\n{directory_path}")
             
             
     def open_path(self,path):
@@ -754,10 +754,10 @@ class MainWindow(QMainWindow):
                     self.xpath_listbox.addItem(xpath_expression)
                 else:
                     self.program_output.setText("Not a valid Xpath expression!")
-                    QMessageBox.critical(self, "Exception adding filter", f"The entered Xpath expression '{xpath_expression}' is not valid, please try again.")
+                    QMessageBox.warning(self, "Exception adding filter", f"The entered Xpath expression '{xpath_expression}' is not valid, please try again.")
             else:
                 self.program_output.setText(f"Cannot add duplicate XPath expression: {xpath_expression}")
-                QMessageBox.critical(self, "Error adding filter", f"Cannot add duplicate XPath expression:\n{xpath_expression}")
+                QMessageBox.warning(self, "Error adding filter", f"Cannot add duplicate XPath expression:\n{xpath_expression}")
         except Exception as ex:
             message = f"An exception of type {type(ex).__name__} occurred. Arguments: {ex.args!r}"
             self.program_output.setText(f"Error adding filter: {message}")
@@ -883,11 +883,11 @@ class MainWindow(QMainWindow):
         matching_filters = self.xpath_filters
 
         if not os.path.exists(folder_containing_xml_files):
-            QMessageBox.critical(self, "Path Error", "Cannot start evaluation because XML input folder is not set!")
+            QMessageBox.warning(self, "Path Error", "Cannot start evaluation because XML input folder is not set!")
         elif len(matching_filters) == 0:
-            QMessageBox.critical(self, "ListBox Error", "Cannot start evaluation because no XPath filters have been added to the list!")
+            QMessageBox.warning(self, "ListBox Error", "Cannot start evaluation because no XPath filters have been added to the list!")
         elif not os.path.exists(folder_for_csv_output):
-            QMessageBox.critical(self, "Path Error", "Cannot start evaluation because CSV output folder is not set!")
+            QMessageBox.warning(self, "Path Error", "Cannot start evaluation because CSV output folder is not set!")
         else:
             try:
                 matching_results, total_matches_found, total_matching_files = self.evaluate_xml_files_matching(
@@ -922,7 +922,7 @@ class MainWindow(QMainWindow):
                                     else:
                                         writer.writerow({"Filename": filename, key: value})
 
-                QMessageBox.information(self, "Export Successful", f"Matches saved to {csv_output_path}\n")
+                QMessageBox.information(self, "Export Successful", f"Matches saved to:\n{csv_output_path}")
                 self.program_output.setText(f"Found {total_matching_files} files that have a total sum of {total_matches_found} matches.")
                 self.browse_xml_folder_button.setDisabled(False)
                 self.read_xml_button.setDisabled(False)
@@ -1126,7 +1126,7 @@ class MainWindow(QMainWindow):
                 self.output_csv_file_conversion.setText(file_name)
         except Exception as ex:
             message = f"An exception of type {type(ex).__name__} occurred. Arguments: {ex.args!r}"
-            QMessageBox.critical(self, "Exception exporting CSV", f"Error exporting CSV:\n{message}")
+            QMessageBox.critical(self, "Exception exporting CSV", f"Error exporting CSV: {message}")
             
             
     @Slot(str)
@@ -1172,7 +1172,7 @@ class MainWindow(QMainWindow):
             (input_ext, output_ext), (None, None))
             
             if read_func is None or write_func is None:
-                QMessageBox.critical(self, "Unsupported Conversion", "Error converting file...")
+                QMessageBox.warning(self, "Unsupported Conversion", "Error converting file, unsupported conversion...")
                 return
             
             csv_df = read_func
@@ -1256,8 +1256,9 @@ class MainWindow(QMainWindow):
             self.filter_column.addItems(["All Columns"] + headers)
             
             QMessageBox.information(self, "Success", "CSV data loaded successfully.")
-        except Exception as e:
-            QMessageBox.critical(self, "Error", f"Failed to load CSV data: {str(e)}")
+        except Exception as ex:
+            message = f"An exception of type {type(ex).__name__} occurred. Arguments: {ex.args!r}"
+            QMessageBox.critical(self, "Error", f"Failed to load CSV data:\n{message}")
 
     def filter_table(self):
         filter_text = self.filter_input.text()
