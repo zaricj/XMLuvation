@@ -5,7 +5,7 @@ from PySide6.QtWidgets import (QApplication, QMainWindow, QWidget, QVBoxLayout,
                              QListWidget, QTextEdit, QProgressBar, QStatusBar,
                              QCheckBox,QMenu,QFileDialog, QMessageBox, QFrame, 
                              QSpacerItem, QSizePolicy, QTableView, QHeaderView)
-from PySide6.QtGui import QIcon, QAction, QStandardItemModel, QStandardItem
+from PySide6.QtGui import QIcon, QAction, QStandardItemModel, QStandardItem, QCloseEvent
 from PySide6.QtCore import Qt, QThread, Signal, Slot, QSortFilterProxyModel
 from  datetime import datetime
 from lxml import etree as ET
@@ -105,6 +105,16 @@ class MainWindow(QMainWindow):
         central_widget = QWidget()
         central_widget.setLayout(main_layout)
         self.setCentralWidget(central_widget)
+    
+    def closeEvent(self, event: QCloseEvent):
+        reply = QMessageBox.question(
+            self, 'Window Close', 'Are you sure you want to close the window?',
+            QMessageBox.Yes | QMessageBox.No, QMessageBox.No)
+
+        if reply == QMessageBox.Yes:
+            event.accept()
+        else:
+            event.ignore()
     
 
     def create_menu_bar(self):
@@ -1062,7 +1072,8 @@ class MainWindow(QMainWindow):
         ##logoqt_label.setPixmap(pixmapqt)
         #layout.addWidget(logo_label, alignment=Qt.AlignCenter)
         ##layout.addWidget(logoqt_label, alignment=Qt.AlignCenter)
-
+        
+        
         layout.addStretch()  # This will push everything up and fill the empty space at the bottom
 
         group.setLayout(layout)
