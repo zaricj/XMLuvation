@@ -4,7 +4,7 @@ from PySide6.QtWidgets import (QApplication, QMainWindow, QWidget, QVBoxLayout,
                              QLineEdit, QPushButton, QComboBox, QRadioButton, 
                              QListWidget, QTextEdit, QProgressBar, QStatusBar,
                              QCheckBox,QMenu,QFileDialog, QMessageBox, QFrame, 
-                             QSpacerItem, QSizePolicy, QTableView, QHeaderView)
+                             QSpacerItem, QSizePolicy, QTableView, QHeaderView, QInputDialog)
 from PySide6.QtGui import QIcon, QAction, QStandardItemModel, QStandardItem, QCloseEvent
 from PySide6.QtCore import Qt, QThread, Signal, Slot, QSortFilterProxyModel
 from  datetime import datetime
@@ -16,6 +16,46 @@ import os
 import re
 import webbrowser
 import pandas as pd
+import json
+import os
+
+class ConfigHandler:
+    def __init__(self):
+        script_dir = os.path.dirname(os.path.abspath(__file__))
+        self.config_dir = os.path.join(script_dir, '_internal', 'configs')
+        self.config_file = os.path.join(self.config_dir, 'config.json')
+        
+        os.makedirs(self.config_dir, exist_ok=True)
+        
+        self.config = self.load_config()
+
+    def load_config(self):
+        if os.path.exists(self.config_file):
+            try:
+                with open(self.config_file, 'r') as f:
+                    return json.load(f)
+            except json.JSONDecodeError:
+                print(f"Warning: {self.config_file} is empty or contains invalid JSON. Using default configuration.")
+        return self.get_default_config()
+
+    def get_default_config(self):
+        return {"custom_paths": {}}
+
+    def save_config(self):
+        with open(self.config_file, 'w') as f:
+            json.dump(self.config, f, indent=4)
+
+    def add_custom_path(self, name, path):
+        self.config["custom_paths"][name] = path
+        self.save_config()
+
+    def get_custom_paths(self):
+        return self.config["custom_paths"]
+
+    def remove_custom_path(self, name):
+        if name in self.config["custom_paths"]:
+            del self.config["custom_paths"][name]
+            self.save_config()
 
 class XMLParserThread(QThread):
     finished = Signal(object)
@@ -64,6 +104,7 @@ class MainWindow(QMainWindow):
     
     def __init__(self):
         super().__init__()
+        self.config_handler = ConfigHandler()
         self.initUI()
         # Theme by qt_material
         self.current_theme = "_internal/theme/dark_amber.xml" # Sets the global main theme from the file
@@ -80,6 +121,7 @@ class MainWindow(QMainWindow):
         self.eval_input_file = None
         self.xpath_filters = []
         self.xpath_listbox = QListWidget(self)
+        
         
         # Signals and Slots
         self.progress_updated.connect(self.update_progress)
@@ -155,15 +197,23 @@ class MainWindow(QMainWindow):
         open_menu.addAction(open_csv_conversion_output_action)
 
         # Path Menu
-        paths_menu = menu_bar.addMenu("&Path")
-        lobster_test_action = QAction("Lobster Test System", self)
-        lobster_test_action.setStatusTip("Open Lobster Test System")
-        lobster_test_action.triggered.connect(lambda: self.open_path(r"\\nesist02\ProfilileXMLExport"))
-        paths_menu.addAction(lobster_test_action)
-        lobster_prod_action = QAction("Lobster Prod System", self)
-        lobster_prod_action.setStatusTip("Open Lobster Prod System")
-        lobster_prod_action.triggered.connect(lambda: self.open_path(r"\\nesis002\ProfilileXMLExport"))
-        paths_menu.addAction(lobster_prod_action)
+        self.paths_menu = menu_bar.addMenu("&Path")
+        #lobster_test_action = QAction("Lobster Test System", self)
+        #lobster_test_action.setStatusTip("Open Lobster Test System")
+        #lobster_test_action.triggered.connect(lambda: self.open_path(r"\\nesist02\ProfilileXMLExport"))
+        #self.paths_menu.addAction(lobster_test_action)
+        #lobster_prod_action = QAction("Lobster Prod System", self)
+        #lobster_prod_action.setStatusTip("Open Lobster Prod System")
+        #lobster_prod_action.triggered.connect(lambda: self.open_path(r"\\nesis002\ProfilileXMLExport"))
+        #self.paths_menu.addAction(lobster_prod_action)
+        
+        # Add custom paths
+        self.load_custom_paths()
+
+        # Add option to add new custom path
+        add_custom_path_action = QAction("Add Custom Path", self)
+        add_custom_path_action.triggered.connect(self.add_custom_path)
+        self.paths_menu.addAction(add_custom_path_action)
 
         
         # Help Menu
@@ -186,6 +236,38 @@ class MainWindow(QMainWindow):
         theme_menu.addAction(personalize_action)
         
     # ======= START FUNCTIONS create_menu_bar ======= #
+    
+    def update_paths_menu(self):
+        # Clear existing path actions, except the last one (Add Custom Path)
+        for action in self.paths_menu.actions()[:-1]:
+            self.paths_menu.removeAction(action)
+
+        # Add custom paths
+        custom_paths = self.config_handler.get_custom_paths()
+        for name, path in custom_paths.items():
+            action = QAction(name, self)
+            action.setStatusTip(f"Open {name}")
+            action.triggered.connect(lambda checked, p=path: self.open_path(p))
+            self.paths_menu.insertAction(self.paths_menu.actions()[0], action)
+            
+
+    def add_custom_path(self):
+        name, ok = QInputDialog.getText(self, "Add Custom Path", "Enter a name for the path:")
+        if ok and name:
+            path, ok = QInputDialog.getText(self, "Add Custom Path", "Enter path:")
+            if ok and path:
+                self.config_handler.add_custom_path(name, path)
+                self.update_paths_menu()
+                
+    
+    def load_custom_paths(self):
+        custom_paths = self.config_handler.get_custom_paths()
+        for name, path in custom_paths.items():
+            action = QAction(name, self)
+            action.setStatusTip(f"Open {name}")
+            action.triggered.connect(lambda checked, p=path: self.open_path(p))
+            self.paths_menu.addAction(action)
+            
     
     def about_message(self):
         # About Message
