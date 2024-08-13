@@ -17,7 +17,6 @@ import re
 import webbrowser
 import pandas as pd
 import json
-import os
 
 class ConfigHandler:
     def __init__(self):
@@ -29,6 +28,7 @@ class ConfigHandler:
         
         self.config = self.load_config()
 
+
     def load_config(self):
         if os.path.exists(self.config_file):
             try:
@@ -38,24 +38,30 @@ class ConfigHandler:
                 print(f"Warning: {self.config_file} is empty or contains invalid JSON. Using default configuration.")
         return self.get_default_config()
 
+
     def get_default_config(self):
         return {"custom_paths": {}}
+
 
     def save_config(self):
         with open(self.config_file, 'w') as f:
             json.dump(self.config, f, indent=4)
 
+
     def add_custom_path(self, name, path):
         self.config["custom_paths"][name] = path
         self.save_config()
 
+
     def get_custom_paths(self):
         return self.config["custom_paths"]
+
 
     def remove_custom_path(self, name):
         if name in self.config["custom_paths"]:
             del self.config["custom_paths"][name]
             self.save_config()
+
 
 class XMLParserThread(QThread):
     finished = Signal(object)
@@ -96,6 +102,7 @@ class XMLParserThread(QThread):
         except Exception as ex:
             self.error.emit(str(ex))
             
+            
 class MainWindow(QMainWindow):
     progress_updated = Signal(int)
     update_input_file_signal = Signal(str)
@@ -112,7 +119,7 @@ class MainWindow(QMainWindow):
         
         
     def initUI(self):
-        self.setWindowTitle("XMLuvation v1.3.1")
+        self.setWindowTitle("XMLuvation v1.3.2")
         self.setWindowIcon(QIcon("_internal/icon/xml_32px.ico"))  # Replace with actual path
         self.setGeometry(500, 250, 1300, 840)
         self.saveGeometry()
@@ -271,7 +278,7 @@ class MainWindow(QMainWindow):
     
     def about_message(self):
         # About Message
-        program_info = "Name: XMluvation\nVersion: 1.3.1\nCredit: Jovan"
+        program_info = "Name: XMluvation\nVersion: 1.3.2\nCredit: Jovan"
         about_message = """XMLuvation is a Python application designed to parse and evaluate XML files and use XPath to search for matches which matching results will be saved in a csv file. Radio buttons are disabled for now, this feature will be implemented in a later version."""
         about_box = QMessageBox()
         about_box.setText("About this program...")
@@ -453,13 +460,13 @@ class MainWindow(QMainWindow):
         self.radio_button_equals = QRadioButton("Equals")
         self.radio_button_equals.setChecked(True)
         self.radio_button_contains = QRadioButton("Contains")
-        self.radio_button_contains.setDisabled(True)
+      #  self.radio_button_contains.setDisabled(True)
         self.radio_button_startswith = QRadioButton("Starts-with")
-        self.radio_button_startswith.setDisabled(True)
+       # #self.radio_button_startswith.setDisabled(True)
         self.radio_button_greater = QRadioButton("Greater")
-        self.radio_button_greater.setDisabled(True)
+       # #self.radio_button_greater.setDisabled(True)
         self.radio_button_smaller = QRadioButton("Smaller")
-        self.radio_button_smaller.setDisabled(True)
+       # #self.radio_button_smaller.setDisabled(True)
         
         function_layout.addWidget(QLabel("Function:"))
         function_layout.addWidget(self.radio_button_equals)
@@ -612,6 +619,12 @@ class MainWindow(QMainWindow):
         self.tag_value_combobox.addItems(result['tag_values'])
         self.attribute_name_combobox.addItems(result['attributes'])
         self.attribute_value_combobox.addItems(result['attribute_values'])
+        
+        # Sets the comboboxes to be empty, because on XML Read, for some reason the comboboxes always get filled with a random value
+        self.tag_name_combobox.setEditText("") 
+        self.tag_value_combobox.setEditText("")
+        self.attribute_name_combobox.setEditText("")
+        self.attribute_value_combobox.setEditText("")
 
         self.eval_input_file = self.xml_parser_thread.xml_file
         self.program_output.setText("XML file loaded successfully.")
@@ -626,6 +639,8 @@ class MainWindow(QMainWindow):
             file_name, _ = QFileDialog.getOpenFileName(self, "Select XML File", "", "XML Files (*.xml)")
             if file_name:
                 self.parse_xml(file_name)
+                directory_path = os.path.dirname(file_name)
+                self.folder_xml_input.setText(directory_path)
         except Exception as ex:
             message = f"An exception of type {type(ex).__name__} occurred. Arguments: {ex.args!r}"
             QMessageBox.critical(self, "Exception in Program", message)
@@ -976,14 +991,6 @@ class MainWindow(QMainWindow):
         folder_containing_xml_files = self.folder_xml_input.text()
         folder_for_csv_output = self.folder_csv_input.text()
         
-        self.browse_xml_folder_button.setDisabled(True)
-        self.read_xml_button.setDisabled(True)
-        self.build_xpath_button.setDisabled(True)
-        self.add_xpath_to_list_button.setDisabled(True)
-        self.browse_csv_button.setDisabled(True)
-        self.csv_save_as_button.setDisabled(True)
-        self.csv_convert_button.setDisabled(True)
-        
         # Date and Time
         today_date = datetime.now()
         formatted_today_date = today_date.strftime("%d.%m.%y-%H-%M-%S")
@@ -999,6 +1006,14 @@ class MainWindow(QMainWindow):
             QMessageBox.warning(self, "Path Error", "Cannot start evaluation because CSV output folder is not set!")
         else:
             try:
+                self.browse_xml_folder_button.setDisabled(True)
+                self.read_xml_button.setDisabled(True)
+                self.build_xpath_button.setDisabled(True)
+                self.add_xpath_to_list_button.setDisabled(True)
+                self.browse_csv_button.setDisabled(True)
+                self.csv_save_as_button.setDisabled(True)
+                self.csv_convert_button.setDisabled(True)
+                
                 matching_results, total_matches_found, total_matching_files = self.evaluate_xml_files_matching(
                     folder_containing_xml_files, matching_filters)
 
