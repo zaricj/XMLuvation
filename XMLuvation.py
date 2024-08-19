@@ -460,13 +460,13 @@ class MainWindow(QMainWindow):
         self.radio_button_equals = QRadioButton("Equals")
         self.radio_button_equals.setChecked(True)
         self.radio_button_contains = QRadioButton("Contains")
-      #  self.radio_button_contains.setDisabled(True)
+        self.radio_button_contains.setDisabled(True)
         self.radio_button_startswith = QRadioButton("Starts-with")
-       # #self.radio_button_startswith.setDisabled(True)
+        self.radio_button_startswith.setDisabled(True)
         self.radio_button_greater = QRadioButton("Greater")
-       # #self.radio_button_greater.setDisabled(True)
+        self.radio_button_greater.setDisabled(True)
         self.radio_button_smaller = QRadioButton("Smaller")
-       # #self.radio_button_smaller.setDisabled(True)
+        self.radio_button_smaller.setDisabled(True)
         
         function_layout.addWidget(QLabel("Function:"))
         function_layout.addWidget(self.radio_button_equals)
@@ -691,7 +691,7 @@ class MainWindow(QMainWindow):
                     # Case: Only Tag Name
                     xpath_expression += "/text()"
 
-                # Apply additional criteria based on radio buttons
+                #  Criteria based on radio buttons
                 if tag_value or attribute_value:
                     criteria = []
                     selected_operation = self.get_selected_operation()
@@ -945,7 +945,7 @@ class MainWindow(QMainWindow):
                 match_count = len(result)
                 file_total_matches += match_count
 
-                if match_count:
+                if result:
                     if "[@" in expression or "[text()=" in expression:
                         final_results.append({
                             "Filename": os.path.splitext(filename)[0],
@@ -972,30 +972,30 @@ class MainWindow(QMainWindow):
         if "/@" in expression:
             attribute_name = expression.split("@")[-1]
             key = f"Attribute {attribute_name} Value"
-            current_file_results[key] = [elem.strip() for elem in result if elem.strip()]
+            current_file_results[key] = ",".join([elem.strip() for elem in result if elem.strip()])
         elif "/text()" in expression:
             tag_name = expression.split("/")[-2]
             key = f"Tag {tag_name} Value"
-            current_file_results[key] = [elem.strip() for elem in result if elem.strip()]
+            current_file_results[key] = ",".join([elem.strip() for elem in result if elem.strip()])
         elif "[@" in expression:
             match = re.search(r"@([^=]+)", expression)
             if match:
                 attribute_name = match.group(1).strip()
                 key = f"Attribute {attribute_name} Value"
-                current_file_results[key] = [
-                    elem.get(attribute_name) for elem in result if elem.get(attribute_name)
-                ]
+                current_file_results[key] = ",".join(
+                    [elem.get(attribute_name) for elem in result if elem.get(attribute_name)]
+                )
 
 
     def convert_to_csv(self):
         folder_containing_xml_files = self.folder_xml_input.text()
         folder_for_csv_output = self.folder_csv_input.text()
-        
+
         # Date and Time
         today_date = datetime.now()
         formatted_today_date = today_date.strftime("%d.%m.%y-%H-%M-%S")
-        
-        csv_output_path = os.path.join(self.folder_csv_input.text(), f"Evaluation_Results_{formatted_today_date}.csv")
+
+        csv_output_path = os.path.join(self.folder_csv_input.text(), f"Evaluation_Results_      {formatted_today_date}.csv")
         matching_filters = self.xpath_filters
 
         if not os.path.exists(folder_containing_xml_files):
@@ -1013,7 +1013,7 @@ class MainWindow(QMainWindow):
                 self.browse_csv_button.setDisabled(True)
                 self.csv_save_as_button.setDisabled(True)
                 self.csv_convert_button.setDisabled(True)
-                
+
                 matching_results, total_matches_found, total_matching_files = self.evaluate_xml_files_matching(
                     folder_containing_xml_files, matching_filters)
 
@@ -1029,22 +1029,28 @@ class MainWindow(QMainWindow):
 
                 with open(csv_output_path, "w", newline="", encoding="utf-8") as csvfile:
                     writer = csv.DictWriter(
-                        csvfile, fieldnames=headers, delimiter=",", extrasaction="ignore"
+                        csvfile, fieldnames=headers, delimiter=",", extrasaction="ignore", quotechar='"', quoting=csv.QUOTE_ALL
                     )
                     writer.writeheader()
 
                     for match in matching_results:
-                        if "Expression" in match:
-                            writer.writerow(match)
-                        else:
-                            filename = match["Filename"]
+                        filename = match["Filename"]
+                        rows_to_write = []
+
+                        # Determine max number of rows needed
+                        max_len = max([len(v.split(",")) for k, v in match.items() if k != "Filename"], default=1)
+
+                        for i in range(max_len):
+                            row = {"Filename": filename}
                             for key, value in match.items():
                                 if key != "Filename":
-                                    if isinstance(value, list):
-                                        for item in value:
-                                            writer.writerow({"Filename": filename, key: item})
-                                    else:
-                                        writer.writerow({"Filename": filename, key: value})
+                                    value_list = value.split(",")
+                                    if i < len(value_list):
+                                        row[key] = value_list[i]
+                            rows_to_write.append(row)
+
+                        for row in rows_to_write:
+                            writer.writerow(row)
 
                 QMessageBox.information(self, "Export Successful", f"Matches saved to:\n{csv_output_path}")
                 self.program_output.setText(f"Found {total_matching_files} files that have a total sum of {total_matches_found} matches.")
@@ -1066,7 +1072,7 @@ class MainWindow(QMainWindow):
                 self.browse_csv_button.setDisabled(False)
                 self.csv_save_as_button.setDisabled(False)
                 self.csv_convert_button.setDisabled(False)
-        
+
                 
     def update_progress(self, value):
         self.progressbar.setValue(value)
@@ -1211,9 +1217,9 @@ class MainWindow(QMainWindow):
         message_with_index = """
         Data will look like  this:
         
-        | Index Header | Header 1 | Header 2   |
+        | Index           | Header 1   | Header 2    |
         |-------------------|-------------------|-------------------|
-        | 1                  | Data...        | Data...         |
+        | 1                  | Data...         | Data...        |
         """
         message_without_index = """
         Data will look like  this:
