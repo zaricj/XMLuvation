@@ -1,10 +1,6 @@
-testing_redundacy.py
-webapp.html
-.venv
-.vscode
-CustomTest
-isolate_me.py
-test.py
-xml-xpath-search-pyqt6.py
 .idea
-progressbar_test.py
+.vscode
+.venv
+CustomTest
+webapp.html
+_internal\configs\config.json
