@@ -84,7 +84,7 @@ class ConfigHandler:
 
 
 class XMLParserThread(QThread):
-    finished = Signal(object)
+    finished = Signal(object) 
     error = Signal(str)
 
     def __init__(self, xml_file):
