@@ -119,7 +119,7 @@ class MainWindow(QMainWindow):
         
         
     def initUI(self):
-        self.setWindowTitle("XMLuvation v1.3.2")
+        self.setWindowTitle("XMLuvation v1.2.2")
         self.setWindowIcon(QIcon("_internal/icon/xml_32px.ico"))  # Replace with actual path
         self.setGeometry(500, 250, 1300, 840)
         self.saveGeometry()
