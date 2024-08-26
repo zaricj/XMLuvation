@@ -985,7 +985,7 @@ class MainWindow(QMainWindow):
         self.csv_convert_button.setToolTip(
             "Starts reading the XML file and writes the matches to a CSV file"
         )
-        self.csv_convert_button.clicked.connect(self.convert_to_csv)
+        self.csv_convert_button.clicked.connect(self.write_to_csv)
 
         export_layout = QHBoxLayout()
         export_layout.addWidget(self.folder_csv_input)
@@ -1002,14 +1002,11 @@ class MainWindow(QMainWindow):
         folder = QFileDialog.getExistingDirectory(self, "Select Save Folder")
         if folder:
             self.folder_csv_input.setText(folder)
+            
 
-    def evaluate_xml_files_matching(
-        self, folder_containing_xml_files, matching_filters
-    ):
-        final_results = []
-        xml_files = [
-            f for f in os.listdir(folder_containing_xml_files) if f.endswith(".xml")
-        ]
+    def parse_xml_with_xpath(self, xpath_expressions):
+        folder_containing_xml_files = self.folder_xml_input.text()
+        xml_files = [f for f in os.listdir(folder_containing_xml_files) if f.endswith(".xml")]
         total_files = len(xml_files)
         total_sum_matches = 0
         total_matching_files = 0
@@ -1025,168 +1022,169 @@ class MainWindow(QMainWindow):
                     "Error reading XML: XML file is empty, skipping file..."
                 )
                 continue
-
-            current_file_results = {"Filename": os.path.splitext(filename)[0]}
+                
+            column_values = {}
             file_total_matches = 0
-            file_results = []
 
-            for expression in matching_filters:
-                result = root.xpath(expression)
-                match_count = len(result)
-                file_total_matches += match_count
-
-                if result:
-                    if self.radio_button_writing.isChecked():
-                        for item in result:
-                            self.process_xpath_result(
-                                expression, item, current_file_results
-                            )
-                            file_results.append(current_file_results)
-                    elif self.radio_button_matching.isChecked():
-                        file_results.append(
-                            {
-                                "Filename": os.path.splitext(filename)[0],
-                                "Expression": expression,
-                                "Total Matches": match_count,
-                            }
-                        )
+            for xpath in xpath_expressions:
+                column_name = self.get_header_from_xpath(xpath)
+                column_values[column_name] = []
+                matches = root.xpath(xpath)
+                
+                for match in matches:
+                    if isinstance(match, ET._Element):
+                        value = match.text.strip() if match.text else ''
+                    elif isinstance(match, str):
+                        value = match
+                    elif isinstance(match, ET._ElementUnicodeResult):
+                        value = str(match)
+                    else:
+                        value = ''
+                    column_values[column_name].append(value)
 
             if file_total_matches > 0:
                 total_sum_matches += file_total_matches
                 total_matching_files += 1
-                final_results.extend(file_results)
-
+                
             # Update progress
             progress = int((index + 1) / total_files * 100)
             self.progress_updated.emit(progress)
 
-        return final_results, total_sum_matches, total_matching_files
+            return column_values, total_sum_matches, total_matching_files
 
-    def process_xpath_result(self, expression, result, current_file_results):
-        if "/@" in expression:
-            attribute_name = expression.split("@")[-1]
-            key = self.create_dynamic_key(expression, attribute_name)
-            current_file_results[key] = str(result).strip()
-        elif "/text()" in expression:
-            element_name = expression.split("/")[-2]
-            key = self.create_dynamic_key(expression, element_name)
-            current_file_results[key] = str(result).strip()
-        elif "[@" in expression:
-            match = re.search(r"@([^=]+)='([^']*)'", expression)
-            if match:
-                attribute_name, attribute_value = match.groups()
-                key = self.create_dynamic_key(
-                    expression, attribute_name, attribute_value
-                )
-                current_file_results[key] = attribute_value.strip()
+
+    def get_header_from_xpath(self, xpath):
+        
+        if xpath.endswith("/text()") and self.radio_button_writing.isChecked():
+            match = re.search(r"([^/]+)/text\(\)$", xpath)
+            return f"{match.group(1)} Value" if match else xpath
+        
+        elif "[text()" in xpath and self.radio_button_matching.isChecked():
+            match = re.search(r"//([^/]+)\[text\(\)='([^']*)'\]")
+            return f"{match.group(1)} Matches" if match else xpath
+        
+        elif "/@" in xpath and self.radio_button_writing.isChecked():
+            # For attributes, use the attribute name
+            return f"{xpath.split("@")[-1]} Value"
+        
+        elif "[@" in xpath and self.radio_button_matching.isChecked():
+            match = re.search(r"@([^=]+)='([^']*)'", xpath)
+            return f"{match.group(0)} Matches" if match else xpath
+        
         else:
-            # Handle cases where the expression doesn't match any of the above patterns
-            key = self.create_dynamic_key(expression, "value")
-            current_file_results[key] = str(result).strip()
+            return xpath.split('/')[-1]
 
-    def create_dynamic_key(self, expression, name, value=None):
-        if value:
-            return f"{name} {value} Value"
-        else:
-            return f"{name} Value"
-
-    def convert_to_csv(self):
-        self.program_output.setText("Saving results as CSV, please wait...")
-        folder_containing_xml_files = self.folder_xml_input.text()
-        folder_for_csv_output = self.folder_csv_input.text()
-
+    def write_to_csv(self):
         # Date and Time
         today_date = datetime.now()
         formatted_today_date = today_date.strftime("%d.%m.%y-%H-%M-%S")
 
+        folder_containing_xml_files = self.folder_xml_input.text()
+        folder_for_csv_output = self.folder_csv_input.text()
+
         csv_output_path = os.path.join(
-            self.folder_csv_input.text(),
+            folder_for_csv_output,
             f"Evaluation_Results_{formatted_today_date}.csv",
         )
-        matching_filters = self.xpath_filters
 
+        # Check if the XML input folder exists before proceeding
         if not os.path.exists(folder_containing_xml_files):
             QMessageBox.warning(
                 self,
                 "Path Error",
                 "Cannot start evaluation because XML input folder is not set!",
             )
-        elif len(matching_filters) == 0:
+            return  # Exit the function if the folder doesn't exist
+
+        # Check if any XPath filters have been added
+        matching_filters = self.xpath_filters
+        
+        if len(matching_filters) == 0:
             QMessageBox.warning(
                 self,
                 "ListBox Error",
                 "Cannot start evaluation because no XPath filters have been added to the list!",
             )
-        elif not os.path.exists(folder_for_csv_output):
+            return  # Exit the function if no filters are present
+
+        # Check if the CSV output folder exists
+        if not os.path.exists(folder_for_csv_output):
             QMessageBox.warning(
                 self,
                 "Path Error",
                 "Cannot start evaluation because CSV output folder is not set!",
             )
-        else:
-            try:
-                self.browse_xml_folder_button.setDisabled(True)
-                self.read_xml_button.setDisabled(True)
-                self.build_xpath_button.setDisabled(True)
-                self.add_xpath_to_list_button.setDisabled(True)
-                self.browse_csv_button.setDisabled(True)
-                self.csv_save_as_button.setDisabled(True)
-                self.csv_convert_button.setDisabled(True)
+            return  # Exit the function if the folder doesn't exist
 
-                matching_results, total_matches_found, total_matching_files = (
-                    self.evaluate_xml_files_matching(
-                        folder_containing_xml_files, matching_filters
-                    )
-                )
+        xml_files = [f for f in os.listdir(folder_containing_xml_files) if f.endswith(".xml")]
 
-                if not matching_results:
-                    QMessageBox.information(self, "No Matches", "No matches found.")
-                    return
+        try:
+            self.browse_xml_folder_button.setDisabled(True)
+            self.read_xml_button.setDisabled(True)
+            self.build_xpath_button.setDisabled(True)
+            self.add_xpath_to_list_button.setDisabled(True)
+            self.browse_csv_button.setDisabled(True)
+            self.csv_save_as_button.setDisabled(True)
+            self.csv_convert_button.setDisabled(True)
 
-                all_keys = set(key for dic in matching_results for key in dic)
-                headers = ["Filename"] + [key for key in all_keys if key != "Filename"]
+            self.program_output.setText("Saving results as CSV, please wait...")
 
-                with open(
-                    csv_output_path, "w", newline="", encoding="utf-8"
-                ) as csvfile:
-                    writer = csv.DictWriter(
-                        csvfile,
-                        fieldnames=headers,
-                        delimiter=";",
-                        quotechar='"',
-                        quoting=csv.QUOTE_ALL,
-                    )
-                    writer.writeheader()
+            all_column_values = []
+            xml_filenames = []
 
-                    for row in matching_results:
-                        writer.writerow(row)
+            for xml_file in xml_files:
+                column_values, total_matching_files, total_matches_found = self.parse_xml_with_xpath(matching_filters)
+                all_column_values.append(column_values)
+                xml_filenames.append(os.path.splitext(os.path.basename(xml_file))[0])
 
-                QMessageBox.information(
-                    self, "Export Successful", f"Matches saved to:\n{csv_output_path}"
-                )
-                self.program_output.setText(
-                    f"Found {total_matching_files} files that have a total sum of {total_matches_found} matches."
-                )
-                self.browse_xml_folder_button.setDisabled(False)
-                self.read_xml_button.setDisabled(False)
-                self.build_xpath_button.setDisabled(False)
-                self.add_xpath_to_list_button.setDisabled(False)
-                self.browse_csv_button.setDisabled(False)
-                self.csv_save_as_button.setDisabled(False)
-                self.csv_convert_button.setDisabled(False)
-                self.progressbar.reset()
-            except Exception as ex:
-                message = f"An exception of type {type(ex).__name__} occurred. Arguments: {ex.args!r}"
-                QMessageBox.critical(
-                    self, "Exception in Program", f"Error exporting CSV: {message}"
-                )
-                self.browse_xml_folder_button.setDisabled(False)
-                self.read_xml_button.setDisabled(False)
-                self.build_xpath_button.setDisabled(False)
-                self.add_xpath_to_list_button.setDisabled(False)
-                self.browse_csv_button.setDisabled(False)
-                self.csv_save_as_button.setDisabled(False)
-                self.csv_convert_button.setDisabled(False)
+            # Prepare the header
+            header = ['Filename'] + [self.get_header_from_xpath(xpath) for xpath in matching_filters]
+
+            # Prepare the rows
+            rows = []
+            for filename, column_values in zip(xml_filenames, all_column_values):
+                max_length = max(len(values) for values in column_values.values())
+                for i in range(max_length):
+                    row = [filename]
+                    for column in header[1:]:
+                        if i < len(column_values[column]):
+                            row.append(column_values[column][i])
+                        else:
+                            row.append('')
+                    rows.append(row)
+
+            # Write to CSV
+            with open(csv_output_path, 'w', newline='', encoding='utf-8') as f:
+                writer = csv.writer(f, delimiter=",", quotechar='"', quoting=csv.QUOTE_ALL)
+                writer.writerow(header)
+                writer.writerows(rows)
+
+            QMessageBox.information(
+                self, "Export Successful", f"Matches saved to:\n{csv_output_path}"
+            )
+            self.program_output.setText(
+                f"Found {total_matching_files} files that have a total sum of {total_matches_found} matches."
+            )
+            self.browse_xml_folder_button.setDisabled(False)
+            self.read_xml_button.setDisabled(False)
+            self.build_xpath_button.setDisabled(False)
+            self.add_xpath_to_list_button.setDisabled(False)
+            self.browse_csv_button.setDisabled(False)
+            self.csv_save_as_button.setDisabled(False)
+            self.csv_convert_button.setDisabled(False)
+            self.progressbar.reset()
+        except Exception as ex:
+            message = f"An exception of type {type(ex).__name__} occurred. Arguments: {ex.args!r}"
+            QMessageBox.critical(
+                self, "Exception in Program", f"Error exporting CSV: {message}"
+            )
+            self.browse_xml_folder_button.setDisabled(False)
+            self.read_xml_button.setDisabled(False)
+            self.build_xpath_button.setDisabled(False)
+            self.add_xpath_to_list_button.setDisabled(False)
+            self.browse_csv_button.setDisabled(False)
+            self.csv_save_as_button.setDisabled(False)
+            self.csv_convert_button.setDisabled(False)
 
     def update_progress(self, value):
         self.progressbar.setValue(value)
@@ -1562,3 +1560,5 @@ if __name__ == "__main__":
     window = MainWindow()
     window.show()
     sys.exit(app.exec())
+
+#//TODO How can I expand the code to write the CSV File completly differently, if I use the expressions that match these patterns: match = re.search(r"//([^/]+)\[text\(\)='([^']*)'\]") match = re.search(r"@([^=]+)='([^']*)'", xpath) I want to write the total number of matches found, here is how the CSV File should look like if I add the filter //filter[@id='187']: "Filename","@id='187' Matches" "TestXML","2" 
