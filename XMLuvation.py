@@ -278,7 +278,7 @@ class MainWindow(QMainWindow):
     
     def about_message(self):
         # About Message
-        program_info = "Name: XMluvation\nVersion: 1.3.2\nCredit: Jovan"
+        program_info = "Name: XMLuvation\nVersion: 1.2.2\nCredit: Jovan\nFramework: PySide6"
         about_message = """XMLuvation is a Python application designed to parse and evaluate XML files and use XPath to search for matches which matching results will be saved in a csv file. Radio buttons are disabled for now, this feature will be implemented in a later version."""
         about_box = QMessageBox()
         about_box.setText("About this program...")
