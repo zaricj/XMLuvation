@@ -6,7 +6,7 @@ from PySide6.QtWidgets import (QApplication, QMainWindow, QWidget, QVBoxLayout,
                              QCheckBox,QMenu,QFileDialog, QMessageBox, QFrame, 
                              QSpacerItem, QSizePolicy, QTableView, QHeaderView, QInputDialog)
 from PySide6.QtGui import QIcon, QAction, QStandardItemModel, QStandardItem, QCloseEvent
-from PySide6.QtCore import Qt, QThread, Signal, Slot, QSortFilterProxyModel
+from PySide6.QtCore import Qt, QThread, Signal, Slot, QSortFilterProxyModel, QObject
 from  datetime import datetime
 from lxml import etree as ET
 from qt_material import apply_stylesheet
@@ -63,7 +63,7 @@ class ConfigHandler:
             self.save_config()
 
 
-class XMLParserThread(QThread):
+class XMLParserThread(QObject):
     finished = Signal(object)
     error = Signal(str)
 
@@ -157,15 +157,15 @@ class MainWindow(QMainWindow):
         central_widget.setLayout(main_layout)
         self.setCentralWidget(central_widget)
     
-    def closeEvent(self, event: QCloseEvent):
-        reply = QMessageBox.question(
-            self, 'Window Close', 'Are you sure you want to close the window?',
-            QMessageBox.Yes | QMessageBox.No, QMessageBox.No)
-
-        if reply == QMessageBox.Yes:
-            event.accept()
-        else:
-            event.ignore()
+    #def closeEvent(self, event: QCloseEvent):
+    #    reply = QMessageBox.question(
+    #        self, 'Exit Program', 'Are you sure you want to exit the program?',
+    #        QMessageBox.Yes | QMessageBox.No, QMessageBox.No)
+#
+    #    if reply == QMessageBox.Yes:
+    #        event.accept()
+    #    else:
+    #        event.ignore()
     
 
     def create_menu_bar(self):
@@ -606,10 +606,18 @@ class MainWindow(QMainWindow):
 
     def parse_xml(self, xml_file):
         try:
-            self.xml_parser_thread = XMLParserThread(xml_file)
-            self.xml_parser_thread.finished.connect(self.on_xml_parsed)
-            self.xml_parser_thread.error.connect(self.on_xml_parse_error)
-            self.xml_parser_thread.start()
+            self.thread = QThread()
+            self.worker = XMLParserThread(xml_file)
+            self.worker.moveToThread(self.thread)
+            
+            # Connect signals and slots
+            self.worker.finished.connect(self.on_xml_parsed)
+            self.worker.error.connect(self.on_xml_parse_error)
+            self.thread.started.connect(self.worker.run)
+
+            # Start the thread
+            self.thread.start()
+
         except Exception as ex:
             message = f"An exception of type {type(ex).__name__} occurred. Arguments: {ex.args!r}"
             QMessageBox.critical(self, "Exception in Program", message)
@@ -634,12 +642,16 @@ class MainWindow(QMainWindow):
         self.attribute_name_combobox.setEditText("")
         self.attribute_value_combobox.setEditText("")
 
-        self.eval_input_file = self.xml_parser_thread.xml_file
+        self.eval_input_file = self.worker.xml_file
         self.program_output.setText("XML file loaded successfully.")
+        self.thread.quit()
+        self.thread.wait()
 
 
     def on_xml_parse_error(self, error_message):
         QMessageBox.critical(self, "Error Parsing XML", error_message)
+        self.thread.quit()
+        self.thread.wait()
                
             
     def read_xml(self):
@@ -907,7 +919,7 @@ class MainWindow(QMainWindow):
         self.folder_csv_input.setPlaceholderText("Choose a folder where you want to save the evaluation...")
         self.csv_save_as_button = QPushButton("Browse")
         self.csv_save_as_button.clicked.connect(self.choose_save_folder)
-        self.csv_convert_button = QPushButton("Convert")
+        self.csv_convert_button = QPushButton("Export")
         self.csv_convert_button.setToolTip("Starts reading the XML file and writes the matches to a CSV file")
         self.csv_convert_button.clicked.connect(self.write_to_csv)
         
