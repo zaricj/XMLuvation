@@ -953,8 +953,11 @@ class MainWindow(QMainWindow):
             try:
                 tree = ET.parse(file_path)
                 root = tree.getroot()
-            except ET.XMLSyntaxError:
-                self.program_output("Error reading XML: XML file is empty, skipping file...")
+            except ET.XMLSyntaxError as xse:
+                self.program_output.append(f"Error reading XML: {str(xse)}, skipping file {filename}")
+                continue
+            except Exception as e:
+                self.program_output.append(f"Unexpected error reading {filename}: {str(e)}")
                 continue
 
             current_file_results = {"Filename": os.path.splitext(filename)[0]}
@@ -966,12 +969,13 @@ class MainWindow(QMainWindow):
                 file_total_matches += match_count
                 
                 # Pattern Matching
-                pattern_text_or_attribute_start = r'^//\w+/text\(\)|^//\w+/@\w+$'
-                match = re.match(pattern_text_or_attribute_start, expression)
-                starts_with_text_or_attr = bool(match)
+                pattern_text_or_attribute_end = r'(.*?/text\(\)$|.*?/@[a-zA-Z_][a-zA-Z0-9_]*$)'
 
+                match = re.match(pattern_text_or_attribute_end, expression)
+                ends_with_text_or_attribute = bool(match) #/TODO Move this part because it spams , need to check elsewhere and not in loop, also checks only at the if it starts after //tag_name/checks_here..
+                print(ends_with_text_or_attribute)
                 if result:
-                    if not starts_with_text_or_attr:
+                    if not ends_with_text_or_attribute:
                         final_results.append({
                             "Filename": os.path.splitext(filename)[0],
                             "Matches": match_count,
@@ -1038,15 +1042,15 @@ class MainWindow(QMainWindow):
                 self.browse_csv_button.setDisabled(True)
                 self.csv_save_as_button.setDisabled(True)
                 self.csv_convert_button.setDisabled(True)
-                
+
                 self.program_output.setText("Writing to CSV, please wait...")
-                
+
                 matching_results, total_matches_found, total_matching_files = self.evaluate_xml_files_matching(folder_containing_xml_files, list_of_xpath_filters)
-                
+
                 if not matching_results:
                     QMessageBox.information(self, "No Matches", "No matches found.")
                     return
-                
+
                 headers = ["Filename"] + [header for header in set(key for dic in matching_results for key in dic) if header != "Filename"
                                           ]
                 with open(csv_output_path, "w", newline="", encoding="utf-8") as csvfile:
@@ -1070,17 +1074,18 @@ class MainWindow(QMainWindow):
                                 rows_to_write.append(row)
                         for row in rows_to_write:
                             writer.writerow(row)
-                            
-                QMessageBox.information(self, "Export Successful", f"Matches saved to:\n{csv_output_path}")
-                self.program_output.setText(f"Found {total_matching_files} files that have a total sum of {total_matches_found} matches.")
-                self.browse_xml_folder_button.setDisabled(False)
-                self.read_xml_button.setDisabled(False)
-                self.build_xpath_button.setDisabled(False)
-                self.add_xpath_to_list_button.setDisabled(False)
-                self.browse_csv_button.setDisabled(False)
-                self.csv_save_as_button.setDisabled(False)
-                self.csv_convert_button.setDisabled(False)
-                self.progressbar.reset()
+
+                    QMessageBox.information(self, "Export Successful", f"Matches saved to:\n{csv_output_path}")
+                    self.program_output.setText(f"Found {total_matching_files} files that have a total sum of {total_matches_found} matches.")
+                    self.browse_xml_folder_button.setDisabled(False)
+                    self.read_xml_button.setDisabled(False)
+                    self.build_xpath_button.setDisabled(False)
+                    self.add_xpath_to_list_button.setDisabled(False)
+                    self.browse_csv_button.setDisabled(False)
+                    self.csv_save_as_button.setDisabled(False)
+                    self.csv_convert_button.setDisabled(False)
+                    self.progressbar.reset()
+                    
             except Exception as ex:
                 message = f"An exception of type {type(ex).__name__} occurred. Arguments: {ex.args!r}"
                 QMessageBox.critical(self, "Exception in Program", f"Error exporting CSV: {message}")
