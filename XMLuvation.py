@@ -6,10 +6,9 @@ from PySide6.QtWidgets import (QApplication, QMainWindow, QWidget, QVBoxLayout,
                              QCheckBox,QMenu,QFileDialog, QMessageBox, QFrame, 
                              QSpacerItem, QSizePolicy, QTableView, QHeaderView, QInputDialog)
 from PySide6.QtGui import QIcon, QAction, QStandardItemModel, QStandardItem, QCloseEvent
-from PySide6.QtCore import Qt, QThread, Signal, Slot, QSortFilterProxyModel, QObject
+from PySide6.QtCore import Qt, QThread, Signal, Slot, QSortFilterProxyModel, QObject, QFile, QTextStream
 from  datetime import datetime
 from lxml import etree as ET
-from qt_material import apply_stylesheet
 import sys
 import csv
 import os
@@ -240,8 +239,8 @@ class MainWindow(QMainWindow):
         self.config_handler = ConfigHandler()
         self.initUI()
         # Theme by qt_material
-        self.current_theme = "_internal/theme/dark_amber.xml" # Sets the global main theme from the file
-        apply_stylesheet(self,self.current_theme)
+        self.current_theme = "_internal/theme/dark_theme.qss" # Sets the global main theme from the file
+        self.initialize_theme(self.current_theme)
         
         
     def initUI(self):
@@ -294,6 +293,17 @@ class MainWindow(QMainWindow):
     #        event.ignore()
     
 
+    def initialize_theme(self, theme_file):
+        try:
+            file = QFile(theme_file)
+            if file.open(QFile.ReadOnly | QFile.Text):
+                stream = QTextStream(file)
+                stylesheet = stream.readAll()
+                self.setStyleSheet(stylesheet)
+            file.close()
+        except Exception as ex:
+            QMessageBox.critical(self, "Theme load error", f"Failed to load theme: {str(ex)}")
+    
     def create_menu_bar(self):
         menu_bar = self.menuBar()
         
@@ -414,12 +424,12 @@ class MainWindow(QMainWindow):
 
     
     def change_theme(self):
-        if self.current_theme == "_internal/theme/dark_amber.xml":
-            self.current_theme = "_internal/theme/light_amber.xml"
+        if self.current_theme == "_internal/theme/dark_theme.qss":
+            self.current_theme = "_internal/theme/light_theme.qss"
         else:
-            self.current_theme = "_internal/theme/dark_amber.xml"
+            self.current_theme = "_internal/theme/dark_theme.qss"
         
-        apply_stylesheet(self, self.current_theme)
+        self.initialize_theme(self.current_theme)
     
     def clear_output(self):
         self.program_output.clear()
@@ -510,7 +520,7 @@ class MainWindow(QMainWindow):
 
 
     def create_xml_eval_group(self):
-        group = QGroupBox("XML folder selection and XPath builder")
+        group = QGroupBox("XML FOLDER SELECTION AND XPATH BUILDER")
         layout = QVBoxLayout()
         self.horizontal_spacer = QSpacerItem(40,10, QSizePolicy.Expanding, QSizePolicy.Minimum)
         
@@ -530,10 +540,10 @@ class MainWindow(QMainWindow):
         self.folder_xml_input = QLineEdit()
         self.folder_xml_input.setPlaceholderText("Choose a folder that contains XML files...")
         self.folder_xml_input.textChanged.connect(self.update_xml_file_count)
-        self.browse_xml_folder_button = QPushButton("Browse")
+        self.browse_xml_folder_button = QPushButton("BROWSE")
         self.browse_xml_folder_button.clicked.connect(self.browse_folder)
-        self.read_xml_button = QPushButton("Read XML")
-        self.read_xml_button.setToolTip("Parses XML content into the output and fills out the Comboboxes based on the XMLs content.")
+        self.read_xml_button = QPushButton("READ XML")
+        self.read_xml_button.setToolTip("Writes the content of the selected XML file to the output and fills out the ComboBoxes based on the XMLs content.")
         self.read_xml_button.clicked.connect(self.read_xml)
         
         folder_layout = QHBoxLayout()
@@ -613,13 +623,18 @@ class MainWindow(QMainWindow):
         build_xpath_layout = QHBoxLayout()
         
         self.xpath_expression_input = QLineEdit()
-        self.xpath_expression_input.setPlaceholderText("Enter XPath expression or press Build Xpath")
-        self.build_xpath_button = QPushButton("Build Xpath")
-        self.build_xpath_button.setToolTip("Builds Xpath expression based on the selected Comboboxes for Tag Name/Value and Attribute Name/Value")
+        self.xpath_expression_input.setPlaceholderText("Enter a XPath expression or build one...")
+        self.build_xpath_button = QPushButton("BUILD XPATH")
+        self.build_xpath_button.setToolTip("Builds XPath expression based on the selected ComboBox values for Tag Name/Value and Attribute Name/Value")
         self.build_xpath_button.clicked.connect(self.build_xpath)
+        self.add_xpath_to_list_button = QPushButton("ADD XPATH TO LIST")
+        self.add_xpath_to_list_button.setToolTip("Adds currently entered XPath expression to the List below which is used to match for in the XML File(s).")
+        self.add_xpath_to_list_button.clicked.connect(self.add_xpath_expression_to_listbox)
+        self.add_xpath_to_list_button.clicked.connect(self.update_statusbar_xpath_listbox_count)
         build_xpath_layout.addWidget(self.xpath_expression_input)
         build_xpath_layout.addWidget(self.build_xpath_button)
         layout.addLayout(build_xpath_layout)
+        layout.addWidget(self.add_xpath_to_list_button)
 
         group.setLayout(layout)
         return group
@@ -797,18 +812,7 @@ class MainWindow(QMainWindow):
         if folder:
             self.folder_xml_input.setText(folder)
             self.update_xml_file_count(folder)
-
-
-    # Statusbar update function
-    def update_xml_file_count(self, folder):
-        try:
-            xml_files = list(Path(folder).glob('*.xml'))
-            file_count = len(xml_files)
-            self.total_xml_files_statusbar.showMessage(f"Found {file_count} XML Files")
-        except Exception as ex:
-            message = f"An exception of type {type(ex).__name__} occurred. Arguments: {ex.args!r}"
-            self.total_xml_files_statusbar.setStyleSheet("color: #ed2828")
-            self.total_xml_files_statusbar.showMessage(f"Error counting XML files: {message}")
+            
             
     def build_xpath(self):
         try:
@@ -900,7 +904,7 @@ class MainWindow(QMainWindow):
     # ======= END FUNCTIONS FOR create_xml_eval_group ======= #
     
     def create_matching_filter_group(self):
-        group = QGroupBox("List of filters to match in XML files")
+        group = QGroupBox("LIST OF FILTERS TO MATCH IN XML FILES")
         
         layout = QVBoxLayout()
         
@@ -909,20 +913,11 @@ class MainWindow(QMainWindow):
         spacer.setFrameShadow(QFrame.Sunken)
         
         # Elements
-        self.add_xpath_to_list_button = QPushButton("Add Xpath to List")
-        self.add_xpath_to_list_button.setToolTip("Adds currently entered Xpath expression to the ListBox")
-        self.add_xpath_to_list_button.clicked.connect(self.add_xpath_expression_to_listbox)
-        self.add_xpath_to_list_button.clicked.connect(self.update_statusbar_xpath_listbox_count)
         self.xpath_listbox.setMinimumHeight(100)
         self.statusbar_xpath_listbox_count = QStatusBar()
         self.statusbar_xpath_listbox_count.setSizeGripEnabled(False)
         self.statusbar_xpath_listbox_count.setStyleSheet("font-weight: bold; color: #ffd740")
 
-        header_layout = QHBoxLayout()
-        header_layout.addWidget(QLabel("Add XPath expressions to the list to search for in XML files:"))
-        header_layout.addWidget(self.add_xpath_to_list_button)
-        layout.addLayout(header_layout)
-        layout.addWidget(spacer)
         layout.addWidget(self.xpath_listbox)
         layout.addWidget(self.statusbar_xpath_listbox_count)
 
@@ -939,12 +934,17 @@ class MainWindow(QMainWindow):
     
     def remove_selected_items(self):
         try:
-            for item in self.xpath_listbox.selectedItems():
-                self.xpath_listbox.takeItem(self.xpath_listbox.row(item))
-            for index,item in enumerate(self.xpath_filters,0):
-                self.xpath_filters.pop(index)
-                print(f"variable xpath_filters length: {len(self.xpath_filters) + 1}")
-                self.update_statusbar_xpath_listbox_count()
+            current_selected_item = self.xpath_listbox.currentRow()
+            if current_selected_item != -1:
+                item_to_remove = self.xpath_listbox.takeItem(current_selected_item)
+                self.xpath_filters.pop(current_selected_item)
+                self.update_xml_file_count(self.folder_xml_input)
+                self.program_output.append(f"Removed item: {item_to_remove.text()} at row {current_selected_item}")
+            else:
+                self.program_output.append("No item selected to delete.")
+        
+        except IndexError:
+            self.program_output.append("Nothing to delete.")
         except Exception as ex:
             message = f"An exception of type {type(ex).__name__} occurred. Arguments: {ex.args!r}"
             self.program_output.setText(f"Error removing selected item from list: {message}")
@@ -952,19 +952,38 @@ class MainWindow(QMainWindow):
 
     def remove_all_items(self):
         try:
-            self.xpath_listbox.clear()
-            self.xpath_filters.clear()
-            print(len(self.xpath_filters))
-            self.update_statusbar_xpath_listbox_count()
+            if self.xpath_listbox.count() > 0:
+                self.xpath_filters.clear()
+                self.xpath_listbox.clear()
+                self.program_output.setText("Deleted all items from the list.")
+            else:
+                self.program_output.setText("No items to delete.")
+                
+            self.update_xml_file_count(self.folder_xml_input)
+            
         except Exception as ex:
             message = f"An exception of type {type(ex).__name__} occurred. Arguments: {ex.args!r}"
-            self.program_output.setText(f"Error removing all items from list: {message}")
+            self.program_output.setText(f"Error removing selected all items from list: {message}")
+            
+    # Statusbar update function
+    def update_xml_file_count(self, folder):
+        try:
+            if Path(folder.text()).is_dir() and folder.text():
+                xml_files = list(Path(folder).glob('*.xml'))
+                file_count = len(xml_files)
+                self.total_xml_files_statusbar.showMessage(f"Found {file_count} XML Files")
+            else:
+                pass
+        except Exception as ex:
+            message = f"An exception of type {type(ex).__name__} occurred. Arguments: {ex.args!r}"
+            self.total_xml_files_statusbar.setStyleSheet("color: #ed2828")
+            self.total_xml_files_statusbar.showMessage(f"Error counting XML files: {message}")
 
 
     def show_context_menu(self, position):
         context_menu = QMenu(self)
-        delete_action = QAction("Delete", self)
-        delete_all_action = QAction("Delete All", self)
+        delete_action = QAction("Delete Selected Item", self)
+        delete_all_action = QAction("Delete All Items", self)
 
         context_menu.addAction(delete_action)
         context_menu.addAction(delete_all_action)
@@ -1036,17 +1055,17 @@ class MainWindow(QMainWindow):
     # ======= End FUNCTIONS FOR create_matching_filter_group ======= #
 
     def create_export_evaluation_group(self):
-        group = QGroupBox("Export evaluation result as a CSV File")
+        group = QGroupBox("EXPORT EVALUATION RESULT AS CSV FILE")
         
         layout = QVBoxLayout()
         
         # Elements
         self.folder_csv_input = QLineEdit()
-        self.folder_csv_input.setPlaceholderText("Choose a folder where you want to save the evaluation...")
-        self.csv_save_as_button = QPushButton("Browse")
+        self.folder_csv_input.setPlaceholderText("Choose a folder where to save the CSV evaluation...")
+        self.csv_save_as_button = QPushButton("BROWSE")
         self.csv_save_as_button.clicked.connect(self.choose_save_folder)
-        self.csv_convert_button = QPushButton("Export")
-        self.csv_convert_button.setToolTip("Starts reading the XML file and writes the matches to a CSV file")
+        self.csv_convert_button = QPushButton("EXPORT")
+        self.csv_convert_button.setToolTip("Starts processing each XML file and writes the found matches to a CSV file.")
         self.csv_convert_button.clicked.connect(self.write_to_csv)
         
         export_layout = QHBoxLayout()
@@ -1122,7 +1141,7 @@ class MainWindow(QMainWindow):
     # ======= End FUNCTIONS FOR create_export_evaluation_group ======= #
 
     def create_program_output_group(self):
-        group = QGroupBox("Program Output")
+        group = QGroupBox("PROGRAM OUTPUT")
         
         layout = QVBoxLayout()
 
@@ -1136,7 +1155,7 @@ class MainWindow(QMainWindow):
 
 
     def create_xml_output_group(self):
-        group = QGroupBox("XML Output")
+        group = QGroupBox("XML OUTPUT")
         
         layout = QVBoxLayout()
 
@@ -1176,7 +1195,7 @@ class MainWindow(QMainWindow):
 
 
     def create_csv_conversion_group(self):
-        group = QGroupBox("CSV Conversion")
+        group = QGroupBox("CSV CONVERSION")
         
         layout = QVBoxLayout()
 
@@ -1191,7 +1210,7 @@ class MainWindow(QMainWindow):
         # Elements
         self.input_csv_file_conversion = QLineEdit()
         self.input_csv_file_conversion.setPlaceholderText("Choose a CSV file for conversion...")
-        self.browse_csv_button = QPushButton("Browse")
+        self.browse_csv_button = QPushButton("BROWSE")
         self.browse_csv_button.clicked.connect(self.browse_csv_file)
         
         input_layout = QHBoxLayout()
@@ -1206,9 +1225,9 @@ class MainWindow(QMainWindow):
         # Elements
         self.output_csv_file_conversion = QLineEdit()
         self.output_csv_file_conversion.setPlaceholderText("Choose where to save the converted CSV file...")
-        self.browse_csv_output_button = QPushButton("Browse")
+        self.browse_csv_output_button = QPushButton("BROWSE")
         self.browse_csv_output_button.clicked.connect(self.csv_save_as)
-        self.convert_csv_button = QPushButton("Convert")
+        self.convert_csv_button = QPushButton("CONVERT")
         self.convert_csv_button.clicked.connect(self.pandas_convert_csv_file)
         self.checkbox_write_index_column = QCheckBox("Write Index Column?")
         self.checkbox_write_index_column.setChecked(False)
@@ -1231,7 +1250,7 @@ class MainWindow(QMainWindow):
         return group
     
     def create_csv_conversion_output_group(self):
-        group = QGroupBox("CSV Conversion Output")
+        group = QGroupBox("CSV CONVERSION OUTPUT")
         layout = QVBoxLayout()
         
         # Elements
@@ -1349,7 +1368,7 @@ class MainWindow(QMainWindow):
     # ======= End FUNCTIONS FOR create_csv_conversion_group ======= #
 
     def create_csv_to_table_group(self):
-        group = QGroupBox("Display CSV into Table")
+        group = QGroupBox("DISPLAY CSV INTO TABLE")
         
         layout = QVBoxLayout()
 
@@ -1357,7 +1376,7 @@ class MainWindow(QMainWindow):
         file_layout = QHBoxLayout()
         self.csv_file_input = QLineEdit()
         self.csv_file_input.setPlaceholderText("Select CSV file...")
-        file_button = QPushButton("Browse")
+        file_button = QPushButton("BROWSE")
         file_button.clicked.connect(self.select_csv_file)
         file_layout.addWidget(self.csv_file_input)
         file_layout.addWidget(file_button)
@@ -1385,7 +1404,7 @@ class MainWindow(QMainWindow):
         layout.addWidget(self.table_view)
 
         # Load CSV button
-        load_button = QPushButton("Load CSV")
+        load_button = QPushButton("LOAD CSV")
         load_button.clicked.connect(self.load_csv_data)
         layout.addWidget(load_button)
 
