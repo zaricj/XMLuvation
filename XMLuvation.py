@@ -800,8 +800,6 @@ class MainWindow(QMainWindow):
             file_name, _ = QFileDialog.getOpenFileName(self, "Select XML File", "", "XML Files (*.xml)")
             if file_name:
                 self.parse_xml(file_name)
-                directory_path = os.path.dirname(file_name)
-                self.folder_xml_input.setText(directory_path)
         except Exception as ex:
             message = f"An exception of type {type(ex).__name__} occurred. Arguments: {ex.args!r}"
             QMessageBox.critical(self, "Exception in Program", message)
@@ -938,7 +936,7 @@ class MainWindow(QMainWindow):
             if current_selected_item != -1:
                 item_to_remove = self.xpath_listbox.takeItem(current_selected_item)
                 self.xpath_filters.pop(current_selected_item)
-                self.update_xml_file_count(self.folder_xml_input)
+                self.update_xml_file_count(self.folder_xml_input.text())
                 self.program_output.append(f"Removed item: {item_to_remove.text()} at row {current_selected_item}")
             else:
                 self.program_output.append("No item selected to delete.")
@@ -959,7 +957,7 @@ class MainWindow(QMainWindow):
             else:
                 self.program_output.setText("No items to delete.")
                 
-            self.update_xml_file_count(self.folder_xml_input)
+            self.update_xml_file_count(self.folder_xml_input.text())
             
         except Exception as ex:
             message = f"An exception of type {type(ex).__name__} occurred. Arguments: {ex.args!r}"
@@ -968,7 +966,7 @@ class MainWindow(QMainWindow):
     # Statusbar update function
     def update_xml_file_count(self, folder):
         try:
-            if Path(folder.text()).is_dir() and folder.text():
+            if Path(folder).is_dir():
                 xml_files = list(Path(folder).glob('*.xml'))
                 file_count = len(xml_files)
                 self.total_xml_files_statusbar.showMessage(f"Found {file_count} XML Files")
