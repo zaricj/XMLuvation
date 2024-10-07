@@ -6,8 +6,8 @@ QWidget {
 }
 
 QMenuBar {
-    background-color: #1e1e1e;
-    padding: 6px;
+    background-color: #2b2b2b;
+    padding: 4px;
 }
 
 QMenuBar::item:selected {
@@ -19,13 +19,12 @@ QMenuBar::item:selected {
 QMenu {
     background-color: #2b2b2b;
     border: 1px solid #3a3a3a;
-    border-radius: 6px;
+    border-radius: 2px;
 }
 
 QMenu::item:selected {
     background-color: #ffc857;
     color: #1e1e1e;
-    border-radius: 4px;
 }
 
 QPushButton {
@@ -74,6 +73,19 @@ QComboBox::drop-down {
     border-top-right-radius: 6px;
     border-bottom-right-radius: 6px;
     image: url(_internal/images/drpdwn_arrow.png)
+}
+
+QPushButton:disabled {
+    background-color: #808080;
+}
+
+QComboBox:disabled {
+    background-color: #808080;    
+}
+
+QComboBox::drop-down:disabled {
+    border: none;
+    background-color: #3d3d3d;
 }
 
 QTabWidget::pane {
