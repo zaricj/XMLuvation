@@ -6,7 +6,7 @@ from PySide6.QtWidgets import (QApplication, QMainWindow, QWidget, QVBoxLayout,
                              QCheckBox,QMenu,QFileDialog, QMessageBox, QFrame, 
                              QSpacerItem, QSizePolicy, QTableView, QHeaderView, QInputDialog)
 from PySide6.QtGui import QIcon, QAction, QStandardItemModel, QStandardItem, QCloseEvent
-from PySide6.QtCore import Qt, QThread, Signal, Slot, QSortFilterProxyModel, QObject, QFile, QTextStream
+from PySide6.QtCore import Qt, QThread, Signal, Slot, QSortFilterProxyModel, QObject, QFile, QTextStream, QThreadPool
 from  datetime import datetime
 from lxml import etree as ET
 import sys
@@ -16,6 +16,7 @@ import re
 import webbrowser
 import pandas as pd
 import json
+import atexit
 
 class ConfigHandler:
     def __init__(self):
@@ -149,7 +150,8 @@ class CSVExportThread(QObject):
 
             # Emit the finished signal
             self.finished.emit()
-
+            self.update_program_output.emit(f"Found {total_matching_files} files that have a total sum of {total_matches_found} matches.")
+            
         except Exception as ex:
             self.error.emit(str(ex))
 
@@ -358,7 +360,6 @@ class MainWindow(QMainWindow):
         add_custom_path_action.triggered.connect(self.add_custom_path)
         self.paths_menu.addAction(add_custom_path_action)
 
-        
         # Help Menu
         help_menu = menu_bar.addMenu("&Help")
         xpath_help_action = QAction("XPath Help", self)
@@ -1124,14 +1125,33 @@ class MainWindow(QMainWindow):
 
     
     def on_csv_export_finished(self):
-        QMessageBox.information(self, "Export Successful", "CSV export completed.")
+        today_date = datetime.now()
+        formatted_today_date = today_date.strftime("%d.%m.%y-%H-%M-%S")
+        csv_output_path = os.path.join(self.folder_csv_input.text(), f"Evaluation_Results_{formatted_today_date}.csv")
+        QMessageBox.information(self, "Export Successful", f"CSV export completed.\n\nMatches saved to:\n{csv_output_path}")
+        self.browse_xml_folder_button.setDisabled(False)
+        self.read_xml_button.setDisabled(False)
+        self.build_xpath_button.setDisabled(False)
+        self.add_xpath_to_list_button.setDisabled(False)
+        self.browse_csv_button.setDisabled(False)
+        self.csv_save_as_button.setDisabled(False)
         self.csv_convert_button.setDisabled(False)
+        self.progressbar.reset()
+        self.thread.quit()
+        self.thread.wait()
 
 
     def on_csv_export_error(self, error_message):
         QMessageBox.critical(self, "Error", f"Error during CSV export: {error_message}")
+        self.browse_xml_folder_button.setDisabled(False)
+        self.read_xml_button.setDisabled(False)
+        self.build_xpath_button.setDisabled(False)
+        self.add_xpath_to_list_button.setDisabled(False)
+        self.browse_csv_button.setDisabled(False)
+        self.csv_save_as_button.setDisabled(False)
         self.csv_convert_button.setDisabled(False)
-        
+        self.thread.quit()
+        self.thread.wait()
                 
     def update_progress(self, value):
         self.progressbar.setValue(value)
@@ -1461,10 +1481,15 @@ class MainWindow(QMainWindow):
             self.proxy_model.setFilterKeyColumn(filter_column)
 
         self.proxy_model.setFilterFixedString(filter_text)
-
-
+    
 if __name__ == "__main__":
     app = QApplication(sys.argv)
     window = MainWindow()
     window.show()
-    sys.exit(app.exec())
+    exit_code = app.exec()
+    # Perform any final cleanup here if needed
+    sys.exit(exit_code)
+
+
+
+    
