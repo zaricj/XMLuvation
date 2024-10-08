@@ -1,8 +1,8 @@
-.idea
-.vscode
-.venv
-CustomTest
-webapp.html
 _internal\configs\config.json
+CustomTest
 output
-test.py
+.venv
+.old
+webapp.html
+claude_approach.py
+test_xpath_at_end.py

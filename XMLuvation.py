@@ -6,7 +6,7 @@ from PySide6.QtWidgets import (QApplication, QMainWindow, QWidget, QVBoxLayout,
                              QCheckBox,QMenu,QFileDialog, QMessageBox, QFrame, 
                              QSpacerItem, QSizePolicy, QTableView, QHeaderView, QInputDialog)
 from PySide6.QtGui import QIcon, QAction, QStandardItemModel, QStandardItem, QCloseEvent
-from PySide6.QtCore import Qt, QThread, Signal, Slot, QSortFilterProxyModel, QObject, QFile, QTextStream, QThreadPool
+from PySide6.QtCore import Qt, QThread, Signal, Slot, QSortFilterProxyModel, QObject, QFile, QTextStream
 from  datetime import datetime
 from lxml import etree as ET
 import sys
@@ -16,13 +16,13 @@ import re
 import webbrowser
 import pandas as pd
 import json
-import atexit
+
+basedir = os.path.dirname(__file__)
 
 class ConfigHandler:
     def __init__(self):
-        script_dir = os.path.dirname(os.path.abspath(__file__))
-        self.config_dir = os.path.join(script_dir, '_internal', 'configs')
-        self.config_file = os.path.join(self.config_dir, 'config.json')
+        self.config_dir = os.path.join(basedir, "_internal\\configs")
+        self.config_file = os.path.join(self.config_dir, "config.json")
         
         os.makedirs(self.config_dir, exist_ok=True)
         
@@ -105,6 +105,7 @@ class XMLParserThread(QObject):
 class CSVExportThread(QObject):
     finished = Signal()
     error = Signal(str)
+    no_matches = Signal()
     progress_updated = Signal(int)
     update_program_output = Signal(str)
 
@@ -114,6 +115,7 @@ class CSVExportThread(QObject):
         self.list_of_xpath_filters = list_of_xpath_filters
         self.csv_output_path = csv_output_path
 
+
     def run(self):
         try:
             # Move the logic of `evaluate_xml_files_matching` and CSV writing here
@@ -122,36 +124,36 @@ class CSVExportThread(QObject):
             )
 
             if not matching_results:
-                QMessageBox.information(None, "No Matches", "No matches found.")
-                return
-
-            headers = ["Filename"] + [header for header in set(key for dic in matching_results for key in dic) if header != "Filename"]
-            with open(self.csv_output_path, "w", newline="", encoding="utf-8") as csvfile:
-                writer = csv.DictWriter(csvfile, fieldnames=headers, delimiter=",", extrasaction="ignore", quotechar='"', quoting=csv.QUOTE_ALL)
-                writer.writeheader()
-                for match in matching_results:
-                    filename = match["Filename"]
-                    rows_to_write = []
-                    max_len = max([len(str(v).split(";")) for k, v in match.items() if k != "Filename"], default=1)
-                    for i in range(max_len):
-                        row = {"Filename": filename}
-                        has_data = False
-                        for key, value in match.items():
-                            if key != "Filename":
-                                value_list = str(value).split(";")
-                                if i < len(value_list):
-                                    row[key] = value_list[i].strip()
-                                    if row[key]:  # Check if the value is not empty
-                                        has_data = True
-                        if has_data:  # Only append the row if it has data
-                            rows_to_write.append(row)
-                    for row in rows_to_write:
-                        writer.writerow(row)
-
-            # Emit the finished signal
-            self.finished.emit()
-            self.update_program_output.emit(f"Found {total_matching_files} files that have a total sum of {total_matches_found} matches.")
+                self.no_matches.emit()
             
+            else:
+                headers = ["Filename"] + [header for header in set(key for dic in matching_results for key in dic) if header != "Filename"]
+                with open(self.csv_output_path, "w", newline="", encoding="utf-8") as csvfile:
+                    writer = csv.DictWriter(csvfile, fieldnames=headers, delimiter=",", extrasaction="ignore", quotechar='"', quoting=csv.QUOTE_ALL)
+                    writer.writeheader()
+                    for match in matching_results:
+                        filename = match["Filename"]
+                        rows_to_write = []
+                        max_len = max([len(str(v).split(";")) for k, v in match.items() if k != "Filename"], default=1)
+                        for i in range(max_len):
+                            row = {"Filename": filename}
+                            has_data = False
+                            for key, value in match.items():
+                                if key != "Filename":
+                                    value_list = str(value).split(";")
+                                    if i < len(value_list):
+                                        row[key] = value_list[i].strip()
+                                        if row[key]:  # Check if the value is not empty
+                                            has_data = True
+                            if has_data:  # Only append the row if it has data
+                                rows_to_write.append(row)
+                        for row in rows_to_write:
+                            writer.writerow(row)
+
+                # Emit the finished signal
+                self.finished.emit()
+                self.update_program_output.emit(f"Found {total_matching_files} files that have a total sum of {total_matches_found} matches.")
+
         except Exception as ex:
             self.error.emit(str(ex))
 
@@ -187,8 +189,8 @@ class CSVExportThread(QObject):
                 pattern_text_or_attribute_end = r'(.*?/text\(\)$|.*?/@[a-zA-Z_][a-zA-Z0-9_]*$)'
 
                 match = re.match(pattern_text_or_attribute_end, expression)
-                ends_with_text_or_attribute = bool(match) #/TODO Move this part because it spams , need to check elsewhere and not in loop, also checks only at the if it starts after //tag_name/checks_here..
-                print(ends_with_text_or_attribute)
+                ends_with_text_or_attribute = bool(match)
+
                 if result:
                     if not ends_with_text_or_attribute:
                         final_results.append({
@@ -209,6 +211,7 @@ class CSVExportThread(QObject):
             progress = int((index + 1) / total_files * 100)
             self.progress_updated.emit(progress)
             
+        self.update_program_output.emit("Writing to CSV file, please wait...")  
         return final_results, total_sum_matches, total_matching_files
 
 
@@ -238,24 +241,20 @@ class MainWindow(QMainWindow):
     
     def __init__(self):
         super().__init__()
+        self.current_theme = os.path.join(basedir, "_internal/theme/dark_theme.qss") # Sets the global main theme from the file
         self.config_handler = ConfigHandler()
-        self.initUI()
-        # Theme by qt_material
-        self.current_theme = "_internal/theme/dark_theme.qss" # Sets the global main theme from the file
+        self.eval_input_file = None
+        self.xpath_filters = []
+        self.xpath_listbox = QListWidget(self)
         self.initialize_theme(self.current_theme)
+        self.initUI()
         
         
     def initUI(self):
         self.setWindowTitle("XMLuvation v1.2.2")
-        self.setWindowIcon(QIcon("_internal/icon/xml_32px.ico"))  # Replace with actual path
+        self.setWindowIcon(QIcon(os.path.join(basedir,"_internal/icon/xml_32px.ico")))  # Replace with actual path
         self.setGeometry(500, 250, 1300, 840)
         self.saveGeometry()
-        
-        
-        self.eval_input_file = None
-        self.xpath_filters = []
-        self.xpath_listbox = QListWidget(self)
-        
         
         # Signals and Slots
         self.progress_updated.connect(self.update_progress)
@@ -284,15 +283,16 @@ class MainWindow(QMainWindow):
         central_widget.setLayout(main_layout)
         self.setCentralWidget(central_widget)
     
-    #def closeEvent(self, event: QCloseEvent):
-    #    reply = QMessageBox.question(
-    #        self, 'Exit Program', 'Are you sure you want to exit the program?',
-    #        QMessageBox.Yes | QMessageBox.No, QMessageBox.No)
-#
-    #    if reply == QMessageBox.Yes:
-    #        event.accept()
-    #    else:
-    #        event.ignore()
+    
+    def closeEvent(self, event: QCloseEvent):
+        reply = QMessageBox.question(
+            self, 'Exit Program', 'Are you sure you want to exit the program?',
+            QMessageBox.Yes | QMessageBox.No, QMessageBox.No)
+        
+        if reply == QMessageBox.Yes:
+            event.accept()
+        else:
+            event.ignore()
     
 
     def initialize_theme(self, theme_file):
@@ -343,14 +343,6 @@ class MainWindow(QMainWindow):
 
         # Path Menu
         self.paths_menu = menu_bar.addMenu("&Path")
-        #lobster_test_action = QAction("Lobster Test System", self)
-        #lobster_test_action.setStatusTip("Open Lobster Test System")
-        #lobster_test_action.triggered.connect(lambda: self.open_path(r"\\nesist02\ProfilileXMLExport"))
-        #self.paths_menu.addAction(lobster_test_action)
-        #lobster_prod_action = QAction("Lobster Prod System", self)
-        #lobster_prod_action.setStatusTip("Open Lobster Prod System")
-        #lobster_prod_action.triggered.connect(lambda: self.open_path(r"\\nesis002\ProfilileXMLExport"))
-        #self.paths_menu.addAction(lobster_prod_action)
         
         # Add custom paths
         self.load_custom_paths()
@@ -360,6 +352,7 @@ class MainWindow(QMainWindow):
         add_custom_path_action.triggered.connect(self.add_custom_path)
         self.paths_menu.addAction(add_custom_path_action)
 
+        
         # Help Menu
         help_menu = menu_bar.addMenu("&Help")
         xpath_help_action = QAction("XPath Help", self)
@@ -425,10 +418,10 @@ class MainWindow(QMainWindow):
 
     
     def change_theme(self):
-        if self.current_theme == "_internal/theme/dark_theme.qss":
-            self.current_theme = "_internal/theme/light_theme.qss"
+        if self.current_theme == os.path.join(basedir,"_internal/theme/dark_theme.qss"):
+            self.current_theme = os.path.join(basedir,"_internal/theme/light_theme.qss")
         else:
-            self.current_theme = "_internal/theme/dark_theme.qss"
+            self.current_theme = os.path.join(basedir,"_internal/theme/dark_theme.qss")
         
         self.initialize_theme(self.current_theme)
     
@@ -452,7 +445,7 @@ class MainWindow(QMainWindow):
     
     # Open CSV output folder function
     def open_output_folder(self):
-        directory_path = self.folder_csv_input.text()
+        directory_path = self.folder_csv_output.text()
         
         if os.path.exists(directory_path):
             try:
@@ -981,8 +974,8 @@ class MainWindow(QMainWindow):
 
     def show_context_menu(self, position):
         context_menu = QMenu(self)
-        delete_action = QAction("Delete Selected Item", self)
-        delete_all_action = QAction("Delete All Items", self)
+        delete_action = QAction("Delete Selected", self)
+        delete_all_action = QAction("Delete All", self)
 
         context_menu.addAction(delete_action)
         context_menu.addAction(delete_all_action)
@@ -1044,7 +1037,6 @@ class MainWindow(QMainWindow):
                 #    self.program_output.setText("Not a valid Xpath expression!")
                 #    QMessageBox.warning(self, "Exception adding filter", f"The entered Xpath expression '{xpath_expression}' is not valid, please try again.")
             else:
-                self.program_output.setText(f"Cannot add duplicate XPath expression: {xpath_expression}")
                 QMessageBox.warning(self, "Error adding filter", f"Cannot add duplicate XPath expression:\n{xpath_expression}")
         except Exception as ex:
             message = f"An exception of type {type(ex).__name__} occurred. Arguments: {ex.args!r}"
@@ -1059,8 +1051,8 @@ class MainWindow(QMainWindow):
         layout = QVBoxLayout()
         
         # Elements
-        self.folder_csv_input = QLineEdit()
-        self.folder_csv_input.setPlaceholderText("Choose a folder where to save the CSV evaluation...")
+        self.folder_csv_output = QLineEdit()
+        self.folder_csv_output.setPlaceholderText("Choose a folder where to save the CSV evaluation...")
         self.csv_save_as_button = QPushButton("BROWSE")
         self.csv_save_as_button.clicked.connect(self.choose_save_folder)
         self.csv_convert_button = QPushButton("EXPORT")
@@ -1068,7 +1060,7 @@ class MainWindow(QMainWindow):
         self.csv_convert_button.clicked.connect(self.write_to_csv)
         
         export_layout = QHBoxLayout()
-        export_layout.addWidget(self.folder_csv_input)
+        export_layout.addWidget(self.folder_csv_output)
         export_layout.addWidget(self.csv_save_as_button)
         export_layout.addWidget(self.csv_convert_button)
         layout.addLayout(export_layout)
@@ -1081,18 +1073,18 @@ class MainWindow(QMainWindow):
     def choose_save_folder(self):
         folder = QFileDialog.getExistingDirectory(self, "Select Save Folder")
         if folder:
-            self.folder_csv_input.setText(folder)
+            self.folder_csv_output.setText(folder)
     
     
     def write_to_csv(self):
         folder_containing_xml_files = self.folder_xml_input.text()
-        folder_for_csv_output = self.folder_csv_input.text()
+        folder_for_csv_output = self.folder_csv_output.text()
 
         # Date and Time
         today_date = datetime.now()
         formatted_today_date = today_date.strftime("%d.%m.%y-%H-%M-%S")
 
-        csv_output_path = os.path.join(self.folder_csv_input.text(), f"Evaluation_Results_{formatted_today_date}.csv")
+        csv_output_path = os.path.join(self.folder_csv_output.text(), f"Evaluation_Results_{formatted_today_date}.csv")
         list_of_xpath_filters = self.xpath_filters
 
         if not os.path.exists(folder_containing_xml_files):
@@ -1104,12 +1096,21 @@ class MainWindow(QMainWindow):
         else:
             try:
                 # Disable buttons while exporting
+                self.browse_xml_folder_button.setDisabled(True)
+                self.browse_csv_button.setDisabled(True)
+                self.read_xml_button.setDisabled(True)
+                self.build_xpath_button.setDisabled(True)
+                self.add_xpath_to_list_button.setDisabled(True)
+                self.csv_save_as_button.setDisabled(True)
                 self.csv_convert_button.setDisabled(True)
+                self.folder_xml_input.setReadOnly(True)
+                self.folder_csv_output.setReadOnly(True)
 
                 # Create and start the thread
                 self.csv_export_thread = CSVExportThread(folder_containing_xml_files, list_of_xpath_filters, csv_output_path)
                 self.csv_export_thread.finished.connect(self.on_csv_export_finished)
                 self.csv_export_thread.error.connect(self.on_csv_export_error)
+                self.csv_export_thread.no_matches.connect(self.no_matches_found)
                 self.csv_export_thread.progress_updated.connect(self.update_progress)
                 self.csv_export_thread.update_program_output.connect(self.program_output.setText)
 
@@ -1125,33 +1126,54 @@ class MainWindow(QMainWindow):
 
     
     def on_csv_export_finished(self):
-        today_date = datetime.now()
-        formatted_today_date = today_date.strftime("%d.%m.%y-%H-%M-%S")
-        csv_output_path = os.path.join(self.folder_csv_input.text(), f"Evaluation_Results_{formatted_today_date}.csv")
-        QMessageBox.information(self, "Export Successful", f"CSV export completed.\n\nMatches saved to:\n{csv_output_path}")
+        QMessageBox.information(self, "Export Successful", "CSV export completed.")
         self.browse_xml_folder_button.setDisabled(False)
+        self.browse_csv_button.setDisabled(False)
         self.read_xml_button.setDisabled(False)
         self.build_xpath_button.setDisabled(False)
         self.add_xpath_to_list_button.setDisabled(False)
-        self.browse_csv_button.setDisabled(False)
         self.csv_save_as_button.setDisabled(False)
         self.csv_convert_button.setDisabled(False)
+        self.folder_xml_input.setReadOnly(False)
+        self.folder_csv_output.setReadOnly(False)
         self.progressbar.reset()
         self.thread.quit()
-        self.thread.wait()
+        self.thread.wait()  
 
 
     def on_csv_export_error(self, error_message):
         QMessageBox.critical(self, "Error", f"Error during CSV export: {error_message}")
         self.browse_xml_folder_button.setDisabled(False)
+        self.browse_csv_button.setDisabled(False)
         self.read_xml_button.setDisabled(False)
         self.build_xpath_button.setDisabled(False)
         self.add_xpath_to_list_button.setDisabled(False)
-        self.browse_csv_button.setDisabled(False)
         self.csv_save_as_button.setDisabled(False)
         self.csv_convert_button.setDisabled(False)
+        self.folder_xml_input.setReadOnly(False)
+        self.folder_csv_output.setReadOnly(False)
+        self.progressbar.reset()
+        self.program_output.clear()
         self.thread.quit()
-        self.thread.wait()
+        self.thread.wait() 
+    
+    
+    def no_matches_found(self):
+        self.browse_xml_folder_button.setDisabled(False)
+        self.browse_csv_button.setDisabled(False)
+        self.read_xml_button.setDisabled(False)
+        self.build_xpath_button.setDisabled(False)
+        self.add_xpath_to_list_button.setDisabled(False)
+        self.csv_save_as_button.setDisabled(False)
+        self.csv_convert_button.setDisabled(False)
+        self.folder_xml_input.setReadOnly(False)
+        self.folder_csv_output.setReadOnly(False)
+        self.progressbar.reset()
+        self.program_output.clear()
+        self.thread.quit()
+        self.thread.wait()  
+        QMessageBox.information(self, "No matches found", "No matches found by searching with the added filters.")
+
                 
     def update_progress(self, value):
         self.progressbar.setValue(value)
@@ -1481,15 +1503,10 @@ class MainWindow(QMainWindow):
             self.proxy_model.setFilterKeyColumn(filter_column)
 
         self.proxy_model.setFilterFixedString(filter_text)
-    
+
+
 if __name__ == "__main__":
     app = QApplication(sys.argv)
     window = MainWindow()
     window.show()
-    exit_code = app.exec()
-    # Perform any final cleanup here if needed
-    sys.exit(exit_code)
-
-
-
-    
+    sys.exit(app.exec())

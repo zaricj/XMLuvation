@@ -44,25 +44,30 @@ QPushButton:pressed {
     padding-top: 8px;
 }
 
-QLineEdit, QComboBox, QTextEdit, QListWidget, QStatusBar {
+QLineEdit, QComboBox, QTextEdit, QStatusBar {
     background-color: #ffffff;
     border: 1px solid #cccccc;
     padding: 6px;
     border-radius: 6px;
 }
 
+QListWidget {
+    font: bold;
+}
+
+
 QListWidget::item {
     height: 26px;
 }
 
 QListWidget::item:selected {
-    height: 26px;
-    background-color:#ffbb33
+    background-color:#ffc857;
+    color: #000000;
 }
 
 QComboBox::drop-down {
     border: none;
-    background-color: #ffbb33;
+    background-color: #ffc857;
     width: 20px;
     border-top-right-radius: 6px;
     border-bottom-right-radius: 6px;
@@ -120,6 +125,10 @@ QRadioButton::indicator {
     height: 16px;
 }
 
+QRadioButton:disabled {
+    color: #808080; 
+}
+
 QScrollBar:vertical {
     border: none;
     background: #262626;
@@ -143,16 +152,14 @@ QProgressBar {
     border: 1px solid #4a4a4a;
     border-radius: 6px;
     text-align: center;
-    color: #ffffff;
+    color: #1a1a1a;
     padding: 2px;
 }
 
 QProgressBar::chunk {
     background-color: #f0ad4e;
-    width: 10px;
-    margin: 1px;
-    border-radius: 4px;
 }
+
 /* CheckBox */
 QCheckBox {
     spacing: 6px;
