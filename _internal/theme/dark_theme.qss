@@ -126,6 +126,12 @@ QRadioButton::indicator {
     height: 16px;
 }
 
+
+QRadioButton:disabled {
+    color: #808080; 
+}
+
+
 QScrollBar:vertical {
     border: none;
     background: #2b2b2b;

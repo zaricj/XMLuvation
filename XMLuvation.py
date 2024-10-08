@@ -113,6 +113,7 @@ class CSVExportThread(QObject):
         self.list_of_xpath_filters = list_of_xpath_filters
         self.csv_output_path = csv_output_path
 
+
     def run(self):
         try:
             # Move the logic of `evaluate_xml_files_matching` and CSV writing here
@@ -146,9 +147,10 @@ class CSVExportThread(QObject):
                             rows_to_write.append(row)
                     for row in rows_to_write:
                         writer.writerow(row)
-
+            
             # Emit the finished signal
             self.finished.emit()
+            self.update_program_output.emit(f"Found {total_matching_files} files that have a total sum of {total_matches_found} matches.")
 
         except Exception as ex:
             self.error.emit(str(ex))
@@ -185,8 +187,8 @@ class CSVExportThread(QObject):
                 pattern_text_or_attribute_end = r'(.*?/text\(\)$|.*?/@[a-zA-Z_][a-zA-Z0-9_]*$)'
 
                 match = re.match(pattern_text_or_attribute_end, expression)
-                ends_with_text_or_attribute = bool(match) #/TODO Move this part because it spams , need to check elsewhere and not in loop, also checks only at the if it starts after //tag_name/checks_here..
-                print(ends_with_text_or_attribute)
+                ends_with_text_or_attribute = bool(match)
+
                 if result:
                     if not ends_with_text_or_attribute:
                         final_results.append({
@@ -207,6 +209,7 @@ class CSVExportThread(QObject):
             progress = int((index + 1) / total_files * 100)
             self.progress_updated.emit(progress)
             
+        self.update_program_output.emit("Writing to CSV file, please wait...")  
         return final_results, total_sum_matches, total_matching_files
 
 
@@ -236,11 +239,13 @@ class MainWindow(QMainWindow):
     
     def __init__(self):
         super().__init__()
-        self.config_handler = ConfigHandler()
-        self.initUI()
-        # Theme by qt_material
         self.current_theme = "_internal/theme/dark_theme.qss" # Sets the global main theme from the file
+        self.config_handler = ConfigHandler()
+        self.eval_input_file = None
+        self.xpath_filters = []
+        self.xpath_listbox = QListWidget(self)
         self.initialize_theme(self.current_theme)
+        self.initUI()
         
         
     def initUI(self):
@@ -248,12 +253,6 @@ class MainWindow(QMainWindow):
         self.setWindowIcon(QIcon("_internal/icon/xml_32px.ico"))  # Replace with actual path
         self.setGeometry(500, 250, 1300, 840)
         self.saveGeometry()
-        
-        
-        self.eval_input_file = None
-        self.xpath_filters = []
-        self.xpath_listbox = QListWidget(self)
-        
         
         # Signals and Slots
         self.progress_updated.connect(self.update_progress)
@@ -281,6 +280,7 @@ class MainWindow(QMainWindow):
         central_widget = QWidget()
         central_widget.setLayout(main_layout)
         self.setCentralWidget(central_widget)
+    
     
     def closeEvent(self, event: QCloseEvent):
         reply = QMessageBox.question(
@@ -341,14 +341,6 @@ class MainWindow(QMainWindow):
 
         # Path Menu
         self.paths_menu = menu_bar.addMenu("&Path")
-        #lobster_test_action = QAction("Lobster Test System", self)
-        #lobster_test_action.setStatusTip("Open Lobster Test System")
-        #lobster_test_action.triggered.connect(lambda: self.open_path(r"\\nesist02\ProfilileXMLExport"))
-        #self.paths_menu.addAction(lobster_test_action)
-        #lobster_prod_action = QAction("Lobster Prod System", self)
-        #lobster_prod_action.setStatusTip("Open Lobster Prod System")
-        #lobster_prod_action.triggered.connect(lambda: self.open_path(r"\\nesis002\ProfilileXMLExport"))
-        #self.paths_menu.addAction(lobster_prod_action)
         
         # Add custom paths
         self.load_custom_paths()
@@ -980,8 +972,8 @@ class MainWindow(QMainWindow):
 
     def show_context_menu(self, position):
         context_menu = QMenu(self)
-        delete_action = QAction("Delete Selected Item", self)
-        delete_all_action = QAction("Delete All Items", self)
+        delete_action = QAction("Delete Selected", self)
+        delete_all_action = QAction("Delete All", self)
 
         context_menu.addAction(delete_action)
         context_menu.addAction(delete_all_action)
@@ -1103,6 +1095,7 @@ class MainWindow(QMainWindow):
         else:
             try:
                 # Disable buttons while exporting
+                self.browse_xml_folder_button.setDisabled(True)
                 self.browse_csv_button.setDisabled(True)
                 self.read_xml_button.setDisabled(True)
                 self.build_xpath_button.setDisabled(True)
@@ -1121,7 +1114,6 @@ class MainWindow(QMainWindow):
                 self.csv_export_thread.moveToThread(self.thread)
                 self.thread.started.connect(self.csv_export_thread.run)
                 self.thread.start()
-                self.thread.join()
 
             except Exception as ex:
                 message = f"An exception of type {type(ex).__name__} occurred. Arguments: {ex.args!r}"
@@ -1131,6 +1123,7 @@ class MainWindow(QMainWindow):
     
     def on_csv_export_finished(self):
         QMessageBox.information(self, "Export Successful", "CSV export completed.")
+        self.browse_xml_folder_button.setDisabled(False)
         self.browse_csv_button.setDisabled(False)
         self.read_xml_button.setDisabled(False)
         self.build_xpath_button.setDisabled(False)
@@ -1144,6 +1137,7 @@ class MainWindow(QMainWindow):
 
     def on_csv_export_error(self, error_message):
         QMessageBox.critical(self, "Error", f"Error during CSV export: {error_message}")
+        self.browse_xml_folder_button.setDisabled(False)
         self.browse_csv_button.setDisabled(False)
         self.read_xml_button.setDisabled(False)
         self.build_xpath_button.setDisabled(False)
