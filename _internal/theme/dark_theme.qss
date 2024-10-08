@@ -46,7 +46,7 @@ QPushButton:pressed {
     padding-top: 8px;
 }
 
-QLineEdit, QComboBox, QTextEdit, QListWidget, QStatusBar {
+QLineEdit, QComboBox, QTextEdit, QStatusBar {
     background-color: #3a3a3a;
     border: 1px solid #4a4a4a;
     padding: 6px;
@@ -54,16 +54,17 @@ QLineEdit, QComboBox, QTextEdit, QListWidget, QStatusBar {
 }
 
 QListWidget {
-    color: #e0e0e0;
+    font: bold;
 }
 
 QListWidget::item {
     height: 26px;
+    font: bold;
 }
 
 QListWidget::item:selected {
-    height: 268px;
-    background-color:#ffc857
+    background-color:#ffc857;
+    color: #000000;
 }
 
 QComboBox::drop-down {
@@ -74,6 +75,8 @@ QComboBox::drop-down {
     border-bottom-right-radius: 6px;
     image: url(_internal/images/drpdwn_arrow.png)
 }
+
+QComboBox:hover {}
 
 QPushButton:disabled {
     background-color: #808080;
@@ -162,9 +165,6 @@ QProgressBar {
 
 QProgressBar::chunk {
     background-color: #ffc857;
-    width: 10px;
-    margin: 1px;
-    border-radius: 4px;
 }
 /* CheckBox */
 QCheckBox {
