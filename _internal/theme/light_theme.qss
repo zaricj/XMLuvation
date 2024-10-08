@@ -53,8 +53,8 @@ QLineEdit, QComboBox, QTextEdit, QStatusBar {
 
 QListWidget {
     font: bold;
+    background-color: #ffffff;
 }
-
 
 QListWidget::item {
     height: 26px;
@@ -105,6 +105,10 @@ QTabBar::tab:selected {
     color: #000000
 }
 
+QTableView {
+    background-color: #ffffff;
+}
+
 QGroupBox {
     border: 1px solid #d3d3d3;
     border-radius: 6px;
@@ -125,8 +129,13 @@ QRadioButton::indicator {
     height: 16px;
 }
 
+QRadioButton::indicator:disabled {
+    border: 1px solid #808080;
+    border-radius: 9px;
+}
+
 QRadioButton:disabled {
-    color: #808080; 
+    color: #808080;
 }
 
 QScrollBar:vertical {
