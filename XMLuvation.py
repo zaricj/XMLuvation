@@ -282,15 +282,15 @@ class MainWindow(QMainWindow):
         central_widget.setLayout(main_layout)
         self.setCentralWidget(central_widget)
     
-    #def closeEvent(self, event: QCloseEvent):
-    #    reply = QMessageBox.question(
-    #        self, 'Exit Program', 'Are you sure you want to exit the program?',
-    #        QMessageBox.Yes | QMessageBox.No, QMessageBox.No)
-#
-    #    if reply == QMessageBox.Yes:
-    #        event.accept()
-    #    else:
-    #        event.ignore()
+    def closeEvent(self, event: QCloseEvent):
+        reply = QMessageBox.question(
+            self, 'Exit Program', 'Are you sure you want to exit the program?',
+            QMessageBox.Yes | QMessageBox.No, QMessageBox.No)
+        
+        if reply == QMessageBox.Yes:
+            event.accept()
+        else:
+            event.ignore()
     
 
     def initialize_theme(self, theme_file):
@@ -1103,6 +1103,11 @@ class MainWindow(QMainWindow):
         else:
             try:
                 # Disable buttons while exporting
+                self.browse_csv_button.setDisabled(True)
+                self.read_xml_button.setDisabled(True)
+                self.build_xpath_button.setDisabled(True)
+                self.add_xpath_to_list_button.setDisabled(True)
+                self.csv_save_as_button.setDisabled(True)
                 self.csv_convert_button.setDisabled(True)
 
                 # Create and start the thread
@@ -1116,6 +1121,7 @@ class MainWindow(QMainWindow):
                 self.csv_export_thread.moveToThread(self.thread)
                 self.thread.started.connect(self.csv_export_thread.run)
                 self.thread.start()
+                self.thread.join()
 
             except Exception as ex:
                 message = f"An exception of type {type(ex).__name__} occurred. Arguments: {ex.args!r}"
@@ -1125,20 +1131,28 @@ class MainWindow(QMainWindow):
     
     def on_csv_export_finished(self):
         QMessageBox.information(self, "Export Successful", "CSV export completed.")
+        self.browse_csv_button.setDisabled(False)
+        self.read_xml_button.setDisabled(False)
+        self.build_xpath_button.setDisabled(False)
+        self.add_xpath_to_list_button.setDisabled(False)
+        self.csv_save_as_button.setDisabled(False)
         self.csv_convert_button.setDisabled(False)
         
-        # Quit and clean up the thread
         self.thread.quit()
-        self.thread.wait()  # Ensures the thread fully exits
+        self.thread.wait()  
 
 
     def on_csv_export_error(self, error_message):
         QMessageBox.critical(self, "Error", f"Error during CSV export: {error_message}")
+        self.browse_csv_button.setDisabled(False)
+        self.read_xml_button.setDisabled(False)
+        self.build_xpath_button.setDisabled(False)
+        self.add_xpath_to_list_button.setDisabled(False)
+        self.csv_save_as_button.setDisabled(False)
         self.csv_convert_button.setDisabled(False)
         
-        # Quit and clean up the thread
         self.thread.quit()
-        self.thread.wait()  # Ensures the thread fully exits
+        self.thread.wait() 
         
                 
     def update_progress(self, value):
