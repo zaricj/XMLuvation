@@ -1126,11 +1126,19 @@ class MainWindow(QMainWindow):
     def on_csv_export_finished(self):
         QMessageBox.information(self, "Export Successful", "CSV export completed.")
         self.csv_convert_button.setDisabled(False)
+        
+        # Quit and clean up the thread
+        self.thread.quit()
+        self.thread.wait()  # Ensures the thread fully exits
 
 
     def on_csv_export_error(self, error_message):
         QMessageBox.critical(self, "Error", f"Error during CSV export: {error_message}")
         self.csv_convert_button.setDisabled(False)
+        
+        # Quit and clean up the thread
+        self.thread.quit()
+        self.thread.wait()  # Ensures the thread fully exits
         
                 
     def update_progress(self, value):
