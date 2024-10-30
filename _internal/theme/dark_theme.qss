@@ -54,17 +54,15 @@ QLineEdit, QComboBox, QTextEdit, QStatusBar {
 }
 
 QListWidget {
-    font: bold;
     background-color: #313338;
 }
 
 QListWidget::item {
     height: 26px;
-    font: bold;
 }
 
 QListWidget::item:selected {
-    background-color:#ffc857;
+    background-color: #ffc857;
     color: #000000;
 }
 
@@ -76,8 +74,6 @@ QComboBox::drop-down {
     border-bottom-right-radius: 6px;
     image: url(_internal/images/drpdwn_arrow.png)
 }
-
-QComboBox:hover {}
 
 QPushButton:disabled {
     background-color: #808080;
