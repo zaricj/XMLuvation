@@ -1,4 +1,3 @@
-from pathlib import Path
 from PySide6.QtWidgets import (QApplication, QMainWindow, QWidget, QVBoxLayout, 
                              QHBoxLayout, QTabWidget, QGroupBox, QLabel, 
                              QLineEdit, QPushButton, QComboBox, QRadioButton, 
@@ -6,22 +5,23 @@ from PySide6.QtWidgets import (QApplication, QMainWindow, QWidget, QVBoxLayout,
                              QCheckBox,QMenu,QFileDialog, QMessageBox, QFrame, 
                              QSpacerItem, QSizePolicy, QTableView, QHeaderView, QInputDialog)
 from PySide6.QtGui import QIcon, QAction, QStandardItemModel, QStandardItem, QCloseEvent
-from PySide6.QtCore import Qt, QThread, Signal, Slot, QSortFilterProxyModel, QObject, QFile, QTextStream
+from PySide6.QtCore import Qt, QThread, Signal, Slot, QSortFilterProxyModel, QObject, QFile, QTextStream, QMutex, QMutexLocker
+from pathlib import Path
 from  datetime import datetime
 from lxml import etree as ET
+import pandas as pd
 import sys
 import csv
 import os
 import re
 import webbrowser
-import pandas as pd
 import json
 
-basedir = os.path.dirname(__file__)
+# TODO Fix exit code = 3221226356 (HEAP_MEMORY_CORRUPTION) (Seems to be a thread still running on exit thing) 
 
 class ConfigHandler:
     def __init__(self):
-        self.config_dir = os.path.join(basedir, "_internal\\configs")
+        self.config_dir = "_internal\\configuration"
         self.config_file = os.path.join(self.config_dir, "config.json")
         
         os.makedirs(self.config_dir, exist_ok=True)
@@ -64,13 +64,13 @@ class ConfigHandler:
 
 
 class XMLParserThread(QObject):
-    finished = Signal(object)
-    error = Signal(str)
+    finished = Signal(dict)
+    show_error_message = Signal(str, str)
 
-    def __init__(self, xml_file):
+    def __init__(self, parent, xml_file):
         super().__init__()
+        self.parent = parent
         self.xml_file = xml_file
-          
 
     def run(self):
         try:
@@ -100,69 +100,141 @@ class XMLParserThread(QObject):
             }
             self.finished.emit(result)
         except Exception as ex:
-            self.error.emit(str(ex))
+            self.show_error_message.emit("An exception occurred", str(ex))
 
 class CSVExportThread(QObject):
     finished = Signal()
-    error = Signal(str)
-    no_matches = Signal()
+    show_info_message = Signal(str, str)
+    show_error_message = Signal(str, str)
     progress_updated = Signal(int)
     update_program_output = Signal(str)
 
-    def __init__(self, folder_containing_xml_files, list_of_xpath_filters, csv_output_path):
+    def __init__(self, parent, folder_containing_xml_files, list_of_xpath_filters, csv_output_path):
         super().__init__()
+        self.parent = parent
         self.folder_containing_xml_files = folder_containing_xml_files
         self.list_of_xpath_filters = list_of_xpath_filters
         self.csv_output_path = csv_output_path
-
+        self._is_running = False
+        self._mutex = QMutex()
+        
+    def stop(self):
+        with QMutexLocker(self._mutex):
+            self._is_running = False
 
     def run(self):
+        with QMutexLocker(self._mutex):
+            self._is_running = True
+            
         try:
-            # Move the logic of `evaluate_xml_files_matching` and CSV writing here
+            if not self._check_running():
+                return
+            
             matching_results, total_matches_found, total_matching_files = self.evaluate_xml_files_matching(
                 self.folder_containing_xml_files, self.list_of_xpath_filters
             )
+            
+            if not self._check_running():
+                return
 
             if not matching_results:
-                self.no_matches.emit()
+                self.show_info_message.emit("No matches found", "No matches found by searching with the added filters.")
+                self.update_program_output.emit("")
+                return
             
-            else:
-                headers = ["Filename"] + [header for header in set(key for dic in matching_results for key in dic) if header != "Filename"]
-                with open(self.csv_output_path, "w", newline="", encoding="utf-8") as csvfile:
-                    writer = csv.DictWriter(csvfile, fieldnames=headers, delimiter=",", extrasaction="ignore", quotechar='"', quoting=csv.QUOTE_ALL)
-                    writer.writeheader()
-                    for match in matching_results:
-                        filename = match["Filename"]
-                        rows_to_write = []
-                        max_len = max([len(str(v).split(";")) for k, v in match.items() if k != "Filename"], default=1)
-                        for i in range(max_len):
-                            row = {"Filename": filename}
-                            has_data = False
-                            for key, value in match.items():
-                                if key != "Filename":
+            self.update_program_output.emit("Writing matches to CSV file, please wait...")
+            
+            # Define headers - now including Index
+            headers = ["Index", "Filename"]
+            # Add all other headers excluding Filename and Index
+            additional_headers = set()
+            for dic in matching_results:
+                additional_headers.update(key for key in dic.keys() if key not in ["Filename", "Index"])
+            headers.extend(sorted(additional_headers))
+
+            with open(self.csv_output_path, "w", newline="", encoding="utf-8") as csvfile:
+                writer = csv.DictWriter(
+                    csvfile, 
+                    fieldnames=headers, 
+                    delimiter=",", 
+                    extrasaction="ignore", 
+                    quotechar='"', 
+                    quoting=csv.QUOTE_ALL
+                )
+                writer.writeheader()
+
+                # Group results by filename
+                results_by_filename = {}
+                for match in matching_results:
+                    filename = match["Filename"]
+                    if filename not in results_by_filename:
+                        results_by_filename[filename] = []
+                    results_by_filename[filename].append(match)
+
+                # Process each file's results
+                for filename, file_matches in results_by_filename.items():
+                    for match in file_matches:
+                        index = match.get("Index", "")
+                        # Handle value fields that might contain multiple values
+                        value_fields = {k: v for k, v in match.items() 
+                                    if k not in ["Index", "Filename"] and v}
+                        
+                        if not value_fields:  # If there are no values, write a single row
+                            writer.writerow({
+                                "Index": index,
+                                "Filename": filename
+                            })
+                        else:
+                            # Split multiple values and write separate rows
+                            max_len = max(len(str(v).split(";")) for v in value_fields.values())
+                            
+                            for i in range(max_len):
+                                row = {
+                                    "Index": index,
+                                    "Filename": filename
+                                }
+                                has_data = False
+                                
+                                for key, value in value_fields.items():
                                     value_list = str(value).split(";")
                                     if i < len(value_list):
                                         row[key] = value_list[i].strip()
                                         if row[key]:  # Check if the value is not empty
                                             has_data = True
-                            if has_data:  # Only append the row if it has data
-                                rows_to_write.append(row)
-                        for row in rows_to_write:
-                            writer.writerow(row)
+                                
+                                if has_data:  # Only write the row if it has data
+                                    writer.writerow(row)
 
-                # Emit the finished signal
-                self.finished.emit()
-                self.update_program_output.emit(f"Found {total_matching_files} files that have a total sum of {total_matches_found} matches.")
+            # Emit completion signals
+            self.show_info_message.emit("Export Successful", "CSV export completed.")
+            self.update_program_output.emit(
+                f"Found {total_matching_files} files that have a total sum of {total_matches_found} matches."
+            )
 
         except Exception as ex:
-            self.error.emit(str(ex))
+            if self._check_running():  # Only emit error if we're still running
+                message = f"An exception of type {type(ex).__name__} occurred. Arguments: {ex.args!r}"
+                self.show_error_message.emit("An exception occurred", message)
 
+        finally:
+            self.finished.emit()
+
+    
+    def _check_running(self):
+        with QMutexLocker(self._mutex):
+            return self._is_running
+    
+    
     def evaluate_xml_files_matching(self, folder_containing_xml_files, list_of_xpath_expressions):
         final_results = []
         xml_files = [f for f in os.listdir(folder_containing_xml_files) if f.endswith(".xml")]
         total_files = len(xml_files)
         total_sum_matches = 0
         total_matching_files = 0
+        match_index = 1  # Initialize the index counter
+        
+        if not self._check_running():
+                return final_results, total_sum_matches, total_matching_files
 
         for index, filename in enumerate(xml_files):
             file_path = os.path.join(folder_containing_xml_files, filename)
@@ -177,7 +249,6 @@ class CSVExportThread(QObject):
                 self.update_program_output.emit(f"Unexpected error reading {filename}: {str(e)}")
                 continue
 
-            current_file_results = {"Filename": os.path.splitext(filename)[0]}
             file_total_matches = 0
 
             for expression in list_of_xpath_expressions:
@@ -187,45 +258,47 @@ class CSVExportThread(QObject):
                 
                 # Pattern Matching
                 pattern_text_or_attribute_end = r'(.*?/text\(\)$|.*?/@[a-zA-Z_][a-zA-Z0-9_]*$)'
-
                 match = re.match(pattern_text_or_attribute_end, expression)
                 ends_with_text_or_attribute = bool(match)
 
                 if result:
                     if not ends_with_text_or_attribute:
                         final_results.append({
+                            "Index": match_index,
                             "Filename": os.path.splitext(filename)[0],
                             "Matches": match_count,
-                            "Expression": expression,
+                            "Expression": expression
                         })
                     else:
-                        self.process_xpath_result(expression, result, current_file_results)
+                        # Create a new dictionary for each expression result
+                        current_result = {"Filename": os.path.splitext(filename)[0], "Index": match_index}
+                        self.process_xpath_result(expression, result, current_result)
+                        if current_result:  # Only append if we have results
+                            final_results.append(current_result)
+                    
+                    match_index += 1  # Increment the index after each match
 
             if file_total_matches > 0:
                 total_sum_matches += file_total_matches
                 total_matching_files += 1
-                if current_file_results:
-                    final_results.append(current_file_results)
 
             # Update progress
             progress = int((index + 1) / total_files * 100)
             self.progress_updated.emit(progress)
             
-        self.update_program_output.emit("Writing to CSV file, please wait...")  
         return final_results, total_sum_matches, total_matching_files
-
 
     def process_xpath_result(self, expression, result, current_file_results):
         if "/@" in expression:
             attribute_name = expression.split("@")[-1]
             key = f"Attribute {attribute_name} Value"
             current_file_results[key] = ";".join([elem.strip() for elem in result if elem.strip()])
-            
+
         elif "/text()" in expression:
             tag_name = expression.split("/")[-2]
             key = f"Tag {tag_name} Value"
             current_file_results[key] = ";".join([elem.strip() for elem in result if elem.strip()])
-            
+
         elif "[@" in expression:
             match = re.search(r"@([^=]+)", expression)
             if match:
@@ -238,21 +311,24 @@ class MainWindow(QMainWindow):
     update_input_file_signal = Signal(str)
     update_output_file_signal = Signal(str)
     
-    
     def __init__(self):
         super().__init__()
-        self.current_theme = os.path.join(basedir, "_internal/theme/dark_theme.qss") # Sets the global main theme from the file
+        self.current_theme =  "_internal\\theme\\dark_theme.qss" # Sets the global main theme from the file
         self.config_handler = ConfigHandler()
         self.eval_input_file = None
         self.xpath_filters = []
         self.xpath_listbox = QListWidget(self)
+        self.program_output = QTextEdit()
+        self.thread = None
+        self.worker = None
         self.initialize_theme(self.current_theme)
+
         self.initUI()
         
         
     def initUI(self):
         self.setWindowTitle("XMLuvation v1.2.2")
-        self.setWindowIcon(QIcon(os.path.join(basedir,"_internal/icon/xml_32px.ico")))  # Replace with actual path
+        self.setWindowIcon(QIcon("_internal\\icon\\xml_32px.ico"))  # Replace with actual path
         self.setGeometry(500, 250, 1300, 840)
         self.saveGeometry()
         
@@ -304,12 +380,13 @@ class MainWindow(QMainWindow):
                 self.setStyleSheet(stylesheet)
             file.close()
         except Exception as ex:
-            QMessageBox.critical(self, "Theme load error", f"Failed to load theme: {str(ex)}")
+            message = f"An exception of type {type(ex).__name__} occurred. Arguments: {ex.args!r}"
+            QMessageBox.critical(self, "Theme load error", message)
     
     def create_menu_bar(self):
         menu_bar = self.menuBar()
         
-         # File Menu
+        # File Menu
         file_menu = menu_bar.addMenu("&File")
         clear_action = QAction("Clear Output", self)
         clear_action.setStatusTip("Clear the output")
@@ -418,10 +495,10 @@ class MainWindow(QMainWindow):
 
     
     def change_theme(self):
-        if self.current_theme == os.path.join(basedir,"_internal/theme/dark_theme.qss"):
-            self.current_theme = os.path.join(basedir,"_internal/theme/light_theme.qss")
+        if self.current_theme == "_internal\\theme\\dark_theme.qss":
+            self.current_theme = "_internal\\theme\\light_theme.qss"
         else:
-            self.current_theme = os.path.join(basedir,"_internal/theme/dark_theme.qss")
+            self.current_theme = "_internal\\theme\\dark_theme.qss"
         
         self.initialize_theme(self.current_theme)
     
@@ -438,7 +515,7 @@ class MainWindow(QMainWindow):
                 os.startfile(directory_path)
             except Exception as ex:
                 message = f"An exception of type {type(ex).__name__} occurred. Arguments: {ex.args!r}"
-                QMessageBox.critical(self, "Error", message)
+                QMessageBox.critical(self, "An exception occurred", message)
         else:
             QMessageBox.warning(self, "Error", f"Path does not exist or is not a valid path:\n{directory_path}")
     
@@ -452,7 +529,7 @@ class MainWindow(QMainWindow):
                 os.startfile(directory_path)
             except Exception as ex:
                 message = f"An exception of type {type(ex).__name__} occurred. Arguments: {ex.args!r}"
-                QMessageBox.critical(self, "Error", message)
+                QMessageBox.critical(self, "An exception occurred", message)
         else:
             QMessageBox.warning(self, "Error", f"Path does not exist or is not a valid path:\n{directory_path}")
     
@@ -465,7 +542,7 @@ class MainWindow(QMainWindow):
                 os.startfile(dirname)
             except Exception as ex:
                 message = f"An exception of type {type(ex).__name__} occurred. Arguments: {ex.args!r}"
-                QMessageBox.critical(self, "Error", message)
+                QMessageBox.critical(self, "An exception occurred", message)
         else:
             QMessageBox.warning(self, "Error", f"Path does not exist or is not a valid path:\n{directory_path}")
             
@@ -478,7 +555,7 @@ class MainWindow(QMainWindow):
                 os.startfile(directory_path)
             except Exception as ex:
                 message = f"An exception of type {type(ex).__name__} occurred. Arguments: {ex.args!r}"
-                QMessageBox.critical(self, "Error", message)
+                QMessageBox.critical(self, "An exception occurred", message)
         else:
             QMessageBox.warning(self, "Error", f"Path does not exist or is not a valid path:\n{directory_path}")
             
@@ -664,7 +741,7 @@ class MainWindow(QMainWindow):
                 self.attribute_name_combobox.setDisabled(False)
         except Exception as ex:
             message = f"An exception of type {type(ex).__name__} occurred. Arguments: {ex.args!r}"
-            QMessageBox.critical(self,"Exception in Program", message)
+            QMessageBox.critical(self, "An exception occurred", message)
 
 
     def on_attribute_name_changed(self, selected_attribute):
@@ -742,12 +819,12 @@ class MainWindow(QMainWindow):
     def parse_xml(self, xml_file):
         try:
             self.thread = QThread()
-            self.worker = XMLParserThread(xml_file)
+            self.worker = XMLParserThread(None, xml_file)
             self.worker.moveToThread(self.thread)
             
             # Connect signals and slots
             self.worker.finished.connect(self.on_xml_parsed)
-            self.worker.error.connect(self.on_xml_parse_error)
+            self.worker.show_error_message.connect(self.on_xml_parse_error)
             self.thread.started.connect(self.worker.run)
 
             # Start the thread
@@ -758,7 +835,7 @@ class MainWindow(QMainWindow):
             QMessageBox.critical(self, "Exception in Program", message)
 
 
-    def on_xml_parsed(self, result):
+    def on_xml_parsed(self, result: dict):
         self.xml_output.setText(result['xml_string'])
 
         self.tag_name_combobox.clear()
@@ -783,11 +860,9 @@ class MainWindow(QMainWindow):
         self.thread.wait()
 
 
-    def on_xml_parse_error(self, error_message):
-        QMessageBox.critical(self, "Error Parsing XML", error_message)
-        self.thread.quit()
-        self.thread.wait()
-               
+    def on_xml_parse_error(self, title, message):
+        QMessageBox.critical(self, title, message)
+            
             
     def read_xml(self):
         try:
@@ -1088,91 +1163,65 @@ class MainWindow(QMainWindow):
         list_of_xpath_filters = self.xpath_filters
 
         if not os.path.exists(folder_containing_xml_files):
-            QMessageBox.warning(self, "Path Error", "Cannot start evaluation because XML input folder is not set!")
+            QMessageBox.warning(self, "XML input path error", "Cannot start evaluation because XML input folder is not set!")
         elif len(list_of_xpath_filters) == 0:
-            QMessageBox.warning(self, "ListBox Error", "Cannot start evaluation because no XPath filters have been added to the list!")
+            QMessageBox.warning(self, "No Xpath filters error", "Cannot start evaluation because no XPath filters have been added to the list!")
         elif not os.path.exists(folder_for_csv_output):
-            QMessageBox.warning(self, "Path Error", "Cannot start evaluation because CSV output folder is not set!")
+            QMessageBox.warning(self, "CSV output path error", "Cannot start evaluation because CSV output folder is not set!")
         else:
             try:
-                # Disable buttons while exporting
-                self.browse_xml_folder_button.setDisabled(True)
-                self.browse_csv_button.setDisabled(True)
-                self.read_xml_button.setDisabled(True)
-                self.build_xpath_button.setDisabled(True)
-                self.add_xpath_to_list_button.setDisabled(True)
-                self.csv_save_as_button.setDisabled(True)
-                self.csv_convert_button.setDisabled(True)
-                self.folder_xml_input.setReadOnly(True)
-                self.folder_csv_output.setReadOnly(True)
+                # Store references to thread and worker
+                self.thread = QThread()
+                self.csv_export_thread = CSVExportThread(self, folder_containing_xml_files, list_of_xpath_filters, csv_output_path)
+                self.csv_export_thread.moveToThread(self.thread)
 
-                # Create and start the thread
-                self.csv_export_thread = CSVExportThread(folder_containing_xml_files, list_of_xpath_filters, csv_output_path)
+                # Connect cleanup signals first
+                self.csv_export_thread.finished.connect(self.thread.quit)  # Quit the thread when worker is done
+                self.csv_export_thread.finished.connect(self.csv_export_thread.deleteLater)  # Schedule worker for deletion
+                self.thread.finished.connect(self.thread.deleteLater)  # Clean up thread
+
+                # Connect your application signals
                 self.csv_export_thread.finished.connect(self.on_csv_export_finished)
-                self.csv_export_thread.error.connect(self.on_csv_export_error)
-                self.csv_export_thread.no_matches.connect(self.no_matches_found)
+                self.csv_export_thread.show_error_message.connect(self.show_error_message)
+                self.csv_export_thread.show_info_message.connect(self.show_info_message)
                 self.csv_export_thread.progress_updated.connect(self.update_progress)
                 self.csv_export_thread.update_program_output.connect(self.program_output.setText)
 
-                self.thread = QThread()
-                self.csv_export_thread.moveToThread(self.thread)
+                # Connect the worker's run method and start
                 self.thread.started.connect(self.csv_export_thread.run)
                 self.thread.start()
+                
+                # Disable UI elements during procesing
+                self.set_ui_enabled(True)
 
             except Exception as ex:
                 message = f"An exception of type {type(ex).__name__} occurred. Arguments: {ex.args!r}"
                 QMessageBox.critical(self, "Exception in Program", f"Error exporting CSV: {message}")
                 self.csv_convert_button.setDisabled(False)
 
+    def set_ui_enabled(self, enabled):
+        # Disable buttons while exporting
+        self.browse_xml_folder_button.setDisabled(enabled)
+        self.browse_csv_button.setDisabled(enabled)
+        self.read_xml_button.setDisabled(enabled)
+        self.build_xpath_button.setDisabled(enabled)
+        self.add_xpath_to_list_button.setDisabled(enabled)
+        self.csv_save_as_button.setDisabled(enabled)
+        self.csv_convert_button.setDisabled(enabled)
+        self.folder_xml_input.setReadOnly(enabled)
+        self.folder_csv_output.setReadOnly(enabled)
     
     def on_csv_export_finished(self):
-        QMessageBox.information(self, "Export Successful", "CSV export completed.")
-        self.browse_xml_folder_button.setDisabled(False)
-        self.browse_csv_button.setDisabled(False)
-        self.read_xml_button.setDisabled(False)
-        self.build_xpath_button.setDisabled(False)
-        self.add_xpath_to_list_button.setDisabled(False)
-        self.csv_save_as_button.setDisabled(False)
-        self.csv_convert_button.setDisabled(False)
-        self.folder_xml_input.setReadOnly(False)
-        self.folder_csv_output.setReadOnly(False)
+        self.set_ui_enabled(False)
         self.progressbar.reset()
         self.thread.quit()
         self.thread.wait()  
-
-
-    def on_csv_export_error(self, error_message):
-        QMessageBox.critical(self, "Error", f"Error during CSV export: {error_message}")
-        self.browse_xml_folder_button.setDisabled(False)
-        self.browse_csv_button.setDisabled(False)
-        self.read_xml_button.setDisabled(False)
-        self.build_xpath_button.setDisabled(False)
-        self.add_xpath_to_list_button.setDisabled(False)
-        self.csv_save_as_button.setDisabled(False)
-        self.csv_convert_button.setDisabled(False)
-        self.folder_xml_input.setReadOnly(False)
-        self.folder_csv_output.setReadOnly(False)
-        self.progressbar.reset()
-        self.program_output.clear()
-        self.thread.quit()
-        self.thread.wait() 
     
+    def show_info_message(self, title, message):
+        QMessageBox.information(self, title, message) 
     
-    def no_matches_found(self):
-        self.browse_xml_folder_button.setDisabled(False)
-        self.browse_csv_button.setDisabled(False)
-        self.read_xml_button.setDisabled(False)
-        self.build_xpath_button.setDisabled(False)
-        self.add_xpath_to_list_button.setDisabled(False)
-        self.csv_save_as_button.setDisabled(False)
-        self.csv_convert_button.setDisabled(False)
-        self.folder_xml_input.setReadOnly(False)
-        self.folder_csv_output.setReadOnly(False)
-        self.progressbar.reset()
-        self.program_output.clear()
-        self.thread.quit()
-        self.thread.wait()  
-        QMessageBox.information(self, "No matches found", "No matches found by searching with the added filters.")
+    def show_error_message(self, title, message):
+        QMessageBox.critical(self, title, message) 
 
                 
     def update_progress(self, value):
@@ -1185,7 +1234,6 @@ class MainWindow(QMainWindow):
         
         layout = QVBoxLayout()
 
-        self.program_output = QTextEdit()
         self.program_output.setReadOnly(True)
         
         layout.addWidget(self.program_output)
