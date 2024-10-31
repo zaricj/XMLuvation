@@ -16,6 +16,7 @@ import os
 import re
 import webbrowser
 import json
+import traceback
 
 # TODO Fix exit code = 3221226356 (HEAP_MEMORY_CORRUPTION) (Seems to be a thread still running on exit thing) 
 
@@ -107,42 +108,55 @@ class CSVExportThread(QObject):
     show_info_message = Signal(str, str)
     show_error_message = Signal(str, str)
     progress_updated = Signal(int)
-    update_program_output = Signal(str)
+    output_set_text = Signal(str)
+    output_append = Signal(str)
 
-    def __init__(self, parent, folder_containing_xml_files, list_of_xpath_filters, csv_output_path):
+    def __init__(self, folder_containing_xml_files, list_of_xpath_filters, csv_output_path):
         super().__init__()
-        self.parent = parent
         self.folder_containing_xml_files = folder_containing_xml_files
         self.list_of_xpath_filters = list_of_xpath_filters
         self.csv_output_path = csv_output_path
-        self._is_running = False
-        self._mutex = QMutex()
+        self._is_running = True
         
     def stop(self):
-        with QMutexLocker(self._mutex):
-            self._is_running = False
+        """Method to stop the running task"""
+        self._is_running = False
 
     def run(self):
-        with QMutexLocker(self._mutex):
-            self._is_running = True
-            
         try:
-            if not self._check_running():
-                return
-            
+            self.search_and_export()
+        except Exception as ex:
+            self.show_error_message("An exception occurred", str(ex))
+        finally:
+            self.finished.emit()
+        
+    def search_and_export(self):
+        try:
+            # Check if the thread is supposed to be running
+            if not self._is_running:
+                return 
+            # TODO Fix on "Abort" __pydevd_ret_val_dict['CSVExportThread.evaluate_xml_files_matching'] = None
             matching_results, total_matches_found, total_matching_files = self.evaluate_xml_files_matching(
                 self.folder_containing_xml_files, self.list_of_xpath_filters
             )
+        except Exception as ex:
+            tb = traceback.extract_tb(ex.__traceback__)
+            line_number = tb[-1].lineno  # Get the line number of the last traceback entry
+            message = f"An exception of type {type(ex).__name__} occurred on line {line_number}. Arguments: {ex.args!r}"
+            self.show_error_message.emit("An exception occurred", message)
             
-            if not self._check_running():
+        try:
+            # Check if Task should continue
+            if not self._is_running:
+                self.output_append.emit("Export task aborted successfully.")
                 return
 
             if not matching_results:
                 self.show_info_message.emit("No matches found", "No matches found by searching with the added filters.")
-                self.update_program_output.emit("")
+                self.output_set_text.emit("")
                 return
             
-            self.update_program_output.emit("Writing matches to CSV file, please wait...")
+            self.output_set_text.emit("Writing matches to CSV file, please wait...")
             
             # Define headers - now including Index
             headers = ["Index", "Filename"]
@@ -166,6 +180,12 @@ class CSVExportThread(QObject):
                 # Group results by filename
                 results_by_filename = {}
                 for match in matching_results:
+                    
+                    # Check if Task should continue
+                    if not self._is_running:
+                        self.output_append.emit("Export task aborted successfully.")
+                        return
+
                     filename = match["Filename"]
                     if filename not in results_by_filename:
                         results_by_filename[filename] = []
@@ -173,7 +193,19 @@ class CSVExportThread(QObject):
 
                 # Process each file's results
                 for filename, file_matches in results_by_filename.items():
+                    
+                    # Check if Task should continue
+                    if not self._is_running:
+                        self.output_append.emit("Export task aborted successfully.")
+                        return
+                    
                     for match in file_matches:
+                        
+                        # Check if Task should continue
+                        if not self._is_running:
+                            self.output_append.emit("Export task aborted successfully.")
+                            return
+                        
                         index = match.get("Index", "")
                         # Handle value fields that might contain multiple values
                         value_fields = {k: v for k, v in match.items() 
@@ -189,6 +221,12 @@ class CSVExportThread(QObject):
                             max_len = max(len(str(v).split(";")) for v in value_fields.values())
                             
                             for i in range(max_len):
+                                
+                                # Check if Task should continue
+                                if not self._is_running:
+                                    self.output_append.emit("Export task aborted successfully.")
+                                    return
+                                
                                 row = {
                                     "Index": index,
                                     "Filename": filename
@@ -196,6 +234,12 @@ class CSVExportThread(QObject):
                                 has_data = False
                                 
                                 for key, value in value_fields.items():
+                                    
+                                    # Check if Task should continue
+                                    if not self._is_running:
+                                        self.output_append.emit("Export task aborted successfully.")
+                                        return
+                                    
                                     value_list = str(value).split(";")
                                     if i < len(value_list):
                                         row[key] = value_list[i].strip()
@@ -207,22 +251,18 @@ class CSVExportThread(QObject):
 
             # Emit completion signals
             self.show_info_message.emit("Export Successful", "CSV export completed.")
-            self.update_program_output.emit(
+            self.output_set_text.emit(
                 f"Found {total_matching_files} files that have a total sum of {total_matches_found} matches."
             )
 
         except Exception as ex:
-            if self._check_running():  # Only emit error if we're still running
-                message = f"An exception of type {type(ex).__name__} occurred. Arguments: {ex.args!r}"
-                self.show_error_message.emit("An exception occurred", message)
+            tb = traceback.extract_tb(ex.__traceback__)
+            line_number = tb[-1].lineno  # Get the line number of the last traceback entry
+            message = f"An exception of type {type(ex).__name__} occurred on line {line_number}. Arguments: {ex.args!r}"
+            self.show_error_message.emit("An exception occurred", message)
 
         finally:
             self.finished.emit()
-
-    
-    def _check_running(self):
-        with QMutexLocker(self._mutex):
-            return self._is_running
     
     
     def evaluate_xml_files_matching(self, folder_containing_xml_files, list_of_xpath_expressions):
@@ -233,25 +273,39 @@ class CSVExportThread(QObject):
         total_matching_files = 0
         match_index = 1  # Initialize the index counter
         
-        if not self._check_running():
-                return final_results, total_sum_matches, total_matching_files
+        # Check if task should continue:
+        if not self._is_running:
+            self.output_append.emit("Export task aborted successfully.")
+            return final_results, total_sum_matches, total_matching_files
 
         for index, filename in enumerate(xml_files):
+            
+            # Check if task should continue:
+            if not self._is_running:
+                self.output_append.emit("Export task aborted successfully.")
+                return
+            
             file_path = os.path.join(folder_containing_xml_files, filename)
-            self.update_program_output.emit(f"Processing {filename}")
+            self.output_set_text.emit(f"Processing {filename}")
             try:
                 tree = ET.parse(file_path)
                 root = tree.getroot()
             except ET.XMLSyntaxError as xse:
-                self.update_program_output.emit(f"Error reading XML: {str(xse)}, skipping file {filename}")
+                self.output_set_text.emit(f"Error reading XML: {str(xse)}, skipping file {filename}")
                 continue
             except Exception as e:
-                self.update_program_output.emit(f"Unexpected error reading {filename}: {str(e)}")
+                self.output_set_text.emit(f"Unexpected error reading {filename}: {str(e)}")
                 continue
 
             file_total_matches = 0
 
             for expression in list_of_xpath_expressions:
+                
+                # Check if task should continue:
+                if not self._is_running:
+                    self.output_append.emit("Export task aborted successfully.")
+                    return
+                
                 result = root.xpath(expression)
                 match_count = len(result)
                 file_total_matches += match_count
@@ -289,6 +343,12 @@ class CSVExportThread(QObject):
         return final_results, total_sum_matches, total_matching_files
 
     def process_xpath_result(self, expression, result, current_file_results):
+        
+        # Check if task should continue:
+        if not self._is_running:
+            self.output_append.emit("Export task aborted successfully.")
+            return
+        
         if "/@" in expression:
             attribute_name = expression.split("@")[-1]
             key = f"Attribute {attribute_name} Value"
@@ -319,10 +379,9 @@ class MainWindow(QMainWindow):
         self.xpath_filters = []
         self.xpath_listbox = QListWidget(self)
         self.program_output = QTextEdit()
-        self.thread = None
-        self.worker = None
+        self.csv_export_thread = None
+        self.csv_export_worker = None
         self.initialize_theme(self.current_theme)
-
         self.initUI()
         
         
@@ -1133,11 +1192,15 @@ class MainWindow(QMainWindow):
         self.csv_convert_button = QPushButton("EXPORT")
         self.csv_convert_button.setToolTip("Starts processing each XML file and writes the found matches to a CSV file.")
         self.csv_convert_button.clicked.connect(self.write_to_csv)
+        self.csv_abort_export_button = QPushButton("ABORT")
+        self.csv_abort_export_button.setHidden(True)
+        self.csv_abort_export_button.clicked.connect(self.stop_csv_export_thread)
         
         export_layout = QHBoxLayout()
         export_layout.addWidget(self.folder_csv_output)
         export_layout.addWidget(self.csv_save_as_button)
         export_layout.addWidget(self.csv_convert_button)
+        export_layout.addWidget(self.csv_abort_export_button)
         layout.addLayout(export_layout)
 
         group.setLayout(layout)
@@ -1171,34 +1234,47 @@ class MainWindow(QMainWindow):
         else:
             try:
                 # Store references to thread and worker
-                self.thread = QThread()
-                self.csv_export_thread = CSVExportThread(self, folder_containing_xml_files, list_of_xpath_filters, csv_output_path)
-                self.csv_export_thread.moveToThread(self.thread)
+                self.csv_export_thread = QThread()
+                self.csv_export_worker = CSVExportThread(folder_containing_xml_files, list_of_xpath_filters, csv_output_path)
+                self.csv_export_worker.moveToThread(self.csv_export_thread)
 
-                # Connect cleanup signals first
-                self.csv_export_thread.finished.connect(self.thread.quit)  # Quit the thread when worker is done
-                self.csv_export_thread.finished.connect(self.csv_export_thread.deleteLater)  # Schedule worker for deletion
-                self.thread.finished.connect(self.thread.deleteLater)  # Clean up thread
+                # Connect signals
+                self.csv_export_thread.started.connect(self.csv_export_worker.run)
+                self.csv_export_worker.output_set_text.connect(self.program_output.setText)
+                self.csv_export_worker.output_append.connect(self.program_output.append)
+                self.csv_export_worker.finished.connect(self.csv_export_thread.quit)
+                self.csv_export_worker.finished.connect(self.on_csv_export_finished)
 
-                # Connect your application signals
-                self.csv_export_thread.finished.connect(self.on_csv_export_finished)
-                self.csv_export_thread.show_error_message.connect(self.show_error_message)
-                self.csv_export_thread.show_info_message.connect(self.show_info_message)
-                self.csv_export_thread.progress_updated.connect(self.update_progress)
-                self.csv_export_thread.update_program_output.connect(self.program_output.setText)
-
-                # Connect the worker's run method and start
-                self.thread.started.connect(self.csv_export_thread.run)
-                self.thread.start()
+                # Connect application signals
+                self.csv_export_worker.show_error_message.connect(self.show_error_message)
+                self.csv_export_worker.show_info_message.connect(self.show_info_message)
+                self.csv_export_worker.progress_updated.connect(self.update_progress)
                 
                 # Disable UI elements during procesing
                 self.set_ui_enabled(True)
+                self.csv_abort_export_button.setHidden(False)
 
+                # Start the thread
+                self.csv_export_thread.start()
+                
             except Exception as ex:
                 message = f"An exception of type {type(ex).__name__} occurred. Arguments: {ex.args!r}"
                 QMessageBox.critical(self, "Exception in Program", f"Error exporting CSV: {message}")
                 self.csv_convert_button.setDisabled(False)
 
+
+    def stop_csv_export_thread(self):
+        if hasattr(self, "csv_export_worker"):
+            self.csv_export_worker.stop()
+            self.program_output.append("Aborting task, please wait...")
+    
+    
+    def on_csv_export_finished(self):
+        self.set_ui_enabled(False)
+        self.progressbar.reset()
+        self.csv_abort_export_button.setHidden(True)
+        
+        
     def set_ui_enabled(self, enabled):
         # Disable buttons while exporting
         self.browse_xml_folder_button.setDisabled(enabled)
@@ -1211,14 +1287,10 @@ class MainWindow(QMainWindow):
         self.folder_xml_input.setReadOnly(enabled)
         self.folder_csv_output.setReadOnly(enabled)
     
-    def on_csv_export_finished(self):
-        self.set_ui_enabled(False)
-        self.progressbar.reset()
-        self.thread.quit()
-        self.thread.wait()  
     
     def show_info_message(self, title, message):
         QMessageBox.information(self, title, message) 
+    
     
     def show_error_message(self, title, message):
         QMessageBox.critical(self, title, message) 
