@@ -5,7 +5,7 @@ from PySide6.QtWidgets import (QApplication, QMainWindow, QWidget, QVBoxLayout,
                              QCheckBox,QMenu,QFileDialog, QMessageBox, QFrame, 
                              QSpacerItem, QSizePolicy, QTableView, QHeaderView, QInputDialog)
 from PySide6.QtGui import QIcon, QAction, QStandardItemModel, QStandardItem, QCloseEvent
-from PySide6.QtCore import Qt, QThread, Signal, Slot, QSortFilterProxyModel, QObject, QFile, QTextStream, QMutex, QMutexLocker
+from PySide6.QtCore import Qt, QThread, Signal, Slot, QSortFilterProxyModel, QObject, QFile, QTextStream
 from pathlib import Path
 from  datetime import datetime
 from lxml import etree as ET
@@ -17,6 +17,9 @@ import re
 import webbrowser
 import json
 import traceback
+import multiprocessing
+from functools import partial
+from typing import List, Tuple, Dict
 
 # TODO Fix exit code = 3221226356 (HEAP_MEMORY_CORRUPTION) (Seems to be a thread still running on exit thing) 
 
@@ -99,11 +102,74 @@ class XMLParserThread(QObject):
                 'attributes': sorted(attributes),
                 'attribute_values': sorted(attribute_values)
             }
-            self.finished.emit(result)
+            
         except Exception as ex:
             self.show_error_message.emit("An exception occurred", str(ex))
+        finally:
+            self.finished.emit(result)
+
+# Standalone processing functions that can be pickled
+def process_single_xml(filename: str, folder_path: str, xpath_expressions: List[str], start_index: int) -> Tuple[List[Dict], int, int]:
+    """Process a single XML file and return its results."""
+    final_results = []
+    file_total_matches = 0
+    match_index = start_index
+    file_path = os.path.join(folder_path, filename)
+    
+    try:
+        tree = ET.parse(file_path)
+        root = tree.getroot()
+    except ET.XMLSyntaxError:
+        return [], 0, 0
+    except Exception:
+        return [], 0, 0
+
+    for expression in xpath_expressions:
+        result = root.xpath(expression)
+        match_count = len(result)
+        file_total_matches += match_count
+
+        pattern_text_or_attribute_end = r'(.*?/text\(\)$|.*?/@[a-zA-Z_][a-zA-Z0-9_]*$)'
+        match = re.match(pattern_text_or_attribute_end, expression)
+        ends_with_text_or_attribute = bool(match)
+
+        if result:
+            if not ends_with_text_or_attribute:
+                final_results.append({
+                    "Index": match_index,
+                    "Filename": os.path.splitext(filename)[0],
+                    "Matches": match_count,
+                    "Expression": expression
+                })
+            else:
+                current_result = {"Filename": os.path.splitext(filename)[0], "Index": match_index}
+                process_xpath_result(expression, result, current_result)
+                if current_result:
+                    final_results.append(current_result)
+            
+            match_index += 1
+
+    return final_results, file_total_matches, 1 if file_total_matches > 0 else 0
+
+def process_xpath_result(expression: str, result, current_file_results: Dict):
+    """Process xpath results for a single expression."""
+    if "/@" in expression:
+        attribute_name = expression.split("@")[-1]
+        key = f"Attribute {attribute_name} Value"
+        current_file_results[key] = ";".join([elem.strip() for elem in result if elem.strip()])
+    elif "/text()" in expression:
+        tag_name = expression.split("/")[-2]
+        key = f"Tag {tag_name} Value"
+        current_file_results[key] = ";".join([elem.strip() for elem in result if elem.strip()])
+    elif "[@" in expression:
+        match = re.search(r"@([^=]+)", expression)
+        if match:
+            attribute_name = match.group(1).strip()
+            key = f"Attribute {attribute_name} Value" 
+            current_file_results[key] = ";".join([elem.get(attribute_name) for elem in result if elem.get(attribute_name)])
 
 class CSVExportThread(QObject):
+    # Signals
     finished = Signal()
     show_info_message = Signal(str, str)
     show_error_message = Signal(str, str)
@@ -126,31 +192,27 @@ class CSVExportThread(QObject):
         try:
             self.search_and_export()
         except Exception as ex:
-            self.show_error_message("An exception occurred", str(ex))
+            self.show_error_message.emit("An exception occurred", str(ex))
         finally:
             self.finished.emit()
         
     def search_and_export(self):
         try:
+            matching_results, total_matches_found, total_matching_files = self.evaluate_xml_files_matching(
+                self.folder_containing_xml_files, self.list_of_xpath_filters)
+
             # Check if the thread is supposed to be running
             if not self._is_running:
                 return 
-            # TODO Fix on "Abort" __pydevd_ret_val_dict['CSVExportThread.evaluate_xml_files_matching'] = None
-            matching_results, total_matches_found, total_matching_files = self.evaluate_xml_files_matching(
-                self.folder_containing_xml_files, self.list_of_xpath_filters
-            )
+
         except Exception as ex:
             tb = traceback.extract_tb(ex.__traceback__)
-            line_number = tb[-1].lineno  # Get the line number of the last traceback entry
+            line_number = tb[-1].lineno
             message = f"An exception of type {type(ex).__name__} occurred on line {line_number}. Arguments: {ex.args!r}"
             self.show_error_message.emit("An exception occurred", message)
+            return
             
         try:
-            # Check if Task should continue
-            if not self._is_running:
-                self.output_append.emit("Export task aborted successfully.")
-                return
-
             if not matching_results:
                 self.show_info_message.emit("No matches found", "No matches found by searching with the added filters.")
                 self.output_set_text.emit("")
@@ -180,53 +242,30 @@ class CSVExportThread(QObject):
                 # Group results by filename
                 results_by_filename = {}
                 for match in matching_results:
-                    
-                    # Check if Task should continue
-                    if not self._is_running:
-                        self.output_append.emit("Export task aborted successfully.")
-                        return
-
                     filename = match["Filename"]
+                    
                     if filename not in results_by_filename:
                         results_by_filename[filename] = []
                     results_by_filename[filename].append(match)
 
                 # Process each file's results
                 for filename, file_matches in results_by_filename.items():
-                    
-                    # Check if Task should continue
-                    if not self._is_running:
-                        self.output_append.emit("Export task aborted successfully.")
-                        return
-                    
                     for match in file_matches:
-                        
-                        # Check if Task should continue
-                        if not self._is_running:
-                            self.output_append.emit("Export task aborted successfully.")
-                            return
-                        
                         index = match.get("Index", "")
+                        
                         # Handle value fields that might contain multiple values
-                        value_fields = {k: v for k, v in match.items() 
-                                    if k not in ["Index", "Filename"] and v}
+                        value_fields = {k: v for k, v in match.items() if k not in ["Index", "Filename"] and v}
                         
                         if not value_fields:  # If there are no values, write a single row
                             writer.writerow({
                                 "Index": index,
                                 "Filename": filename
-                            })
+                                })
                         else:
                             # Split multiple values and write separate rows
                             max_len = max(len(str(v).split(";")) for v in value_fields.values())
                             
                             for i in range(max_len):
-                                
-                                # Check if Task should continue
-                                if not self._is_running:
-                                    self.output_append.emit("Export task aborted successfully.")
-                                    return
-                                
                                 row = {
                                     "Index": index,
                                     "Filename": filename
@@ -234,18 +273,11 @@ class CSVExportThread(QObject):
                                 has_data = False
                                 
                                 for key, value in value_fields.items():
-                                    
-                                    # Check if Task should continue
-                                    if not self._is_running:
-                                        self.output_append.emit("Export task aborted successfully.")
-                                        return
-                                    
                                     value_list = str(value).split(";")
                                     if i < len(value_list):
                                         row[key] = value_list[i].strip()
                                         if row[key]:  # Check if the value is not empty
                                             has_data = True
-                                
                                 if has_data:  # Only write the row if it has data
                                     writer.writerow(row)
 
@@ -257,115 +289,73 @@ class CSVExportThread(QObject):
 
         except Exception as ex:
             tb = traceback.extract_tb(ex.__traceback__)
-            line_number = tb[-1].lineno  # Get the line number of the last traceback entry
+            line_number = tb[-1].lineno
             message = f"An exception of type {type(ex).__name__} occurred on line {line_number}. Arguments: {ex.args!r}"
             self.show_error_message.emit("An exception occurred", message)
 
         finally:
             self.finished.emit()
-    
-    
+
     def evaluate_xml_files_matching(self, folder_containing_xml_files, list_of_xpath_expressions):
-        final_results = []
+        """Evaluate XML files using multiprocessing."""
         xml_files = [f for f in os.listdir(folder_containing_xml_files) if f.endswith(".xml")]
         total_files = len(xml_files)
+        
+        if not xml_files:
+            return [], 0, 0
+
+        # Calculate the number of processes to use (leave one core free)
+        num_processes = max(1, multiprocessing.cpu_count() - 1)
+        
+        # Initialize multiprocessing variables
+        final_results = []
         total_sum_matches = 0
         total_matching_files = 0
-        match_index = 1  # Initialize the index counter
         
-        # Check if task should continue:
-        if not self._is_running:
-            self.output_append.emit("Export task aborted successfully.")
-            return final_results, total_sum_matches, total_matching_files
-
-        for index, filename in enumerate(xml_files):
-            
-            # Check if task should continue:
-            if not self._is_running:
-                self.output_append.emit("Export task aborted successfully.")
-                return
-            
-            file_path = os.path.join(folder_containing_xml_files, filename)
-            self.output_set_text.emit(f"Processing {filename}")
-            try:
-                tree = ET.parse(file_path)
-                root = tree.getroot()
-            except ET.XMLSyntaxError as xse:
-                self.output_set_text.emit(f"Error reading XML: {str(xse)}, skipping file {filename}")
-                continue
-            except Exception as e:
-                self.output_set_text.emit(f"Unexpected error reading {filename}: {str(e)}")
-                continue
-
-            file_total_matches = 0
-
-            for expression in list_of_xpath_expressions:
-                
-                # Check if task should continue:
-                if not self._is_running:
-                    self.output_append.emit("Export task aborted successfully.")
-                    return
-                
-                result = root.xpath(expression)
-                match_count = len(result)
-                file_total_matches += match_count
-                
-                # Pattern Matching
-                pattern_text_or_attribute_end = r'(.*?/text\(\)$|.*?/@[a-zA-Z_][a-zA-Z0-9_]*$)'
-                match = re.match(pattern_text_or_attribute_end, expression)
-                ends_with_text_or_attribute = bool(match)
-
-                if result:
-                    if not ends_with_text_or_attribute:
-                        final_results.append({
-                            "Index": match_index,
-                            "Filename": os.path.splitext(filename)[0],
-                            "Matches": match_count,
-                            "Expression": expression
-                        })
-                    else:
-                        # Create a new dictionary for each expression result
-                        current_result = {"Filename": os.path.splitext(filename)[0], "Index": match_index}
-                        self.process_xpath_result(expression, result, current_result)
-                        if current_result:  # Only append if we have results
-                            final_results.append(current_result)
+        try:
+            while self._is_running:
+                # Create a pool of processes
+                with multiprocessing.Pool(processes=num_processes) as pool:
+                    # Create partial function with fixed arguments
+                    process_func = partial(
+                        process_single_xml,
+                        folder_path=folder_containing_xml_files,
+                        xpath_expressions=list_of_xpath_expressions,
+                        start_index=1
+                    )
                     
-                    match_index += 1  # Increment the index after each match
+                    # Process files and collect results
+                    for i, (file_results, file_matches, matching_file) in enumerate(
+                        pool.imap_unordered(process_func, xml_files)
+                    ):
+                        if not self._is_running:
+                            self.output_set_text.emit("Export task aborted successfully.")
+                            pool.terminate()
+                            return final_results, total_sum_matches, total_matching_files
+                        
+                        final_results.extend(file_results)
+                        total_sum_matches += file_matches
+                        total_matching_files += matching_file
+                        
+                        # Update progress
+                        progress = int((i + 1) / total_files * 100)
+                        self.progress_updated.emit(progress)
+                        self.output_set_text.emit(f"Processing file {i + 1} of {total_files}")
+                    
+                    self.output_append.emit("All files processed successfully.")
+                    
+                    # Sort results by Index to maintain order
+                    final_results.sort(key=lambda x: x.get("Index", 0))
+                    
+                    return final_results, total_sum_matches, total_matching_files
+                    
+        except Exception as ex:
+            self.show_error_message.emit(
+                "Multiprocessing Error",
+                f"Error during multiprocessing: {str(ex)}"
+            )
+            return [], 0, 0
 
-            if file_total_matches > 0:
-                total_sum_matches += file_total_matches
-                total_matching_files += 1
-
-            # Update progress
-            progress = int((index + 1) / total_files * 100)
-            self.progress_updated.emit(progress)
-            
-        return final_results, total_sum_matches, total_matching_files
-
-    def process_xpath_result(self, expression, result, current_file_results):
-        
-        # Check if task should continue:
-        if not self._is_running:
-            self.output_append.emit("Export task aborted successfully.")
-            return
-        
-        if "/@" in expression:
-            attribute_name = expression.split("@")[-1]
-            key = f"Attribute {attribute_name} Value"
-            current_file_results[key] = ";".join([elem.strip() for elem in result if elem.strip()])
-
-        elif "/text()" in expression:
-            tag_name = expression.split("/")[-2]
-            key = f"Tag {tag_name} Value"
-            current_file_results[key] = ";".join([elem.strip() for elem in result if elem.strip()])
-
-        elif "[@" in expression:
-            match = re.search(r"@([^=]+)", expression)
-            if match:
-                attribute_name = match.group(1).strip()
-                key = f"Attribute {attribute_name} Value" 
-                current_file_results[key] = ";".join([elem.get(attribute_name) for elem in result if elem.get(attribute_name)])
-            
 class MainWindow(QMainWindow):
     progress_updated = Signal(int)
     update_input_file_signal = Signal(str)
@@ -877,17 +867,18 @@ class MainWindow(QMainWindow):
 
     def parse_xml(self, xml_file):
         try:
-            self.thread = QThread()
-            self.worker = XMLParserThread(None, xml_file)
-            self.worker.moveToThread(self.thread)
+            self.parse_xml_thread = QThread()
+            self.parse_xml_worker = XMLParserThread(None, xml_file)
+            self.parse_xml_worker.moveToThread(self.parse_xml_thread)
             
             # Connect signals and slots
-            self.worker.finished.connect(self.on_xml_parsed)
-            self.worker.show_error_message.connect(self.on_xml_parse_error)
-            self.thread.started.connect(self.worker.run)
+            self.parse_xml_worker.finished.connect(self.on_xml_parsed)
+            self.parse_xml_worker.finished.connect(self.parse_xml_thread.quit)
+            self.parse_xml_worker.show_error_message.connect(self.show_error_message)
+            self.parse_xml_thread.started.connect(self.parse_xml_worker.run)
 
             # Start the thread
-            self.thread.start()
+            self.parse_xml_thread.start()
 
         except Exception as ex:
             message = f"An exception of type {type(ex).__name__} occurred. Arguments: {ex.args!r}"
@@ -913,16 +904,10 @@ class MainWindow(QMainWindow):
         self.attribute_name_combobox.setEditText("")
         self.attribute_value_combobox.setEditText("")
 
-        self.eval_input_file = self.worker.xml_file
+        self.eval_input_file = self.parse_xml_worker.xml_file
         self.program_output.setText("XML file loaded successfully.")
-        self.thread.quit()
-        self.thread.wait()
 
 
-    def on_xml_parse_error(self, title, message):
-        QMessageBox.critical(self, title, message)
-            
-            
     def read_xml(self):
         try:
             file_name, _ = QFileDialog.getOpenFileName(self, "Select XML File", "", "XML Files (*.xml)")
@@ -1266,14 +1251,14 @@ class MainWindow(QMainWindow):
     def stop_csv_export_thread(self):
         if hasattr(self, "csv_export_worker"):
             self.csv_export_worker.stop()
-            self.program_output.append("Aborting task, please wait...")
+            self.program_output.setText("Export task aborted successfully.")
     
     
     def on_csv_export_finished(self):
         self.set_ui_enabled(False)
         self.progressbar.reset()
         self.csv_abort_export_button.setHidden(True)
-        
+
         
     def set_ui_enabled(self, enabled):
         # Disable buttons while exporting

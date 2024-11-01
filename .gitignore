@@ -1,6 +1,7 @@
 _internal\configs\config.json
 CustomTest
 output
+multiprocessing
 .venv
 .old
 webapp.html
