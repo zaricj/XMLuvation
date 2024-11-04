@@ -361,6 +361,8 @@ class MainWindow(QMainWindow):
         self.program_output = QTextEdit()
         self.csv_export_thread = None
         self.csv_export_worker = None
+        self.parse_xml_thread = None
+        self.parse_xml_worker = None
         self.initialize_theme(self.current_theme)
         self.initUI()
         
@@ -676,7 +678,7 @@ class MainWindow(QMainWindow):
         self.tag_value_combobox = QComboBox()
         self.tag_value_combobox.setEditable(True)
         
-         # Set expanding size policy for comboboxes
+        # Set expanding size policy for comboboxes
         self.tag_name_combobox.setSizePolicy(QSizePolicy.Expanding, QSizePolicy.Fixed)
         self.tag_value_combobox.setSizePolicy(QSizePolicy.Expanding, QSizePolicy.Fixed)
         
@@ -1005,7 +1007,7 @@ class MainWindow(QMainWindow):
     # ======= END FUNCTIONS FOR create_xml_eval_group ======= #
     
     def create_matching_filter_group(self):
-        group = QGroupBox("LIST OF FILTERS TO MATCH IN XML FILES")
+        group = QGroupBox("LIST OF XPATH FILTERS TO SEARCH AND MATCH IN XML FILE(S)")
         
         layout = QVBoxLayout()
         
@@ -1130,7 +1132,7 @@ class MainWindow(QMainWindow):
 
         # Check if expression matches any pattern
         return any(re.match(pattern, xpath_expression) for pattern in valid_patterns)
-  
+
     
     def add_xpath_expression_to_listbox(self):
         xpath_expression = self.xpath_expression_input.text()
@@ -1151,11 +1153,11 @@ class MainWindow(QMainWindow):
             message = f"An exception of type {type(ex).__name__} occurred. Arguments: {ex.args!r}"
             self.program_output.setText(f"Error adding filter: {message}")
             QMessageBox.critical(self, "Exception adding filter", message)
-     
+
     # ======= End FUNCTIONS FOR create_matching_filter_group ======= #
 
     def create_export_evaluation_group(self):
-        group = QGroupBox("EXPORT EVALUATION RESULT AS CSV FILE")
+        group = QGroupBox("EXPORT SEARCH RESULT TO A CSV FILE")
         
         layout = QVBoxLayout()
         
@@ -1431,7 +1433,7 @@ class MainWindow(QMainWindow):
         except Exception as ex:
             message = f"An exception of type {type(ex).__name__} occurred. Arguments: {ex.args!r}"
             QMessageBox.critical(self, "Exception in reading CSV", f"Error reading CSV:\n{message}")
-                  
+
     
     def csv_save_as(self):
         try:
@@ -1598,7 +1600,6 @@ class MainWindow(QMainWindow):
             self.proxy_model.setFilterKeyColumn(filter_column)
 
         self.proxy_model.setFilterFixedString(filter_text)
-
 
 if __name__ == "__main__":
     app = QApplication(sys.argv)
