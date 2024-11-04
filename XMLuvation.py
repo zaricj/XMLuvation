@@ -109,11 +109,10 @@ class XMLParserThread(QObject):
             self.finished.emit(result)
 
 # Standalone processing functions that can be pickled
-def process_single_xml(filename: str, folder_path: str, xpath_expressions: List[str], start_index: int) -> Tuple[List[Dict], int, int]:
+def  process_single_xml(filename: str, folder_path: str, xpath_expressions: List[str]) -> Tuple[List[Dict], int, int]:
     """Process a single XML file and return its results."""
     final_results = []
     file_total_matches = 0
-    match_index = start_index
     file_path = os.path.join(folder_path, filename)
     
     try:
@@ -136,20 +135,19 @@ def process_single_xml(filename: str, folder_path: str, xpath_expressions: List[
         if result:
             if not ends_with_text_or_attribute:
                 final_results.append({
-                    "Index": match_index,
                     "Filename": os.path.splitext(filename)[0],
                     "Matches": match_count,
                     "Expression": expression
                 })
             else:
-                current_result = {"Filename": os.path.splitext(filename)[0], "Index": match_index}
+                current_result = {"Filename": os.path.splitext(filename)[0]}
                 process_xpath_result(expression, result, current_result)
                 if current_result:
                     final_results.append(current_result)
             
-            match_index += 1
+            
 
-    return final_results, file_total_matches, 1 if file_total_matches > 0 else 0
+    return final_results, file_total_matches
 
 def process_xpath_result(expression: str, result, current_file_results: Dict):
     """Process xpath results for a single expression."""
@@ -221,11 +219,11 @@ class CSVExportThread(QObject):
             self.output_set_text.emit("Writing matches to CSV file, please wait...")
             
             # Define headers - now including Index
-            headers = ["Index", "Filename"]
+            headers = ["Filename"]
             # Add all other headers excluding Filename and Index
             additional_headers = set()
             for dic in matching_results:
-                additional_headers.update(key for key in dic.keys() if key not in ["Filename", "Index"])
+                additional_headers.update(key for key in dic.keys() if key not in ["Filename"])
             headers.extend(sorted(additional_headers))
 
             with open(self.csv_output_path, "w", newline="", encoding="utf-8") as csvfile:
@@ -251,14 +249,12 @@ class CSVExportThread(QObject):
                 # Process each file's results
                 for filename, file_matches in results_by_filename.items():
                     for match in file_matches:
-                        index = match.get("Index", "")
                         
                         # Handle value fields that might contain multiple values
-                        value_fields = {k: v for k, v in match.items() if k not in ["Index", "Filename"] and v}
+                        value_fields = {k: v for k, v in match.items() if k not in ["Filename"] and v}
                         
                         if not value_fields:  # If there are no values, write a single row
                             writer.writerow({
-                                "Index": index,
                                 "Filename": filename
                                 })
                         else:
@@ -267,7 +263,6 @@ class CSVExportThread(QObject):
                             
                             for i in range(max_len):
                                 row = {
-                                    "Index": index,
                                     "Filename": filename
                                 }
                                 has_data = False
@@ -312,48 +307,43 @@ class CSVExportThread(QObject):
         total_sum_matches = 0
         total_matching_files = 0
         
-        try:
-            while self._is_running:
-                # Create a pool of processes
-                with multiprocessing.Pool(processes=num_processes) as pool:
-                    # Create partial function with fixed arguments
-                    process_func = partial(
-                        process_single_xml,
-                        folder_path=folder_containing_xml_files,
-                        xpath_expressions=list_of_xpath_expressions,
-                        start_index=1
-                    )
+        #try:
+        while self._is_running:
+            # Create a pool of processes
+            with multiprocessing.Pool(processes=num_processes) as pool:
+                # Create partial function with fixed arguments
+                process_func = partial(
+                    process_single_xml,
+                    folder_path=folder_containing_xml_files,
+                    xpath_expressions=list_of_xpath_expressions
+                )
+                
+                # Process files and collect results
+                for i, (file_results, file_matches) in enumerate(
+                    pool.imap_unordered(process_func, xml_files)
+                ):
+                    if not self._is_running:
+                        self.output_set_text.emit("Export task aborted successfully.")
+                        pool.terminate()
+                        return final_results, total_sum_matches, total_matching_files
                     
-                    # Process files and collect results
-                    for i, (file_results, file_matches, matching_file) in enumerate(
-                        pool.imap_unordered(process_func, xml_files)
-                    ):
-                        if not self._is_running:
-                            self.output_set_text.emit("Export task aborted successfully.")
-                            pool.terminate()
-                            return final_results, total_sum_matches, total_matching_files
-                        
-                        final_results.extend(file_results)
-                        total_sum_matches += file_matches
-                        total_matching_files += matching_file
-                        
-                        # Update progress
-                        progress = int((i + 1) / total_files * 100)
-                        self.progress_updated.emit(progress)
-                        self.output_set_text.emit(f"Processing file {i + 1} of {total_files}")
+                    final_results.extend(file_results)
+                    total_sum_matches += file_matches
                     
-                    self.output_append.emit("All files processed successfully.")
+                    # Update progress
+                    progress = int((i + 1) / total_files * 100)
+                    self.progress_updated.emit(progress)
+                    self.output_set_text.emit(f"Processing file {i + 1} of {total_files}")
+                
+                self.output_append.emit("All files processed successfully.")
+                
+                return final_results, total_sum_matches, total_matching_files
                     
-                    # Sort results by Index to maintain order
-                    final_results.sort(key=lambda x: x.get("Index", 0))
-                    
-                    return final_results, total_sum_matches, total_matching_files
-                    
-        except Exception as ex:
-            self.show_error_message.emit(
-                "Multiprocessing Error",
-                f"Error during multiprocessing: {str(ex)}"
-            )
+       # except Exception as ex:
+       #     self.show_error_message.emit(
+       #         "Multiprocessing Error",
+       #         f"Error during multiprocessing: {str(ex)}"
+       #     )
             return [], 0, 0
 
 class MainWindow(QMainWindow):
