@@ -109,7 +109,7 @@ class XMLParserThread(QObject):
             self.finished.emit(result)
 
 # Standalone processing functions that can be pickled
-def  process_single_xml(filename: str, folder_path: str, xpath_expressions: List[str]) -> Tuple[List[Dict], int, int]:
+def process_single_xml(filename: str, folder_path: str, xpath_expressions: List[str]) -> Tuple[List[Dict], int, int]:
     """Process a single XML file and return its results."""
     final_results = []
     file_total_matches = 0
@@ -133,21 +133,17 @@ def  process_single_xml(filename: str, folder_path: str, xpath_expressions: List
         ends_with_text_or_attribute = bool(match)
 
         if result:
+            current_result = {"Filename": os.path.splitext(filename)[0]}
             if not ends_with_text_or_attribute:
-                final_results.append({
-                    "Filename": os.path.splitext(filename)[0],
-                    "Matches": match_count,
-                    "Expression": expression
-                })
+                current_result["Matches"] = match_count
+                current_result["Expression"] = expression
             else:
-                current_result = {"Filename": os.path.splitext(filename)[0]}
                 process_xpath_result(expression, result, current_result)
-                if current_result:
-                    final_results.append(current_result)
             
-            
+            if current_result:
+                final_results.append(current_result)
 
-    return final_results, file_total_matches
+    return final_results, file_total_matches, 1 if file_total_matches > 0 else 0
 
 def process_xpath_result(expression: str, result, current_file_results: Dict):
     """Process xpath results for a single expression."""
@@ -216,14 +212,12 @@ class CSVExportThread(QObject):
                 self.output_set_text.emit("")
                 return
             
-            self.output_set_text.emit("Writing matches to CSV file, please wait...")
-            
-            # Define headers - now including Index
+            # Define headers excluding Index
             headers = ["Filename"]
-            # Add all other headers excluding Filename and Index
+            # Add all other headers excluding Filename
             additional_headers = set()
             for dic in matching_results:
-                additional_headers.update(key for key in dic.keys() if key not in ["Filename"])
+                additional_headers.update(key for key in dic.keys() if key != "Filename")
             headers.extend(sorted(additional_headers))
 
             with open(self.csv_output_path, "w", newline="", encoding="utf-8") as csvfile:
@@ -249,9 +243,8 @@ class CSVExportThread(QObject):
                 # Process each file's results
                 for filename, file_matches in results_by_filename.items():
                     for match in file_matches:
-                        
                         # Handle value fields that might contain multiple values
-                        value_fields = {k: v for k, v in match.items() if k not in ["Filename"] and v}
+                        value_fields = {k: v for k, v in match.items() if k != "Filename" and v}
                         
                         if not value_fields:  # If there are no values, write a single row
                             writer.writerow({
@@ -307,43 +300,42 @@ class CSVExportThread(QObject):
         total_sum_matches = 0
         total_matching_files = 0
         
-        #try:
-        while self._is_running:
-            # Create a pool of processes
-            with multiprocessing.Pool(processes=num_processes) as pool:
-                # Create partial function with fixed arguments
-                process_func = partial(
-                    process_single_xml,
-                    folder_path=folder_containing_xml_files,
-                    xpath_expressions=list_of_xpath_expressions
-                )
-                
-                # Process files and collect results
-                for i, (file_results, file_matches) in enumerate(
-                    pool.imap_unordered(process_func, xml_files)
-                ):
-                    if not self._is_running:
-                        self.output_set_text.emit("Export task aborted successfully.")
-                        pool.terminate()
-                        return final_results, total_sum_matches, total_matching_files
+        try:
+            while self._is_running:
+                # Create a pool of processes
+                with multiprocessing.Pool(processes=num_processes) as pool:
+                    # Create partial function with fixed arguments
+                    process_func = partial(
+                        process_single_xml,
+                        folder_path=folder_containing_xml_files,
+                        xpath_expressions=list_of_xpath_expressions,
+                    )
                     
-                    final_results.extend(file_results)
-                    total_sum_matches += file_matches
+                    # Process files and collect results
+                    for i, (file_results, file_matches, matching_file) in enumerate(
+                        pool.imap_unordered(process_func, xml_files)
+                    ):
+                        if not self._is_running:
+                            self.output_set_text.emit("Export task aborted successfully.")
+                            pool.terminate()
+                            return final_results, total_sum_matches, total_matching_files
+                        
+                        final_results.extend(file_results)
+                        total_sum_matches += file_matches
+                        total_matching_files += matching_file
+                        
+                        # Update progress
+                        progress = int((i + 1) / total_files * 100)
+                        self.progress_updated.emit(progress)
+                        self.output_set_text.emit(f"Processing file {i + 1} of {total_files}")
                     
-                    # Update progress
-                    progress = int((i + 1) / total_files * 100)
-                    self.progress_updated.emit(progress)
-                    self.output_set_text.emit(f"Processing file {i + 1} of {total_files}")
-                
-                self.output_append.emit("All files processed successfully.")
-                
-                return final_results, total_sum_matches, total_matching_files
+                    return final_results, total_sum_matches, total_matching_files
                     
-       # except Exception as ex:
-       #     self.show_error_message.emit(
-       #         "Multiprocessing Error",
-       #         f"Error during multiprocessing: {str(ex)}"
-       #     )
+        except Exception as ex:
+            self.show_error_message.emit(
+                "Multiprocessing Error",
+                f"Error during multiprocessing: {str(ex)}"
+            )
             return [], 0, 0
 
 class MainWindow(QMainWindow):
@@ -363,12 +355,16 @@ class MainWindow(QMainWindow):
         self.csv_export_worker = None
         self.parse_xml_thread = None
         self.parse_xml_worker = None
+        
+        # Theme stuff
+        self.light_mode = QIcon("_internal\\imgs\\light.png")
+        self.dark_mode = QIcon("_internal\\imgs\\dark.png")
         self.initialize_theme(self.current_theme)
+        
         self.initUI()
         
-        
     def initUI(self):
-        self.setWindowTitle("XMLuvation v1.2.2")
+        self.setWindowTitle("XMLuvation v1.3.1")
         self.setWindowIcon(QIcon("_internal\\icon\\xml_32px.ico"))  # Replace with actual path
         self.setGeometry(500, 250, 1300, 840)
         self.saveGeometry()
@@ -484,11 +480,8 @@ class MainWindow(QMainWindow):
         #help_menu.addAction(xpath_cheatsheet_action)
         
         # Theme Menu
-        theme_menu = menu_bar.addMenu("&Personalize")
-        personalize_action = QAction("Switch Dark/Light Theme", self)
-        personalize_action.setStatusTip("Change theme to dark")
-        personalize_action.triggered.connect(self.change_theme)
-        theme_menu.addAction(personalize_action)
+        self.toggle_theme_action = menu_bar.addAction(self.light_mode, "Toggle Theme")
+        self.toggle_theme_action.triggered.connect(self.change_theme)
         
     # ======= START FUNCTIONS create_menu_bar ======= #
     
@@ -526,7 +519,7 @@ class MainWindow(QMainWindow):
     
     def about_message(self):
         # About Message
-        program_info = "Name: XMLuvation\nVersion: 1.2.2\nCredit: Jovan\nFramework: PySide6"
+        program_info = "Name: XMLuvation\nVersion: 1.3.1\nCredit: Jovan\nFramework: PySide6"
         about_message = """XMLuvation is a Python application designed to parse and evaluate XML files and use XPath to search for matches which matching results will be saved in a csv file. Radio buttons are disabled for now, this feature will be implemented in a later version."""
         about_box = QMessageBox()
         about_box.setText("About this program...")
@@ -538,9 +531,10 @@ class MainWindow(QMainWindow):
     def change_theme(self):
         if self.current_theme == "_internal\\theme\\dark_theme.qss":
             self.current_theme = "_internal\\theme\\light_theme.qss"
+            self.toggle_theme_action.setIcon(self.dark_mode)
         else:
             self.current_theme = "_internal\\theme\\dark_theme.qss"
-        
+            self.toggle_theme_action.setIcon(self.light_mode)
         self.initialize_theme(self.current_theme)
     
     def clear_output(self):
