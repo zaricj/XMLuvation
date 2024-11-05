@@ -345,6 +345,7 @@ class MainWindow(QMainWindow):
     
     def __init__(self):
         super().__init__()
+        self.setAttribute(Qt.WA_DeleteOnClose)  
         self.current_theme =  "_internal\\theme\\dark_theme.qss" # Sets the global main theme from the file
         self.config_handler = ConfigHandler()
         self.eval_input_file = None
@@ -355,15 +356,6 @@ class MainWindow(QMainWindow):
         self.csv_export_worker = None
         self.parse_xml_thread = None
         self.parse_xml_worker = None
-        
-        # Theme stuff
-        self.light_mode = QIcon("_internal\\imgs\\light.png")
-        self.dark_mode = QIcon("_internal\\imgs\\dark.png")
-        self.initialize_theme(self.current_theme)
-        
-        self.initUI()
-        
-    def initUI(self):
         self.setWindowTitle("XMLuvation v1.3.1")
         self.setWindowIcon(QIcon("_internal\\icon\\xml_32px.ico"))  # Replace with actual path
         self.setGeometry(500, 250, 1300, 840)
@@ -377,10 +369,18 @@ class MainWindow(QMainWindow):
         # Connect the custom context menu for Listbox
         self.xpath_listbox.setContextMenuPolicy(Qt.CustomContextMenu)
         self.xpath_listbox.customContextMenuRequested.connect(self.show_context_menu)
-
+        
+        # Theme stuff
+        self.light_mode = QIcon("_internal\\images\\light.png")
+        self.dark_mode = QIcon("_internal\\images\\dark.png")
+        self.initialize_theme(self.current_theme)
+        
+        self.initUI()
+        
         # Create the menu bar
         self.create_menu_bar()
-
+        
+    def initUI(self):
         # Create the main layout
         main_layout = QVBoxLayout()
 
@@ -1595,8 +1595,9 @@ class MainWindow(QMainWindow):
 
         self.proxy_model.setFilterFixedString(filter_text)
 
-if __name__ == "__main__":
+if __name__ == "__main__": 
+    multiprocessing.freeze_support()
     app = QApplication(sys.argv)
     window = MainWindow()
     window.show()
-    sys.exit(app.exec())
+    app.exec()
