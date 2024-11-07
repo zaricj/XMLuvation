@@ -69,8 +69,8 @@ This project is licensed under the MIT License.
 
 ##### Main View
 
-![XMLuvation_Pyside6_P1](https://github.com/user-attachments/assets/32670ae0-5362-47e8-a8ea-3610d568642b)
+![XMLuvation_Pyside6_P1](docs/images/main_gui.png)
 
 ##### CSV Conversion and Table Display View
 
-![XMLuvation_Pyside6_P2](https://github.com/user-attachments/assets/fa476b98-80a3-48ff-9205-1d5f16b4d7b5)
+![XMLuvation_Pyside6_P2](docs/images/second_main_gui.png)
