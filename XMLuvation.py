@@ -658,8 +658,9 @@ class MainWindow(QMainWindow):
         folder_layout.addWidget(self.read_xml_button)
         layout.addLayout(folder_layout)
 
+        layout.addSpacerItem(QSpacerItem(2,5, QSizePolicy.Expanding, QSizePolicy.Minimum))
         layout.addWidget(QLabel("Get XML Tag and Attribute Names/Values for XPath generation:"))
-        layout.addSpacerItem(QSpacerItem(40,10, QSizePolicy.Expanding, QSizePolicy.Minimum))
+        layout.addSpacerItem(QSpacerItem(2,5, QSizePolicy.Expanding, QSizePolicy.Minimum))
 
         tag_layout = QHBoxLayout()
         
@@ -1371,7 +1372,7 @@ class MainWindow(QMainWindow):
 
         layout.addLayout(output_layout)
         
-        #layout.addSpacerItem(self.horizontal_spacer)
+        layout.addSpacerItem(QSpacerItem(40,10, QSizePolicy.Expanding, QSizePolicy.Minimum))
         layout.addWidget(self.convert_csv_button)
         layout.addWidget(self.checkbox_write_index_column)
         
