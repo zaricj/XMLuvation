@@ -345,7 +345,7 @@ class MainWindow(QMainWindow):
     
     def __init__(self):
         super().__init__()
-        self.setAttribute(Qt.WA_DeleteOnClose)  
+        self.setAttribute(Qt.WA_DeleteOnClose)
         self.current_theme =  "_internal\\theme\\dark_theme.qss" # Sets the global main theme from the file
         self.config_handler = ConfigHandler()
         self.eval_input_file = None
@@ -628,7 +628,7 @@ class MainWindow(QMainWindow):
     def create_xml_eval_group(self):
         group = QGroupBox("XML FOLDER SELECTION AND XPATH BUILDER")
         layout = QVBoxLayout()
-        self.horizontal_spacer = QSpacerItem(40,10, QSizePolicy.Expanding, QSizePolicy.Minimum)
+        
         
         xml_input_folder_and_statusbar_layout = QHBoxLayout()
         
@@ -659,7 +659,7 @@ class MainWindow(QMainWindow):
         layout.addLayout(folder_layout)
 
         layout.addWidget(QLabel("Get XML Tag and Attribute Names/Values for XPath generation:"))
-        layout.addSpacerItem(self.horizontal_spacer)
+        layout.addSpacerItem(QSpacerItem(40,10, QSizePolicy.Expanding, QSizePolicy.Minimum))
 
         tag_layout = QHBoxLayout()
         
@@ -698,7 +698,7 @@ class MainWindow(QMainWindow):
         att_layout.addWidget(self.attribute_value_label)
         att_layout.addWidget(self.attribute_value_combobox)
         layout.addLayout(att_layout)
-        layout.addSpacerItem(self.horizontal_spacer)
+        layout.addSpacerItem(QSpacerItem(40,10, QSizePolicy.Expanding, QSizePolicy.Minimum))
         
         # Set expanding size policy for comboboxes
         self.attribute_name_combobox.setSizePolicy(QSizePolicy.Expanding, QSizePolicy.Fixed)
@@ -1297,7 +1297,7 @@ class MainWindow(QMainWindow):
         self.progressbar.setFormat("%p%")  
         
         layout.addWidget(self.xml_output)
-        layout.addSpacerItem(self.horizontal_spacer)
+        layout.addSpacerItem(QSpacerItem(40,10, QSizePolicy.Expanding, QSizePolicy.Minimum))
         progress_layout = QHBoxLayout()
         progress_layout.addWidget(self.progressbar)
         layout.addLayout(progress_layout)
@@ -1350,7 +1350,7 @@ class MainWindow(QMainWindow):
         input_layout.addWidget(self.browse_csv_button)
         
         layout.addWidget(self.desc_label)
-        layout.addSpacerItem(self.horizontal_spacer)
+        layout.addSpacerItem(QSpacerItem(40,10, QSizePolicy.Expanding, QSizePolicy.Minimum))
         layout.addLayout(input_layout)
         
         # Elements
@@ -1371,7 +1371,7 @@ class MainWindow(QMainWindow):
 
         layout.addLayout(output_layout)
         
-        layout.addSpacerItem(self.horizontal_spacer)
+        #layout.addSpacerItem(self.horizontal_spacer)
         layout.addWidget(self.convert_csv_button)
         layout.addWidget(self.checkbox_write_index_column)
         
@@ -1600,4 +1600,4 @@ if __name__ == "__main__":
     app = QApplication(sys.argv)
     window = MainWindow()
     window.show()
-    app.exec()
+    sys.exit(app.exec())
