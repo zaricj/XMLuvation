@@ -357,7 +357,7 @@ class MainWindow(QMainWindow):
         self.parse_xml_thread = None
         self.parse_xml_worker = None
         self.setWindowTitle("XMLuvation v1.3.1")
-        self.setWindowIcon(QIcon("_internal\\icon\\xml_32px.ico"))  # Replace with actual path
+        self.setWindowIcon(QIcon("_internal\\icon\\xml_256px.ico"))  # Replace with actual path
         self.setGeometry(500, 250, 1300, 840)
         self.saveGeometry()
         
@@ -373,12 +373,21 @@ class MainWindow(QMainWindow):
         # Theme stuff
         self.light_mode = QIcon("_internal\\images\\light.png")
         self.dark_mode = QIcon("_internal\\images\\dark.png")
-        self.initialize_theme(self.current_theme)
         
         self.initUI()
         
         # Create the menu bar
         self.create_menu_bar()
+        
+        try:
+            with open("_internal\\theme\\theme_config.txt", "r") as f:
+                    self.initialize_theme(f.read())
+                    if f.read() == "_internal\\theme\\light_theme.qss":
+                        self.toggle_theme_action.setIcon(self.dark_mode)
+                    else:
+                        self.toggle_theme_action.setIcon(self.light_mode)
+        except FileNotFoundError:
+            self.initialize_theme(self.current_theme)
         
     def initUI(self):
         # Create the main layout
@@ -404,6 +413,8 @@ class MainWindow(QMainWindow):
         
         if reply == QMessageBox.Yes:
             event.accept()
+            with open("_internal\\theme\\theme_config.txt", "w") as f:
+                f.write(self.current_theme)
         else:
             event.ignore()
     
@@ -709,15 +720,15 @@ class MainWindow(QMainWindow):
     
         # Elements
         self.radio_button_equals = QRadioButton("Equals")
-        self.radio_button_equals.setChecked(True)
+        # self.radio_button_equals.setChecked(True)
         self.radio_button_contains = QRadioButton("Contains")
-        self.radio_button_contains.setDisabled(True)
+        # self.radio_button_contains.setDisabled(True)
         self.radio_button_startswith = QRadioButton("Starts-with")
-        self.radio_button_startswith.setDisabled(True)
+        # self.radio_button_startswith.setDisabled(True)
         self.radio_button_greater = QRadioButton("Greater")
-        self.radio_button_greater.setDisabled(True)
+        # self.radio_button_greater.setDisabled(True)
         self.radio_button_smaller = QRadioButton("Smaller")
-        self.radio_button_smaller.setDisabled(True)
+        # self.radio_button_smaller.setDisabled(True)
         
         function_layout.addWidget(QLabel("Function:"))
         function_layout.addWidget(self.radio_button_equals)
