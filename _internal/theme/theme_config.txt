@@ -1,1 +1,1 @@
-_internal\theme\light_theme.qss
+_internal\theme\dark_theme.qss

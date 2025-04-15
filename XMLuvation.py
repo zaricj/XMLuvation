@@ -21,8 +21,6 @@ import multiprocessing
 from functools import partial
 from typing import List, Tuple, Dict
 
-# TODO Fix exit code = 3221226356 (HEAP_MEMORY_CORRUPTION) (Seems to be a thread still running on exit thing) 
-
 class ConfigHandler:
     def __init__(self):
         self.config_dir = "_internal\\configuration"
@@ -133,34 +131,62 @@ def process_single_xml(filename: str, folder_path: str, xpath_expressions: List[
         ends_with_text_or_attribute = bool(match)
 
         if result:
-            current_result = {"Filename": os.path.splitext(filename)[0]}
             if not ends_with_text_or_attribute:
+                current_result = {"Filename": os.path.splitext(filename)[0]}
                 current_result["Matches"] = match_count
                 current_result["Expression"] = expression
-            else:
-                process_xpath_result(expression, result, current_result)
-            
-            if current_result:
                 final_results.append(current_result)
+            else:
+                new_results = process_xpath_result(expression, result, os.path.splitext(filename)[0])
+                final_results.extend(new_results)
+            
 
     return final_results, file_total_matches, 1 if file_total_matches > 0 else 0
 
-def process_xpath_result(expression: str, result, current_file_results: Dict):
+def process_xpath_result(expression: str, result, filename: str) -> List[Dict]:
     """Process xpath results for a single expression."""
+    results = []
+    
     if "/@" in expression:
         attribute_name = expression.split("@")[-1]
         key = f"Attribute {attribute_name} Value"
-        current_file_results[key] = ";".join([elem.strip() for elem in result if elem.strip()])
+        
+        # Create separate entry for each result
+        for elem in result:
+            if elem.strip():
+                results.append({
+                    "Filename": filename,
+                    key: elem.strip()
+                })
+                
     elif "/text()" in expression:
         tag_name = expression.split("/")[-2]
         key = f"Tag {tag_name} Value"
-        current_file_results[key] = ";".join([elem.strip() for elem in result if elem.strip()])
+        
+        # Create separate entry for each result
+        for elem in result:
+            if elem.strip():
+                results.append({
+                    "Filename": filename,
+                    key: elem.strip()
+                })
+                
     elif "[@" in expression:
         match = re.search(r"@([^=]+)", expression)
         if match:
             attribute_name = match.group(1).strip()
-            key = f"Attribute {attribute_name} Value" 
-            current_file_results[key] = ";".join([elem.get(attribute_name) for elem in result if elem.get(attribute_name)])
+            key = f"Attribute {attribute_name} Value"
+            
+            # Create separate entry for each result
+            for elem in result:
+                value = elem.get(attribute_name)
+                if value:
+                    results.append({
+                        "Filename": filename,
+                        key: value
+                    })
+    
+    return results
 
 class CSVExportThread(QObject):
     # Signals
@@ -194,7 +220,6 @@ class CSVExportThread(QObject):
         try:
             matching_results, total_matches_found, total_matching_files = self.evaluate_xml_files_matching(
                 self.folder_containing_xml_files, self.list_of_xpath_filters)
-
             # Check if the thread is supposed to be running
             if not self._is_running:
                 return 
@@ -235,39 +260,29 @@ class CSVExportThread(QObject):
                 results_by_filename = {}
                 for match in matching_results:
                     filename = match["Filename"]
-                    
                     if filename not in results_by_filename:
                         results_by_filename[filename] = []
                     results_by_filename[filename].append(match)
-
+        
                 # Process each file's results
                 for filename, file_matches in results_by_filename.items():
+                    # Align values for each filename
+                    aligned_rows = {}
                     for match in file_matches:
-                        # Handle value fields that might contain multiple values
-                        value_fields = {k: v for k, v in match.items() if k != "Filename" and v}
-                        
-                        if not value_fields:  # If there are no values, write a single row
-                            writer.writerow({
-                                "Filename": filename
-                                })
-                        else:
-                            # Split multiple values and write separate rows
-                            max_len = max(len(str(v).split(";")) for v in value_fields.values())
-                            
-                            for i in range(max_len):
-                                row = {
-                                    "Filename": filename
-                                }
-                                has_data = False
-                                
-                                for key, value in value_fields.items():
-                                    value_list = str(value).split(";")
-                                    if i < len(value_list):
-                                        row[key] = value_list[i].strip()
-                                        if row[key]:  # Check if the value is not empty
-                                            has_data = True
-                                if has_data:  # Only write the row if it has data
-                                    writer.writerow(row)
+                        for key, value in match.items():
+                            if key != "Filename" and value:  # Ignore Filename and empty values
+                                if key not in aligned_rows:
+                                    aligned_rows[key] = []
+                                aligned_rows[key].append(value)
+        
+                    # Get the maximum number of aligned rows
+                    max_rows = max(len(values) for values in aligned_rows.values())
+                    for i in range(max_rows):
+                        row = {"Filename": filename}
+                        for key, values in aligned_rows.items():
+                            if i < len(values):
+                                row[key] = values[i]
+                        writer.writerow(row)
 
             # Emit completion signals
             self.show_info_message.emit("Export Successful", "CSV export completed.")
@@ -720,6 +735,7 @@ class MainWindow(QMainWindow):
     
         # Elements
         self.radio_button_equals = QRadioButton("Equals")
+        self.radio_button_equals.setChecked(True)
         # self.radio_button_equals.setChecked(True)
         self.radio_button_contains = QRadioButton("Contains")
         # self.radio_button_contains.setDisabled(True)
@@ -1233,7 +1249,7 @@ class MainWindow(QMainWindow):
                 self.csv_export_worker.show_info_message.connect(self.show_info_message)
                 self.csv_export_worker.progress_updated.connect(self.update_progress)
                 
-                # Disable UI elements during procesing
+                # Disable UI elements during processing
                 self.set_ui_enabled(True)
                 self.csv_abort_export_button.setHidden(False)
 
