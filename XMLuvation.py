@@ -143,7 +143,7 @@ def process_single_xml(filename: str, folder_path: str, xpath_expressions: List[
 
     return final_results, file_total_matches, 1 if file_total_matches > 0 else 0
 
-def process_xpath_result(expression: str, result, filename: str) -> List[Dict]:
+def process_xpath_result(expression: str, result: list, filename: str) -> List[Dict]:
     """Process xpath results for a single expression."""
     results = []
     
@@ -956,7 +956,10 @@ class MainWindow(QMainWindow):
                 if tag_value and not attribute_name:
                     # Case: Tag Name and Tag Value
                     xpath_expression += f"[text()='{tag_value}']"
-                elif attribute_name and not tag_value:
+                elif tag_name and attribute_name and not attribute_value:
+                    # Case: Tag Name and Attribute Name without Attribute Value
+                    xpath_expression += f"[@{attribute_name}]/@{attribute_name}"
+                elif attribute_name and not tag_value and not attribute_value:
                     # Case: Tag Name and Attribute Name
                     xpath_expression += f"/@{attribute_name}"
                 elif attribute_name and attribute_value:
