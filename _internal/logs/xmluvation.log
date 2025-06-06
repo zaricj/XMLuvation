@@ -1,0 +1,12 @@
+2025-06-06 11:33:40,304 - DEBUG - Resolved config file path: C:\Users\ZaricJ\Documents\05 Entwicklung\GitHub\XMLuvation\_internal\configuration\config.json
+2025-06-06 11:33:40,304 - DEBUG - Attempting to load config from C:\Users\ZaricJ\Documents\05 Entwicklung\GitHub\XMLuvation\_internal\configuration\config.json
+2025-06-06 11:33:40,304 - DEBUG - Loaded config: {'custom_paths': {'Lobster Echt XML': '\\\\nesis002\\ProfilileXMLExport'}}
+2025-06-06 11:34:52,154 - DEBUG - Resolved config file path: C:\Users\ZaricJ\Documents\05 Entwicklung\GitHub\XMLuvation\_internal\configuration\config.json
+2025-06-06 11:34:52,154 - DEBUG - Attempting to load config from C:\Users\ZaricJ\Documents\05 Entwicklung\GitHub\XMLuvation\_internal\configuration\config.json
+2025-06-06 11:34:52,154 - DEBUG - Loaded config: {'custom_paths': {'Lobster Echt XML': '\\\\nesis002\\ProfilileXMLExport'}}
+2025-06-06 11:36:32,854 - DEBUG - Resolved config file path: C:\Users\ZaricJ\Documents\05 Entwicklung\GitHub\XMLuvation\_internal\configuration\config.json
+2025-06-06 11:36:32,854 - DEBUG - Attempting to load config from C:\Users\ZaricJ\Documents\05 Entwicklung\GitHub\XMLuvation\_internal\configuration\config.json
+2025-06-06 11:36:32,854 - DEBUG - Loaded config: {'custom_paths': {'Lobster Echt XML': '\\\\nesis002\\ProfilileXMLExport'}}
+2025-06-06 11:38:30,974 - DEBUG - Resolved config file path: C:\Users\ZaricJ\Documents\05 Entwicklung\GitHub\XMLuvation\_internal\configuration\config.json
+2025-06-06 11:38:30,975 - DEBUG - Attempting to load config from C:\Users\ZaricJ\Documents\05 Entwicklung\GitHub\XMLuvation\_internal\configuration\config.json
+2025-06-06 11:38:30,975 - DEBUG - Loaded config: {'custom_paths': {'Lobster Echt XML': '\\\\nesis002\\ProfilileXMLExport'}}
