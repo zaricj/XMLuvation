@@ -27,6 +27,8 @@ from utils.csv_export import CSVExportThread
 
 # Path Constants
 
+ConfigHandler.print_file_path(ConfigHandler())
+
 BASE_DIR = os.path.dirname(os.path.abspath(__file__))
 
 LOG_FILE_PATH: str = os.path.join("src","gui","logs","xmluvation.log")
