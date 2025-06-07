@@ -5,7 +5,7 @@ from PySide6.QtWidgets import (QApplication, QMainWindow, QWidget, QVBoxLayout,
                              QCheckBox,QMenu,QFileDialog, QMessageBox, QFrame, 
                              QSpacerItem, QSizePolicy, QTableView, QHeaderView, QInputDialog)
 from PySide6.QtGui import QIcon, QAction, QStandardItemModel, QStandardItem, QCloseEvent
-from PySide6.QtCore import Qt, QThread, Signal, Slot, QSortFilterProxyModel, QObject, QFile, QTextStream
+from PySide6.QtCore import Qt, QThread, Signal, Slot, QSortFilterProxyModel, QObject, QFile, QTextStream, QSettings
 from pathlib import Path
 from  datetime import datetime
 from lxml import etree as ET
@@ -18,340 +18,36 @@ import webbrowser
 import json
 import traceback
 import multiprocessing
+import faulthandler
 from functools import partial
 from typing import List, Tuple, Dict
+from utils.config_handler import ConfigHandler
+from utils.xml_parser import XMLParserThread
+from utils.csv_export import CSVExportThread
 
-class ConfigHandler:
-    def __init__(self):
-        self.config_dir = "_internal\\configuration"
-        self.config_file = os.path.join(self.config_dir, "config.json")
-        
-        os.makedirs(self.config_dir, exist_ok=True)
-        
-        self.config = self.load_config()
+# Path Constants
 
+BASE_DIR = os.path.dirname(os.path.abspath(__file__))
 
-    def load_config(self):
-        if os.path.exists(self.config_file):
-            try:
-                with open(self.config_file, 'r') as f:
-                    return json.load(f)
-            except json.JSONDecodeError:
-                print(f"Warning: {self.config_file} is empty or contains invalid JSON. Using default configuration.")
-        return self.get_default_config()
+LOG_FILE_PATH: str = os.path.join("src","gui","logs","xmluvation.log")
+GUI_CONFIG_FILE_PATH: str = os.path.join("src","gui","config","config.json")
+DARK_THEME_PATH = os.path.join(BASE_DIR, "resources", "themes", "dark_theme.qss")
+LIGHT_THEME_PATH = os.path.join(BASE_DIR, "resources", "themes", "light_theme.qss")
+ICON_PATH = os.path.join(BASE_DIR, "resources", "icons", "xml_256px.ico")
+DARK_THEME_QMENU_ICON = os.path.join(BASE_DIR, "resources", "images", "dark.png")
+LIGHT_THEME_QMENU_ICON = os.path.join(BASE_DIR, "resources", "images", "light.png")
 
-
-    def get_default_config(self):
-        return {"custom_paths": {}}
-
-
-    def save_config(self):
-        with open(self.config_file, 'w') as f:
-            json.dump(self.config, f, indent=4)
-
-
-    def add_custom_path(self, name, path):
-        self.config["custom_paths"][name] = path
-        self.save_config()
-
-
-    def get_custom_paths(self):
-        return self.config["custom_paths"]
-
-
-    def remove_custom_path(self, name):
-        if name in self.config["custom_paths"]:
-            del self.config["custom_paths"][name]
-            self.save_config()
-
-
-class XMLParserThread(QObject):
-    finished = Signal(dict)
-    show_error_message = Signal(str, str)
-
-    def __init__(self, parent, xml_file):
-        super().__init__()
-        self.parent = parent
-        self.xml_file = xml_file
-
-    def run(self):
-        try:
-            tree = ET.parse(self.xml_file)
-            root = tree.getroot()
-            xml_string = ET.tostring(root, encoding="unicode", pretty_print=True)
-
-            tags = set()
-            tag_values = set()
-            attributes = set()
-            attribute_values = set()
-
-            for elem in root.iter():
-                tags.add(elem.tag)
-                if elem.text and elem.text.strip():
-                    tag_values.add(elem.text.strip())
-                for attr, value in elem.attrib.items():
-                    attributes.add(attr)
-                    attribute_values.add(value)
-
-            result = {
-                'xml_string': xml_string,
-                'tags': sorted(tags),
-                'tag_values': sorted(tag_values),
-                'attributes': sorted(attributes),
-                'attribute_values': sorted(attribute_values)
-            }
-            
-        except Exception as ex:
-            self.show_error_message.emit("An exception occurred", str(ex))
-        finally:
-            self.finished.emit(result)
-
-# Standalone processing functions that can be pickled
-def process_single_xml(filename: str, folder_path: str, xpath_expressions: List[str]) -> Tuple[List[Dict], int, int]:
-    """Process a single XML file and return its results."""
-    final_results = []
-    file_total_matches = 0
-    file_path = os.path.join(folder_path, filename)
-    
+def initialize_theme(parent, theme_file):
     try:
-        tree = ET.parse(file_path)
-        root = tree.getroot()
-    except ET.XMLSyntaxError:
-        return [], 0, 0
-    except Exception:
-        return [], 0, 0
+        file = QFile(theme_file)
+        if file.open(QFile.ReadOnly | QFile.Text):
+            stream = QTextStream(file)
+            stylesheet = stream.readAll()
+            parent.setStyleSheet(stylesheet)
+        file.close()
+    except Exception as ex:
+        QMessageBox.critical(parent, "Theme load error", f"Failed to load theme: {str(ex)}")
 
-    for expression in xpath_expressions:
-        result = root.xpath(expression)
-        match_count = len(result)
-        file_total_matches += match_count
-
-        pattern_text_or_attribute_end = r'(.*?/text\(\)$|.*?/@[a-zA-Z_][a-zA-Z0-9_]*$)'
-        match = re.match(pattern_text_or_attribute_end, expression)
-        ends_with_text_or_attribute = bool(match)
-
-        if result:
-            if not ends_with_text_or_attribute:
-                current_result = {"Filename": os.path.splitext(filename)[0]}
-                current_result["Matches"] = match_count
-                current_result["Expression"] = expression
-                final_results.append(current_result)
-            else:
-                new_results = process_xpath_result(expression, result, os.path.splitext(filename)[0])
-                final_results.extend(new_results)
-            
-
-    return final_results, file_total_matches, 1 if file_total_matches > 0 else 0
-
-def process_xpath_result(expression: str, result: list, filename: str) -> List[Dict]:
-    """Process xpath results for a single expression."""
-    results = []
-    
-    if "/@" in expression:
-        attribute_name = expression.split("@")[-1]
-        key = f"Attribute {attribute_name} Value"
-        
-        # Create separate entry for each result
-        for elem in result:
-            if elem.strip():
-                results.append({
-                    "Filename": filename,
-                    key: elem.strip()
-                })
-                
-    elif "/text()" in expression:
-        tag_name = expression.split("/")[-2]
-        key = f"Tag {tag_name} Value"
-        
-        # Create separate entry for each result
-        for elem in result:
-            if elem.strip():
-                results.append({
-                    "Filename": filename,
-                    key: elem.strip()
-                })
-                
-    elif "[@" in expression:
-        match = re.search(r"@([^=]+)", expression)
-        if match:
-            attribute_name = match.group(1).strip()
-            key = f"Attribute {attribute_name} Value"
-            
-            # Create separate entry for each result
-            for elem in result:
-                value = elem.get(attribute_name)
-                if value:
-                    results.append({
-                        "Filename": filename,
-                        key: value
-                    })
-    
-    return results
-
-class CSVExportThread(QObject):
-    # Signals
-    finished = Signal()
-    show_info_message = Signal(str, str)
-    show_error_message = Signal(str, str)
-    progress_updated = Signal(int)
-    output_set_text = Signal(str)
-    output_append = Signal(str)
-
-    def __init__(self, folder_containing_xml_files, list_of_xpath_filters, csv_output_path):
-        super().__init__()
-        self.folder_containing_xml_files = folder_containing_xml_files
-        self.list_of_xpath_filters = list_of_xpath_filters
-        self.csv_output_path = csv_output_path
-        self._is_running = True
-        
-    def stop(self):
-        """Method to stop the running task"""
-        self._is_running = False
-
-    def run(self):
-        try:
-            self.search_and_export()
-        except Exception as ex:
-            self.show_error_message.emit("An exception occurred", str(ex))
-        finally:
-            self.finished.emit()
-        
-    def search_and_export(self):
-        try:
-            matching_results, total_matches_found, total_matching_files = self.evaluate_xml_files_matching(
-                self.folder_containing_xml_files, self.list_of_xpath_filters)
-            # Check if the thread is supposed to be running
-            if not self._is_running:
-                return 
-
-        except Exception as ex:
-            tb = traceback.extract_tb(ex.__traceback__)
-            line_number = tb[-1].lineno
-            message = f"An exception of type {type(ex).__name__} occurred on line {line_number}. Arguments: {ex.args!r}"
-            self.show_error_message.emit("An exception occurred", message)
-            return
-            
-        try:
-            if not matching_results:
-                self.show_info_message.emit("No matches found", "No matches found by searching with the added filters.")
-                self.output_set_text.emit("")
-                return
-            
-            # Define headers excluding Index
-            headers = ["Filename"]
-            # Add all other headers excluding Filename
-            additional_headers = set()
-            for dic in matching_results:
-                additional_headers.update(key for key in dic.keys() if key != "Filename")
-            headers.extend(sorted(additional_headers))
-
-            with open(self.csv_output_path, "w", newline="", encoding="utf-8") as csvfile:
-                writer = csv.DictWriter(
-                    csvfile, 
-                    fieldnames=headers, 
-                    delimiter=",", 
-                    extrasaction="ignore", 
-                    quotechar='"', 
-                    quoting=csv.QUOTE_ALL
-                )
-                writer.writeheader()
-
-                # Group results by filename
-                results_by_filename = {}
-                for match in matching_results:
-                    filename = match["Filename"]
-                    if filename not in results_by_filename:
-                        results_by_filename[filename] = []
-                    results_by_filename[filename].append(match)
-        
-                # Process each file's results
-                for filename, file_matches in results_by_filename.items():
-                    # Align values for each filename
-                    aligned_rows = {}
-                    for match in file_matches:
-                        for key, value in match.items():
-                            if key != "Filename" and value:  # Ignore Filename and empty values
-                                if key not in aligned_rows:
-                                    aligned_rows[key] = []
-                                aligned_rows[key].append(value)
-        
-                    # Get the maximum number of aligned rows
-                    max_rows = max(len(values) for values in aligned_rows.values())
-                    for i in range(max_rows):
-                        row = {"Filename": filename}
-                        for key, values in aligned_rows.items():
-                            if i < len(values):
-                                row[key] = values[i]
-                        writer.writerow(row)
-
-            # Emit completion signals
-            self.show_info_message.emit("Export Successful", "CSV export completed.")
-            self.output_set_text.emit(
-                f"Found {total_matching_files} files that have a total sum of {total_matches_found} matches."
-            )
-
-        except Exception as ex:
-            tb = traceback.extract_tb(ex.__traceback__)
-            line_number = tb[-1].lineno
-            message = f"An exception of type {type(ex).__name__} occurred on line {line_number}. Arguments: {ex.args!r}"
-            self.show_error_message.emit("An exception occurred", message)
-
-        finally:
-            self.finished.emit()
-
-    def evaluate_xml_files_matching(self, folder_containing_xml_files, list_of_xpath_expressions):
-        """Evaluate XML files using multiprocessing."""
-        xml_files = [f for f in os.listdir(folder_containing_xml_files) if f.endswith(".xml")]
-        total_files = len(xml_files)
-        
-        if not xml_files:
-            return [], 0, 0
-
-        # Calculate the number of processes to use (leave one core free)
-        num_processes = max(1, multiprocessing.cpu_count() - 1)
-        
-        # Initialize multiprocessing variables
-        final_results = []
-        total_sum_matches = 0
-        total_matching_files = 0
-        
-        try:
-            while self._is_running:
-                # Create a pool of processes
-                with multiprocessing.Pool(processes=num_processes) as pool:
-                    # Create partial function with fixed arguments
-                    process_func = partial(
-                        process_single_xml,
-                        folder_path=folder_containing_xml_files,
-                        xpath_expressions=list_of_xpath_expressions,
-                    )
-                    
-                    # Process files and collect results
-                    for i, (file_results, file_matches, matching_file) in enumerate(
-                        pool.imap_unordered(process_func, xml_files)
-                    ):
-                        if not self._is_running:
-                            self.output_set_text.emit("Export task aborted successfully.")
-                            pool.terminate()
-                            return final_results, total_sum_matches, total_matching_files
-                        
-                        final_results.extend(file_results)
-                        total_sum_matches += file_matches
-                        total_matching_files += matching_file
-                        
-                        # Update progress
-                        progress = int((i + 1) / total_files * 100)
-                        self.progress_updated.emit(progress)
-                        self.output_set_text.emit(f"Processing file {i + 1} of {total_files}")
-                    
-                    return final_results, total_sum_matches, total_matching_files
-                    
-        except Exception as ex:
-            self.show_error_message.emit(
-                "Multiprocessing Error",
-                f"Error during multiprocessing: {str(ex)}"
-            )
-            return [], 0, 0
 
 class MainWindow(QMainWindow):
     progress_updated = Signal(int)
@@ -371,11 +67,10 @@ class MainWindow(QMainWindow):
         self.csv_export_worker = None
         self.parse_xml_thread = None
         self.parse_xml_worker = None
+        self.settings = QSettings("Jovan", "XMLuvation")
         self.setWindowTitle("XMLuvation v1.3.1")
-        self.setWindowIcon(QIcon("_internal\\icon\\xml_256px.ico"))  # Replace with actual path
-        self.setGeometry(500, 250, 1300, 840)
-        self.saveGeometry()
-        
+        self.setWindowIcon(QIcon(ICON_PATH))
+
         # Signals and Slots
         self.progress_updated.connect(self.update_progress)
         self.update_input_file_signal.connect(self.update_input_file)
@@ -385,24 +80,29 @@ class MainWindow(QMainWindow):
         self.xpath_listbox.setContextMenuPolicy(Qt.CustomContextMenu)
         self.xpath_listbox.customContextMenuRequested.connect(self.show_context_menu)
         
-        # Theme stuff
-        self.light_mode = QIcon("_internal\\images\\light.png")
-        self.dark_mode = QIcon("_internal\\images\\dark.png")
+        # Theme Icons in QMenu
+        self.light_mode = QIcon(LIGHT_THEME_QMENU_ICON)
+        self.dark_mode = QIcon(DARK_THEME_QMENU_ICON)
+
+        # Theme files qss
+        self.dark_theme_file = DARK_THEME_PATH
+        self.light_theme_file = LIGHT_THEME_PATH
+        
+        # Load last used theme or default
+        self.current_theme = self.settings.value("app_theme", "dark_theme.qss")
+        theme_path = self.dark_theme_file if self.current_theme == "dark_theme.qss" else self.light_theme_file
+        initialize_theme(self, theme_path)
+        
+        # Restore previous geometry
+        geometry = self.settings.value("main_window_geometry")
+        if geometry:
+            self.restoreGeometry(geometry)
         
         self.initUI()
         
         # Create the menu bar
         self.create_menu_bar()
         
-        try:
-            with open("_internal\\theme\\theme_config.txt", "r") as f:
-                    self.initialize_theme(f.read())
-                    if f.read() == "_internal\\theme\\light_theme.qss":
-                        self.toggle_theme_action.setIcon(self.dark_mode)
-                    else:
-                        self.toggle_theme_action.setIcon(self.light_mode)
-        except FileNotFoundError:
-            self.initialize_theme(self.current_theme)
         
     def initUI(self):
         # Create the main layout
@@ -426,25 +126,13 @@ class MainWindow(QMainWindow):
             self, 'Exit Program', 'Are you sure you want to exit the program?',
             QMessageBox.Yes | QMessageBox.No, QMessageBox.No)
         
-        if reply == QMessageBox.Yes:
-            event.accept()
-            with open("_internal\\theme\\theme_config.txt", "w") as f:
-                f.write(self.current_theme)
-        else:
+        if reply == QMessageBox.No:
             event.ignore()
-    
-
-    def initialize_theme(self, theme_file):
-        try:
-            file = QFile(theme_file)
-            if file.open(QFile.ReadOnly | QFile.Text):
-                stream = QTextStream(file)
-                stylesheet = stream.readAll()
-                self.setStyleSheet(stylesheet)
-            file.close()
-        except Exception as ex:
-            message = f"An exception of type {type(ex).__name__} occurred. Arguments: {ex.args!r}"
-            QMessageBox.critical(self, "Theme load error", message)
+            return
+        else:
+            self.settings.setValue("app_theme", self.current_theme)
+            self.settings.setValue("main_window_geometry", self.saveGeometry())
+            super().closeEvent(event)
     
     def create_menu_bar(self):
         menu_bar = self.menuBar()
@@ -555,17 +243,20 @@ class MainWindow(QMainWindow):
 
     
     def change_theme(self):
-        if self.current_theme == "_internal\\theme\\dark_theme.qss":
-            self.current_theme = "_internal\\theme\\light_theme.qss"
+        if self.current_theme == "dark_theme.qss":
             self.toggle_theme_action.setIcon(self.dark_mode)
+            initialize_theme(self, self.light_theme_file)
+            self.current_theme = "light_theme.qss"
         else:
-            self.current_theme = "_internal\\theme\\dark_theme.qss"
             self.toggle_theme_action.setIcon(self.light_mode)
-        self.initialize_theme(self.current_theme)
-    
+            initialize_theme(self, self.dark_theme_file)
+            self.current_theme = "dark_theme.qss"
+
+
     def clear_output(self):
         self.program_output.clear()
         self.csv_conversion_output.clear()
+    
     
     # Open XML input folder function
     def open_input_folder(self):
@@ -1628,6 +1319,7 @@ class MainWindow(QMainWindow):
 
 if __name__ == "__main__": 
     multiprocessing.freeze_support()
+    #faulthandler.enable() 
     app = QApplication(sys.argv)
     window = MainWindow()
     window.show()

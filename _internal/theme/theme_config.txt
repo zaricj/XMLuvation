@@ -1,1 +1,0 @@
-_internal\theme\dark_theme.qss
