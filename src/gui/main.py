@@ -143,7 +143,6 @@ class MainWindow(QMainWindow):
         print(f"CSV Output Path: {'✓' if self.ui.line_edit_csv_output_path else '✗'}")
         print(f"Browse CSV Output Button: {'✓' if self.ui.button_browse_csv else '✗'}")
         print(f"Export CSV Button: {'✓' if self.ui.button_export_csv else '✗'}")
-        print(f"CSV Status Bar: {'✓' if self.ui.statusbar_csv_conversion else '✗'}")
         print(f"Button CSV Conversion Input: {'✓' if self.ui.button_browse_csv_conversion_path_input else '✗'}")
         print(f"Button CSV Conversion Output: {'✓' if self.ui.button_browse_csv_conversion_path_output else '✗'}")
         print(f"Button CSV Conversion Convert: {'✓' if self.ui.button_csv_conversion_convert else '✗'}")
@@ -215,7 +214,7 @@ class MainWindow(QMainWindow):
         folder = QFileDialog.getExistingDirectory(self, "Select directory that contains XML files")
         if folder:
             self.ui.line_edit_xml_folder_path_input.setText(folder)
-            # self.update_xml_file_count(folder) #TODO Re-enable this, but first finish UI in QtDesigner and create Statusbars for each groupbox where needed 
+            self.update_xml_file_count(folder)
             
     def read_xml_file(self):
         print("Read XML files clicked")
@@ -283,7 +282,6 @@ class MainWindow(QMainWindow):
         """Build XPath expression based on user input."""
         try:
             builder = create_xpath_builder()
-            #validator = create_xpath_validator()
 
             # Assign UI references
             builder.tag_name_combo = self.ui.combobox_tag_names
@@ -305,7 +303,6 @@ class MainWindow(QMainWindow):
             # Build expression
             builder.build_xpath_expression()
             
-
         except Exception as ex:
             self.on_error_message("Error building XPath expression", str(ex))
     
@@ -315,9 +312,17 @@ class MainWindow(QMainWindow):
 
     def add_xpath_to_list(self):
         print("Add XPath to list clicked")
-        # Add to list widget directly:
-        # self.ui.list_widget_xpath_expressions.addItem("New XPath")
-        
+        # Check if the XPath input is not empty:
+        expression = self.ui.line_edit_xpath_builder.text().strip()
+        if expression:
+            validator = create_xpath_validator()
+            self._connect_xpath_builder_signals(validator)
+            # Validate the XPath expression
+            validator.xpath_expression = expression
+            is_valid = validator.validate_xpath_expression()
+            if is_valid:
+                self.ui.list_widget_xpath_expressions.addItem(expression)
+
     def browse_csv_output(self):
         print("Browse CSV output clicked")
         # Set output path directly:
@@ -328,17 +333,98 @@ class MainWindow(QMainWindow):
         # Update program output directly:
         # self.ui.text_edit_program_output.append("Exporting to CSV...")
         
-    def on_tag_name_changed(self, text):
-        print(f"Tag name changed to: {text}")
+    def on_tag_name_changed(self, selected_tag):
+        print(f"Tag name changed to: {selected_tag}")
+        if not selected_tag:
+            return []
+        try:
+            attributes = self.get_attributes(self.eval_input_file, selected_tag)
+            self.attribute_name_combobox.clear()
+            self.attribute_name_combobox.addItems(attributes)
+ 
+            values_xml = self.get_tag_values(self.eval_input_file, selected_tag)
+            self.tag_value_combobox.clear()
+            self.tag_value_combobox.addItems(values_xml)
+ 
+            # Disable tag value combo box if there are no values for the selected tag
+            if not values_xml or all(value.strip() == "" for value in values_xml if value is not None):
+                self.tag_value_combobox.setDisabled(True)
+                self.tag_value_combobox.clear()
+            else:
+                self.tag_value_combobox.setDisabled(False)
+ 
+            # Disable attribute name and value combo boxes if there are no attributes for the selected tag
+            if not attributes:
+                self.attribute_name_combobox.setDisabled(True)
+                self.attribute_name_combobox.clear()
+                self.attribute_value_combobox.setDisabled(True)
+                self.attribute_value_combobox.clear()
+            else:
+                self.attribute_name_combobox.setDisabled(False)
+        except Exception as ex:
+            message = f"An exception of type {type(ex).__name__} occurred. Arguments: {ex.args!r}"
+            QMessageBox.critical(self, "An exception occurred", message)
     
     def on_tag_value_changed(self, text):
         print(f"Tag value changed to: {text}")
         
-    def on_attribute_name_changed(self, text):
-        print(f"Attribute name changed to: {text}")
+    def on_attribute_name_changed(self, selected_attribute):
+        print(f"Attribute name changed to: {selected_attribute}")
+        try:
+            selected_tag = self.tag_name_combobox.currentText()
+            attribute_values = self.get_attribute_values(self.eval_input_file, selected_tag, selected_attribute)
+            self.attribute_value_combobox.clear()
+            self.attribute_value_combobox.addItems(attribute_values)
+ 
+            # Disable attribute value combo box if there are no attribute values
+            if not attribute_values:
+                self.attribute_value_combobox.setDisabled(True)
+                self.attribute_value_combobox.clear()
+            else:
+                self.attribute_value_combobox.setDisabled(False)
+ 
+            # Disable tag value combo box if the selected tag has no values
+            values_xml = self.get_tag_values(self.eval_input_file, selected_tag)
+            
+            if not values_xml:
+                self.tag_value_combobox.setDisabled(True)
+                self.tag_value_combobox.clear()
+        except Exception as ex:
+            message = f"An exception of type {type(ex).__name__} occurred. Arguments: {ex.args!r}"
+            QMessageBox.critical(self,"Exception in Program", message)
         
     def on_attribute_value_changed(self, text):
         print(f"Attribute value changed to: {text}")
+        
+    def get_attribute_values(self, eval_input_file, selected_tag, selected_attribute):
+        if not eval_input_file or not selected_tag or not selected_attribute:
+            return []
+        try:
+            root = ET.parse(eval_input_file).getroot()
+            values = set()
+            for elem in root.iter(selected_tag):
+                if selected_attribute in elem.attrib:
+                    values.add(elem.attrib[selected_attribute])
+            return sorted(values)
+        except Exception as ex:
+            message = f"An exception of type {type(ex).__name__} occurred. Arguments: {ex.args!r}"
+            QMessageBox.critical(self, "Error getting attribute values", message)
+            return []
+        
+    def get_tag_values(self, eval_input_file, selected_tag):
+        if not eval_input_file or not selected_tag:
+            return []
+        try:
+            root = ET.parse(eval_input_file).getroot()
+            values = set()
+            for elem in root.iter(selected_tag):
+                if elem.text and elem.text.strip():
+                    values.add(elem.text.strip())
+            return sorted(values)
+        except Exception as ex:
+            message = f"An exception of type {type(ex).__name__} occurred. Arguments: {ex.args!r}"
+            QMessageBox.critical(self,"Error getting tag values", message)
+            return []
     
     def on_function_changed(self, function_type, checked):
         if checked:
@@ -385,23 +471,22 @@ class MainWindow(QMainWindow):
         QMessageBox.warning(self, title, message)
         
     @Slot(str)
-    def on_progress_append_to_program_output(self, message: str):
+    def append_to_program_output(self, message: str):
         """Handle progress updates from the XPath builder."""
         # Update status bar with progress
         self.ui.text_edit_program_output.append(message)
-        
+
     # === SIGNAL CONNECTION HELPERS ===
     def _connect_xml_parsing_signals(self, worker):
         """Connect common signals for most operations.
         """
         worker.signals.finished.connect(self.on_xml_parsing_finished)
         worker.signals.error_occurred.connect(self.on_error_message)
-        worker.signals.progress.connect(self.on_progress_append_to_program_output)
+        worker.signals.progress.connect(self.append_to_program_output)
 
     def _connect_xpath_builder_signals(self, worker):
         """Connect signals for XPath building operations."""
-        worker.signals.progress.connect(self.on_progress_append_to_program_output)
-        #worker.signals.xpath_validated.connect(self.on_xpath_validated)
+        worker.signals.progress.connect(self.append_to_program_output)
         worker.signals.error_occurred.connect(self.on_error_message)
     
     def closeEvent(self, event: QCloseEvent):
@@ -640,22 +725,20 @@ class MainWindow(QMainWindow):
         except Exception as ex:
             message = f"An exception of type {type(ex).__name__} occurred. Arguments: {ex.args!r}"
             self.ui.text_edit_program_output.setText(f"Error removing selected all items from list: {message}")
-#             
-#     # Statusbar update function
-#     def update_xml_file_count(self, folder):
-#         try:
-#             if Path(folder).is_dir():
-#                 xml_files = list(Path(folder).glob('*.xml'))
-#                 file_count = len(xml_files)
-#                 self.total_xml_files_statusbar.showMessage(f"Found {file_count} XML Files")
-#             else:
-#                 pass
-#         except Exception as ex:
-#             message = f"An exception of type {type(ex).__name__} occurred. Arguments: {ex.args!r}"
-#             self.total_xml_files_statusbar.setStyleSheet("color: #ed2828")
-#             self.total_xml_files_statusbar.showMessage(f"Error counting XML files: {message}")
-# 
-# 
+
+    # Statusbar update function
+    def update_xml_file_count(self, folder):
+        try:
+            if Path(folder).is_dir():
+                xml_files = list(Path(folder).glob('*.xml'))
+                file_count = len(xml_files)
+                self.ui.statusbar_xml_files_count.setStyleSheet("color: #47de65")
+                self.ui.statusbar_xml_files_count.showMessage(f"Found {file_count} XML Files")
+        except Exception as ex:
+            message = f"An exception of type {type(ex).__name__} occurred. Arguments: {ex.args!r}"
+            self.ui.statusbar_xml_files_count.setStyleSheet("color: #ed2828")
+            self.ui.statusbar_xml_files_count.showMessage(f"Error counting XML files: {message}")
+
     def show_context_menu(self, position):
         context_menu = QMenu(self)
         delete_action = QAction("Delete Selected", self)
@@ -669,70 +752,18 @@ class MainWindow(QMainWindow):
 
         # Show the context menu at the cursor's current position
         context_menu.exec(self.ui.list_widget_xpath_expressions.mapToGlobal(position))
-#     
-#     
-#     def is_duplicate(self, xpath_expression):
-#         return xpath_expression in self.xpath_filters
-#     
-#     
-#     def validate_xpath_expression(self, xpath_expression):
-#         # Define valid patterns
-#         valid_patterns = [
-#         r"^/[\w]+$",  # /xml_element
-#         r"^//[\w]+$",  # //xml_element
-#         r"^//[\w]+\[@[\w]+\]$",  # //xml_element[@attribute]
-#         r"^//[\w]+\[@[\w]+='[^']*'\]$",  # //xml_element[@attribute='value']
-#         r"^//[\w]+\[@[\w]+!='[^']*'\]$",  # //xml_element[@attribute!='value']
-#         r"^//[\w]+\[@[\w]+='[^']*' and @[\w]+='[^']*'\]$",  # //xml_element[@attribute1='value1' and @attribute2='value2']
-#         r"^//[\w]+\[contains\(@[\w]+, '[^']*'\)\]$",  # //xml_element[contains(@attribute, 'substring')]
-#         r"^//[\w]+\[starts-with\(@[\w]+, '[^']*'\)\]$",  # //xml_element[starts-with(@attribute, 'substring')]
-#         r"^//[\w]+\[text\(\)='[^']*'\]$",  # //xml_element[text()='value']
-#         r"^//[\w]+\[contains\(text\(\), '[^']*'\)\]$",  # //xml_element[contains(text(), 'substring')]
-#         r"^//[\w]+\[starts-with\(text\(\), '[^']*'\)\]$",  # //xml_element[starts-with(text(), 'substring')]
-#         r"^//[\w]+\[number\(@[\w]+\) > [0-9]+\]$",  # //xml_element[number(@attribute) > 10]
-#         r"^//[\w]+\[number\(@[\w]+\) < [0-9]+\]$",  # //xml_element[number(@attribute) < 10]
-#         r"^//[\w]+/[\w]+/text\(\)$",  # //xml_element/xml_element/text()
-#         r"^//[\w]+/[\w]+\[@[\w]+\]/text\(\)$",  # //xml_element/xml_element[@attribute]/text()
-#         r"^//[\w]+/[\w]+\[@[\w]+='[^']*'\]/text\(\)$",  # //xml_element/xml_element[@attribute='value']/text()
-#         r"^//[\w]+/[\w]+$",  # //xml_element/xml_element
-#         r"^//[\w]+/[\w]+/[\w]+$",  # //xml_element/xml_element/xml_element
-#         r"^//[\w]+/text\(\)$",  # //xml_element/text()
-#         r"^//[\w]+/@[\w]+$",  # //xml_element/@attribute
-#         r"^//[\w]+/[\w]+\[@[\w]+\]$",  # //xml_element/xml_element[@attribute]
-#         r"^//[\w]+/[\w]+\[text\(\)='[^']*'\]$",  # //xml_tag_name/another_xml_tag_name[text()='some_value']
-#         r"^//[\w]+/[\w]+/@[\w]+$",  # //xml_tag/xml_tag/@attribute
-#     ]
-# 
-#         # Check if expression matches any pattern
-#         return any(re.match(pattern, xpath_expression) for pattern in valid_patterns)
-# 
-#     
-#     def add_xpath_expression_to_listbox(self):
-#         xpath_expression = self.xpath_expression_input.text()
-#         try:
-#             if not xpath_expression:
-#                 self.program_output.setText("No Xpath expression entered.")
-#             elif xpath_expression and not self.is_duplicate(xpath_expression):
-#                 #validate = self.validate_xpath_expression(xpath_expression) #TODO Re-enable validating
-#                 #if validate:
-#                 self.xpath_filters.append(xpath_expression)
-#                 self.xpath_listbox.addItem(xpath_expression)
-#                 #else:
-#                 #    self.program_output.setText("Not a valid Xpath expression!")
-#                 #    QMessageBox.warning(self, "Exception adding filter", f"The entered Xpath expression '{xpath_expression}' is not valid, please try again.")
-#             else:
-#                 QMessageBox.warning(self, "Error adding filter", f"Cannot add duplicate XPath expression:\n{xpath_expression}")
-#         except Exception as ex:
-#             message = f"An exception of type {type(ex).__name__} occurred. Arguments: {ex.args!r}"
-#             self.program_output.setText(f"Error adding filter: {message}")
-#             QMessageBox.critical(self, "Exception adding filter", message)
-# 
-#     # ======= End FUNCTIONS FOR create_matching_filter_group ======= #
-#     
-#     # ======= Start FUNCTIONS FOR create_export_evaluation_group ======= #
-#     
-#     def choose_save_folder(self):
-#         folder = QFileDialog.getExistingDirectory(self, "Select Save Folder")
+
+
+    def is_duplicate(self, xpath_expression):
+        return xpath_expression in self.xpath_filters
+
+
+    # ======= End FUNCTIONS FOR create_matching_filter_group ======= #
+
+    # ======= Start FUNCTIONS FOR create_export_evaluation_group ======= #
+
+#    def choose_save_folder(self):
+#        folder = QFileDialog.getExistingDirectory(self, "Select Save Folder")
 #         if folder:
 #             self.ui.line_edit_csv_output_path.setText(folder)
 #     
@@ -809,7 +840,7 @@ class MainWindow(QMainWindow):
 # 
 
     def update_progress_bar(self, value):
-        self.progressbar_main.setValue(value)
+        self.ui.progressbar_main.setValue(value)
 #         
 #     # ======= End FUNCTIONS FOR create_export_evaluation_group ======= #
 #     
@@ -863,14 +894,12 @@ class MainWindow(QMainWindow):
     @Slot(str)
     def update_output_file(self, file_name):
         if hasattr(self, 'output_csv_file_conversion'):
-            self.output_csv_file_conversion.setText(file_name)
-            self.output_csv_file_conversion.repaint()  # Force a repaint 
+            self.ui.line_edit_csv_conversion_path_output.setText(file_name)
     
     @Slot(str)
     def update_input_file(self,file_name):
-        if hasattr(self, "input_csv_file_conversion"):
-            self.input_csv_file_conversion.setText(file_name)
-            self.input_csv_file_conversion.repaint() # Force a repaint
+        if hasattr(self, "line_edit_csv_conversion_path_input"):
+            self.ui.line_edit_csv_conversion_path_input.setText(file_name)
 #             
 #     
 #     def pandas_convert_csv_file(self):

@@ -18,8 +18,8 @@ from PySide6.QtGui import (QBrush, QColor, QConicalGradient, QCursor,
 from PySide6.QtWidgets import (QApplication, QCheckBox, QComboBox, QGroupBox,
     QHBoxLayout, QLabel, QLineEdit, QListWidget,
     QListWidgetItem, QMainWindow, QProgressBar, QPushButton,
-    QRadioButton, QSizePolicy, QSpacerItem, QTabWidget,
-    QTextEdit, QVBoxLayout, QWidget, QStatusBar)
+    QRadioButton, QSizePolicy, QTabWidget, QTextEdit,
+    QVBoxLayout, QWidget, QStatusBar)
 from gui.resources.qrc import xmluvation_resources_rc
 
 class Ui_MainWindow(object):
@@ -252,8 +252,12 @@ class Ui_MainWindow(object):
         self.vert_layout_main.setObjectName(u"vert_layout_main")
         self.group_box_xml_input_xpath_builder = QGroupBox(self.tab_xml_evaluation)
         self.group_box_xml_input_xpath_builder.setObjectName(u"group_box_xml_input_xpath_builder")
+        self.statusbar_xml_files_count = QStatusBar(self.group_box_xml_input_xpath_builder)
+        self.statusbar_xml_files_count.setSizeGripEnabled(False)
+        self.statusbar_xml_files_count.setObjectName(u"statusbar_xml_files_count")
         self.verticalLayout_4 = QVBoxLayout(self.group_box_xml_input_xpath_builder)
         self.verticalLayout_4.setObjectName(u"verticalLayout_4")
+        self.verticalLayout_4.addWidget(self.statusbar_xml_files_count)
         self.horizontalLayout_one = QHBoxLayout()
         self.horizontalLayout_one.setObjectName(u"horizontalLayout_one")
         self.line_edit_xml_folder_path_input = QLineEdit(self.group_box_xml_input_xpath_builder)
@@ -288,11 +292,13 @@ class Ui_MainWindow(object):
         self.horizontalLayout_three.setObjectName(u"horizontalLayout_three")
         self.combobox_tag_names = QComboBox(self.group_box_xml_input_xpath_builder)
         self.combobox_tag_names.setObjectName(u"combobox_tag_names")
+        self.combobox_tag_names.setEditable(False)
 
         self.horizontalLayout_three.addWidget(self.combobox_tag_names)
 
         self.combobox_tag_values = QComboBox(self.group_box_xml_input_xpath_builder)
         self.combobox_tag_values.setObjectName(u"combobox_tag_values")
+        self.combobox_tag_values.setEditable(False)
 
         self.horizontalLayout_three.addWidget(self.combobox_tag_values)
 
@@ -303,11 +309,13 @@ class Ui_MainWindow(object):
         self.horizontalLayout_four.setObjectName(u"horizontalLayout_four")
         self.combobox_attribute_names = QComboBox(self.group_box_xml_input_xpath_builder)
         self.combobox_attribute_names.setObjectName(u"combobox_attribute_names")
+        self.combobox_attribute_names.setEditable(False)
 
         self.horizontalLayout_four.addWidget(self.combobox_attribute_names)
 
         self.combobox_attribute_values = QComboBox(self.group_box_xml_input_xpath_builder)
         self.combobox_attribute_values.setObjectName(u"combobox_attribute_values")
+        self.combobox_attribute_values.setEditable(False)
 
         self.horizontalLayout_four.addWidget(self.combobox_attribute_values)
 
@@ -379,9 +387,11 @@ class Ui_MainWindow(object):
         self.verticalLayout_7.setObjectName(u"verticalLayout_7")
         self.list_widget_xpath_expressions = QListWidget(self.group_box_xpath_expressions_list)
         self.list_widget_xpath_expressions.setObjectName(u"list_widget_xpath_expressions")
-
+        self.statusbar_xpath_expressions = QStatusBar(self.group_box_xpath_expressions_list)
+        self.statusbar_xpath_expressions.setSizeGripEnabled(False)
+        self.statusbar_xpath_expressions.setObjectName(u"statusbar_xpath_expressions")
         self.verticalLayout_7.addWidget(self.list_widget_xpath_expressions)
-
+        self.verticalLayout_7.addWidget(self.statusbar_xpath_expressions)
 
         self.vert_layout_main.addWidget(self.group_box_xpath_expressions_list)
 
@@ -404,6 +414,11 @@ class Ui_MainWindow(object):
 
         self.horizontalLayout.addWidget(self.button_export_csv)
 
+        self.button_abort_csv_export = QPushButton(self.group_box_export_to_csv)
+        self.button_abort_csv_export.setObjectName(u"button_abort_csv_export")
+        self.button_abort_csv_export.setVisible(False)
+
+        self.horizontalLayout.addWidget(self.button_abort_csv_export)
 
         self.vert_layout_main.addWidget(self.group_box_export_to_csv)
 
@@ -413,6 +428,7 @@ class Ui_MainWindow(object):
         self.verticalLayout_6.setObjectName(u"verticalLayout_6")
         self.text_edit_program_output = QTextEdit(self.group_box_program_output)
         self.text_edit_program_output.setObjectName(u"text_edit_program_output")
+        self.text_edit_program_output.setReadOnly(True)
 
         self.verticalLayout_6.addWidget(self.text_edit_program_output)
 
@@ -435,7 +451,7 @@ class Ui_MainWindow(object):
 
         self.progressbar_main = QProgressBar(self.group_box_xml_output)
         self.progressbar_main.setObjectName(u"progressbar_main")
-        self.progressbar_main.setValue(24)
+        self.progressbar_main.setValue(0)
 
         self.verticalLayout_5.addWidget(self.progressbar_main)
 
@@ -448,13 +464,11 @@ class Ui_MainWindow(object):
         self.tabWidget.addTab(self.tab_xml_evaluation, "")
         self.tab_csv_conversion = QWidget()
         self.tab_csv_conversion.setObjectName(u"tab_csv_conversion")
-        self.horizontalLayout_4 = QHBoxLayout(self.tab_csv_conversion)
-        self.horizontalLayout_4.setObjectName(u"horizontalLayout_4")
-        self.hor_layout_csv_conversion_main = QHBoxLayout()
-        self.hor_layout_csv_conversion_main.setObjectName(u"hor_layout_csv_conversion_main")
+        self.verticalLayout_3 = QVBoxLayout(self.tab_csv_conversion)
+        self.verticalLayout_3.setObjectName(u"verticalLayout_3")
         self.groupbox_csv_conversion = QGroupBox(self.tab_csv_conversion)
         self.groupbox_csv_conversion.setObjectName(u"groupbox_csv_conversion")
-        self.groupbox_csv_conversion.setMaximumSize(QSize(700, 16777215))
+        self.groupbox_csv_conversion.setMaximumSize(QSize(16777215, 16777215))
         self.verticalLayout_2 = QVBoxLayout(self.groupbox_csv_conversion)
         self.verticalLayout_2.setObjectName(u"verticalLayout_2")
         self.label_csv_conversion_title = QLabel(self.groupbox_csv_conversion)
@@ -520,26 +534,14 @@ class Ui_MainWindow(object):
 
         self.verticalLayout_2.addWidget(self.checkbox_write_index_column)
 
-        self.verticalSpacer_csv_conversion = QSpacerItem(20, 40, QSizePolicy.Policy.Minimum, QSizePolicy.Policy.Expanding)
+        self.text_edit_csv_conversion_output = QTextEdit(self.groupbox_csv_conversion)
+        self.text_edit_csv_conversion_output.setObjectName(u"text_edit_csv_conversion_output")
+        self.text_edit_csv_conversion_output.setReadOnly(True)
 
-        self.statusbar_csv_conversion = QStatusBar(self.groupbox_csv_conversion)
-        self.statusbar_csv_conversion.setSizeGripEnabled(False)
-        self.statusbar_csv_conversion.setObjectName(u"statusbar_csv_conversion")
-        
-        
-        self.verticalLayout_2.addItem(self.verticalSpacer_csv_conversion)
-        self.verticalLayout_2.addWidget(self.statusbar_csv_conversion)
+        self.verticalLayout_2.addWidget(self.text_edit_csv_conversion_output)
 
 
-        self.hor_layout_csv_conversion_main.addWidget(self.groupbox_csv_conversion)
-
-
-        self.horizontalLayout_4.addLayout(self.hor_layout_csv_conversion_main)
-
-        self.groupBox_2 = QGroupBox(self.tab_csv_conversion)
-        self.groupBox_2.setObjectName(u"groupBox_2")
-
-        self.horizontalLayout_4.addWidget(self.groupBox_2)
+        self.verticalLayout_3.addWidget(self.groupbox_csv_conversion)
 
         self.tabWidget.addTab(self.tab_csv_conversion, "")
 
@@ -549,7 +551,7 @@ class Ui_MainWindow(object):
 
         self.retranslateUi(MainWindow)
 
-        self.tabWidget.setCurrentIndex(1)
+        self.tabWidget.setCurrentIndex(0)
 
 
         QMetaObject.connectSlotsByName(MainWindow)
@@ -562,10 +564,10 @@ class Ui_MainWindow(object):
         self.button_browse_xml_folder.setText(QCoreApplication.translate("MainWindow", u"Browse", None))
         self.button_read_xml.setText(QCoreApplication.translate("MainWindow", u"Read XML", None))
         self.label_xpath_builder.setText(QCoreApplication.translate("MainWindow", u"Get names and values of XML tags and Attributes for XPath generation:", None))
-        self.combobox_tag_names.setPlaceholderText(QCoreApplication.translate("MainWindow", u"Tag Names...", None))
-        self.combobox_tag_values.setPlaceholderText(QCoreApplication.translate("MainWindow", u"Tag Values...", None))
-        self.combobox_attribute_names.setPlaceholderText(QCoreApplication.translate("MainWindow", u"Attribute Names...", None))
-        self.combobox_attribute_values.setPlaceholderText(QCoreApplication.translate("MainWindow", u"Attribute Values...", None))
+        self.combobox_tag_names.setPlaceholderText(QCoreApplication.translate("MainWindow", u"Select Tag Name...", None))
+        self.combobox_tag_values.setPlaceholderText(QCoreApplication.translate("MainWindow", u"Select Tag Value...", None))
+        self.combobox_attribute_names.setPlaceholderText(QCoreApplication.translate("MainWindow", u"Select Attribute Name...", None))
+        self.combobox_attribute_values.setPlaceholderText(QCoreApplication.translate("MainWindow", u"Select Attribute Value...", None))
         self.label_function.setText(QCoreApplication.translate("MainWindow", u"Function:", None))
         self.radio_button_equals.setText(QCoreApplication.translate("MainWindow", u"Equals", None))
         self.radio_button_contains.setText(QCoreApplication.translate("MainWindow", u"Contains", None))
@@ -580,21 +582,22 @@ class Ui_MainWindow(object):
         self.line_edit_csv_output_path.setPlaceholderText(QCoreApplication.translate("MainWindow", u"Choose a folder where to save the CSV evaluation...", None))
         self.button_browse_csv.setText(QCoreApplication.translate("MainWindow", u"Browse", None))
         self.button_export_csv.setText(QCoreApplication.translate("MainWindow", u"Export", None))
+        self.button_abort_csv_export.setText(QCoreApplication.translate("MainWindow", u"Abort", None))
         self.group_box_program_output.setTitle(QCoreApplication.translate("MainWindow", u"PROGRAM OUTPUT", None))
         self.group_box_xml_output.setTitle(QCoreApplication.translate("MainWindow", u"XML OUTPUT", None))
+        self.progressbar_main.setFormat(QCoreApplication.translate("MainWindow", u"%p%", None))
         self.tabWidget.setTabText(self.tabWidget.indexOf(self.tab_xml_evaluation), QCoreApplication.translate("MainWindow", u"XML Evaluation", None))
         self.groupbox_csv_conversion.setTitle(QCoreApplication.translate("MainWindow", u"CSV Conversion", None))
         self.label_csv_conversion_title.setText(QCoreApplication.translate("MainWindow", u"CSV Conversion", None))
         self.label_csv_conversion_desc.setText(QCoreApplication.translate("MainWindow", u"Convert CSV File to a different file type with the Pandas module\n"
 "Supported output file types: Excel, Markdown, HTML and JSON", None))
         self.line_edit_csv_conversion_path_input.setPlaceholderText(QCoreApplication.translate("MainWindow", u"Choose a CSV file for conversion...", None))
-        self.button_browse_csv_conversion_path_input.setText(QCoreApplication.translate("MainWindow", u"PushButton", None))
+        self.button_browse_csv_conversion_path_input.setText(QCoreApplication.translate("MainWindow", u"Browse", None))
         self.line_edit_csv_conversion_path_output.setText("")
         self.line_edit_csv_conversion_path_output.setPlaceholderText(QCoreApplication.translate("MainWindow", u"Choose where to save the converted CSV file..", None))
-        self.button_browse_csv_conversion_path_output.setText(QCoreApplication.translate("MainWindow", u"PushButton", None))
-        self.button_csv_conversion_convert.setText(QCoreApplication.translate("MainWindow", u"PushButton", None))
+        self.button_browse_csv_conversion_path_output.setText(QCoreApplication.translate("MainWindow", u"Browse", None))
+        self.button_csv_conversion_convert.setText(QCoreApplication.translate("MainWindow", u"Convert CSV File", None))
         self.checkbox_write_index_column.setText(QCoreApplication.translate("MainWindow", u"Write Index Column?", None))
-        self.groupBox_2.setTitle(QCoreApplication.translate("MainWindow", u"CSV Display into Table", None))
         self.tabWidget.setTabText(self.tabWidget.indexOf(self.tab_csv_conversion), QCoreApplication.translate("MainWindow", u"CSV Conversion and Display", None))
     # retranslateUi
 

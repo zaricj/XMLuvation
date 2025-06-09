@@ -1,3 +1,5 @@
+from gui.resources.qrc import xmluvation_resources_rc
+
 missing qstatusbar for csv conversion output, copy as is under self.verticalSpacer_csv_conversion:
 
         self.statusbar_csv_conversion = QStatusBar(self.groupbox_csv_conversion)
@@ -7,3 +9,23 @@ missing qstatusbar for csv conversion output, copy as is under self.verticalSpac
         
         self.verticalLayout_2.addItem(self.verticalSpacer_csv_conversion)
         self.verticalLayout_2.addWidget(self.statusbar_csv_conversion)
+
+
+add statusbars under these:
+
+list_widget_xpath_expressions
+
+        self.list_widget_xpath_expressions = QListWidget(self.group_box_xpath_expressions_list)
+        self.list_widget_xpath_expressions.setObjectName(u"list_widget_xpath_expressions")
+        self.verticalLayout_7.addWidget(self.list_widget_xpath_expressions)
+        self.verticalLayout_7.addWidget(self.statusbar_xpath_expressions)
+
+
+add statusbar above this:
+
+group_box_xml_input_xpath_builder
+
+        self.statusbar_xml_files_count = QStatusBar(self.group_box_xml_input_xpath_builder)
+        self.statusbar_xml_files_count.setSizeGripEnabled(False)
+        self.statusbar_xml_files_count.setObjectName(u"statusbar_xml_files_count")
+        self.verticalLayout_4.addWidget(self.statusbar_xml_files_count)

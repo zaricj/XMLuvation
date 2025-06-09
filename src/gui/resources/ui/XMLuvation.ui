@@ -239,7 +239,7 @@ QCheckBox::indicator:unchecked {
        <enum>QTabWidget::TabPosition::North</enum>
       </property>
       <property name="currentIndex">
-       <number>1</number>
+       <number>0</number>
       </property>
       <property name="usesScrollButtons">
        <bool>false</bool>
@@ -297,15 +297,21 @@ QCheckBox::indicator:unchecked {
               <layout class="QHBoxLayout" name="horizontalLayout_three">
                <item>
                 <widget class="QComboBox" name="combobox_tag_names">
+                 <property name="editable">
+                  <bool>false</bool>
+                 </property>
                  <property name="placeholderText">
-                  <string>Tag Names...</string>
+                  <string>Select Tag Name...</string>
                  </property>
                 </widget>
                </item>
                <item>
                 <widget class="QComboBox" name="combobox_tag_values">
+                 <property name="editable">
+                  <bool>false</bool>
+                 </property>
                  <property name="placeholderText">
-                  <string>Tag Values...</string>
+                  <string>Select Tag Value...</string>
                  </property>
                 </widget>
                </item>
@@ -315,15 +321,21 @@ QCheckBox::indicator:unchecked {
               <layout class="QHBoxLayout" name="horizontalLayout_four">
                <item>
                 <widget class="QComboBox" name="combobox_attribute_names">
+                 <property name="editable">
+                  <bool>false</bool>
+                 </property>
                  <property name="placeholderText">
-                  <string>Attribute Names...</string>
+                  <string>Select Attribute Name...</string>
                  </property>
                 </widget>
                </item>
                <item>
                 <widget class="QComboBox" name="combobox_attribute_values">
+                 <property name="editable">
+                  <bool>false</bool>
+                 </property>
                  <property name="placeholderText">
-                  <string>Attribute Values...</string>
+                  <string>Select Attribute Value...</string>
                  </property>
                 </widget>
                </item>
@@ -445,6 +457,13 @@ QCheckBox::indicator:unchecked {
                </property>
               </widget>
              </item>
+             <item>
+              <widget class="QPushButton" name="button_abort_csv_export">
+               <property name="text">
+                <string>Abort</string>
+               </property>
+              </widget>
+             </item>
             </layout>
            </widget>
           </item>
@@ -455,7 +474,11 @@ QCheckBox::indicator:unchecked {
             </property>
             <layout class="QVBoxLayout" name="verticalLayout_6">
              <item>
-              <widget class="QTextEdit" name="text_edit_program_output"/>
+              <widget class="QTextEdit" name="text_edit_program_output">
+               <property name="readOnly">
+                <bool>true</bool>
+               </property>
+              </widget>
              </item>
             </layout>
            </widget>
@@ -476,7 +499,10 @@ QCheckBox::indicator:unchecked {
              <item>
               <widget class="QProgressBar" name="progressbar_main">
                <property name="value">
-                <number>24</number>
+                <number>0</number>
+               </property>
+               <property name="format">
+                <string>%p%</string>
                </property>
               </widget>
              </item>
@@ -491,148 +517,131 @@ QCheckBox::indicator:unchecked {
        <attribute name="title">
         <string>CSV Conversion and Display</string>
        </attribute>
-       <layout class="QHBoxLayout" name="horizontalLayout_4">
+       <layout class="QVBoxLayout" name="verticalLayout_3">
         <item>
-         <layout class="QHBoxLayout" name="hor_layout_csv_conversion_main">
-          <item>
-           <widget class="QGroupBox" name="groupbox_csv_conversion">
-            <property name="maximumSize">
-             <size>
-              <width>700</width>
-              <height>16777215</height>
-             </size>
-            </property>
-            <property name="title">
-             <string>CSV Conversion</string>
-            </property>
-            <layout class="QVBoxLayout" name="verticalLayout_2">
-             <item>
-              <widget class="QLabel" name="label_csv_conversion_title">
-               <property name="sizePolicy">
-                <sizepolicy hsizetype="Preferred" vsizetype="Preferred">
-                 <horstretch>0</horstretch>
-                 <verstretch>0</verstretch>
-                </sizepolicy>
-               </property>
-               <property name="maximumSize">
-                <size>
-                 <width>16777215</width>
-                 <height>60</height>
-                </size>
-               </property>
-               <property name="font">
-                <font>
-                 <family>Arial</family>
-                 <pointsize>32</pointsize>
-                </font>
-               </property>
-               <property name="text">
-                <string>CSV Conversion</string>
-               </property>
-              </widget>
-             </item>
-             <item>
-              <widget class="QLabel" name="label_csv_conversion_desc">
-               <property name="maximumSize">
-                <size>
-                 <width>16777215</width>
-                 <height>60</height>
-                </size>
-               </property>
-               <property name="font">
-                <font>
-                 <family>Arial</family>
-                 <pointsize>10</pointsize>
-                </font>
-               </property>
-               <property name="text">
-                <string>Convert CSV File to a different file type with the Pandas module
+         <widget class="QGroupBox" name="groupbox_csv_conversion">
+          <property name="maximumSize">
+           <size>
+            <width>16777215</width>
+            <height>16777215</height>
+           </size>
+          </property>
+          <property name="title">
+           <string>CSV Conversion</string>
+          </property>
+          <layout class="QVBoxLayout" name="verticalLayout_2">
+           <item>
+            <widget class="QLabel" name="label_csv_conversion_title">
+             <property name="sizePolicy">
+              <sizepolicy hsizetype="Preferred" vsizetype="Preferred">
+               <horstretch>0</horstretch>
+               <verstretch>0</verstretch>
+              </sizepolicy>
+             </property>
+             <property name="maximumSize">
+              <size>
+               <width>16777215</width>
+               <height>60</height>
+              </size>
+             </property>
+             <property name="font">
+              <font>
+               <family>Arial</family>
+               <pointsize>32</pointsize>
+              </font>
+             </property>
+             <property name="text">
+              <string>CSV Conversion</string>
+             </property>
+            </widget>
+           </item>
+           <item>
+            <widget class="QLabel" name="label_csv_conversion_desc">
+             <property name="maximumSize">
+              <size>
+               <width>16777215</width>
+               <height>60</height>
+              </size>
+             </property>
+             <property name="font">
+              <font>
+               <family>Arial</family>
+               <pointsize>10</pointsize>
+              </font>
+             </property>
+             <property name="text">
+              <string>Convert CSV File to a different file type with the Pandas module
 Supported output file types: Excel, Markdown, HTML and JSON</string>
+             </property>
+            </widget>
+           </item>
+           <item>
+            <layout class="QHBoxLayout" name="hor_layout_csv_path_input">
+             <property name="leftMargin">
+              <number>0</number>
+             </property>
+             <property name="topMargin">
+              <number>0</number>
+             </property>
+             <item>
+              <widget class="QLineEdit" name="line_edit_csv_conversion_path_input">
+               <property name="placeholderText">
+                <string>Choose a CSV file for conversion...</string>
                </property>
               </widget>
              </item>
              <item>
-              <layout class="QHBoxLayout" name="hor_layout_csv_path_input">
-               <property name="leftMargin">
-                <number>0</number>
-               </property>
-               <property name="topMargin">
-                <number>0</number>
-               </property>
-               <item>
-                <widget class="QLineEdit" name="line_edit_csv_conversion_path_input">
-                 <property name="placeholderText">
-                  <string>Choose a CSV file for conversion...</string>
-                 </property>
-                </widget>
-               </item>
-               <item>
-                <widget class="QPushButton" name="button_browse_csv_conversion_path_input">
-                 <property name="text">
-                  <string>PushButton</string>
-                 </property>
-                </widget>
-               </item>
-              </layout>
-             </item>
-             <item>
-              <layout class="QHBoxLayout" name="hor_layout_csv_conversion_path_output">
-               <item>
-                <widget class="QLineEdit" name="line_edit_csv_conversion_path_output">
-                 <property name="text">
-                  <string/>
-                 </property>
-                 <property name="placeholderText">
-                  <string>Choose where to save the converted CSV file..</string>
-                 </property>
-                </widget>
-               </item>
-               <item>
-                <widget class="QPushButton" name="button_browse_csv_conversion_path_output">
-                 <property name="text">
-                  <string>PushButton</string>
-                 </property>
-                </widget>
-               </item>
-              </layout>
-             </item>
-             <item>
-              <widget class="QPushButton" name="button_csv_conversion_convert">
+              <widget class="QPushButton" name="button_browse_csv_conversion_path_input">
                <property name="text">
-                <string>PushButton</string>
+                <string>Browse</string>
                </property>
               </widget>
-             </item>
-             <item>
-              <widget class="QCheckBox" name="checkbox_write_index_column">
-               <property name="text">
-                <string>Write Index Column?</string>
-               </property>
-              </widget>
-             </item>
-             <item>
-              <spacer name="verticalSpacer_csv_conversion">
-               <property name="orientation">
-                <enum>Qt::Orientation::Vertical</enum>
-               </property>
-               <property name="sizeHint" stdset="0">
-                <size>
-                 <width>20</width>
-                 <height>40</height>
-                </size>
-               </property>
-              </spacer>
              </item>
             </layout>
-           </widget>
-          </item>
-         </layout>
-        </item>
-        <item>
-         <widget class="QGroupBox" name="groupBox_2">
-          <property name="title">
-           <string>CSV Display into Table</string>
-          </property>
+           </item>
+           <item>
+            <layout class="QHBoxLayout" name="hor_layout_csv_conversion_path_output">
+             <item>
+              <widget class="QLineEdit" name="line_edit_csv_conversion_path_output">
+               <property name="text">
+                <string/>
+               </property>
+               <property name="placeholderText">
+                <string>Choose where to save the converted CSV file..</string>
+               </property>
+              </widget>
+             </item>
+             <item>
+              <widget class="QPushButton" name="button_browse_csv_conversion_path_output">
+               <property name="text">
+                <string>Browse</string>
+               </property>
+              </widget>
+             </item>
+            </layout>
+           </item>
+           <item>
+            <widget class="QPushButton" name="button_csv_conversion_convert">
+             <property name="text">
+              <string>Convert CSV File</string>
+             </property>
+            </widget>
+           </item>
+           <item>
+            <widget class="QCheckBox" name="checkbox_write_index_column">
+             <property name="text">
+              <string>Write Index Column?</string>
+             </property>
+            </widget>
+           </item>
+           <item>
+            <widget class="QTextEdit" name="text_edit_csv_conversion_output">
+             <property name="readOnly">
+              <bool>true</bool>
+             </property>
+            </widget>
+           </item>
+          </layout>
          </widget>
         </item>
        </layout>

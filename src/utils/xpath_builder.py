@@ -6,7 +6,6 @@ from typing import Optional, Dict, List, Tuple
 
 class XPathBuilderSignals(QObject):
     """Signals class for XPathBuilder operations."""
-    xpath_validated = Signal(bool, str)  # Emitted with validation result
     error_occurred = Signal(str, str)  # Emitted when an error occurs
     progress = Signal(str)  # Emitted for progress updates
 
@@ -14,16 +13,18 @@ class XPathBuilderSignals(QObject):
 class XPathValidator(QRunnable):
     """Thread worker for validating XPath expressions."""
     
-    def __init__(self, xpath_expression: str, xml_file_path: str = None):
+    def __init__(self):
         super().__init__()
-        self.xpath_expression = xpath_expression
-        self.xml_file_path = xml_file_path
+        self.xpath_expression = None
+        self.xml_file_path = None
         self.signals = XPathBuilderSignals()
         self.setAutoDelete(True)
     
-    @Slot()
-    def run(self):
-        """Validate XPath expression and optionally test against XML file."""
+    def validate_xpath_expression(self):
+        """Validate XPath expression and optionally test against XML file.
+        
+        Returns: True if valid, False otherwise.
+        """
         try:
             # First, validate syntax
             self.signals.progress.emit("Validating XPath syntax...")
@@ -39,20 +40,24 @@ class XPathValidator(QRunnable):
                 results = root.xpath(self.xpath_expression)
                 result_count = len(results) if isinstance(results, list) else 1
                 
-                message = f"XPath is valid and returned {result_count} result(s)"
-                self.signals.xpath_validated.emit(True, message)
+                self.signals.progress.emit(f"XPath is valid and returned {result_count} result(s)")
             else:
-                self.signals.xpath_validated.emit(True, "XPath syntax is valid")
+                self.signals.progress.emit("XPath syntax is valid")
+            
+            return True
                 
         except ET.XPathSyntaxError as e:
             error_msg = f"XPath syntax error: {str(e)}"
-            self.signals.xpath_validated.emit(False, error_msg)
+            self.signals.error_occurred.emit("XPathSyntaxError", error_msg)
+            return False
         except ET.XPathEvalError as e:
             error_msg = f"XPath evaluation error: {str(e)}"
-            self.signals.xpath_validated.emit(False, error_msg)
+            self.signals.error_occurred.emit("XPathEvalError", error_msg)
+            return False
         except Exception as e:
             error_msg = f"Validation error: {str(e)}"
             self.signals.error_occurred.emit("Validation Error", error_msg)
+            return False
 
 
 class XPathBuilder(QObject):
@@ -239,6 +244,6 @@ def create_xpath_builder() -> XPathBuilder:
     return XPathBuilder()
 
 
-def create_xpath_validator(xpath_expression: str, xml_file_path: str = None) -> XPathValidator:
+def create_xpath_validator() -> XPathValidator:
     """Create a new XPathValidator worker."""
-    return XPathValidator(xpath_expression, xml_file_path)
+    return XPathValidator()
