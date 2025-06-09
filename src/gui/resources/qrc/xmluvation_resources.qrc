@@ -1,0 +1,8 @@
+<RCC>
+  <qresource>
+    <file>../images/dark.png</file>
+    <file>../images/drpdwn_arrow.png</file>
+    <file>../images/light.png</file>
+    <file>../icons/xml_256px.ico</file>
+  </qresource>
+</RCC>

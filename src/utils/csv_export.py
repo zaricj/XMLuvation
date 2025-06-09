@@ -77,7 +77,6 @@ def process_single_xml(filename: str, folder_path: str, xpath_expressions: List[
 class CSVExportThread(QObject):
     """Worker thread for exporting XML XPath evaluation results to a CSV file."""
     output_set_text = Signal(str)
-    output_append = Signal(str)
     finished = Signal()
     show_error_message = Signal(str, str)
     show_info_message = Signal(str, str)

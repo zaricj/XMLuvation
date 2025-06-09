@@ -6,12 +6,223 @@
    <rect>
     <x>0</x>
     <y>0</y>
-    <width>1295</width>
+    <width>1305</width>
     <height>1000</height>
    </rect>
   </property>
+  <property name="font">
+   <font>
+    <family>Arial</family>
+    <pointsize>10</pointsize>
+   </font>
+  </property>
   <property name="windowTitle">
-   <string>MainWindow</string>
+   <string>XMLuvation</string>
+  </property>
+  <property name="windowIcon">
+   <iconset resource="../qrc/xmluvation_resources.qrc">
+    <normaloff>:/icons/xml_256px.ico</normaloff>:/icons/xml_256px.ico</iconset>
+  </property>
+  <property name="styleSheet">
+   <string notr="true">QWidget {
+    background-color: #232428;
+    color: #ffffff;
+    font-family: Arial, sans-serif;
+    border-radius: 6px;
+}
+
+QMenuBar {
+    background-color: #232428;
+    padding: 4px;
+}
+
+QMenuBar::item:selected {
+    background-color: #ffc857;
+    border-radius: 4px;
+    color: #1e1e1e;
+}
+
+QMenu {
+    background-color: #232428;
+    border: 1px solid #313338;
+    border-radius: 2px;
+}
+
+QMenu::item:selected {
+    background-color: #ffc857;
+    color: #1e1e1e;
+}
+
+QPushButton {
+    background-color: #ffc857;
+    color: #000000;
+    border: none;
+    padding: 8px 14px;
+    border-radius: 6px;
+    font: bold;
+}
+
+QPushButton:hover {
+    background-color: #a3803c;
+}
+
+QPushButton:pressed {
+    background-color: #313338;
+    color: #ffffff;
+    padding-left: 9px; /* Creates a &quot;pressed&quot; effect */
+    padding-top: 8px;
+}
+
+QLineEdit, QComboBox, QTextEdit, QStatusBar {
+    background-color: #313338;
+    border: 1px solid #4a4a4a;
+    padding: 6px;
+    border-radius: 6px;
+}
+
+QListWidget {
+    background-color: #313338;
+}
+
+QListWidget::item {
+    height: 26px;
+}
+
+QListWidget::item:selected {
+    background-color: #ffc857;
+    color: #000000;
+}
+
+QComboBox::drop-down {
+    border: none;
+    background-color: #ffc857;
+    width: 20px;
+    border-top-right-radius: 6px;
+    border-bottom-right-radius: 6px;
+    image: url(:/images/drpdwn_arrow.png)
+}
+
+QPushButton:disabled {
+    background-color: #808080;
+}
+
+QComboBox:disabled {
+    background-color: #808080;    
+}
+
+QComboBox::drop-down:disabled {
+    border: none;
+    background-color: #3d3d3d;
+}
+
+QTabWidget::pane {
+    border: 1px solid #313338;
+    border-radius: 6px;
+}
+
+QTabBar::tab {
+    background-color: #232428;
+    border: 1px solid #313338;
+    padding: 8px 14px;
+    border-radius: 6px;
+    margin: 0 2px;
+}
+
+QTabBar::tab:selected {
+    background-color: #ffc857;
+    color: #000000;
+}
+
+QTableView {
+    background-color: #313338;
+}
+
+QGroupBox {
+    border: 1px solid #313338;
+    border-radius: 6px;
+    margin-top: 10px;
+    padding: 10px;
+    font: bold;
+}
+
+QGroupBox::title {
+    subcontrol-origin: margin;
+    subcontrol-position: top left;
+    left: 12px;
+    padding: 0 6px;
+}
+
+QRadioButton::indicator {
+    width: 16px;
+    height: 16px;
+}
+
+
+QRadioButton:disabled {
+    color: #808080; 
+}
+
+
+QScrollBar:vertical {
+    border: none;
+    background: #232428;
+    width: 12px;
+    margin: 4px;
+    border-radius: 6px;
+}
+
+QScrollBar::handle:vertical {
+    background: #313338;
+    min-height: 20px;
+    border-radius: 6px;
+}
+
+QScrollBar::add-line:vertical, QScrollBar::sub-line:vertical {
+    height: 0px;
+}
+
+/* Progress Bar */
+QProgressBar {
+    background-color: #313338;
+    border: 1px solid #4a4a4a;
+    border-radius: 6px;
+    text-align: center;
+    color: #ffffff;
+    padding: 2px;
+}
+
+QProgressBar::chunk {
+    background-color: #ffc857;
+}
+/* CheckBox */
+QCheckBox {
+    spacing: 6px;
+}
+
+QCheckBox::indicator {
+    width: 16px;
+    height: 16px;
+    border-radius: 4px;
+    background-color: #313338;
+    border: 1px solid #4a4a4a;
+}
+
+QCheckBox::indicator:checked {
+    background-color: #ffc857;
+    border: 1px solid #ec971f;
+}
+
+QCheckBox::indicator:unchecked {
+    background-color: #313338;
+    border: 1px solid #4a4a4a;
+}
+</string>
+  </property>
+  <property name="iconSize">
+   <size>
+    <width>256</width>
+    <height>256</height>
+   </size>
   </property>
   <widget class="QWidget" name="centralwidget">
    <layout class="QVBoxLayout" name="verticalLayout">
@@ -19,6 +230,8 @@
      <widget class="QTabWidget" name="tabWidget">
       <property name="font">
        <font>
+        <family>Arial</family>
+        <pointsize>10</pointsize>
         <bold>false</bold>
        </font>
       </property>
@@ -26,7 +239,7 @@
        <enum>QTabWidget::TabPosition::North</enum>
       </property>
       <property name="currentIndex">
-       <number>0</number>
+       <number>1</number>
       </property>
       <property name="usesScrollButtons">
        <bool>false</bool>
@@ -37,27 +250,156 @@
        </attribute>
        <layout class="QHBoxLayout" name="horizontalLayout_2">
         <item>
-         <layout class="QVBoxLayout" name="verticalLayout_2">
+         <layout class="QVBoxLayout" name="vert_layout_main">
           <item>
-           <widget class="QGroupBox" name="groupBox_4">
+           <widget class="QGroupBox" name="group_box_xml_input_xpath_builder">
             <property name="title">
              <string>XML FOLDER SELECTION AND XPATH BUILDER</string>
             </property>
-            <layout class="QHBoxLayout" name="horizontalLayout_3">
+            <layout class="QVBoxLayout" name="verticalLayout_4">
              <item>
-              <widget class="QLineEdit" name="lineEdit"/>
+              <layout class="QHBoxLayout" name="horizontalLayout_one">
+               <item>
+                <widget class="QLineEdit" name="line_edit_xml_folder_path_input">
+                 <property name="placeholderText">
+                  <string>Choose a folder that contains XML files...</string>
+                 </property>
+                </widget>
+               </item>
+               <item>
+                <widget class="QPushButton" name="button_browse_xml_folder">
+                 <property name="text">
+                  <string>Browse</string>
+                 </property>
+                </widget>
+               </item>
+               <item>
+                <widget class="QPushButton" name="button_read_xml">
+                 <property name="text">
+                  <string>Read XML</string>
+                 </property>
+                </widget>
+               </item>
+              </layout>
              </item>
              <item>
-              <widget class="QPushButton" name="pushButton_4">
-               <property name="text">
-                <string>PushButton</string>
-               </property>
-              </widget>
+              <layout class="QHBoxLayout" name="horizontalLayout_two">
+               <item>
+                <widget class="QLabel" name="label_xpath_builder">
+                 <property name="text">
+                  <string>Get names and values of XML tags and Attributes for XPath generation:</string>
+                 </property>
+                </widget>
+               </item>
+              </layout>
              </item>
              <item>
-              <widget class="QPushButton" name="pushButton_3">
+              <layout class="QHBoxLayout" name="horizontalLayout_three">
+               <item>
+                <widget class="QComboBox" name="combobox_tag_names">
+                 <property name="placeholderText">
+                  <string>Tag Names...</string>
+                 </property>
+                </widget>
+               </item>
+               <item>
+                <widget class="QComboBox" name="combobox_tag_values">
+                 <property name="placeholderText">
+                  <string>Tag Values...</string>
+                 </property>
+                </widget>
+               </item>
+              </layout>
+             </item>
+             <item>
+              <layout class="QHBoxLayout" name="horizontalLayout_four">
+               <item>
+                <widget class="QComboBox" name="combobox_attribute_names">
+                 <property name="placeholderText">
+                  <string>Attribute Names...</string>
+                 </property>
+                </widget>
+               </item>
+               <item>
+                <widget class="QComboBox" name="combobox_attribute_values">
+                 <property name="placeholderText">
+                  <string>Attribute Values...</string>
+                 </property>
+                </widget>
+               </item>
+              </layout>
+             </item>
+             <item>
+              <layout class="QHBoxLayout" name="horizontalLayout_five">
+               <item>
+                <widget class="QLabel" name="label_function">
+                 <property name="text">
+                  <string>Function:</string>
+                 </property>
+                </widget>
+               </item>
+               <item>
+                <widget class="QRadioButton" name="radio_button_equals">
+                 <property name="text">
+                  <string>Equals</string>
+                 </property>
+                 <property name="checked">
+                  <bool>true</bool>
+                 </property>
+                </widget>
+               </item>
+               <item>
+                <widget class="QRadioButton" name="radio_button_contains">
+                 <property name="text">
+                  <string>Contains</string>
+                 </property>
+                </widget>
+               </item>
+               <item>
+                <widget class="QRadioButton" name="radio_button_starts_with">
+                 <property name="text">
+                  <string>Starts-with</string>
+                 </property>
+                </widget>
+               </item>
+               <item>
+                <widget class="QRadioButton" name="radio_button_greater">
+                 <property name="text">
+                  <string>Greater</string>
+                 </property>
+                </widget>
+               </item>
+               <item>
+                <widget class="QRadioButton" name="radio_button_smaller">
+                 <property name="text">
+                  <string>Smaller</string>
+                 </property>
+                </widget>
+               </item>
+              </layout>
+             </item>
+             <item>
+              <layout class="QHBoxLayout" name="horizontalLayout_six">
+               <item>
+                <widget class="QLineEdit" name="line_edit_xpath_builder">
+                 <property name="placeholderText">
+                  <string>Enter a XPath expression or build one...</string>
+                 </property>
+                </widget>
+               </item>
+               <item>
+                <widget class="QPushButton" name="button_build_xpath">
+                 <property name="text">
+                  <string>Build XPath</string>
+                 </property>
+                </widget>
+               </item>
+              </layout>
+             </item>
+             <item>
+              <widget class="QPushButton" name="button_add_xpath_to_list">
                <property name="text">
-                <string>PushButton</string>
+                <string>Add XPath Expression to list</string>
                </property>
               </widget>
              </item>
@@ -65,37 +407,41 @@
            </widget>
           </item>
           <item>
-           <widget class="QGroupBox" name="groupBox">
+           <widget class="QGroupBox" name="group_box_xpath_expressions_list">
             <property name="title">
              <string>LIST OF XPATH FILTERS TO SEARCH AND MATCH IN XML FILES</string>
             </property>
             <layout class="QVBoxLayout" name="verticalLayout_7">
              <item>
-              <widget class="QListWidget" name="listWidget"/>
+              <widget class="QListWidget" name="list_widget_xpath_expressions"/>
              </item>
             </layout>
            </widget>
           </item>
           <item>
-           <widget class="QGroupBox" name="groupBox_2">
+           <widget class="QGroupBox" name="group_box_export_to_csv">
             <property name="title">
              <string>EXPORT SEARCH RESULT TO CSV FILE</string>
             </property>
             <layout class="QHBoxLayout" name="horizontalLayout">
              <item>
-              <widget class="QLineEdit" name="lineEdit_2"/>
-             </item>
-             <item>
-              <widget class="QPushButton" name="pushButton">
-               <property name="text">
-                <string>PushButton</string>
+              <widget class="QLineEdit" name="line_edit_csv_output_path">
+               <property name="placeholderText">
+                <string>Choose a folder where to save the CSV evaluation...</string>
                </property>
               </widget>
              </item>
              <item>
-              <widget class="QPushButton" name="pushButton_2">
+              <widget class="QPushButton" name="button_browse_csv">
                <property name="text">
-                <string>PushButton</string>
+                <string>Browse</string>
+               </property>
+              </widget>
+             </item>
+             <item>
+              <widget class="QPushButton" name="button_export_csv">
+               <property name="text">
+                <string>Export</string>
                </property>
               </widget>
              </item>
@@ -103,13 +449,13 @@
            </widget>
           </item>
           <item>
-           <widget class="QGroupBox" name="groupBox_3">
+           <widget class="QGroupBox" name="group_box_program_output">
             <property name="title">
              <string>PROGRAM OUTPUT</string>
             </property>
             <layout class="QVBoxLayout" name="verticalLayout_6">
              <item>
-              <widget class="QTextEdit" name="textEdit_2"/>
+              <widget class="QTextEdit" name="text_edit_program_output"/>
              </item>
             </layout>
            </widget>
@@ -117,18 +463,18 @@
          </layout>
         </item>
         <item>
-         <layout class="QVBoxLayout" name="verticalLayout_3">
+         <layout class="QVBoxLayout" name="vert_layout_xml_output">
           <item>
-           <widget class="QGroupBox" name="groupBox_5">
+           <widget class="QGroupBox" name="group_box_xml_output">
             <property name="title">
              <string>XML OUTPUT</string>
             </property>
             <layout class="QVBoxLayout" name="verticalLayout_5">
              <item>
-              <widget class="QTextEdit" name="textEdit"/>
+              <widget class="QTextEdit" name="text_edit_xml_output"/>
              </item>
              <item>
-              <widget class="QProgressBar" name="progressBar">
+              <widget class="QProgressBar" name="progressbar_main">
                <property name="value">
                 <number>24</number>
                </property>
@@ -145,23 +491,159 @@
        <attribute name="title">
         <string>CSV Conversion and Display</string>
        </attribute>
+       <layout class="QHBoxLayout" name="horizontalLayout_4">
+        <item>
+         <layout class="QHBoxLayout" name="hor_layout_csv_conversion_main">
+          <item>
+           <widget class="QGroupBox" name="groupbox_csv_conversion">
+            <property name="maximumSize">
+             <size>
+              <width>700</width>
+              <height>16777215</height>
+             </size>
+            </property>
+            <property name="title">
+             <string>CSV Conversion</string>
+            </property>
+            <layout class="QVBoxLayout" name="verticalLayout_2">
+             <item>
+              <widget class="QLabel" name="label_csv_conversion_title">
+               <property name="sizePolicy">
+                <sizepolicy hsizetype="Preferred" vsizetype="Preferred">
+                 <horstretch>0</horstretch>
+                 <verstretch>0</verstretch>
+                </sizepolicy>
+               </property>
+               <property name="maximumSize">
+                <size>
+                 <width>16777215</width>
+                 <height>60</height>
+                </size>
+               </property>
+               <property name="font">
+                <font>
+                 <family>Arial</family>
+                 <pointsize>32</pointsize>
+                </font>
+               </property>
+               <property name="text">
+                <string>CSV Conversion</string>
+               </property>
+              </widget>
+             </item>
+             <item>
+              <widget class="QLabel" name="label_csv_conversion_desc">
+               <property name="maximumSize">
+                <size>
+                 <width>16777215</width>
+                 <height>60</height>
+                </size>
+               </property>
+               <property name="font">
+                <font>
+                 <family>Arial</family>
+                 <pointsize>10</pointsize>
+                </font>
+               </property>
+               <property name="text">
+                <string>Convert CSV File to a different file type with the Pandas module
+Supported output file types: Excel, Markdown, HTML and JSON</string>
+               </property>
+              </widget>
+             </item>
+             <item>
+              <layout class="QHBoxLayout" name="hor_layout_csv_path_input">
+               <property name="leftMargin">
+                <number>0</number>
+               </property>
+               <property name="topMargin">
+                <number>0</number>
+               </property>
+               <item>
+                <widget class="QLineEdit" name="line_edit_csv_conversion_path_input">
+                 <property name="placeholderText">
+                  <string>Choose a CSV file for conversion...</string>
+                 </property>
+                </widget>
+               </item>
+               <item>
+                <widget class="QPushButton" name="button_browse_csv_conversion_path_input">
+                 <property name="text">
+                  <string>PushButton</string>
+                 </property>
+                </widget>
+               </item>
+              </layout>
+             </item>
+             <item>
+              <layout class="QHBoxLayout" name="hor_layout_csv_conversion_path_output">
+               <item>
+                <widget class="QLineEdit" name="line_edit_csv_conversion_path_output">
+                 <property name="text">
+                  <string/>
+                 </property>
+                 <property name="placeholderText">
+                  <string>Choose where to save the converted CSV file..</string>
+                 </property>
+                </widget>
+               </item>
+               <item>
+                <widget class="QPushButton" name="button_browse_csv_conversion_path_output">
+                 <property name="text">
+                  <string>PushButton</string>
+                 </property>
+                </widget>
+               </item>
+              </layout>
+             </item>
+             <item>
+              <widget class="QPushButton" name="button_csv_conversion_convert">
+               <property name="text">
+                <string>PushButton</string>
+               </property>
+              </widget>
+             </item>
+             <item>
+              <widget class="QCheckBox" name="checkbox_write_index_column">
+               <property name="text">
+                <string>Write Index Column?</string>
+               </property>
+              </widget>
+             </item>
+             <item>
+              <spacer name="verticalSpacer_csv_conversion">
+               <property name="orientation">
+                <enum>Qt::Orientation::Vertical</enum>
+               </property>
+               <property name="sizeHint" stdset="0">
+                <size>
+                 <width>20</width>
+                 <height>40</height>
+                </size>
+               </property>
+              </spacer>
+             </item>
+            </layout>
+           </widget>
+          </item>
+         </layout>
+        </item>
+        <item>
+         <widget class="QGroupBox" name="groupBox_2">
+          <property name="title">
+           <string>CSV Display into Table</string>
+          </property>
+         </widget>
+        </item>
+       </layout>
       </widget>
      </widget>
     </item>
    </layout>
   </widget>
-  <widget class="QMenuBar" name="menubar">
-   <property name="geometry">
-    <rect>
-     <x>0</x>
-     <y>0</y>
-     <width>1295</width>
-     <height>33</height>
-    </rect>
-   </property>
-  </widget>
-  <widget class="QStatusBar" name="statusbar"/>
  </widget>
- <resources/>
+ <resources>
+  <include location="../qrc/xmluvation_resources.qrc"/>
+ </resources>
  <connections/>
 </ui>

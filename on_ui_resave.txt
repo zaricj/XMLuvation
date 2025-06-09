@@ -1,0 +1,9 @@
+missing qstatusbar for csv conversion output, copy as is under self.verticalSpacer_csv_conversion:
+
+        self.statusbar_csv_conversion = QStatusBar(self.groupbox_csv_conversion)
+        self.statusbar_csv_conversion.setSizeGripEnabled(False)
+        self.statusbar_csv_conversion.setObjectName(u"statusbar_csv_conversion")
+        
+        
+        self.verticalLayout_2.addItem(self.verticalSpacer_csv_conversion)
+        self.verticalLayout_2.addWidget(self.statusbar_csv_conversion)
