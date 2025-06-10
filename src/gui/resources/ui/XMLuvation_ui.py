@@ -390,6 +390,7 @@ class Ui_MainWindow(object):
         self.statusbar_xpath_expressions = QStatusBar(self.group_box_xpath_expressions_list)
         self.statusbar_xpath_expressions.setSizeGripEnabled(False)
         self.statusbar_xpath_expressions.setObjectName(u"statusbar_xpath_expressions")
+        self.statusbar_xpath_expressions.setStyleSheet("color: #ffc857;")
         self.verticalLayout_7.addWidget(self.list_widget_xpath_expressions)
         self.verticalLayout_7.addWidget(self.statusbar_xpath_expressions)
 
