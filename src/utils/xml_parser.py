@@ -107,14 +107,10 @@ class XMLParserThread(QRunnable):
     
     def _parse_xml(self):
         """Parse XML file and extract comprehensive information."""
-        self.signals.progress.emit("Starting XML parsing...")
-        
         tree = ET.parse(self.xml_file_path)
         root = tree.getroot()
         
         xml_string = ET.tostring(root, encoding="unicode", pretty_print=True)
-        
-        self.signals.progress.emit("Extracting XML elements...")
         
         # Extract comprehensive XML information
         tags = set()
