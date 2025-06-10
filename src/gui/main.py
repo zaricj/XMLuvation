@@ -152,11 +152,9 @@ class MainWindow(QMainWindow):
         return f"Active threads: {active_count}/{max_count}"
     
     def setup_connections(self):
-        """Setup all signal-slot connections - now you have direct access to all widgets!"""
+        """Setup all signal-slot connections"""
         
         # === XML TAB - Direct widget access via self.ui ===
-        # No more findChild() needed!
-        
         
         # Folder browsing and XML reading
         self.ui.button_browse_xml_folder.clicked.connect(self.browse_xml_folder)
@@ -212,7 +210,7 @@ class MainWindow(QMainWindow):
             message = f"An exception of type {type(ex).__name__} occurred. Arguments: {ex.args!r}"
             QMessageBox.critical(self, "Exception in Program", message)
     
-    # === XML PARSING ===
+    # === XML PARSING === 
     def start_xml_parsing(self, xml_file_path: str):
         """Parse XML file and display content."""
         try:
@@ -302,41 +300,6 @@ class MainWindow(QMainWindow):
         print("Build XPath expression clicked")
         self.start_build_xpath_expression()
 
-
-    def add_xpath_to_list(self):
-        print("Add XPath to list clicked")
-        try:
-            # Check if the XPath input is not empty:
-            expression = self.ui.line_edit_xpath_builder.text().strip()
-            if not expression: 
-                QMessageBox.information(self, "Empty XPath", "Please enter a valid XPath expression before adding it to the list.")
-            elif expression and not self.is_duplicate(expression):
-                validator = create_xpath_validator()
-                self._connect_xpath_builder_signals(validator)
-                # Validate the XPath expression
-                validator.xpath_expression = expression
-                is_valid = validator.validate_xpath_expression()
-                if is_valid:
-                    self.xpath_filters.append(expression)
-                    self.ui.list_widget_xpath_expressions.addItem(expression)
-            else:
-                QMessageBox.warning(self, "Duplicate XPath Expression", f"Cannot add duplicate XPath expression:\n{expression}")
-        except Exception as ex:
-            message = f"An exception of type {type(ex).__name__} occurred. Arguments: {ex.args!r}"
-            QMessageBox.critical(self, "Exception adding XPath Expression to List Widget", message)
-
-
-    def browse_csv_output(self):
-        print("Browse CSV output clicked")
-        # Set output path directly:
-        # self.ui.line_edit_csv_output_path.setText("path/to/output.csv")
-        
-        
-    def export_to_csv(self):
-        print("Export to CSV clicked")
-        # Update program output directly:
-        # self.ui.text_edit_program_output.append("Exporting to CSV...")
-        
 
     def update_combobox_states(self, tags: list, attributes: list, tag_values: list, attribute_values: list):
         """Helper to set initial states of comboboxes after XML parsing."""
@@ -457,8 +420,44 @@ class MainWindow(QMainWindow):
             message = f"An exception of type {type(ex).__name__} occurred. Arguments: {ex.args!r}"
             QMessageBox.critical(self,"Error getting tag values", message)
             return []
-    
-    
+        
+        
+    # === List Widget Handler ===
+    def add_xpath_to_list(self):
+        print("Add XPath to list clicked")
+        try:
+            # Check if the XPath input is not empty:
+            expression = self.ui.line_edit_xpath_builder.text().strip()
+            if not expression: 
+                QMessageBox.information(self, "Empty XPath", "Please enter a valid XPath expression before adding it to the list.")
+            elif expression and not self.is_duplicate(expression):
+                validator = create_xpath_validator()
+                self._connect_xpath_builder_signals(validator)
+                # Validate the XPath expression
+                validator.xpath_expression = expression
+                is_valid = validator.validate_xpath_expression()
+                if is_valid:
+                    self.xpath_filters.append(expression)
+                    self.ui.list_widget_xpath_expressions.addItem(expression)
+            else:
+                QMessageBox.warning(self, "Duplicate XPath Expression", f"Cannot add duplicate XPath expression:\n{expression}")
+        except Exception as ex:
+            message = f"An exception of type {type(ex).__name__} occurred. Arguments: {ex.args!r}"
+            QMessageBox.critical(self, "Exception adding XPath Expression to List Widget", message)
+
+
+    def browse_csv_output(self):
+        print("Browse CSV output clicked")
+        # Set output path directly:
+        # self.ui.line_edit_csv_output_path.setText("path/to/output.csv")
+        
+        
+    def export_to_csv(self):
+        print("Export to CSV clicked")
+        # Update program output directly:
+        # self.ui.text_edit_program_output.append("Exporting to CSV...")
+        
+
     def on_function_changed(self, function_type, checked):
         if checked:
             print(f"Function changed to: {function_type}")
