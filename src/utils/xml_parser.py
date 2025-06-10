@@ -97,8 +97,6 @@ class XMLParserThread(QRunnable):
         try:
             if self.operation == 'parse':
                 self._parse_xml()
-            elif self.operation == 'extract':
-                self._extract_data()
             elif self.operation == 'analyze':
                 self._analyze_structure()
             else:

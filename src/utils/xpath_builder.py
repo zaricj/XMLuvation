@@ -49,6 +49,7 @@ class XPathValidator(QRunnable):
         except ET.XPathSyntaxError as e:
             error_msg = f"XPath syntax error: {str(e)}"
             self.signals.error_occurred.emit("XPathSyntaxError", error_msg)
+            self.signals.progress.emit("XPath syntax is invalid")
             return False
         except ET.XPathEvalError as e:
             error_msg = f"XPath evaluation error: {str(e)}"
