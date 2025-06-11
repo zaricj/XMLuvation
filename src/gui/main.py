@@ -8,8 +8,8 @@ from PySide6.QtGui import QIcon, QAction, QStandardItemModel, QStandardItem, QCl
 from PySide6.QtCore import Qt, QThread, Signal, Slot, QSortFilterProxyModel, QObject, QFile, QTextStream, QSettings, QThreadPool, QIODevice
 from PySide6.QtUiTools import QUiLoader
 from pathlib import Path
+
 from  datetime import datetime
-from lxml import etree as ET
 import pandas as pd
 import sys
 import csv
@@ -19,18 +19,17 @@ import webbrowser
 import json
 import traceback
 import multiprocessing
-import faulthandler
 from functools import partial
 from typing import List, Tuple, Dict
 
 
 from utils.config_handler import ConfigHandler
-from utils.xml_parser import (
-    XMLParserThread, XMLUtils, 
+from utils.xml_parser import (XMLUtils, 
     create_xml_parser, create_structure_analyzer
 )
 from utils.xpath_builder import create_xpath_builder, create_xpath_validator
 from utils.csv_export import CSVExportThread
+from gui.logic.controller import ComboBoxStateController
 
 from gui.resources.ui.XMLuvation_ui import Ui_MainWindow
 
@@ -82,6 +81,12 @@ class MainWindow(QMainWindow):
         # Set window title with version
         self.setWindowTitle(f"XMLuvation {APP_VERSION}")
         
+        # XML Data
+        self.parsed_xml_data = {}
+        
+        # Instantiate the controller with a reference to the MainWindow
+        self.cb_state_controller = ComboBoxStateController(self, self.parsed_xml_data)
+        
         # Settings file for storing application settings
         self.settings = QSettings("Jovan", "XMLuvation")
         
@@ -92,7 +97,6 @@ class MainWindow(QMainWindow):
         #  Initialize the QThreadPool for running threads
         self.thread_pool = QThreadPool()
         max_threads = self.thread_pool.maxThreadCount() # PC's max CPU threads (I have 32 Threads on a Ryzen 9 7950X3D)
-        
         
         # Keep track of active workers (optional, for cleanup)
         self.active_workers = []
@@ -184,10 +188,8 @@ class MainWindow(QMainWindow):
         self.ui.button_export_csv.clicked.connect(self.export_to_csv)
         
         # Combo boxes
-        self.ui.combobox_tag_names.currentTextChanged.connect(self.on_tag_name_changed)
-        self.ui.combobox_tag_values.currentTextChanged.connect(self.on_tag_value_changed)
-        self.ui.combobox_attribute_names.currentTextChanged.connect(self.on_attribute_name_changed)
-        self.ui.combobox_attribute_values.currentTextChanged.connect(self.on_attribute_value_changed)
+        self.ui.combobox_tag_names.currentTextChanged.connect(self.cb_state_controller.on_tag_name_changed)
+        self.ui.combobox_attribute_names.currentTextChanged.connect(self.cb_state_controller.on_attribute_name_changed)
         
         # Radio buttons
         self.ui.radio_button_equals.toggled.connect(lambda checked: self.on_function_changed("equals", checked))
@@ -273,6 +275,9 @@ class MainWindow(QMainWindow):
             #self.on_info_message("Parsing Complete", info_message) # QMessageBox info popup
             self.ui.text_edit_program_output.append(info_message)
             
+            self.parsed_xml_data = result
+            # Pass the new result data (the xml data as dict) to the ComboBoxStateController class
+            self.cb_state_controller.set_parsed_data(result)
             
         except Exception as ex:
             self.on_error_message(ex, "Error processing parsing results")
@@ -333,98 +338,6 @@ class MainWindow(QMainWindow):
         # Update program output directly:
         # self.ui.text_edit_program_output.append("Exporting to CSV...")
         
-    def on_tag_name_changed(self, selected_tag):
-        print(f"Tag name changed to: {selected_tag}")
-        if not selected_tag:
-            return []
-        try:
-            attributes = self.get_attributes(self.eval_input_file, selected_tag)
-            self.attribute_name_combobox.clear()
-            self.attribute_name_combobox.addItems(attributes)
- 
-            values_xml = self.get_tag_values(self.eval_input_file, selected_tag)
-            self.tag_value_combobox.clear()
-            self.tag_value_combobox.addItems(values_xml)
- 
-            # Disable tag value combo box if there are no values for the selected tag
-            if not values_xml or all(value.strip() == "" for value in values_xml if value is not None):
-                self.tag_value_combobox.setDisabled(True)
-                self.tag_value_combobox.clear()
-            else:
-                self.tag_value_combobox.setDisabled(False)
- 
-            # Disable attribute name and value combo boxes if there are no attributes for the selected tag
-            if not attributes:
-                self.attribute_name_combobox.setDisabled(True)
-                self.attribute_name_combobox.clear()
-                self.attribute_value_combobox.setDisabled(True)
-                self.attribute_value_combobox.clear()
-            else:
-                self.attribute_name_combobox.setDisabled(False)
-        except Exception as ex:
-            message = f"An exception of type {type(ex).__name__} occurred. Arguments: {ex.args!r}"
-            QMessageBox.critical(self, "An exception occurred", message)
-    
-    def on_tag_value_changed(self, text):
-        print(f"Tag value changed to: {text}")
-        
-    def on_attribute_name_changed(self, selected_attribute):
-        print(f"Attribute name changed to: {selected_attribute}")
-        try:
-            selected_tag = self.tag_name_combobox.currentText()
-            attribute_values = self.get_attribute_values(self.eval_input_file, selected_tag, selected_attribute)
-            self.attribute_value_combobox.clear()
-            self.attribute_value_combobox.addItems(attribute_values)
- 
-            # Disable attribute value combo box if there are no attribute values
-            if not attribute_values:
-                self.attribute_value_combobox.setDisabled(True)
-                self.attribute_value_combobox.clear()
-            else:
-                self.attribute_value_combobox.setDisabled(False)
- 
-            # Disable tag value combo box if the selected tag has no values
-            values_xml = self.get_tag_values(self.eval_input_file, selected_tag)
-            
-            if not values_xml:
-                self.tag_value_combobox.setDisabled(True)
-                self.tag_value_combobox.clear()
-        except Exception as ex:
-            message = f"An exception of type {type(ex).__name__} occurred. Arguments: {ex.args!r}"
-            QMessageBox.critical(self,"Exception in Program", message)
-        
-    def on_attribute_value_changed(self, text):
-        print(f"Attribute value changed to: {text}")
-        
-    def get_attribute_values(self, eval_input_file, selected_tag, selected_attribute):
-        if not eval_input_file or not selected_tag or not selected_attribute:
-            return []
-        try:
-            root = ET.parse(eval_input_file).getroot()
-            values = set()
-            for elem in root.iter(selected_tag):
-                if selected_attribute in elem.attrib:
-                    values.add(elem.attrib[selected_attribute])
-            return sorted(values)
-        except Exception as ex:
-            message = f"An exception of type {type(ex).__name__} occurred. Arguments: {ex.args!r}"
-            QMessageBox.critical(self, "Error getting attribute values", message)
-            return []
-        
-    def get_tag_values(self, eval_input_file, selected_tag):
-        if not eval_input_file or not selected_tag:
-            return []
-        try:
-            root = ET.parse(eval_input_file).getroot()
-            values = set()
-            for elem in root.iter(selected_tag):
-                if elem.text and elem.text.strip():
-                    values.add(elem.text.strip())
-            return sorted(values)
-        except Exception as ex:
-            message = f"An exception of type {type(ex).__name__} occurred. Arguments: {ex.args!r}"
-            QMessageBox.critical(self,"Error getting tag values", message)
-            return []
     
     def on_function_changed(self, function_type, checked):
         if checked:
