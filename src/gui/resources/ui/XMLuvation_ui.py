@@ -292,16 +292,15 @@ class Ui_MainWindow(object):
         self.horizontalLayout_three.setObjectName(u"horizontalLayout_three")
         self.combobox_tag_names = QComboBox(self.group_box_xml_input_xpath_builder)
         self.combobox_tag_names.setObjectName(u"combobox_tag_names")
-        self.combobox_tag_names.setEditable(False)
+        self.combobox_tag_names.setEditable(True)
 
         self.horizontalLayout_three.addWidget(self.combobox_tag_names)
 
         self.combobox_tag_values = QComboBox(self.group_box_xml_input_xpath_builder)
         self.combobox_tag_values.setObjectName(u"combobox_tag_values")
-        self.combobox_tag_values.setEditable(False)
+        self.combobox_tag_values.setEditable(True)
 
         self.horizontalLayout_three.addWidget(self.combobox_tag_values)
-
 
         self.verticalLayout_4.addLayout(self.horizontalLayout_three)
 
@@ -309,13 +308,13 @@ class Ui_MainWindow(object):
         self.horizontalLayout_four.setObjectName(u"horizontalLayout_four")
         self.combobox_attribute_names = QComboBox(self.group_box_xml_input_xpath_builder)
         self.combobox_attribute_names.setObjectName(u"combobox_attribute_names")
-        self.combobox_attribute_names.setEditable(False)
+        self.combobox_attribute_names.setEditable(True)
 
         self.horizontalLayout_four.addWidget(self.combobox_attribute_names)
 
         self.combobox_attribute_values = QComboBox(self.group_box_xml_input_xpath_builder)
         self.combobox_attribute_values.setObjectName(u"combobox_attribute_values")
-        self.combobox_attribute_values.setEditable(False)
+        self.combobox_attribute_values.setEditable(True)
 
         self.horizontalLayout_four.addWidget(self.combobox_attribute_values)
 
@@ -390,6 +389,7 @@ class Ui_MainWindow(object):
         self.statusbar_xpath_expressions = QStatusBar(self.group_box_xpath_expressions_list)
         self.statusbar_xpath_expressions.setSizeGripEnabled(False)
         self.statusbar_xpath_expressions.setObjectName(u"statusbar_xpath_expressions")
+        self.statusbar_xpath_expressions.setStyleSheet("color: #ffc857;")
         self.verticalLayout_7.addWidget(self.list_widget_xpath_expressions)
         self.verticalLayout_7.addWidget(self.statusbar_xpath_expressions)
 
