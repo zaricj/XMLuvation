@@ -1,6 +1,7 @@
 from PySide6.QtWidgets import (QApplication, QMainWindow, QMenu,QFileDialog, QMessageBox, QInputDialog)
 from PySide6.QtGui import QIcon, QAction, QCloseEvent
 from PySide6.QtCore import Qt, Signal, Slot, QFile, QTextStream, QSettings, QThreadPool
+from pathlib import Path
 
 import sys
 import os
@@ -14,7 +15,7 @@ from utils.xml_parser import (XMLUtils,
 )
 from utils.xpath_builder import create_xpath_builder, create_xpath_validator
 from utils.csv_export import CSVExportThread
-from gui.logic.controller import ComboBoxStateController
+from gui.logic.controller import ComboBoxStateController, CSVConversionController
 
 from gui.resources.ui.XMLuvation_ui import Ui_MainWindow
 
@@ -203,7 +204,7 @@ class MainWindow(QMainWindow):
         
         # === CSV TAB ===
         self.ui.button_browse_csv_conversion_path_input.clicked.connect(lambda: self.browse_file_helper(dialog_message="Select csv file for conversion", line_widget=self.ui.line_edit_csv_conversion_path_input, file_extension_filter="CSV File (*.csv)"))
-        self.ui.button_browse_csv_conversion_path_output.clicked.connect(lambda: self.browse_file_helper(dialog_message="Select output path for converted file", line_widget=self.ui.line_edit_csv_conversion_path_output, file_extension_filter="Excel file (*.xlsx);;JSON file (*.json);;Markdown file (*.md);;HTML file (*.html)"))
+        self.ui.button_browse_csv_conversion_path_output.clicked.connect(lambda: self.browse_save_file_as_helper(dialog_message="Save as", line_widget=self.ui.line_edit_csv_conversion_path_output, file_extension_filter="Excel file (*.xlsx);;JSON file (*.json);;Markdown file (*.md);;HTML file (*.html)"))
         self.ui.button_csv_conversion_convert.clicked.connect(self.csv_convert)
         self.ui.checkbox_write_index_column.toggled.connect(self.on_write_index_toggled)
         
@@ -243,12 +244,33 @@ class MainWindow(QMainWindow):
         try:
             file_name, _ = QFileDialog.getOpenFileName(self, caption=dialog_message, filter=file_extension_filter)
             if file_name:
-                # Set the file path in the QLineEditWidget
-                line_widget.setText(file_name)
+                line_widget.setText(file_name) # Set the file path in the QLineEditWidget
         except Exception as ex:
             message = f"An exception of type {type(ex).__name__} occurred. Arguments: {ex.args!r}"
             QMessageBox.critical(self, "An exception occurred in browse folder method", message)
+    
+    def browse_save_file_as_helper(self, dialog_message:str, line_widget:object, file_extension_filter:str) -> None:
+        """File dialog for file saving as, sets the path of the selected file in a specified QLineEdit Widget
+
+        Args:
+            dialog_message (str): Title message for the QFileDialog to display
+            line_widget (object): The QLineEdit Widget to write to the path value as string
+            file_extension_filter (str): Filter files for selection based on set filter. 
             
+                - Example for only xml files: 
+                    - 'XML File (*.xml)'
+                    
+                    
+                - Example for multiple filters:
+                    - 'Images (*.png *.xpm *.jpg);;Text files (*.txt);;XML files (*.xml)'
+        """
+        try:
+            file_name, _ = QFileDialog.getSaveFileName(self, caption=dialog_message, filter=file_extension_filter)
+            if file_name:
+                line_widget.setText(file_name)
+        except Exception as ex:
+            message = f"An exception of type {type(ex).__name__} occurred. Arguments: {ex.args!r}"
+            QMessageBox.critical(self, "An exception occurred in browse save file method", f"Error exporting CSV: {message}")
     
     # === EVENT HANDLERS FOR XML EVALUATION GROUPBOX ===
     
@@ -410,8 +432,9 @@ class MainWindow(QMainWindow):
     
     def csv_convert(self):
         print("CSV convert clicked")
-        # Check if write index is enabled:
-        # write_index = self.ui.checkBox.isChecked()
+        # Initialized object 
+        self.csv_conversion_controller = CSVConversionController(self)
+        self.csv_conversion_controller.start_csv_conversion()
     
     
     def on_write_index_toggled(self, checked):
