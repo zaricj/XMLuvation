@@ -107,7 +107,15 @@ class XPathBuilder(QObject):
 
     
     def build_xpath_expression(self) -> str:
-        """Build XPath expression based on current UI values."""
+        """Build XPath expression based on currently selected combobox values.
+        
+        Available combobox values are:
+        - tag name
+        - tag value
+        - attribute name
+        - attribute value
+        
+        """
         try:
             # Get current values from UI
             tag_name = self._get_combo_text(self.tag_name_combo)

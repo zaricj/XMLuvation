@@ -112,33 +112,44 @@ class XMLParserThread(QRunnable):
         
         xml_string = ET.tostring(root, encoding="unicode", pretty_print=True)
         
-        # Extract comprehensive XML information
+        # Structures for comprehensive and contextual XML info
         tags = set()
         tag_values = set()
         attributes = set()
         attribute_values = set()
         namespaces = set()
-        
+
+        tag_to_values = {}  # e.g., {"author": ["Gambardella, Matthew", "Ralls, Kim", ...]}
+        tag_to_attributes = {}  # e.g., {"book": ["id"]}
+        tag_attr_to_values = {}  # e.g., {("book", "id"): ["bk101", "bk102", ...]}
+
         for elem in root.iter():
-            # Extract tag information
             tag = elem.tag
             tags.add(tag)
-            
-            # Extract namespace if present
+
+            # Namespace extraction
             if '}' in tag:
-                namespace = tag.split('}')[0][1:]  # Remove { and }
+                namespace = tag.split('}')[0][1:]
                 namespaces.add(namespace)
-            
-            # Extract text content
+
+            # Text content mapping
             if elem.text and elem.text.strip():
-                tag_values.add(elem.text.strip())
-            
-            # Extract attributes
-            for attr, value in elem.attrib.items():
+                value = elem.text.strip()
+                tag_values.add(value)
+                tag_to_values.setdefault(tag, set()).add(value)
+
+            # Attributes
+            for attr, val in elem.attrib.items():
                 attributes.add(attr)
-                attribute_values.add(value)
-        
-        # Build comprehensive result
+                attribute_values.add(val)
+                tag_to_attributes.setdefault(tag, set()).add(attr)
+                tag_attr_to_values.setdefault((tag, attr), set()).add(val)
+
+        # Convert sets to sorted lists
+        tag_to_values = {k: sorted(v) for k, v in tag_to_values.items()}
+        tag_to_attributes = {k: sorted(v) for k, v in tag_to_attributes.items()}
+        tag_attr_to_values = {k: sorted(v) for k, v in tag_attr_to_values.items()}
+
         result = {
             'xml_string': xml_string,
             'tags': sorted(tags),
@@ -149,11 +160,15 @@ class XMLParserThread(QRunnable):
             'file_path': self.xml_file_path,
             'root_tag': root.tag,
             'element_count': len(list(root.iter())),
-            'encoding': XMLUtils.get_xml_encoding(self.xml_file_path)
+            'encoding': XMLUtils.get_xml_encoding(self.xml_file_path),
+            'tag_to_values': tag_to_values,
+            'tag_to_attributes': tag_to_attributes,
+            'tag_attr_to_values': tag_attr_to_values,
         }
-        
+
         self.signals.progress.emit("XML parsing completed successfully!")
         self.signals.finished.emit(result)
+
     
     def _analyze_structure(self):
         """Analyze XML document structure and provide detailed statistics."""
