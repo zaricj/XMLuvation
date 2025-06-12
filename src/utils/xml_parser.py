@@ -1,9 +1,7 @@
 # utils/xml_parser.py
 from PySide6.QtCore import QObject, QRunnable, Signal, Slot
 from lxml import etree as ET
-from typing import Dict, List, Optional, Union
 import json
-from pathlib import Path
 
 
 class XMLParserSignals(QObject):
@@ -109,9 +107,9 @@ class XMLParserThread(QRunnable):
         """Parse XML file and extract comprehensive information."""
         tree = ET.parse(self.xml_file_path)
         root = tree.getroot()
-        
+
         xml_string = ET.tostring(root, encoding="unicode", pretty_print=True)
-        
+
         # Structures for comprehensive and contextual XML info
         tags = set()
         tag_values = set()

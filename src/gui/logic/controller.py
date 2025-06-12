@@ -126,50 +126,74 @@ class ComboBoxStateController:
             return []
 
 
-class CSVExportController:
+class CSVConversionController:
     def __init__(self, main_window:object):
         self.main_window = main_window
         self.ui = main_window.ui
             
     def start_csv_conversion(self):
-        csv_input_file = self.ui.line_edit_csv_conversion_path_input.text()
-        excel_output_file = self.ui.line_edit_csv_conversion_path_output.text()
-        checkbox = self.ui.checkbox_write_index_column.isChecked()
+        csv_file_path = self.ui.line_edit_csv_conversion_path_input.text()
+        output_converted_file_path = self.ui.line_edit_csv_conversion_path_output.text()
+        write_index = self.ui.checkbox_write_index_column.isChecked()
+
         try:
-            with open(csv_input_file, encoding="utf-8") as file:
-                sample = file.read(4096)
+            # Check if QLineEdit widgets aren't empty
+            if not csv_file_path:
+                raise FileNotFoundError
+            elif not output_converted_file_path:
+                raise FileNotFoundError
+            
+            # Detect delimiter
+            with open(csv_file_path, encoding="utf-8") as file:
+                sample = file.read(1024)
                 sniffer = csv.Sniffer()
-                get_delimiter = sniffer.sniff(sample).delimiter
-            if not checkbox:
-                csv_df = pd.read_csv(csv_input_file, delimiter=get_delimiter, encoding="utf-8", index_col=0)
-            else:
-                csv_df = pd.read_csv(csv_input_file, delimiter=get_delimiter, encoding="utf-8")
-                
-            CONVERSION_FUNCTIONS = {
-                # CSV Conversion
-                ("csv", "html"): (csv_df, pd.DataFrame.to_html),
-                ("csv", "json"): (csv_df, pd.DataFrame.to_json),
-                ("csv", "xlsx"): (csv_df, pd.DataFrame.to_excel),
-                ("csv", "md"): (csv_df, pd.DataFrame.to_markdown),
+                delimiter = sniffer.sniff(sample).delimiter
+
+            # Load CSV
+            df = pd.read_csv(csv_file_path, delimiter=delimiter, encoding="utf-8", engine="pyarrow")
+
+            # Get extensions
+            _, input_ext = os.path.splitext(csv_file_path)
+            _, output_ext = os.path.splitext(output_converted_file_path)
+            input_ext = input_ext.lower().lstrip(".")
+            output_ext = output_ext.lower().lstrip(".")
+
+            # Define conversion functions
+            def to_html(df, path): df.to_html(path, index=write_index)
+            def to_json(df, path): df.to_json(path, orient="records", force_ascii=False)
+            def to_md(df, path): df.to_markdown(path, index=write_index)
+            def to_xlsx(df, path):
+                with pd.ExcelWriter(path, engine="xlsxwriter") as writer:
+                    df.to_excel(writer, index=write_index)
+
+            conversion_map = {
+                ("csv", "html"): to_html,
+                ("csv", "json"): to_json,
+                ("csv", "md"): to_md,
+                ("csv", "xlsx"): to_xlsx,
             }
-            
-            filename, input_extension  = os.path.splitext(csv_input_file)
-            filename, output_extension  = os.path.splitext(excel_output_file)
-            
-            read_func, write_func = CONVERSION_FUNCTIONS.get(
-            (input_extension, output_extension), (None, None))
-            
-            if read_func is None or write_func is None:
-                QMessageBox.warning(self, "Unsupported Conversion", "Error converting file, unsupported conversion...")
+
+            convert_func = conversion_map.get((input_ext, output_ext))
+
+            if not convert_func:
+                QMessageBox.warning(self.main_window, "Unsupported Conversion", f"Cannot convert from '{input_ext}' to '{output_ext}'.")
                 return
-            
-            csv_df = read_func
-            write_func(csv_df, excel_output_file)
-            QMessageBox.info(self.main_window, "Conversion Successful", f"Successfully converted\n{os.path.basename(csv_input_file)}\nto\n{os.path.basename(excel_output_file)}")
-            
+
+            # Execute conversion
+            convert_func(df, output_converted_file_path)
+
+            QMessageBox.information(
+                self.main_window,
+                "Conversion Successful",
+                f"Successfully converted:\n{os.path.basename(csv_file_path)}\nto\n{os.path.basename(output_converted_file_path)}"
+            )
+        
+        except FileNotFoundError:
+            QMessageBox.warning(self.main_window, "Path error", "Both the csv input and conversion output paths need to be declared!")
+
         except Exception as ex:
-            message = f"An exception of type {type(ex).__name__} occurred. Arguments: {ex.args!r}"
-            QMessageBox.critical(self.main_window, "Exception exporting CSV", f"Error exporting CSV: {message}")
+            msg = f"{type(ex).__name__}: {ex}"
+            QMessageBox.critical(self.main_window, "Conversion Error", msg)
 
 
     # ======= End FUNCTIONS FOR create_csv_conversion_group ======= #
