@@ -297,22 +297,50 @@ QCheckBox::indicator:unchecked {
               <layout class="QHBoxLayout" name="horizontalLayout_three">
                <item>
                 <widget class="QComboBox" name="combobox_tag_names">
-                 <property name="editable">
+                 <property name="enabled">
                   <bool>false</bool>
+                 </property>
+                 <property name="editable">
+                  <bool>true</bool>
+                 </property>
+                 <property name="currentText">
+                  <string>Select Tag Name...</string>
+                 </property>
+                 <property name="currentIndex">
+                  <number>0</number>
                  </property>
                  <property name="placeholderText">
                   <string>Select Tag Name...</string>
                  </property>
+                 <item>
+                  <property name="text">
+                   <string>Select Tag Name...</string>
+                  </property>
+                 </item>
                 </widget>
                </item>
                <item>
                 <widget class="QComboBox" name="combobox_tag_values">
-                 <property name="editable">
+                 <property name="enabled">
                   <bool>false</bool>
+                 </property>
+                 <property name="editable">
+                  <bool>true</bool>
+                 </property>
+                 <property name="currentText">
+                  <string>Select Tag Value...</string>
+                 </property>
+                 <property name="currentIndex">
+                  <number>0</number>
                  </property>
                  <property name="placeholderText">
                   <string>Select Tag Value...</string>
                  </property>
+                 <item>
+                  <property name="text">
+                   <string>Select Tag Value...</string>
+                  </property>
+                 </item>
                 </widget>
                </item>
               </layout>
@@ -321,22 +349,50 @@ QCheckBox::indicator:unchecked {
               <layout class="QHBoxLayout" name="horizontalLayout_four">
                <item>
                 <widget class="QComboBox" name="combobox_attribute_names">
-                 <property name="editable">
+                 <property name="enabled">
                   <bool>false</bool>
+                 </property>
+                 <property name="editable">
+                  <bool>true</bool>
+                 </property>
+                 <property name="currentText">
+                  <string>Select Attribute Name...</string>
+                 </property>
+                 <property name="currentIndex">
+                  <number>0</number>
                  </property>
                  <property name="placeholderText">
                   <string>Select Attribute Name...</string>
                  </property>
+                 <item>
+                  <property name="text">
+                   <string>Select Attribute Name...</string>
+                  </property>
+                 </item>
                 </widget>
                </item>
                <item>
                 <widget class="QComboBox" name="combobox_attribute_values">
-                 <property name="editable">
+                 <property name="enabled">
                   <bool>false</bool>
+                 </property>
+                 <property name="editable">
+                  <bool>true</bool>
+                 </property>
+                 <property name="currentText">
+                  <string>Select Attribute Value...</string>
+                 </property>
+                 <property name="currentIndex">
+                  <number>0</number>
                  </property>
                  <property name="placeholderText">
                   <string>Select Attribute Value...</string>
                  </property>
+                 <item>
+                  <property name="text">
+                   <string>Select Attribute Value...</string>
+                  </property>
+                 </item>
                 </widget>
                </item>
               </layout>
@@ -435,34 +491,66 @@ QCheckBox::indicator:unchecked {
             <property name="title">
              <string>EXPORT SEARCH RESULT TO CSV FILE</string>
             </property>
-            <layout class="QHBoxLayout" name="horizontalLayout">
+            <layout class="QVBoxLayout" name="verticalLayout_8">
              <item>
-              <widget class="QLineEdit" name="line_edit_csv_output_path">
-               <property name="placeholderText">
-                <string>Choose a folder where to save the CSV evaluation...</string>
+              <layout class="QHBoxLayout" name="hor_layout_csv_input_and_export">
+               <item>
+                <widget class="QLineEdit" name="line_edit_csv_output_path">
+                 <property name="placeholderText">
+                  <string>Choose a folder where to save the CSV evaluation...</string>
+                 </property>
+                </widget>
+               </item>
+               <item>
+                <widget class="QPushButton" name="button_browse_csv">
+                 <property name="text">
+                  <string>Browse</string>
+                 </property>
+                </widget>
+               </item>
+              </layout>
+             </item>
+             <item>
+              <widget class="QLabel" name="label_csv_headers_info">
+               <property name="text">
+                <string>Enter CSV headers for each XPath expression (comma-separated)</string>
                </property>
               </widget>
              </item>
              <item>
-              <widget class="QPushButton" name="button_browse_csv">
-               <property name="text">
-                <string>Browse</string>
-               </property>
-              </widget>
+              <layout class="QHBoxLayout" name="hor_layout_csv_headers">
+               <item>
+                <widget class="QLineEdit" name="line_edit_csv_headers_input">
+                 <property name="placeholderText">
+                  <string>CSV headers based on the number of XPath expressions (comma-separated)</string>
+                 </property>
+                </widget>
+               </item>
+              </layout>
              </item>
              <item>
-              <widget class="QPushButton" name="button_export_csv">
-               <property name="text">
-                <string>Export</string>
-               </property>
-              </widget>
-             </item>
-             <item>
-              <widget class="QPushButton" name="button_abort_csv_export">
-               <property name="text">
-                <string>Abort</string>
-               </property>
-              </widget>
+              <layout class="QHBoxLayout" name="hor_layout_button_export_and_abort">
+               <item>
+                <widget class="QPushButton" name="button_abort_csv_export">
+                 <property name="enabled">
+                  <bool>true</bool>
+                 </property>
+                 <property name="text">
+                  <string>Abort</string>
+                 </property>
+                 <property name="flat">
+                  <bool>false</bool>
+                 </property>
+                </widget>
+               </item>
+               <item>
+                <widget class="QPushButton" name="button_start_csv_export">
+                 <property name="text">
+                  <string>Export</string>
+                 </property>
+                </widget>
+               </item>
+              </layout>
              </item>
             </layout>
            </widget>
@@ -548,7 +636,13 @@ QCheckBox::indicator:unchecked {
               <font>
                <family>Arial</family>
                <pointsize>32</pointsize>
+               <bold>true</bold>
+               <underline>true</underline>
+               <kerning>true</kerning>
               </font>
+             </property>
+             <property name="styleSheet">
+              <string notr="true">color: rgb(255, 200, 87);</string>
              </property>
              <property name="text">
               <string>CSV Conversion</string>

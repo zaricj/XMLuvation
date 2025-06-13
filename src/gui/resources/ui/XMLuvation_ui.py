@@ -3,7 +3,7 @@
 ################################################################################
 ## Form generated from reading UI file 'XMLuvation.ui'
 ##
-## Created by: Qt User Interface Compiler version 6.9.0
+## Created by: Qt User Interface Compiler version 6.9.1
 ##
 ## WARNING! All changes made in this file will be lost when recompiling UI file!
 ################################################################################
@@ -18,8 +18,8 @@ from PySide6.QtGui import (QBrush, QColor, QConicalGradient, QCursor,
 from PySide6.QtWidgets import (QApplication, QCheckBox, QComboBox, QGroupBox,
     QHBoxLayout, QLabel, QLineEdit, QListWidget,
     QListWidgetItem, QMainWindow, QProgressBar, QPushButton,
-    QRadioButton, QSizePolicy, QTabWidget, QTextEdit,
-    QVBoxLayout, QWidget, QStatusBar)
+    QRadioButton, QSizePolicy, QTabWidget, QTextEdit, QStatusBar,
+    QVBoxLayout, QWidget)
 from gui.resources.qrc import xmluvation_resources_rc
 
 class Ui_MainWindow(object):
@@ -257,7 +257,9 @@ class Ui_MainWindow(object):
         self.statusbar_xml_files_count.setObjectName(u"statusbar_xml_files_count")
         self.verticalLayout_4 = QVBoxLayout(self.group_box_xml_input_xpath_builder)
         self.verticalLayout_4.setObjectName(u"verticalLayout_4")
+        
         self.verticalLayout_4.addWidget(self.statusbar_xml_files_count)
+        
         self.horizontalLayout_one = QHBoxLayout()
         self.horizontalLayout_one.setObjectName(u"horizontalLayout_one")
         self.line_edit_xml_folder_path_input = QLineEdit(self.group_box_xml_input_xpath_builder)
@@ -291,29 +293,38 @@ class Ui_MainWindow(object):
         self.horizontalLayout_three = QHBoxLayout()
         self.horizontalLayout_three.setObjectName(u"horizontalLayout_three")
         self.combobox_tag_names = QComboBox(self.group_box_xml_input_xpath_builder)
+        self.combobox_tag_names.addItem("")
         self.combobox_tag_names.setObjectName(u"combobox_tag_names")
+        self.combobox_tag_names.setEnabled(False)
         self.combobox_tag_names.setEditable(True)
 
         self.horizontalLayout_three.addWidget(self.combobox_tag_names)
 
         self.combobox_tag_values = QComboBox(self.group_box_xml_input_xpath_builder)
+        self.combobox_tag_values.addItem("")
         self.combobox_tag_values.setObjectName(u"combobox_tag_values")
+        self.combobox_tag_values.setEnabled(False)
         self.combobox_tag_values.setEditable(True)
 
         self.horizontalLayout_three.addWidget(self.combobox_tag_values)
+
 
         self.verticalLayout_4.addLayout(self.horizontalLayout_three)
 
         self.horizontalLayout_four = QHBoxLayout()
         self.horizontalLayout_four.setObjectName(u"horizontalLayout_four")
         self.combobox_attribute_names = QComboBox(self.group_box_xml_input_xpath_builder)
+        self.combobox_attribute_names.addItem("")
         self.combobox_attribute_names.setObjectName(u"combobox_attribute_names")
+        self.combobox_attribute_names.setEnabled(False)
         self.combobox_attribute_names.setEditable(True)
 
         self.horizontalLayout_four.addWidget(self.combobox_attribute_names)
 
         self.combobox_attribute_values = QComboBox(self.group_box_xml_input_xpath_builder)
+        self.combobox_attribute_values.addItem("")
         self.combobox_attribute_values.setObjectName(u"combobox_attribute_values")
+        self.combobox_attribute_values.setEnabled(False)
         self.combobox_attribute_values.setEditable(True)
 
         self.horizontalLayout_four.addWidget(self.combobox_attribute_values)
@@ -386,39 +397,69 @@ class Ui_MainWindow(object):
         self.verticalLayout_7.setObjectName(u"verticalLayout_7")
         self.list_widget_xpath_expressions = QListWidget(self.group_box_xpath_expressions_list)
         self.list_widget_xpath_expressions.setObjectName(u"list_widget_xpath_expressions")
+
         self.statusbar_xpath_expressions = QStatusBar(self.group_box_xpath_expressions_list)
         self.statusbar_xpath_expressions.setSizeGripEnabled(False)
         self.statusbar_xpath_expressions.setObjectName(u"statusbar_xpath_expressions")
         self.statusbar_xpath_expressions.setStyleSheet("color: #ffc857;")
+
         self.verticalLayout_7.addWidget(self.list_widget_xpath_expressions)
         self.verticalLayout_7.addWidget(self.statusbar_xpath_expressions)
+
 
         self.vert_layout_main.addWidget(self.group_box_xpath_expressions_list)
 
         self.group_box_export_to_csv = QGroupBox(self.tab_xml_evaluation)
         self.group_box_export_to_csv.setObjectName(u"group_box_export_to_csv")
-        self.horizontalLayout = QHBoxLayout(self.group_box_export_to_csv)
-        self.horizontalLayout.setObjectName(u"horizontalLayout")
+        self.verticalLayout_8 = QVBoxLayout(self.group_box_export_to_csv)
+        self.verticalLayout_8.setObjectName(u"verticalLayout_8")
+        self.hor_layout_csv_input_and_export = QHBoxLayout()
+        self.hor_layout_csv_input_and_export.setObjectName(u"hor_layout_csv_input_and_export")
         self.line_edit_csv_output_path = QLineEdit(self.group_box_export_to_csv)
         self.line_edit_csv_output_path.setObjectName(u"line_edit_csv_output_path")
 
-        self.horizontalLayout.addWidget(self.line_edit_csv_output_path)
+        self.hor_layout_csv_input_and_export.addWidget(self.line_edit_csv_output_path)
 
         self.button_browse_csv = QPushButton(self.group_box_export_to_csv)
         self.button_browse_csv.setObjectName(u"button_browse_csv")
 
-        self.horizontalLayout.addWidget(self.button_browse_csv)
+        self.hor_layout_csv_input_and_export.addWidget(self.button_browse_csv)
 
-        self.button_export_csv = QPushButton(self.group_box_export_to_csv)
-        self.button_export_csv.setObjectName(u"button_export_csv")
 
-        self.horizontalLayout.addWidget(self.button_export_csv)
+        self.verticalLayout_8.addLayout(self.hor_layout_csv_input_and_export)
 
+        self.label_csv_headers_info = QLabel(self.group_box_export_to_csv)
+        self.label_csv_headers_info.setObjectName(u"label_csv_headers_info")
+
+        self.verticalLayout_8.addWidget(self.label_csv_headers_info)
+
+        self.hor_layout_csv_headers = QHBoxLayout()
+        self.hor_layout_csv_headers.setObjectName(u"hor_layout_csv_headers")
+        self.line_edit_csv_headers_input = QLineEdit(self.group_box_export_to_csv)
+        self.line_edit_csv_headers_input.setObjectName(u"line_edit_csv_headers_input")
+
+        self.hor_layout_csv_headers.addWidget(self.line_edit_csv_headers_input)
+
+
+        self.verticalLayout_8.addLayout(self.hor_layout_csv_headers)
+
+        self.hor_layout_button_export_and_abort = QHBoxLayout()
+        self.hor_layout_button_export_and_abort.setObjectName(u"hor_layout_button_export_and_abort")
         self.button_abort_csv_export = QPushButton(self.group_box_export_to_csv)
         self.button_abort_csv_export.setObjectName(u"button_abort_csv_export")
-        self.button_abort_csv_export.setVisible(False)
+        self.button_abort_csv_export.setEnabled(True)
+        self.button_abort_csv_export.setFlat(False)
 
-        self.horizontalLayout.addWidget(self.button_abort_csv_export)
+        self.hor_layout_button_export_and_abort.addWidget(self.button_abort_csv_export)
+
+        self.button_start_csv_export = QPushButton(self.group_box_export_to_csv)
+        self.button_start_csv_export.setObjectName(u"button_start_csv_export")
+
+        self.hor_layout_button_export_and_abort.addWidget(self.button_start_csv_export)
+
+
+        self.verticalLayout_8.addLayout(self.hor_layout_button_export_and_abort)
+
 
         self.vert_layout_main.addWidget(self.group_box_export_to_csv)
 
@@ -482,7 +523,11 @@ class Ui_MainWindow(object):
         font2 = QFont()
         font2.setFamilies([u"Arial"])
         font2.setPointSize(32)
+        font2.setBold(True)
+        font2.setUnderline(True)
+        font2.setKerning(True)
         self.label_csv_conversion_title.setFont(font2)
+        self.label_csv_conversion_title.setStyleSheet(u"color: rgb(255, 200, 87);")
 
         self.verticalLayout_2.addWidget(self.label_csv_conversion_title)
 
@@ -552,6 +597,10 @@ class Ui_MainWindow(object):
         self.retranslateUi(MainWindow)
 
         self.tabWidget.setCurrentIndex(0)
+        self.combobox_tag_names.setCurrentIndex(0)
+        self.combobox_tag_values.setCurrentIndex(0)
+        self.combobox_attribute_names.setCurrentIndex(0)
+        self.combobox_attribute_values.setCurrentIndex(0)
 
 
         QMetaObject.connectSlotsByName(MainWindow)
@@ -564,9 +613,21 @@ class Ui_MainWindow(object):
         self.button_browse_xml_folder.setText(QCoreApplication.translate("MainWindow", u"Browse", None))
         self.button_read_xml.setText(QCoreApplication.translate("MainWindow", u"Read XML", None))
         self.label_xpath_builder.setText(QCoreApplication.translate("MainWindow", u"Get names and values of XML tags and Attributes for XPath generation:", None))
+        self.combobox_tag_names.setItemText(0, QCoreApplication.translate("MainWindow", u"Select Tag Name...", None))
+
+        self.combobox_tag_names.setCurrentText(QCoreApplication.translate("MainWindow", u"Select Tag Name...", None))
         self.combobox_tag_names.setPlaceholderText(QCoreApplication.translate("MainWindow", u"Select Tag Name...", None))
+        self.combobox_tag_values.setItemText(0, QCoreApplication.translate("MainWindow", u"Select Tag Value...", None))
+
+        self.combobox_tag_values.setCurrentText(QCoreApplication.translate("MainWindow", u"Select Tag Value...", None))
         self.combobox_tag_values.setPlaceholderText(QCoreApplication.translate("MainWindow", u"Select Tag Value...", None))
+        self.combobox_attribute_names.setItemText(0, QCoreApplication.translate("MainWindow", u"Select Attribute Name...", None))
+
+        self.combobox_attribute_names.setCurrentText(QCoreApplication.translate("MainWindow", u"Select Attribute Name...", None))
         self.combobox_attribute_names.setPlaceholderText(QCoreApplication.translate("MainWindow", u"Select Attribute Name...", None))
+        self.combobox_attribute_values.setItemText(0, QCoreApplication.translate("MainWindow", u"Select Attribute Value...", None))
+
+        self.combobox_attribute_values.setCurrentText(QCoreApplication.translate("MainWindow", u"Select Attribute Value...", None))
         self.combobox_attribute_values.setPlaceholderText(QCoreApplication.translate("MainWindow", u"Select Attribute Value...", None))
         self.label_function.setText(QCoreApplication.translate("MainWindow", u"Function:", None))
         self.radio_button_equals.setText(QCoreApplication.translate("MainWindow", u"Equals", None))
@@ -581,8 +642,10 @@ class Ui_MainWindow(object):
         self.group_box_export_to_csv.setTitle(QCoreApplication.translate("MainWindow", u"EXPORT SEARCH RESULT TO CSV FILE", None))
         self.line_edit_csv_output_path.setPlaceholderText(QCoreApplication.translate("MainWindow", u"Choose a folder where to save the CSV evaluation...", None))
         self.button_browse_csv.setText(QCoreApplication.translate("MainWindow", u"Browse", None))
-        self.button_export_csv.setText(QCoreApplication.translate("MainWindow", u"Export", None))
+        self.label_csv_headers_info.setText(QCoreApplication.translate("MainWindow", u"Enter CSV headers for each XPath expression (comma-separated)", None))
+        self.line_edit_csv_headers_input.setPlaceholderText(QCoreApplication.translate("MainWindow", u"CSV headers based on the number of XPath expressions (comma-separated)", None))
         self.button_abort_csv_export.setText(QCoreApplication.translate("MainWindow", u"Abort", None))
+        self.button_start_csv_export.setText(QCoreApplication.translate("MainWindow", u"Export", None))
         self.group_box_program_output.setTitle(QCoreApplication.translate("MainWindow", u"PROGRAM OUTPUT", None))
         self.group_box_xml_output.setTitle(QCoreApplication.translate("MainWindow", u"XML OUTPUT", None))
         self.progressbar_main.setFormat(QCoreApplication.translate("MainWindow", u"%p%", None))
