@@ -109,9 +109,10 @@ class CSVExportThread(QRunnable):
         self._pool = None # To store the multiprocessing pool instance
         
         # Operation parameters
-        self.folder_path_containing_xml_files = kwargs.get("folder_path_containing_xml_files")
-        self.xpath_expressions_list = kwargs.get("xpath_expressions_list")
-        self.output_save_path_for_csv_export = kwargs.get("output_save_path_for_csv_export")
+        self.folder_path_containing_xml_files: str = kwargs.get("folder_path_containing_xml_files", "")
+        self.xpath_expressions_list: list = kwargs.get("xpath_expressions_list", [])
+        self.output_save_path_for_csv_export: str = kwargs.get("output_save_path_for_csv_export", "")
+        self.csv_headers_input_list: list = kwargs.get("csv_headers_input_list", [])
 
     def stop(self):
         """Signals the worker to stop its processing by setting the multiprocessing event."""
@@ -144,7 +145,9 @@ class CSVExportThread(QRunnable):
             self.signals.finished.emit()
             return
 
-        fieldnames = ['XML_FILE', 'XPath_Expression', 'Match_Content', 'Match_Index']
+        # TODO Work on new write logic
+        fieldnames = ['Filename']
+        fieldnames.append(self.csv_headers_input_list)
         
         try:
             with open(self.output_save_path_for_csv_export, 'w', newline='', encoding='utf-8') as csvfile:
@@ -203,7 +206,7 @@ class CSVExportThread(QRunnable):
 
 
 # Convenience function for creating threaded operations
-def create_csv_exporter(folder_path_containing_xml_files:str, xpath_expressions_list:list, output_save_path_for_csv_export:str) -> CSVExportThread:
+def create_csv_exporter(folder_path_containing_xml_files:str, xpath_expressions_list:list, output_save_path_for_csv_export:str, csv_headers_input_list:list) -> CSVExportThread:
     """Create a CSV export thread for extracting data from multiple XML files
 
     Args:
@@ -214,4 +217,4 @@ def create_csv_exporter(folder_path_containing_xml_files:str, xpath_expressions_
     Returns:
         CSVExportThread: Worker thread for exporting XML XPath evaluation results to a CSV file.
     """
-    return CSVExportThread("export", folder_path_containing_xml_files=folder_path_containing_xml_files, xpath_expressions_list=xpath_expressions_list, output_save_path_for_csv_export=output_save_path_for_csv_export)
+    return CSVExportThread("export", folder_path_containing_xml_files=folder_path_containing_xml_files, xpath_expressions_list=xpath_expressions_list, output_save_path_for_csv_export=output_save_path_for_csv_export, csv_headers_input_list=csv_headers_input_list)
