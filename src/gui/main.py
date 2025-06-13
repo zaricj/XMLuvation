@@ -138,7 +138,7 @@ class MainWindow(QMainWindow):
         print(f"Read XML Button: {'✓' if self.ui.button_read_xml else '✗'}")
         print(f"CSV Output Path: {'✓' if self.ui.line_edit_csv_output_path else '✗'}")
         print(f"Browse CSV Output Button: {'✓' if self.ui.button_browse_csv else '✗'}")
-        print(f"Export CSV Button: {'✓' if self.ui.button_export_csv else '✗'}")
+        print(f"Export CSV Button: {'✓' if self.ui.button_start_csv_export else '✗'}")
         print(f"Button CSV Conversion Input: {'✓' if self.ui.button_browse_csv_conversion_path_input else '✗'}")
         print(f"Button CSV Conversion Output: {'✓' if self.ui.button_browse_csv_conversion_path_output else '✗'}")
         print(f"Button CSV Conversion Convert: {'✓' if self.ui.button_csv_conversion_convert else '✗'}")
@@ -323,6 +323,17 @@ class MainWindow(QMainWindow):
             self.ui.combobox_attribute_values.clear()
             self.ui.combobox_attribute_values.addItems(attribute_values)
             
+            # Enable ComboBoxes
+            self.ui.combobox_tag_names.setDisabled(False)
+            self.ui.combobox_attribute_names.setDisabled(False)
+            self.ui.combobox_tag_values.setDisabled(False)
+            self.ui.combobox_attribute_values.setDisabled(False)
+            
+            self.ui.combobox_tag_names.setCurrentText("Select Tag Name...")
+            self.ui.combobox_attribute_names.setCurrentText("Select Tag Value...")
+            self.ui.combobox_tag_values.setCurrentText("Select Attribute Name...")
+            self.ui.combobox_attribute_values.setCurrentText("Select Attribute Value...")
+            
             # Display additional info
             info_message = f"File: {result.get('file_path', 'Unknown')}\n"
             info_message += f"Root element: {result.get('root_tag', 'Unknown')}\n"
@@ -462,35 +473,49 @@ class MainWindow(QMainWindow):
             message = f"An exception of type {type(ex).__name__} occurred. Arguments: {ex.args!r}"
             QMessageBox.critical(self, "Exception in Program", f"An error occurred: {message}")
 
-    # === EVENT HANDLERS FOR QMESSAGEBOXES ===
-    @Slot(str, str)
+    # === EVENT HANDLERS FOR QMessageBoxes === #
+    
+    @Slot(str, str) # QMessageBox.critical type shit
     def on_error_message(self, title, message):
-        """Slot to handle error messages."""
+        """Show critical message dialog."""
         QMessageBox.critical(self, title, message)
     
-    @Slot(str, str)
+    @Slot(str, str) # QMessageBox.information type shit
     def on_info_message(self, title, message):
-        """Slot to handle info messages."""
+        """Show information message dialog."""
         QMessageBox.information(self, title, message)
         
-    @Slot(str, str)
+    @Slot(str, str) # QMessageBox.warning type shit
     def show_warning_message(self, title, message):
-        """Show an warning message dialog."""
+        """Show warning message dialog."""
         QMessageBox.warning(self, title, message)
+        
+    # === END EVENT HANDLERS FOR QMessageBoxes END === #
     
-    # === EVENT HANDLER FOR QTextEdit MAIN PROGRAM OUTPUT ===
+    # === EVENT HANDLER FOR QTextEdit MAIN PROGRAM OUTPUT === #
+    
     @Slot(str)
     def append_to_program_output(self, message:str):
-        """Handle progress updates from the XPath builder."""
-        # Update status bar with progress
+        """Handle QTextEdit progress updates with .append() in any class, does the QTextEdit.append("hello world").
+        
+        Args:
+            message (str): Message to send to the QTextEdit Widget
+        """
         self.ui.text_edit_program_output.append(message)
         
     @Slot(str)
     def set_text_to_program_output(self, message:str):
-        """Handles progress u"""
+        """Handle QTextEdit progress updates with .setText() in any class, does the QTextEdit.setText("hello world")
 
+        Args:
+            message (str): Message to send to the QTextEdit Widget
+        """
+        self.ui.text_edit_program_output.setText(message)
 
-    # === SIGNAL CONNECTION HELPERS ===
+    # === END EVENT HANDLER FOR QTextEdit MAIN PROGRAM OUTPUT END === #
+
+    # === SIGNAL CONNECTION HELPERS === #
+    
     def _connect_xml_parsing_signals(self, worker):
         """Connect common signals for most operations.
         """
@@ -504,6 +529,11 @@ class MainWindow(QMainWindow):
         worker.signals.progress.connect(self.append_to_program_output)
         worker.signals.error_occurred.connect(self.on_error_message)
     
+    
+    def _connect_csv_export_signals(self, worker):
+        pass
+    
+    # === END SIGNAL CONNECTION HELPERS END === #
     
     def closeEvent(self, event: QCloseEvent):
         reply = QMessageBox.question(
@@ -583,7 +613,7 @@ class MainWindow(QMainWindow):
         self.toggle_theme_action.triggered.connect(self.change_theme)
         
     # ======= START FUNCTIONS create_menu_bar ======= #
-    
+
     def update_paths_menu(self):
         # Clear existing path actions, except the last one (Add Custom Path)
         for action in self.paths_menu.actions()[:-1]:
@@ -660,9 +690,8 @@ class MainWindow(QMainWindow):
         webbrowser.open("https://www.w3schools.com/xml/xpath_syntax.asp")
         
     # ======= END FUNCTIONS create_menu_bar ======= #
-    
 
-#     # ======= Start FUNCTIONS FOR create_matching_filter_group ======= #
+    # ======= Start FUNCTIONS FOR create_matching_filter_group ======= #
 
     def update_statusbar_xpath_listbox_count(self):
         self.counter = self.ui.list_widget_xpath_expressions.count()
