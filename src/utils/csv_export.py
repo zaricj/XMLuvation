@@ -90,7 +90,8 @@ class CSVExportSignals(QObject):
     error_occurred = Signal(str, str) # QMessageBox.critical
     info_occurred = Signal(str, str) # QMessageBox.information
     warning_occured = Signal(str, str) # QMessageBox.warning
-    program_output_progress = Signal(str) # Program Output aka self.ui.text_edit_program_output
+    program_output_progress_append = Signal(str) # Program Output aka self.ui.text_edit_program_output.append
+    program_output_progress_set_text = Signal(str) # Program Output aka self.ui.text_edit_program_output.setText
     progressbar_update = Signal(int) # Progressbar aka self.ui.progressbar_main
 
 class CSVExportThread(QRunnable):
@@ -102,13 +103,19 @@ class CSVExportThread(QRunnable):
         self.kwargs = kwargs
         self.signals = CSVExportSignals()
         self.setAutoDelete(True)
+        
         # Create a multiprocessing Event for signaling termination
         self._terminate_event = multiprocessing.Event()
         self._pool = None # To store the multiprocessing pool instance
+        
+        # Operation parameters
+        self.folder_path_containing_xml_files = kwargs.get("folder_path_containing_xml_files")
+        self.xpath_expressions_list = kwargs.get("xpath_expressions_list")
+        self.output_save_path_for_csv_export = kwargs.get("output_save_path_for_csv_export")
 
     def stop(self):
         """Signals the worker to stop its processing by setting the multiprocessing event."""
-        self.signals.program_output_progress.emit("Aborting CSV export...")
+        self.signals.program_output_progress_append.emit("Aborting CSV export...")
         self._terminate_event.set() # Set the event to signal termination
         if self._pool:
             self._pool.terminate() # Forcefully terminate processes in the pool
@@ -128,7 +135,7 @@ class CSVExportThread(QRunnable):
 
 
     def _export_serach_to_csv(self):
-        self.signals.program_output_progress.emit("Starting CSV export...")
+        self.signals.program_output_progress_append.emit("Starting CSV export...")
         xml_files_list = [f for f in os.listdir(self.folder_path_containing_xml_files) if f.lower().endswith('.xml')]
         total_xml_files_count = len(xml_files_list)
 
@@ -140,14 +147,14 @@ class CSVExportThread(QRunnable):
         fieldnames = ['XML_FILE', 'XPath_Expression', 'Match_Content', 'Match_Index']
         
         try:
-            with open(self.output_csv_path, 'w', newline='', encoding='utf-8') as csvfile:
+            with open(self.output_save_path_for_csv_export, 'w', newline='', encoding='utf-8') as csvfile:
                 writer = csv.DictWriter(csvfile, fieldnames=fieldnames, extrasaction='ignore')
                 writer.writeheader()
 
                 pool_func = partial(
                     process_single_xml,
                     folder_path=self.folder_path_containing_xml_files,
-                    xpath_expressions=self.xpath_expressions
+                    xpath_expressions=self.xpath_expressions_list
                 )
 
                 # Initialize the pool with the worker_init function and the terminate event
@@ -160,7 +167,7 @@ class CSVExportThread(QRunnable):
                     self._pool.imap_unordered(pool_func, xml_files_list)
                 ):
                     if self._terminate_event.is_set():
-                        self.signals.program_output_progress.emit("Export task aborted successfully.")
+                        self.signals.program_output_progress_append.emit("Export task aborted successfully.")
                         break # Exit the loop immediately
 
                     if file_rows:
@@ -170,16 +177,16 @@ class CSVExportThread(QRunnable):
                     total_matching_files += matching_file_flag
                     
                     progress = int(((i + 1) / total_xml_files_count) * 100)
-                    self.signals.progress_updated.emit(progress)
-                    self.signals.program_output_progress.emit(f"Processed file {i + 1} of {total_xml_files_count}")
+                    self.signals.progressbar_update.emit(progress)
+                    self.signals.program_output_progress_append.emit(f"Processed file {i + 1} of {total_xml_files_count}")
                 
                 if not self._terminate_event.is_set(): # Only show completion message if not aborted
-                    self.signals.info_occurred.emit(
+                    self.signals.program_output_progress_set_text.emit(
                         "Export Completed",
                         f"CSV export finished.\nTotal XML files processed: {total_xml_files_count}\n"
                         f"Total matches found: {total_sum_matches}\n"
                         f"Total files with matches: {total_matching_files}\n"
-                        f"Output saved to: {self.output_csv_path}"
+                        f"Output saved to: {self.output_save_path_for_csv_export}"
                     )
                 
         except Exception as ex:
@@ -196,6 +203,15 @@ class CSVExportThread(QRunnable):
 
 
 # Convenience function for creating threaded operations
-def create_csv_export_thread() -> CSVExportThread:
-    """Create a CSV export thread for extracting data from multiple XML files."""
-    return CSVExportThread("export")
+def create_csv_exporter(folder_path_containing_xml_files:str, xpath_expressions_list:list, output_save_path_for_csv_export:str) -> CSVExportThread:
+    """Create a CSV export thread for extracting data from multiple XML files
+
+    Args:
+        folder_path_containing_xml_files (str): Folder path that contains the XML files, use self.ui.line_edit_xml_folder_path_input
+        xpath_expressions_list (list): List of XPath expressions to use and search XML file, use self.ui.list_widget_xpath_expressions
+        output_save_path_for_csv_export (str): Folder path where the search result should be exported to as a CSV file, use self.ui.line_edit_csv_output_path
+
+    Returns:
+        CSVExportThread: Worker thread for exporting XML XPath evaluation results to a CSV file.
+    """
+    return CSVExportThread("export", folder_path_containing_xml_files=folder_path_containing_xml_files, xpath_expressions_list=xpath_expressions_list, output_save_path_for_csv_export=output_save_path_for_csv_export)
