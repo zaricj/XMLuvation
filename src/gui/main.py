@@ -301,8 +301,8 @@ class MainWindow(QMainWindow):
         self.ui.button_add_xpath_to_list.clicked.connect(self.add_xpath_to_list)
         
         # CSV export
-        #self.ui.button_browse_csv.clicked.connect(self.browse_csv_output)
-        #self.ui.button_export_csv.clicked.connect(self.export_to_csv)
+        self.ui.button_browse_csv.clicked.connect(self.browse_save_file_as_helper(dialog_message="Save as", line_widget=self.ui.line_edit_csv_conversion_path_output, file_extension_filter="CSV File (*.csv)"))
+        self.ui.button_start_csv_export.clicked.connect(self.start_csv_export)
         
         # Combo boxes
         self.ui.combobox_tag_names.currentTextChanged.connect(self.cb_state_controller.on_tag_name_changed)
@@ -524,11 +524,9 @@ class MainWindow(QMainWindow):
         QMessageBox.information(self, title, message)
         
     @Slot(str, str) # QMessageBox.warning type shit
-    def show_warning_message(self, title, message):
+    def on_warning_message(self, title, message):
         """Show warning message dialog."""
         QMessageBox.warning(self, title, message)
-        
-    # === END EVENT HANDLERS FOR QMessageBoxes END === #
     
     # === EVENT HANDLER FOR QTextEdit MAIN PROGRAM OUTPUT === #
     
@@ -550,8 +548,7 @@ class MainWindow(QMainWindow):
         """
         self.ui.text_edit_program_output.setText(message)
 
-    
-    # === EVENT HANDLERS FOR XML EVALUATION GROUPBOX ===
+
     # === XML PARSING EVENT TRIGGER BUTTON === #
     def read_xml_file(self):
         print("Read XML files clicked")
@@ -662,15 +659,15 @@ class MainWindow(QMainWindow):
         worker.signals.program_output_progress.connect(self.append_to_program_output)
         worker.signals.error_occurred.connect(self.on_error_message)
     
-    
     def _connect_csv_export_signals(self, worker):
-        pass
-    
-    # === END SIGNAL CONNECTION HELPERS END === #
-        
-    # ======= END FUNCTIONS create_menu_bar ======= #
+        worker.signals.finished.connect(self.on_csv_export_finished)
+        worker.signals.error_occurred.connect(self.on_error_message)
+        worker.signals.info_occurred.connect(self.on_info_message)
+        worker.signals.warning_occured.connect(self.on_warning_message)
+        worker.signals.program_output_progress_append.connect(self.append_to_program_output)
+        worker.signals.program_output_progress_set_text.connect(self.set_text_to_program_output)
+        worker.signals.progressbar_update.connect(self.update_progress_bar)
 
-    # ======= Start FUNCTIONS FOR create_matching_filter_group ======= #
 
     def update_statusbar_xpath_listbox_count(self):
         self.counter = self.ui.list_widget_xpath_expressions.count()
@@ -737,51 +734,20 @@ class MainWindow(QMainWindow):
         """
         return xpath_expression in self.xpath_filters
     
-    #def start_csv_export(self, folder_path: str, xpath_expressions: list, output_csv_path: str):
-    #    """Initializes and starts the CSV export in a new thread."""
-    #    if not hasattr(self, 'csv_export_thread') or not self.csv_export_thread.isRunning():
-    #        self.csv_export_thread = QThread()
-    #        self.csv_export_worker = CSVExportThread(
-    #            folder_path=folder_path,
-    #            xpath_expressions=xpath_expressions,
-    #            output_csv_path=output_csv_path
-    #        )
-    #        self.csv_export_worker.moveToThread(self.csv_export_thread)#
-#
-    #        self.csv_export_thread.started.connect(self.csv_export_worker.run)#
-#
-    #        # Connect worker signals to main window slots
-    #        self.csv_export_worker.output_set_text.connect(self.output_set_text)
-    #        self.csv_export_worker.progress_updated.connect(self.update_progress_bar)
-    #        self.csv_export_worker.finished.connect(self.on_csv_export_finished)
-    #        self.csv_export_worker.show_error_message.connect(self.show_error_message)
-    #        self.csv_export_worker.show_info_message.connect(self.show_info_message)#
-#
-    #        # Connect for cleanup
-    #        self.csv_export_worker.finished.connect(self.csv_export_thread.quit)
-    #        self.csv_export_worker.finished.connect(self.csv_export_worker.deleteLater)
-    #        self.csv_export_thread.finished.connect(self.csv_export_thread.deleteLater)#
-#
-    #        self.csv_export_thread.start()
-    #    else:
-    #        self.program_output.setText("CSV export is already running or thread is busy.")
-
-
-    # ======= End FUNCTIONS FOR create_matching_filter_group ======= #
-
-#    def stop_csv_export_thread(self):
-#        if hasattr(self, "csv_export_worker"):
-#            self.csv_export_worker.stop()
-#            self.program_output.setText("Export task aborted successfully.")
+    def start_csv_export(self):
+        """Initializes and starts the CSV export in a new thread."""
+        exporter = create_csv_exporter(self.ui.line_edit_xml_folder_path_input.text(), self.ui.list_widget_xpath_expressions.items(), self.ui.line_edit_csv_output_path)
+        exporter
         
+    @Slot()
+    def on_csv_export_finished(self):
+        self.set_ui_enabled(False)
+        self.ui.progressbar_main.reset()
+        self.ui.button_abort_csv_export.setHidden(True)
     
-   # @Slot()
-   # def on_csv_export_finished(self):
-   #     self.csv_export_thread = None # Clear reference after use
-   #     self.csv_export_worker = None # Clear reference
-   #     self.set_ui_enabled(False)
-   #     self.progressbar.reset()
-   #     self.csv_abort_export_button.setHidden(True)
+    @Slot(int)
+    def update_progress_bar(self, progress:int):
+        self.ui.progressbar_main.update(progress)
 
     
     def set_ui_enabled(self, enabled):
