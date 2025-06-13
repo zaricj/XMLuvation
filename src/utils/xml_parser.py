@@ -8,7 +8,7 @@ class XMLParserSignals(QObject):
     """Signals class for XMLParserThread operations."""
     finished = Signal(dict)
     error_occurred = Signal(str, str)
-    progress = Signal(str)
+    program_output_progress = Signal(str)
     validation_result = Signal(bool, str)
     transformation_complete = Signal(str)
 
@@ -164,13 +164,13 @@ class XMLParserThread(QRunnable):
             'tag_attr_to_values': tag_attr_to_values,
         }
 
-        self.signals.progress.emit("XML parsing completed successfully!")
+        self.signals.program_output_progress.emit("XML parsing completed successfully!")
         self.signals.finished.emit(result)
 
     
     def _analyze_structure(self):
         """Analyze XML document structure and provide detailed statistics."""
-        self.signals.progress.emit("Analyzing XML structure...")
+        self.signals.program_output_progress.emit("Analyzing XML structure...")
         
         tree = ET.parse(self.xml_file_path)
         root = tree.getroot()
@@ -237,7 +237,7 @@ class XMLParserThread(QRunnable):
         }
         
         self.signals.finished.emit(result)
-        self.signals.progress.emit("Structure analysis completed!")
+        self.signals.program_output_progress.emit("Structure analysis completed!")
     
     def _extract_namespaces(self, root):
         """Extract all namespaces used in the document."""
