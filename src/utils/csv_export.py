@@ -1,4 +1,4 @@
-from PySide6.QtCore import Signal, QObject
+from PySide6.QtCore import QObject, QRunnable, Signal, Slot
 from lxml import etree as ET
 import csv
 import os
@@ -8,11 +8,25 @@ from functools import partial
 import re
 from typing import List, Tuple, Dict, Any
 
-# Standalone processing functions that can be pickled
+# We'll use a global event for all worker processes to check for termination
+# This needs to be managed carefully as multiprocessing.Event instances cannot be directly passed to QRunnable
+# Instead, the main process will set the event, and worker processes will periodically check it.
+_terminate_event = None
+
+def worker_init(terminate_event):
+    """Initializer function for multiprocessing pool workers."""
+    global _terminate_event
+    _terminate_event = terminate_event
+
 def process_single_xml(filename: str, folder_path: str, xpath_expressions: List[str]) -> Tuple[List[Dict[str, str]], int, int]:
     """Process a single XML file and return its results as a list of dictionaries,
     where each dictionary represents a single XPath match for a CSV row.
     """
+    global _terminate_event
+    if _terminate_event and _terminate_event.is_set():
+        # Early exit if termination is requested
+        return [], 0, 0
+
     file_path = os.path.join(folder_path, filename)
     file_rows: List[Dict[str, str]] = [] # Will store dictionaries for CSV rows
     file_total_matches = 0
@@ -25,6 +39,10 @@ def process_single_xml(filename: str, folder_path: str, xpath_expressions: List[
         return [], 0, 0 # Return empty results if file cannot be parsed
 
     for expression in xpath_expressions:
+        if _terminate_event and _terminate_event.is_set():
+            # Check for termination before processing each XPath expression
+            return [], 0, 0
+
         try:
             results = root.xpath(expression)
             match_count = len(results)
@@ -41,15 +59,11 @@ def process_single_xml(filename: str, folder_path: str, xpath_expressions: List[
                 for i, result in enumerate(results):
                     match_content = ""
                     if isinstance(result, ET._Element):
-                        # If the result is an element, try to get its text or specific attribute
                         if ends_with_text_or_attribute:
-                            # If XPath explicitly asked for text() or @attr, result will be string
                             match_content = str(result)
                         else:
-                            # If result is an element, get its text content, or tag if no text
                             match_content = result.text.strip() if result.text else result.tag
                     elif isinstance(result, str):
-                        # If XPath directly returned a string (e.g., text() or @attribute)
                         match_content = result.strip()
                     elif isinstance(result, (int, float)):
                         match_content = str(result)
@@ -62,19 +76,23 @@ def process_single_xml(filename: str, folder_path: str, xpath_expressions: List[
                     }
                     file_rows.append(row)
             else:
-                # If no matches, still add a row to indicate the XPath was evaluated
-                # with empty content, if desired. For now, only add rows for matches.
                 pass
 
         except Exception as e:
-            # Log specific XPath expression errors, but don't stop processing other XPaths/files
-            # print(f"Error processing XPath '{expression}' in file '{filename}': {e}")
-            pass # Or emit a signal for logging error
+            pass
 
     return file_rows, file_total_matches, file_matched_any_xpath
 
 
-class CSVExportThread(QObject):
+class CSVExportSignals(QObject):
+    """Signals class for XMLParserThread operations."""
+    finished = Signal(dict)
+    error_occurred = Signal(str, str)
+    progress = Signal(str)
+    progressbar_update = Signal(int)
+
+
+class CSVExportThread(QRunnable):
     """Worker thread for exporting XML XPath evaluation results to a CSV file."""
     output_set_text = Signal(str)
     finished = Signal()
@@ -82,17 +100,19 @@ class CSVExportThread(QObject):
     show_info_message = Signal(str, str)
     progress_updated = Signal(int)
 
-    def __init__(self, folder_path: str, xpath_expressions: List[str], output_csv_path: str):
+    def __init__(self, operation: str, **kwargs):
         super().__init__()
-        self.folder_path = folder_path
-        self.xpath_expressions = xpath_expressions
-        self.output_csv_path = output_csv_path
+        self.operation = operation
+        self.kwargs = kwargs
         self._is_running = True
+        self.signals = CSVExportSignals()
+        self.setAutoDelete(True)
 
     def stop(self):
         """Signals the worker to stop its processing."""
         self._is_running = False
 
+    @Slot()
     def run(self):
         self.output_set_text.emit("Starting CSV export...")
         xml_filenames = [f for f in os.listdir(self.folder_path) if f.lower().endswith('.xml')]

@@ -17,7 +17,7 @@ class ComboBoxStateController:
     - 'file_path' --> self.get_xml_file()_path,
     - 'root_tag' --> root.tag,
     - 'element_count' --> len(list(root.iter())),
-    - 'encoding' --> XMLUtils.get_xml_encoding(self.get_xml_file()_path)
+    - 'encoding' --> XMLUtils.get_xml_encoding(self.get_xml_file_path)
     """
     def __init__(self, main_window:object, parsed_xml_data:dict):
         self.main_window = main_window
@@ -127,6 +127,8 @@ class ComboBoxStateController:
 
 
 class CSVConversionController:
+    """Handles methods and logic for csv_conversion_groupbox
+    """
     def __init__(self, main_window:object):
         self.main_window = main_window
         self.ui = main_window.ui
@@ -194,6 +196,3 @@ class CSVConversionController:
         except Exception as ex:
             msg = f"{type(ex).__name__}: {ex}"
             QMessageBox.critical(self.main_window, "Conversion Error", msg)
-
-
-    # ======= End FUNCTIONS FOR create_csv_conversion_group ======= #

@@ -1,7 +1,6 @@
 from PySide6.QtWidgets import (QApplication, QMainWindow, QMenu,QFileDialog, QMessageBox, QInputDialog)
 from PySide6.QtGui import QIcon, QAction, QCloseEvent
 from PySide6.QtCore import Qt, Signal, Slot, QFile, QTextStream, QSettings, QThreadPool
-from pathlib import Path
 
 import sys
 import os
@@ -130,36 +129,156 @@ class MainWindow(QMainWindow):
         status = self.get_thread_pool_status()
         print(status) 
         
-    def print_widget_status(self):
-        """Print which widgets were successfully found"""
-        print("=== XMLuvation UI Widgets Status ===")
-        print(f"XML Folder Input: {'✓' if self.ui.line_edit_xml_folder_path_input else '✗'}")
-        print(f"Browse Button: {'✓' if self.ui.button_browse_xml_folder else '✗'}")
-        print(f"Read XML Button: {'✓' if self.ui.button_read_xml else '✗'}")
-        print(f"CSV Output Path: {'✓' if self.ui.line_edit_csv_output_path else '✗'}")
-        print(f"Browse CSV Output Button: {'✓' if self.ui.button_browse_csv else '✗'}")
-        print(f"Export CSV Button: {'✓' if self.ui.button_start_csv_export else '✗'}")
-        print(f"Button CSV Conversion Input: {'✓' if self.ui.button_browse_csv_conversion_path_input else '✗'}")
-        print(f"Button CSV Conversion Output: {'✓' if self.ui.button_browse_csv_conversion_path_output else '✗'}")
-        print(f"Button CSV Conversion Convert: {'✓' if self.ui.button_csv_conversion_convert else '✗'}")
-        print(f"Tag Names Combo: {'✓' if self.ui.combobox_tag_names else '✗'}")
-        print(f"Tag Values Combo: {'✓' if self.ui.combobox_tag_values else '✗'}")
-        print(f"Attribute Names Combo: {'✓' if self.ui.combobox_attribute_names else '✗'}")
-        print(f"Attribute Values Combo: {'✓' if self.ui.combobox_attribute_values else '✗'}")
-        print(f"XPath Builder Input: {'✓' if self.ui.line_edit_xpath_builder else '✗'}")
-        print(f"Build XPath Button: {'✓' if self.ui.button_build_xpath else '✗'}")
-        print(f"XPath List Widget: {'✓' if self.ui.list_widget_xpath_expressions else '✗'}")
-        print(f"Progress Bar: {'✓' if self.ui.progressbar_main else '✗'}")
-        print(f"Program Output: {'✓' if self.ui.text_edit_program_output else '✗'}")
-        print(f"XML Output: {'✓' if self.ui.text_edit_xml_output else '✗'}")
-        print("=====================================")
-    
-    def get_thread_pool_status(self):
-        """Get current thread pool status (useful for debugging)."""
-        active_count = self.thread_pool.activeThreadCount()
-        max_count = self.thread_pool.maxThreadCount()
-        return f"Active threads: {active_count}/{max_count}"
-    
+# ====================================================================================================================== #
+# === Menubar, Menubar Control and UI Events === #
+    def closeEvent(self, event: QCloseEvent):
+        reply = QMessageBox.question(
+            self, 'Exit Program', 'Are you sure you want to exit the program?',
+            QMessageBox.Yes | QMessageBox.No, QMessageBox.Yes)
+        
+        if reply == QMessageBox.No:
+            event.ignore()
+            return
+        else:
+            self.settings.setValue("app_theme", self.current_theme)
+            self.settings.setValue("geometry", self.saveGeometry())
+            super().closeEvent(event)
+
+    def create_menu_bar(self):
+        menu_bar = self.menuBar()
+        
+        # File Menu
+        file_menu = menu_bar.addMenu("&File")
+        clear_action = QAction("Clear Output", self)
+        clear_action.setStatusTip("Clear the output")
+        clear_action.triggered.connect(self.clear_output)
+        file_menu.addAction(clear_action)
+        file_menu.addSeparator()
+        exit_action = QAction("E&xit", self)
+        exit_action.setStatusTip("Exit the application")
+        exit_action.triggered.connect(self.close)
+        file_menu.addAction(exit_action)
+
+        # Open Menu
+        open_menu = menu_bar.addMenu("&Open")
+        open_input_action = QAction("Open XML Input Folder", self)
+        open_input_action.setStatusTip("Open the XML input folder")
+        open_input_action.triggered.connect(lambda: self.open_folder_in_file_explorer(self.ui.line_edit_xml_folder_path_input.text()))
+        open_menu.addAction(open_input_action)
+        open_output_action = QAction("Open CSV Output Folder", self)
+        open_output_action.setStatusTip("Open the CSV output folder")
+        open_output_action.triggered.connect(lambda: self.open_folder_in_file_explorer(self.ui.line_edit_csv_output_path.text()))
+        open_menu.addAction(open_output_action)
+        open_menu.addSeparator()
+        open_csv_conversion_input_action = QAction("Open CSV Conversion Input Folder", self)
+        open_csv_conversion_input_action.setStatusTip("Open CSV Conversion Input Folder")
+        open_csv_conversion_input_action.triggered.connect(lambda: self.open_folder_in_file_explorer(self.ui.line_edit_csv_conversion_path_input.text()))
+        open_menu.addAction(open_csv_conversion_input_action)
+        open_csv_conversion_output_action = QAction("Open CSV Conversion Output Folder", self)
+        open_csv_conversion_output_action.setStatusTip("Open CSV Conversion Output Folder")
+        open_csv_conversion_output_action.triggered.connect(lambda: self.open_folder_in_file_explorer(self.ui.line_edit_csv_conversion_path_output.text()))
+        open_menu.addAction(open_csv_conversion_output_action)
+
+        # Path Menu
+        self.paths_menu = menu_bar.addMenu("&Path")
+        
+        # Add custom paths
+        self.load_custom_paths()
+
+        # Add option to add new custom path
+        add_custom_path_action = QAction("Add Custom Path", self)
+        add_custom_path_action.triggered.connect(self.add_custom_path)
+        self.paths_menu.addAction(add_custom_path_action)
+
+        # Help Menu
+        help_menu = menu_bar.addMenu("&Help")
+        xpath_help_action = QAction("XPath Help", self)
+        xpath_help_action.setStatusTip("Open XPath Syntax Help")
+        xpath_help_action.triggered.connect(self.open_web_xpath_help)
+        help_menu.addAction(xpath_help_action)
+        about = QAction("About", self)
+        about.setStatusTip("About this program")
+        about.triggered.connect(self.about_message)
+        help_menu.addAction(about)
+        #help_menu.addAction(xpath_cheatsheet_action)
+        
+        # Theme Menu
+        self.toggle_theme_action = menu_bar.addAction(self.theme_icon, "Toggle Theme")
+        self.toggle_theme_action.triggered.connect(self.change_theme)
+        
+    # ======= START FUNCTIONS create_menu_bar ======= #
+
+    def update_paths_menu(self):
+        # Clear existing path actions, except the last one (Add Custom Path)
+        for action in self.paths_menu.actions()[:-1]:
+            self.paths_menu.removeAction(action)
+
+        # Add custom paths
+        custom_paths = self.config_handler.get_custom_paths()
+        for name, path in custom_paths.items():
+            action = QAction(name, self)
+            action.setStatusTip(f"Open {name}")
+            action.triggered.connect(lambda checked, p=path: self.open_path(p))
+            self.paths_menu.insertAction(self.paths_menu.actions()[0], action)
+
+    def add_custom_path(self):
+        name, ok = QInputDialog.getText(self, "Add Custom Path", "Enter a name for the path:")
+        if ok and name:
+            path, ok = QInputDialog.getText(self, "Add Custom Path", "Enter path:")
+            if ok and path:
+                self.config_handler.add_custom_path(name, path)
+                self.update_paths_menu()
+
+    def load_custom_paths(self):
+        custom_paths = self.config_handler.get_custom_paths()
+        for name, path in custom_paths.items():
+            action = QAction(name, self)
+            action.setStatusTip(f"Open {name}")
+            action.triggered.connect(lambda checked, p=path: self.open_path(p))
+            self.paths_menu.addAction(action)
+
+    def about_message(self):
+        # About Message
+        program_info = "Name: XMLuvation\nVersion: 1.3.1\nCredit: Jovan\nFramework: PySide6"
+        about_message = """XMLuvation is a Python application designed to parse and evaluate XML files and use XPath to search for matches which matching results will be saved in a csv file."""
+        about_box = QMessageBox()
+        about_box.setText("About this program...")
+        about_box.setInformativeText(about_message)
+        about_box.setDetailedText(program_info)
+        about_box.exec()
+
+    def change_theme(self):
+        if self.current_theme == "dark_theme.qss":
+            self.toggle_theme_action.setIcon(self.dark_mode_icon)
+            initialize_theme(self, self.light_theme_file)
+            self.current_theme = "light_theme.qss"
+            self.current_theme_icon = "light.png"
+        else:
+            self.toggle_theme_action.setIcon(self.light_mode_icon)
+            initialize_theme(self, self.dark_theme_file)
+            self.current_theme = "dark_theme.qss"
+            self.current_theme_icon = "dark.png"
+
+    def clear_output(self):
+        self.ui.text_edit_program_output.clear()
+
+    def open_folder_in_file_explorer(self, folder_path):
+        """Helper method to open the specified folder in the file explorer."""
+        if os.path.exists(folder_path):
+            try:
+                os.startfile(folder_path)
+            except Exception as ex:
+                message = f"An exception of type {type(ex).__name__} occurred. Arguments: {ex.args!r}"
+                QMessageBox.critical(self, "An exception occurred", message)
+        else:
+            QMessageBox.warning(self, "Error", f"Path does not exist or is not a valid path:\n{folder_path}")
+
+    def open_web_xpath_help(self):
+        webbrowser.open("https://www.w3schools.com/xml/xpath_syntax.asp")
+
+# ====================================================================================================================== #
+
+    # Setup UI Widget Actions
     def setup_connections(self):
         """Setup all signal-slot connections"""
         
@@ -178,7 +297,7 @@ class MainWindow(QMainWindow):
         
         # XPath building
         #self.ui.line_edit_xpath_builder
-        self.ui.button_build_xpath.clicked.connect(self.button_build_xpath_expression)
+        self.ui.button_build_xpath.clicked.connect(self.start_build_xpath_expression)
         self.ui.button_add_xpath_to_list.clicked.connect(self.add_xpath_to_list)
         
         # CSV export
@@ -208,7 +327,7 @@ class MainWindow(QMainWindow):
         self.ui.button_csv_conversion_convert.clicked.connect(self.csv_convert)
         self.ui.checkbox_write_index_column.toggled.connect(self.on_write_index_toggled)
         
-    
+    # === Helper Methods === #
     def browse_folder_helper(self, dialog_message:str, line_widget:object) -> None:
         """File dialog for folder browsing, sets the path of the selected folder in a specified QLineEdit Widget
 
@@ -272,95 +391,9 @@ class MainWindow(QMainWindow):
             message = f"An exception of type {type(ex).__name__} occurred. Arguments: {ex.args!r}"
             QMessageBox.critical(self, "An exception occurred in browse save file method", f"Error exporting CSV: {message}")
     
-    # === EVENT HANDLERS FOR XML EVALUATION GROUPBOX ===
-    
-    # === XML PARSING EVENT TRIGGER BUTTON === #
-    def read_xml_file(self):
-        print("Read XML files clicked")
-        try:
-            file_name, _ = QFileDialog.getOpenFileName(self, "Select XML File", "", "XML File (*.xml)")
-            if file_name:
-                self.start_xml_parsing(file_name)
-        except Exception as ex:
-            message = f"An exception of type {type(ex).__name__} occurred. Arguments: {ex.args!r}"
-            QMessageBox.critical(self, "Exception in Program", message)
-    
-    # === XML PARSING === #
-    def start_xml_parsing(self, xml_file_path: str):
-        """Parse XML file and display content."""
-        try:
-            xml_parser_worker = create_xml_parser(xml_file_path)
-            self._connect_xml_parsing_signals(xml_parser_worker)
-            self.thread_pool.start(xml_parser_worker)
-            
-            # Optional: Keep track of the worker
-            self.active_workers.append(xml_parser_worker)
-        except Exception as ex:
-            self.on_error_message("Error starting XML parsing", ex)
+# ====================================================================================================================== #
 
-     # === XML PARSING ON FINISHED SLOT === #
-    @Slot(dict)
-    def on_xml_parsing_finished(self, result: dict):
-        """Handle XML parsing completion."""
-        try:
-            xml_content = result.get('xml_string', '')
-            self.ui.text_edit_xml_output.setPlainText(xml_content)
-            
-            # Fill the combo boxes with unique tags and attributes
-            tags = result.get('tags', [])
-            attributes = result.get('attributes', [])
-            
-            tag_values = result.get('tag_values', [])
-            attribute_values = result.get('attribute_values', [])
-            
-            self.ui.combobox_tag_names.clear()
-            self.ui.combobox_tag_names.addItems(tags)
-            self.ui.combobox_attribute_names.clear()
-            self.ui.combobox_attribute_names.addItems(attributes)
-            
-            self.ui.combobox_tag_values.clear()
-            self.ui.combobox_tag_values.addItems(tag_values)
-            self.ui.combobox_attribute_values.clear()
-            self.ui.combobox_attribute_values.addItems(attribute_values)
-            
-            # Enable ComboBoxes
-            self.ui.combobox_tag_names.setDisabled(False)
-            self.ui.combobox_attribute_names.setDisabled(False)
-            self.ui.combobox_tag_values.setDisabled(False)
-            self.ui.combobox_attribute_values.setDisabled(False)
-            
-            self.ui.combobox_tag_names.setCurrentText("Select Tag Name...")
-            self.ui.combobox_attribute_names.setCurrentText("Select Tag Value...")
-            self.ui.combobox_tag_values.setCurrentText("Select Attribute Name...")
-            self.ui.combobox_attribute_values.setCurrentText("Select Attribute Value...")
-            
-            # Display additional info
-            info_message = f"File: {result.get('file_path', 'Unknown')}\n"
-            info_message += f"Root element: {result.get('root_tag', 'Unknown')}\n"
-            info_message += f"Total elements: {result.get('element_count', 0)}\n"
-            info_message += f"Unique tags: {len(result.get('tags', []))}\n"
-            info_message += f"Encoding: {result.get('encoding', 'Unknown')}"
-            
-            # Save xml file in initialized variable
-            self.current_read_xml_file = result.get("file_path")
-            
-            #self.on_info_message("Parsing Complete", info_message) # QMessageBox info popup
-            self.ui.text_edit_program_output.append(info_message)
-            
-            self.parsed_xml_data = result
-            # Pass the new result data (the xml data as dict) to the ComboBoxStateController class
-            self.cb_state_controller.set_parsed_data(result)
-            
-        except Exception as ex:
-            self.on_error_message(ex, "Error processing parsing results")
-            
-
-    # === XPATH BUILDING BUTTON EVENT === #
-    def button_build_xpath_expression(self):
-        print("Build XPath expression clicked")
-        self.start_build_xpath_expression()
-        
-    # === XPATH BUILDING HANDLER === #
+    # === XPATH BUILDING HANDLER VIA BUTTON EVENT === #
     def start_build_xpath_expression(self):
         """Build XPath expression based on selected combobox values."""
         try:
@@ -384,12 +417,14 @@ class MainWindow(QMainWindow):
             self._connect_xpath_builder_signals(builder)
 
             # Build expression
-            builder.build_xpath_expression()
+            xpath_expression = builder.build_xpath_expression()
+            # Add built XPath Expression to the QLineEdit Widget for the XPath
+            self.ui.line_edit_xpath_builder.setText(xpath_expression)
             
         except Exception as ex:
             self.on_error_message("Error building XPath expression", str(ex))
     
-    # === LIST WIDGET HANDLER ===
+    # === QListWidget HANDLER ===
     def add_xpath_to_list(self):
         """Add the entered or built XPath expression from the QLineEdit to the QListWidget for later searching
         
@@ -415,6 +450,7 @@ class MainWindow(QMainWindow):
         except Exception as ex:
             message = f"An exception of type {type(ex).__name__} occurred. Arguments: {ex.args!r}"
             QMessageBox.critical(self, "Exception adding XPath Expression to List Widget", message)
+
 
     def on_function_changed(self, function_type, checked):
         if checked:
@@ -451,12 +487,12 @@ class MainWindow(QMainWindow):
     def on_write_index_toggled(self, checked):
         print(f"Write index column: {checked}")
         message_with_index = """
-           Data will look like  this:
-           
-           | Index           | Header 1   | Header 2    |
-           |-------------------|-------------------|-------------------|
-           | 1                  | Data...         | Data...        |
-           """
+        Data will look like  this:
+        
+        | Index           | Header 1   | Header 2    |
+        |-------------------|-------------------|-------------------|
+        | 1                  | Data...         | Data...        |
+        """
         message_without_index = """
         Data will look like  this:
         
@@ -513,6 +549,102 @@ class MainWindow(QMainWindow):
         self.ui.text_edit_program_output.setText(message)
 
     # === END EVENT HANDLER FOR QTextEdit MAIN PROGRAM OUTPUT END === #
+    
+    # === EVENT HANDLERS FOR XML EVALUATION GROUPBOX ===
+    
+    # === XML PARSING EVENT TRIGGER BUTTON === #
+    def read_xml_file(self):
+        print("Read XML files clicked")
+        try:
+            file_name, _ = QFileDialog.getOpenFileName(self, "Select XML File", "", "XML File (*.xml)")
+            if file_name:
+                self.start_xml_parsing(file_name)
+        except Exception as ex:
+            message = f"An exception of type {type(ex).__name__} occurred. Arguments: {ex.args!r}"
+            QMessageBox.critical(self, "Exception in Program", message)
+    
+    # === XML PARSING === #
+    def start_xml_parsing(self, xml_file_path: str):
+        """Parse XML file and display content."""
+        try:
+            xml_parser_worker = create_xml_parser(xml_file_path)
+            self._connect_xml_parsing_signals(xml_parser_worker)
+            self.thread_pool.start(xml_parser_worker)
+            
+            # Optional: Keep track of the worker
+            self.active_workers.append(xml_parser_worker)
+        except Exception as ex:
+            self.on_error_message("Error starting XML parsing", ex)
+
+    # === XML PARSING ON FINISHED SLOT === #
+    @Slot(dict)
+    def on_xml_parsing_finished(self, result: dict):
+        """Handle XML parsing completion."""
+        try:
+            xml_content = result.get('xml_string', '')
+            self.ui.text_edit_xml_output.setPlainText(xml_content)
+            
+            # Fill the combo boxes with unique tags and attributes
+            tags = result.get('tags', [])
+            attributes = result.get('attributes', [])
+            
+            tag_values = result.get('tag_values', [])
+            attribute_values = result.get('attribute_values', [])
+            
+            self.ui.combobox_tag_names.clear()
+            self.ui.combobox_tag_names.addItems(tags)
+            self.ui.combobox_attribute_names.clear()
+            self.ui.combobox_attribute_names.addItems(attributes)
+            
+            self.ui.combobox_tag_values.clear()
+            self.ui.combobox_tag_values.addItems(tag_values)
+            self.ui.combobox_attribute_values.clear()
+            self.ui.combobox_attribute_values.addItems(attribute_values)
+            
+            # Enable ComboBoxes
+            self.ui.combobox_tag_names.setDisabled(False)
+            self.ui.combobox_attribute_names.setDisabled(False)
+            self.ui.combobox_tag_values.setDisabled(False)
+            self.ui.combobox_attribute_values.setDisabled(False)
+            
+            # Display additional info
+            info_message = f"File: {result.get('file_path', 'Unknown')}\n"
+            info_message += f"Root element: {result.get('root_tag', 'Unknown')}\n"
+            info_message += f"Total elements: {result.get('element_count', 0)}\n"
+            info_message += f"Unique tags: {len(result.get('tags', []))}\n"
+            info_message += f"Encoding: {result.get('encoding', 'Unknown')}"
+            
+            # Save xml file in initialized variable
+            self.current_read_xml_file = result.get("file_path")
+            
+            #self.on_info_message("Parsing Complete", info_message) # QMessageBox info popup
+            self.ui.text_edit_program_output.append(info_message)
+            
+            self.parsed_xml_data = result
+            # Pass the new result data (the xml data as dict) to the ComboBoxStateController class
+            self.cb_state_controller.set_parsed_data(result)
+            
+        except Exception as ex:
+            self.on_error_message(ex, "Error processing parsing results")
+            
+    # Statusbar update function
+    def update_xml_file_count(self):
+        """Updated the current XML Files found in the selected folder from  QLineEdit' line_edit_xml_folder_path_input'
+        """
+        try:
+            folder: str = self.ui.line_edit_xml_folder_path_input.text()
+            if os.path.isdir(folder):
+                xml_files_count: int = sum(1 for f in os.listdir(folder) if f.endswith(".xml"))
+                if xml_files_count > 1:
+                    self.ui.statusbar_xml_files_count.setStyleSheet("color: #47de65")
+                    self.ui.statusbar_xml_files_count.showMessage(f"Found {xml_files_count} XML Files")
+        except Exception as ex:
+            message = f"An exception of type {type(ex).__name__} occurred. Arguments: {ex.args!r}"
+            self.ui.statusbar_xml_files_count.setStyleSheet("color: #ed2828")
+            self.ui.statusbar_xml_files_count.showMessage(f"Error counting XML files: {message}")
+    
+    # === CSV Exporting Process === #
+    
 
     # === SIGNAL CONNECTION HELPERS === #
     
@@ -534,160 +666,6 @@ class MainWindow(QMainWindow):
         pass
     
     # === END SIGNAL CONNECTION HELPERS END === #
-    
-    def closeEvent(self, event: QCloseEvent):
-        reply = QMessageBox.question(
-            self, 'Exit Program', 'Are you sure you want to exit the program?',
-            QMessageBox.Yes | QMessageBox.No, QMessageBox.Yes)
-        
-        if reply == QMessageBox.No:
-            event.ignore()
-            return
-        else:
-            self.settings.setValue("app_theme", self.current_theme)
-            self.settings.setValue("geometry", self.saveGeometry())
-            super().closeEvent(event)
-
-
-    def create_menu_bar(self):
-        menu_bar = self.menuBar()
-        
-        # File Menu
-        file_menu = menu_bar.addMenu("&File")
-        clear_action = QAction("Clear Output", self)
-        clear_action.setStatusTip("Clear the output")
-        clear_action.triggered.connect(self.clear_output)
-        file_menu.addAction(clear_action)
-        file_menu.addSeparator()
-        exit_action = QAction("E&xit", self)
-        exit_action.setStatusTip("Exit the application")
-        exit_action.triggered.connect(self.close)
-        file_menu.addAction(exit_action)
-
-        # Open Menu
-        open_menu = menu_bar.addMenu("&Open")
-        open_input_action = QAction("Open XML Input Folder", self)
-        open_input_action.setStatusTip("Open the XML input folder")
-        open_input_action.triggered.connect(lambda: self.open_folder_in_file_explorer(self.ui.line_edit_xml_folder_path_input.text()))
-        open_menu.addAction(open_input_action)
-        open_output_action = QAction("Open CSV Output Folder", self)
-        open_output_action.setStatusTip("Open the CSV output folder")
-        open_output_action.triggered.connect(lambda: self.open_folder_in_file_explorer(self.ui.line_edit_csv_output_path.text()))
-        open_menu.addAction(open_output_action)
-        open_menu.addSeparator()
-        open_csv_conversion_input_action = QAction("Open CSV Conversion Input Folder", self)
-        open_csv_conversion_input_action.setStatusTip("Open CSV Conversion Input Folder")
-        open_csv_conversion_input_action.triggered.connect(lambda: self.open_folder_in_file_explorer(self.ui.line_edit_csv_conversion_path_input.text()))
-        open_menu.addAction(open_csv_conversion_input_action)
-        open_csv_conversion_output_action = QAction("Open CSV Conversion Output Folder", self)
-        open_csv_conversion_output_action.setStatusTip("Open CSV Conversion Output Folder")
-        open_csv_conversion_output_action.triggered.connect(lambda: self.open_folder_in_file_explorer(self.ui.line_edit_csv_conversion_path_output.text()))
-        open_menu.addAction(open_csv_conversion_output_action)
-
-        # Path Menu
-        self.paths_menu = menu_bar.addMenu("&Path")
-        
-        # Add custom paths
-        self.load_custom_paths()
-
-        # Add option to add new custom path
-        add_custom_path_action = QAction("Add Custom Path", self)
-        add_custom_path_action.triggered.connect(self.add_custom_path)
-        self.paths_menu.addAction(add_custom_path_action)
-
-        
-        # Help Menu
-        help_menu = menu_bar.addMenu("&Help")
-        xpath_help_action = QAction("XPath Help", self)
-        xpath_help_action.setStatusTip("Open XPath Syntax Help")
-        xpath_help_action.triggered.connect(self.open_web_xpath_help)
-        help_menu.addAction(xpath_help_action)
-        about = QAction("About", self)
-        about.setStatusTip("About this program")
-        about.triggered.connect(self.about_message)
-        help_menu.addAction(about)
-        #help_menu.addAction(xpath_cheatsheet_action)
-        
-        # Theme Menu
-        self.toggle_theme_action = menu_bar.addAction(self.theme_icon, "Toggle Theme")
-        self.toggle_theme_action.triggered.connect(self.change_theme)
-        
-    # ======= START FUNCTIONS create_menu_bar ======= #
-
-    def update_paths_menu(self):
-        # Clear existing path actions, except the last one (Add Custom Path)
-        for action in self.paths_menu.actions()[:-1]:
-            self.paths_menu.removeAction(action)
-
-        # Add custom paths
-        custom_paths = self.config_handler.get_custom_paths()
-        for name, path in custom_paths.items():
-            action = QAction(name, self)
-            action.setStatusTip(f"Open {name}")
-            action.triggered.connect(lambda checked, p=path: self.open_path(p))
-            self.paths_menu.insertAction(self.paths_menu.actions()[0], action)
-            
-
-    def add_custom_path(self):
-        name, ok = QInputDialog.getText(self, "Add Custom Path", "Enter a name for the path:")
-        if ok and name:
-            path, ok = QInputDialog.getText(self, "Add Custom Path", "Enter path:")
-            if ok and path:
-                self.config_handler.add_custom_path(name, path)
-                self.update_paths_menu()
-
-
-    def load_custom_paths(self):
-        custom_paths = self.config_handler.get_custom_paths()
-        for name, path in custom_paths.items():
-            action = QAction(name, self)
-            action.setStatusTip(f"Open {name}")
-            action.triggered.connect(lambda checked, p=path: self.open_path(p))
-            self.paths_menu.addAction(action)
-
-
-    def about_message(self):
-        # About Message
-        program_info = "Name: XMLuvation\nVersion: 1.3.1\nCredit: Jovan\nFramework: PySide6"
-        about_message = """XMLuvation is a Python application designed to parse and evaluate XML files and use XPath to search for matches which matching results will be saved in a csv file."""
-        about_box = QMessageBox()
-        about_box.setText("About this program...")
-        about_box.setInformativeText(about_message)
-        about_box.setDetailedText(program_info)
-        about_box.exec()
-
-
-    def change_theme(self):
-        if self.current_theme == "dark_theme.qss":
-            self.toggle_theme_action.setIcon(self.dark_mode_icon)
-            initialize_theme(self, self.light_theme_file)
-            self.current_theme = "light_theme.qss"
-            self.current_theme_icon = "light.png"
-        else:
-            self.toggle_theme_action.setIcon(self.light_mode_icon)
-            initialize_theme(self, self.dark_theme_file)
-            self.current_theme = "dark_theme.qss"
-            self.current_theme_icon = "dark.png"
-
-
-    def clear_output(self):
-        self.ui.text_edit_program_output.clear()
-
-
-    def open_folder_in_file_explorer(self, folder_path):
-        """Helper method to open the specified folder in the file explorer."""
-        if os.path.exists(folder_path):
-            try:
-                os.startfile(folder_path)
-            except Exception as ex:
-                message = f"An exception of type {type(ex).__name__} occurred. Arguments: {ex.args!r}"
-                QMessageBox.critical(self, "An exception occurred", message)
-        else:
-            QMessageBox.warning(self, "Error", f"Path does not exist or is not a valid path:\n{folder_path}")
-
-
-    def open_web_xpath_help(self):
-        webbrowser.open("https://www.w3schools.com/xml/xpath_syntax.asp")
         
     # ======= END FUNCTIONS create_menu_bar ======= #
 
@@ -732,23 +710,6 @@ class MainWindow(QMainWindow):
             self.ui.text_edit_program_output.setText(f"Error removing selected all items from list: {message}")
 
 
-    # Statusbar update function
-    def update_xml_file_count(self):
-        """Updated the current XML Files found in the selected folder from  QLineEdit' line_edit_xml_folder_path_input'
-        """
-        try:
-            folder: str = self.ui.line_edit_xml_folder_path_input.text()
-            if os.path.isdir(folder):
-                xml_files_count: int = sum(1 for f in os.listdir(folder) if f.endswith(".xml"))
-                if xml_files_count > 1:
-                    self.ui.statusbar_xml_files_count.setStyleSheet("color: #47de65")
-                    self.ui.statusbar_xml_files_count.showMessage(f"Found {xml_files_count} XML Files")
-        except Exception as ex:
-            message = f"An exception of type {type(ex).__name__} occurred. Arguments: {ex.args!r}"
-            self.ui.statusbar_xml_files_count.setStyleSheet("color: #ed2828")
-            self.ui.statusbar_xml_files_count.showMessage(f"Error counting XML files: {message}")
-
-
     def show_context_menu(self, position):
         context_menu = QMenu(self)
         delete_action = QAction("Delete Selected", self)
@@ -774,47 +735,38 @@ class MainWindow(QMainWindow):
             bool: If XPath expression already exists in xpath_filters list, returns True if it exists, else False.
         """
         return xpath_expression in self.xpath_filters
+    
+    def start_csv_export(self, folder_path: str, xpath_expressions: list, output_csv_path: str):
+        """Initializes and starts the CSV export in a new thread."""
+        if not hasattr(self, 'csv_export_thread') or not self.csv_export_thread.isRunning():
+            self.csv_export_thread = QThread()
+            self.csv_export_worker = CSVExportThread(
+                folder_path=folder_path,
+                xpath_expressions=xpath_expressions,
+                output_csv_path=output_csv_path
+            )
+            self.csv_export_worker.moveToThread(self.csv_export_thread)#
+
+            self.csv_export_thread.started.connect(self.csv_export_worker.run)#
+
+            # Connect worker signals to main window slots
+            self.csv_export_worker.output_set_text.connect(self.output_set_text)
+            self.csv_export_worker.progress_updated.connect(self.update_progress_bar)
+            self.csv_export_worker.finished.connect(self.on_csv_export_finished)
+            self.csv_export_worker.show_error_message.connect(self.show_error_message)
+            self.csv_export_worker.show_info_message.connect(self.show_info_message)#
+
+            # Connect for cleanup
+            self.csv_export_worker.finished.connect(self.csv_export_thread.quit)
+            self.csv_export_worker.finished.connect(self.csv_export_worker.deleteLater)
+            self.csv_export_thread.finished.connect(self.csv_export_thread.deleteLater)#
+
+            self.csv_export_thread.start()
+        else:
+            self.program_output.setText("CSV export is already running or thread is busy.")
 
 
     # ======= End FUNCTIONS FOR create_matching_filter_group ======= #
-
-    # ======= Start FUNCTIONS FOR create_export_evaluation_group ======= #
-
-    def choose_save_folder(self):
-        folder = QFileDialog.getExistingDirectory(self, "Select Save Folder")
-        if folder:
-            self.ui.line_edit_csv_output_path.setText(folder)
-    
-    
-#    def start_csv_export(self, folder_path: str, xpath_expressions: list, output_csv_path: str):
-#        """Initializes and starts the CSV export in a new thread."""
-#        if not hasattr(self, 'csv_export_thread') or not self.csv_export_thread.isRunning():
-#            self.csv_export_thread = QThread()
-#            self.csv_export_worker = CSVExportThread(
-#                folder_path=folder_path,
-#                xpath_expressions=xpath_expressions,
-#                output_csv_path=output_csv_path
-#            )
-#            self.csv_export_worker.moveToThread(self.csv_export_thread)#
-
-#            self.csv_export_thread.started.connect(self.csv_export_worker.run)#
-
-#            # Connect worker signals to main window slots
-#            self.csv_export_worker.output_set_text.connect(self.output_set_text)
-#            self.csv_export_worker.progress_updated.connect(self.update_progress_bar)
-#            self.csv_export_worker.finished.connect(self.on_csv_export_finished)
-#            self.csv_export_worker.show_error_message.connect(self.show_error_message)
-#            self.csv_export_worker.show_info_message.connect(self.show_info_message)#
-
-#            # Connect for cleanup
-#            self.csv_export_worker.finished.connect(self.csv_export_thread.quit)
-#            self.csv_export_worker.finished.connect(self.csv_export_worker.deleteLater)
-#            self.csv_export_thread.finished.connect(self.csv_export_thread.deleteLater)#
-
-#            self.csv_export_thread.start()
-#        else:
-#            self.program_output.setText("CSV export is already running or thread is busy.")
-
 
 #    def stop_csv_export_thread(self):
 #        if hasattr(self, "csv_export_worker"):
@@ -845,105 +797,36 @@ class MainWindow(QMainWindow):
         
     # ======= End FUNCTIONS FOR create_export_evaluation_group ======= #
     
-    # ======= Start FUNCTIONS FOR create_csv_conversion_group ======= #
 
-    def browse_csv_file(self):
-        try:
-            file_name, _ = QFileDialog.getOpenFileName(self, "Select CSV File", "", "CSV Files (*.csv)")
-            if file_name:
-                self.ui.line_edit_csv_conversion_path_input.setText(file_name)
-        except Exception as ex:
-            message = f"An exception of type {type(ex).__name__} occurred. Arguments: {ex.args!r}"
-            QMessageBox.critical(self, "Exception in reading CSV", f"Error reading CSV:\n{message}")
-
+    def print_widget_status(self):
+        """Print which widgets were successfully found"""
+        print("=== XMLuvation UI Widgets Status ===")
+        print(f"XML Folder Input: {'✓' if self.ui.line_edit_xml_folder_path_input else '✗'}")
+        print(f"Browse Button: {'✓' if self.ui.button_browse_xml_folder else '✗'}")
+        print(f"Read XML Button: {'✓' if self.ui.button_read_xml else '✗'}")
+        print(f"CSV Output Path: {'✓' if self.ui.line_edit_csv_output_path else '✗'}")
+        print(f"Browse CSV Output Button: {'✓' if self.ui.button_browse_csv else '✗'}")
+        print(f"Export CSV Button: {'✓' if self.ui.button_start_csv_export else '✗'}")
+        print(f"Button CSV Conversion Input: {'✓' if self.ui.button_browse_csv_conversion_path_input else '✗'}")
+        print(f"Button CSV Conversion Output: {'✓' if self.ui.button_browse_csv_conversion_path_output else '✗'}")
+        print(f"Button CSV Conversion Convert: {'✓' if self.ui.button_csv_conversion_convert else '✗'}")
+        print(f"Tag Names Combo: {'✓' if self.ui.combobox_tag_names else '✗'}")
+        print(f"Tag Values Combo: {'✓' if self.ui.combobox_tag_values else '✗'}")
+        print(f"Attribute Names Combo: {'✓' if self.ui.combobox_attribute_names else '✗'}")
+        print(f"Attribute Values Combo: {'✓' if self.ui.combobox_attribute_values else '✗'}")
+        print(f"XPath Builder Input: {'✓' if self.ui.line_edit_xpath_builder else '✗'}")
+        print(f"Build XPath Button: {'✓' if self.ui.button_build_xpath else '✗'}")
+        print(f"XPath List Widget: {'✓' if self.ui.list_widget_xpath_expressions else '✗'}")
+        print(f"Progress Bar: {'✓' if self.ui.progressbar_main else '✗'}")
+        print(f"Program Output: {'✓' if self.ui.text_edit_program_output else '✗'}")
+        print(f"XML Output: {'✓' if self.ui.text_edit_xml_output else '✗'}")
+        print("=====================================")
     
-    def csv_save_as(self):
-        try:
-            options = QFileDialog.Options()
-            file_types = "Excel File (*.xlsx);;JSON File (*.json);;HTML File (*.html);;Markdown File (*.md)"
-            file_name, _ = QFileDialog.getSaveFileName(self, "Save As", "", file_types, options=options)
-            if file_name:
-                self.ui.line_edit_csv_conversion_path_output.setText(file_name)
-        except Exception as ex:
-            message = f"An exception of type {type(ex).__name__} occurred. Arguments: {ex.args!r}"
-            QMessageBox.critical(self, "Exception exporting CSV", f"Error exporting CSV: {message}")
-            
-
-# 
-#     def select_csv_file(self):
-#         file_name, _ = QFileDialog.getOpenFileName(self, "Select CSV File", "", "CSV Files (*.csv)")
-#         if file_name:
-#             self.csv_file_input.setText(file_name)
-# 
-#     def load_csv_data(self):
-#         file_path = self.csv_file_input.text()
-#         if not file_path:
-#             QMessageBox.warning(self, "Error", "Please select a CSV file first.")
-#             return
-# 
-#         try:
-#             with open(file_path, "r") as f:
-#                 sample = f.read(1024)
-#                 f.seek(0)  # Rewind to the beginning of the file
-#                 sniffer = csv.Sniffer()
-#                 has_header = sniffer.has_header(sample)
-#                 dialect = sniffer.sniff(sample)
-#                 delimiter = dialect.delimiter
-# 
-#                 reader = csv.reader(f, delimiter=delimiter)
-#                 headers = (
-#                     next(reader)
-#                     if has_header
-#                     else [f"Column {i}" for i in range(len(next(reader)))]
-#                 )
-# 
-#                 self.table_model.clear()
-#                 self.table_model.setHorizontalHeaderLabels(headers)
-# 
-#                 for row in reader:
-#                     items = [QStandardItem(field) for field in row]
-#                     self.table_model.appendRow(items)
-# 
-#             self.filter_column.clear()
-#             self.filter_column.addItems(["All Columns"] + headers)
-# 
-#             QMessageBox.information(self, "Success", "CSV data loaded successfully.")
-#         except Exception as ex:
-#             message = f"An exception of type {type(ex).__name__} occurred. Arguments: {ex.args!r}"
-#             QMessageBox.critical(self, "Error", f"Failed to load CSV data:\n{message}")
-# 
-#     def filter_table(self):
-#         filter_text = self.filter_input.text()
-#         filter_column = self.filter_column.currentIndex() - 1  # -1 because "All Columns" is at index 0
-# 
-#         if filter_column == -1:  # "All Columns" selected
-#             self.proxy_model.setFilterKeyColumn(-1)
-#         else:
-#             self.proxy_model.setFilterKeyColumn(filter_column)
-# 
-#         self.proxy_model.setFilterFixedString(filter_text)
-
-# if __name__ == "__main__":
-#     
-#     # Initialize the application
-#     multiprocessing.freeze_support()
-#     app = QApplication(sys.argv)
-#     ui_file = QFile(UI_FILE_NAME)
-#     if not ui_file.open(QIODevice.ReadOnly):
-#         print(f"Cannot open {UI_FILE_NAME}: {ui_file.errorString()}")
-#         sys.exit(-1)
-#     
-#     loader = QUiLoader()
-#     loaded_ui = loader.load(ui_file)
-#     ui_file.close()
-#     
-#     if not loaded_ui:
-#         print(loader.errorString())
-#         sys.exit(-1)
-#     
-#     window = MainWindow(loaded_ui)
-#     window.show()
-#     sys.exit(app.exec())
+    def get_thread_pool_status(self):
+        """Get current thread pool status (useful for debugging)."""
+        active_count = self.thread_pool.activeThreadCount()
+        max_count = self.thread_pool.maxThreadCount()
+        return f"Active threads: {active_count}/{max_count}"
 
 if __name__ == "__main__":
     # Initialize the application
