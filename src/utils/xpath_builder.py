@@ -81,7 +81,6 @@ class XPathBuilder(QObject):
         self.tag_value_combo = None
         self.attribute_name_combo = None
         self.attribute_value_combo = None
-        self.xpath_input = None
         
         # Radio button references
         self.radio_equals = None
@@ -114,7 +113,9 @@ class XPathBuilder(QObject):
         - tag value
         - attribute name
         - attribute value
-        
+
+        Returns:
+            str: Built XPath expression string
         """
         try:
             # Get current values from UI
@@ -135,10 +136,6 @@ class XPathBuilder(QObject):
                 self.signals.progress.emit(f"Built XPath: {xpath}")
             else:
                 self.signals.progress.emit("No XPath expression built, select at least a tag name.")
-            
-            # Update UI input field
-            if self.xpath_input:
-                self.xpath_input.setText(xpath)
             
             return xpath
             
