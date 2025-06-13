@@ -1,7 +1,6 @@
 # utils/xml_parser.py
 from PySide6.QtCore import QObject, QRunnable, Signal, Slot
 from lxml import etree as ET
-import json
 
 
 class XMLParserSignals(QObject):

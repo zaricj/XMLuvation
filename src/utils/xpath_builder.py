@@ -7,7 +7,7 @@ from typing import Optional, Dict, List, Tuple
 class XPathBuilderSignals(QObject):
     """Signals class for XPathBuilder operations."""
     error_occurred = Signal(str, str)  # Emitted when an error occurs
-    progress = Signal(str)  # Emitted for progress updates
+    program_output_progress = Signal(str)  # Emitted for progress updates
 
 
 class XPathValidator(QRunnable):
@@ -27,12 +27,12 @@ class XPathValidator(QRunnable):
         """
         try:
             # First, validate syntax
-            self.signals.progress.emit("Validating XPath syntax...")
+            self.signals.program_output_progress.emit("Validating XPath syntax...")
             ET.XPath(self.xpath_expression)
             
             # If XML file provided, test the expression
             if self.xml_file_path:
-                self.signals.progress.emit("Testing XPath against XML file...")
+                self.signals.program_output_progress.emit("Testing XPath against XML file...")
                 tree = ET.parse(self.xml_file_path)
                 root = tree.getroot()
                 
@@ -40,16 +40,16 @@ class XPathValidator(QRunnable):
                 results = root.xpath(self.xpath_expression)
                 result_count = len(results) if isinstance(results, list) else 1
                 
-                self.signals.progress.emit(f"XPath is valid and returned {result_count} result(s)")
+                self.signals.program_output_progress.emit(f"XPath is valid and returned {result_count} result(s)")
             else:
-                self.signals.progress.emit("XPath syntax is valid")
+                self.signals.program_output_progress.emit("XPath syntax is valid")
             
             return True
                 
         except ET.XPathSyntaxError as e:
             error_msg = f"XPath syntax error: {str(e)}"
             self.signals.error_occurred.emit("XPathSyntaxError", error_msg)
-            self.signals.progress.emit("XPath syntax is invalid")
+            self.signals.program_output_progress.emit("XPath syntax is invalid")
             return False
         except ET.XPathEvalError as e:
             error_msg = f"XPath evaluation error: {str(e)}"
@@ -133,9 +133,9 @@ class XPathBuilder(QObject):
             self._current_xpath = xpath
             
             if xpath != "":
-                self.signals.progress.emit(f"Built XPath: {xpath}")
+                self.signals.program_output_progress.emit(f"Built XPath: {xpath}")
             else:
-                self.signals.progress.emit("No XPath expression built, select at least a tag name.")
+                self.signals.program_output_progress.emit("No XPath expression built, select at least a tag name.")
             
             return xpath
             

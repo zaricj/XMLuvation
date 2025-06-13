@@ -326,8 +326,10 @@ class MainWindow(QMainWindow):
         self.ui.button_browse_csv_conversion_path_output.clicked.connect(lambda: self.browse_save_file_as_helper(dialog_message="Save as", line_widget=self.ui.line_edit_csv_conversion_path_output, file_extension_filter="Excel file (*.xlsx);;JSON file (*.json);;Markdown file (*.md);;HTML file (*.html)"))
         self.ui.button_csv_conversion_convert.clicked.connect(self.csv_convert)
         self.ui.checkbox_write_index_column.toggled.connect(self.on_write_index_toggled)
-        
+
+
     # === Helper Methods === #
+    
     def browse_folder_helper(self, dialog_message:str, line_widget:object) -> None:
         """File dialog for folder browsing, sets the path of the selected folder in a specified QLineEdit Widget
 
@@ -343,8 +345,8 @@ class MainWindow(QMainWindow):
         except Exception as ex:
             message = f"An exception of type {type(ex).__name__} occurred. Arguments: {ex.args!r}"
             QMessageBox.critical(self, "An exception occurred in browse folder method", message)
-            
-    
+
+
     def browse_file_helper(self, dialog_message:str, line_widget:object, file_extension_filter:str) -> None:
         """File dialog for file browsing, sets the path of the selected file in a specified QLineEdit Widget
 
@@ -367,7 +369,8 @@ class MainWindow(QMainWindow):
         except Exception as ex:
             message = f"An exception of type {type(ex).__name__} occurred. Arguments: {ex.args!r}"
             QMessageBox.critical(self, "An exception occurred in browse folder method", message)
-    
+
+
     def browse_save_file_as_helper(self, dialog_message:str, line_widget:object, file_extension_filter:str) -> None:
         """File dialog for file saving as, sets the path of the selected file in a specified QLineEdit Widget
 
@@ -404,7 +407,6 @@ class MainWindow(QMainWindow):
             builder.tag_value_combo = self.ui.combobox_tag_values
             builder.attribute_name_combo = self.ui.combobox_attribute_names
             builder.attribute_value_combo = self.ui.combobox_attribute_values
-            builder.xpath_input = self.ui.line_edit_xpath_builder
 
             # Assign radio buttons
             builder.radio_equals = self.ui.radio_button_equals
@@ -548,10 +550,8 @@ class MainWindow(QMainWindow):
         """
         self.ui.text_edit_program_output.setText(message)
 
-    # === END EVENT HANDLER FOR QTextEdit MAIN PROGRAM OUTPUT END === #
     
     # === EVENT HANDLERS FOR XML EVALUATION GROUPBOX ===
-    
     # === XML PARSING EVENT TRIGGER BUTTON === #
     def read_xml_file(self):
         print("Read XML files clicked")
