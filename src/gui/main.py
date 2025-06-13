@@ -13,7 +13,7 @@ from utils.xml_parser import (XMLUtils,
     create_xml_parser, create_structure_analyzer
 )
 from utils.xpath_builder import create_xpath_builder, create_xpath_validator
-from utils.csv_export import CSVExportThread
+from utils.csv_export import create_csv_exporter
 from gui.logic.controller import ComboBoxStateController, CSVConversionController
 
 from gui.resources.ui.XMLuvation_ui import Ui_MainWindow
@@ -561,7 +561,7 @@ class MainWindow(QMainWindow):
                 self.start_xml_parsing(file_name)
         except Exception as ex:
             message = f"An exception of type {type(ex).__name__} occurred. Arguments: {ex.args!r}"
-            QMessageBox.critical(self, "Exception in Program", message)
+            QMessageBox.critical(self, "Exception reading xml file", message)
     
     # === XML PARSING === #
     def start_xml_parsing(self, xml_file_path: str):
@@ -574,7 +574,8 @@ class MainWindow(QMainWindow):
             # Optional: Keep track of the worker
             self.active_workers.append(xml_parser_worker)
         except Exception as ex:
-            self.on_error_message("Error starting XML parsing", ex)
+            message = f"An exception of type {type(ex).__name__} occurred. Arguments: {ex.args!r}"
+            QMessageBox.critical(self, "Exception on starting to pare xml file", message)
 
     # === XML PARSING ON FINISHED SLOT === #
     @Slot(dict)
@@ -617,7 +618,6 @@ class MainWindow(QMainWindow):
             # Save xml file in initialized variable
             self.current_read_xml_file = result.get("file_path")
             
-            #self.on_info_message("Parsing Complete", info_message) # QMessageBox info popup
             self.ui.text_edit_program_output.append(info_message)
             
             self.parsed_xml_data = result
@@ -625,7 +625,8 @@ class MainWindow(QMainWindow):
             self.cb_state_controller.set_parsed_data(result)
             
         except Exception as ex:
-            self.on_error_message(ex, "Error processing parsing results")
+            message = f"An exception of type {type(ex).__name__} occurred. Arguments: {ex.args!r}"
+            QMessageBox.critical(self, "Error processing parsing results", message)
             
     # Statusbar update function
     def update_xml_file_count(self):
@@ -653,12 +654,12 @@ class MainWindow(QMainWindow):
         """
         worker.signals.finished.connect(self.on_xml_parsing_finished)
         worker.signals.error_occurred.connect(self.on_error_message)
-        worker.signals.progress.connect(self.append_to_program_output)
+        worker.signals.program_output_progress.connect(self.append_to_program_output)
 
 
     def _connect_xpath_builder_signals(self, worker):
         """Connect signals for XPath building operations."""
-        worker.signals.progress.connect(self.append_to_program_output)
+        worker.signals.program_output_progress.connect(self.append_to_program_output)
         worker.signals.error_occurred.connect(self.on_error_message)
     
     
@@ -736,34 +737,34 @@ class MainWindow(QMainWindow):
         """
         return xpath_expression in self.xpath_filters
     
-    def start_csv_export(self, folder_path: str, xpath_expressions: list, output_csv_path: str):
-        """Initializes and starts the CSV export in a new thread."""
-        if not hasattr(self, 'csv_export_thread') or not self.csv_export_thread.isRunning():
-            self.csv_export_thread = QThread()
-            self.csv_export_worker = CSVExportThread(
-                folder_path=folder_path,
-                xpath_expressions=xpath_expressions,
-                output_csv_path=output_csv_path
-            )
-            self.csv_export_worker.moveToThread(self.csv_export_thread)#
-
-            self.csv_export_thread.started.connect(self.csv_export_worker.run)#
-
-            # Connect worker signals to main window slots
-            self.csv_export_worker.output_set_text.connect(self.output_set_text)
-            self.csv_export_worker.progress_updated.connect(self.update_progress_bar)
-            self.csv_export_worker.finished.connect(self.on_csv_export_finished)
-            self.csv_export_worker.show_error_message.connect(self.show_error_message)
-            self.csv_export_worker.show_info_message.connect(self.show_info_message)#
-
-            # Connect for cleanup
-            self.csv_export_worker.finished.connect(self.csv_export_thread.quit)
-            self.csv_export_worker.finished.connect(self.csv_export_worker.deleteLater)
-            self.csv_export_thread.finished.connect(self.csv_export_thread.deleteLater)#
-
-            self.csv_export_thread.start()
-        else:
-            self.program_output.setText("CSV export is already running or thread is busy.")
+    #def start_csv_export(self, folder_path: str, xpath_expressions: list, output_csv_path: str):
+    #    """Initializes and starts the CSV export in a new thread."""
+    #    if not hasattr(self, 'csv_export_thread') or not self.csv_export_thread.isRunning():
+    #        self.csv_export_thread = QThread()
+    #        self.csv_export_worker = CSVExportThread(
+    #            folder_path=folder_path,
+    #            xpath_expressions=xpath_expressions,
+    #            output_csv_path=output_csv_path
+    #        )
+    #        self.csv_export_worker.moveToThread(self.csv_export_thread)#
+#
+    #        self.csv_export_thread.started.connect(self.csv_export_worker.run)#
+#
+    #        # Connect worker signals to main window slots
+    #        self.csv_export_worker.output_set_text.connect(self.output_set_text)
+    #        self.csv_export_worker.progress_updated.connect(self.update_progress_bar)
+    #        self.csv_export_worker.finished.connect(self.on_csv_export_finished)
+    #        self.csv_export_worker.show_error_message.connect(self.show_error_message)
+    #        self.csv_export_worker.show_info_message.connect(self.show_info_message)#
+#
+    #        # Connect for cleanup
+    #        self.csv_export_worker.finished.connect(self.csv_export_thread.quit)
+    #        self.csv_export_worker.finished.connect(self.csv_export_worker.deleteLater)
+    #        self.csv_export_thread.finished.connect(self.csv_export_thread.deleteLater)#
+#
+    #        self.csv_export_thread.start()
+    #    else:
+    #        self.program_output.setText("CSV export is already running or thread is busy.")
 
 
     # ======= End FUNCTIONS FOR create_matching_filter_group ======= #
