@@ -85,14 +85,13 @@ class MainWindow(QMainWindow):
         #  Initialize the QThreadPool for running threads
         self.thread_pool = QThreadPool()
         max_threads = self.thread_pool.maxThreadCount() # PC's max CPU threads (I have 32 Threads on a Ryzen 9 7950X3D)
+        self.set_max_threads = round(max_threads / 8) #!!! Testing THIS IS DANGEROUS --> CRASHES SYSTEM = OutOfMemory
+        self.thread_pool.setMaxThreadCount(self.set_max_threads) # 4 Threads 
         
         # Keep track of active workers (optional, for cleanup)
         self.active_workers = []
-        
-        self.setAttribute(Qt.WA_DeleteOnClose)
-        self.config_handler = ConfigHandler()
-        
         self.xpath_filters = []
+        self.config_handler = ConfigHandler()
         
         # Connect the custom context menu for Listbox
         self.ui.list_widget_xpath_expressions.setContextMenuPolicy(Qt.CustomContextMenu)
@@ -289,11 +288,11 @@ class MainWindow(QMainWindow):
         self.ui.line_edit_xml_folder_path_input.textChanged.connect(self.update_xml_file_count) 
         
         # Folder browsing and XML reading
-        self.ui.button_browse_xml_folder.clicked.connect(lambda: self.browse_folder_helper(dialog_message="Select directory that contains XML files", line_widget= self.ui.line_edit_xml_folder_path_input))
+        self.ui.button_browse_xml_folder.clicked.connect(lambda: self.browse_folder_helper(dialog_message="Select directory that contains XML files", line_widget=self.ui.line_edit_xml_folder_path_input))
         self.ui.button_read_xml.clicked.connect(self.read_xml_file)
         
         # File browsing for csv evaluation export
-        self.ui.button_browse_csv.clicked.connect(lambda: self.browse_folder_helper(dialog_message="Select csv evaluation export path", line_widget=self.ui.line_edit_csv_output_path))
+        self.ui.button_browse_csv.clicked.connect(lambda: self.browse_save_file_as_helper(dialog_message="Save as", line_widget=self.ui.line_edit_csv_output_path, file_extension_filter="CSV File (*.csv)"))
         
         # XPath building
         #self.ui.line_edit_xpath_builder
@@ -301,7 +300,6 @@ class MainWindow(QMainWindow):
         self.ui.button_add_xpath_to_list.clicked.connect(self.add_xpath_to_list)
         
         # CSV export
-        self.ui.button_browse_csv.clicked.connect(self.browse_save_file_as_helper(dialog_message="Save as", line_widget=self.ui.line_edit_csv_conversion_path_output, file_extension_filter="CSV File (*.csv)"))
         self.ui.button_start_csv_export.clicked.connect(self.start_csv_export)
         
         # Combo boxes
@@ -633,7 +631,7 @@ class MainWindow(QMainWindow):
             folder: str = self.ui.line_edit_xml_folder_path_input.text()
             if os.path.isdir(folder):
                 xml_files_count: int = sum(1 for f in os.listdir(folder) if f.endswith(".xml"))
-                if xml_files_count > 1:
+                if xml_files_count >= 1:
                     self.ui.statusbar_xml_files_count.setStyleSheet("color: #47de65")
                     self.ui.statusbar_xml_files_count.showMessage(f"Found {xml_files_count} XML Files")
         except Exception as ex:
@@ -642,7 +640,26 @@ class MainWindow(QMainWindow):
             self.ui.statusbar_xml_files_count.showMessage(f"Error counting XML files: {message}")
     
     # === CSV Exporting Process === #
+    def start_csv_export(self):
+        """Initializes and starts the CSV export in a new thread."""
+        try:
+            exporter = create_csv_exporter(self.ui.line_edit_xml_folder_path_input.text(), self.xpath_filters, self.ui.line_edit_csv_output_path.text(), self.to_list(self.ui.line_edit_csv_headers_input.text()), self.set_max_threads)
+            self._connect_csv_export_signals(exporter)
+            self.thread_pool.start(exporter)
+
+            # Optional: Keep track of the worker
+            self.active_workers.append(exporter)
+            
+        except Exception as ex:
+            message = f"An exception of type {type(ex).__name__} occurred. Arguments: {ex.args!r}"
+            QMessageBox.critical(self, "Exception on starting to export results to csv file", message)
     
+    def to_list(self, text:str) -> list[str]:
+        try:
+            return [string.strip() for string in text.split(",") if string.strip()]
+        except Exception as ex:
+            message = f"An exception of type {type(ex).__name__} occurred. Arguments: {ex.args!r}"
+            QMessageBox.critical(self,  "Headers to List Error", message)
 
     # === SIGNAL CONNECTION HELPERS === #
     
@@ -734,10 +751,6 @@ class MainWindow(QMainWindow):
         """
         return xpath_expression in self.xpath_filters
     
-    def start_csv_export(self):
-        """Initializes and starts the CSV export in a new thread."""
-        exporter = create_csv_exporter(self.ui.line_edit_xml_folder_path_input.text(), self.ui.list_widget_xpath_expressions.items(), self.ui.line_edit_csv_output_path)
-        exporter
         
     @Slot()
     def on_csv_export_finished(self):
@@ -747,7 +760,7 @@ class MainWindow(QMainWindow):
     
     @Slot(int)
     def update_progress_bar(self, progress:int):
-        self.ui.progressbar_main.update(progress)
+        self.ui.progressbar_main.setValue(progress)
 
     
     def set_ui_enabled(self, enabled):

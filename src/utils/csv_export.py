@@ -18,7 +18,7 @@ def worker_init(terminate_event):
     global _terminate_event
     _terminate_event = terminate_event
 
-def process_single_xml(filename: str, folder_path: str, xpath_expressions: List[str]) -> Tuple[List[Dict[str, str]], int, int]:
+def process_single_xml(xml_file: str, folder: str, xpath_expressions: List[str], headers: List[str]) -> Tuple[List[Dict[str, str]], int, int]:
     """Process a single XML file and return its results as a list of dictionaries,
     where each dictionary represents a single XPath match for a CSV row.
     """
@@ -27,10 +27,10 @@ def process_single_xml(filename: str, folder_path: str, xpath_expressions: List[
         # Early exit if termination is requested
         return [], 0, 0
 
-    file_path = os.path.join(folder_path, filename)
+    file_path: str = os.path.join(folder, xml_file)
     file_rows: List[Dict[str, str]] = [] # Will store dictionaries for CSV rows
-    file_total_matches = 0
-    file_matched_any_xpath = 0 # 1 if any XPath matches in this file, 0 otherwise
+    file_total_matches: int = 0
+    file_matched_any_xpath: int = 0 # 1 if any XPath matches in this file, 0 otherwise
 
     try:
         tree = ET.parse(file_path)
@@ -38,7 +38,7 @@ def process_single_xml(filename: str, folder_path: str, xpath_expressions: List[
     except (ET.XMLSyntaxError, Exception): # Catching general Exception for file read errors
         return [], 0, 0 # Return empty results if file cannot be parsed
 
-    for expression in xpath_expressions:
+    for expression, header in zip(xpath_expressions, headers):
         if _terminate_event and _terminate_event.is_set():
             # Check for termination before processing each XPath expression
             return [], 0, 0
@@ -52,7 +52,7 @@ def process_single_xml(filename: str, folder_path: str, xpath_expressions: List[
                 file_total_matches += match_count
             
             # Determine if the XPath ends with /text() or /@attribute
-            pattern_text_or_attribute_end = r'(.*?/text\(\)$|.*?/@[a-zA-Z_][a-zA-Z0-9_]*$)'
+            pattern_text_or_attribute_end = r"(.*?/text\(\)$|.*?/@[a-zA-Z_][a-zA-Z0-9_]*$)"
             ends_with_text_or_attribute = bool(re.match(pattern_text_or_attribute_end, expression))
 
             if results:
@@ -68,17 +68,17 @@ def process_single_xml(filename: str, folder_path: str, xpath_expressions: List[
                     elif isinstance(result, (int, float)):
                         match_content = str(result)
                     
-                    row = {
-                        'XML_FILE': filename,
-                        'XPath_Expression': expression,
-                        'Match_Content': match_content,
-                        'Match_Index': str(i + 1) # 1-based index for matches
+                    row: dict[str, str]= {
+                        "Filename": xml_file,
+                        "XPath_Expression": expression,
+                        header: match_content,
+                        "Match_Index": str(i + 1) # 1-based index for matches
                     }
                     file_rows.append(row)
             else:
                 pass
 
-        except Exception as e:
+        except Exception:
             pass
 
     return file_rows, file_total_matches, file_matched_any_xpath
@@ -112,7 +112,8 @@ class CSVExportThread(QRunnable):
         self.folder_path_containing_xml_files: str = kwargs.get("folder_path_containing_xml_files", "")
         self.xpath_expressions_list: list = kwargs.get("xpath_expressions_list", [])
         self.output_save_path_for_csv_export: str = kwargs.get("output_save_path_for_csv_export", "")
-        self.csv_headers_input_list: list = kwargs.get("csv_headers_input_list", [])
+        self.csv_headers_list: list = kwargs.get("csv_headers_list", [])
+        self.max_proccesses: int = kwargs.get("max_proccesses", 2)
 
     def stop(self):
         """Signals the worker to stop its processing by setting the multiprocessing event."""
@@ -126,7 +127,7 @@ class CSVExportThread(QRunnable):
     def run(self):
         """Main execution method that routes to specific operations."""
         try:
-            if self.operation == 'export':
+            if self.operation == "export":
                 self._export_serach_to_csv()
             else:
                 raise ValueError(f"Unknown operation: {self.operation}")
@@ -136,32 +137,54 @@ class CSVExportThread(QRunnable):
 
 
     def _export_serach_to_csv(self):
-        self.signals.program_output_progress_append.emit("Starting CSV export...")
+        """Start seraching all xml files in the specified folder and write it's results to a specified output csv file
+        """
+        print(f"Using {self.max_proccesses} Proccesses...")
+        
+        if not os.path.exists(self.folder_path_containing_xml_files) and not os.path.isdir(self.folder_path_containing_xml_files):
+            self.signals.warning_occured.emit("XML Folder not found", "Please set the path to the folder that contains XML files to process.")
+            return
+        
+        xpath_expressions_size: int = len(self.xpath_expressions_list)
+        csv_headers_size: int = len(self.csv_headers_list)
         xml_files_list = [f for f in os.listdir(self.folder_path_containing_xml_files) if f.lower().endswith('.xml')]
         total_xml_files_count = len(xml_files_list)
+        
+        # Check if csv output folder path has been set
+        if not self.output_save_path_for_csv_export:
+            self.signals.warning_occured.emit("CSV Output Path is Empty", "Please set an output folder path for the csv file.")
+            return
+        # Check if csv headers and xpath expressions list lenght is 0 on both
+        if csv_headers_size == 0 and xpath_expressions_size == 0:
+            self.signals.warning_occured.emit("Headers and Expressions empty", "No csv headers and XPath expression found, please add some.")
+            return
+        # Check if csv headers lenght is not the same as the lenght of xpath expressions
+        elif csv_headers_size != xpath_expressions_size:
+            self.signals.warning_occured.emit("CSV Header Size Warning", f"Input of CSV headers is not the same lenght as the XPath expressions\nCSV {csv_headers_size} / XPath {xpath_expressions_size}")
+            return
+        
+        self.signals.program_output_progress_append.emit("Starting CSV export...")
 
         if total_xml_files_count == 0:
             self.signals.info_occurred.emit("Export Finished", "No XML files found to export.")
             self.signals.finished.emit()
             return
 
-        # TODO Work on new write logic
-        fieldnames = ['Filename']
-        fieldnames.append(self.csv_headers_input_list)
-        
+        # TODO Work on new write logic)
         try:
             with open(self.output_save_path_for_csv_export, 'w', newline='', encoding='utf-8') as csvfile:
-                writer = csv.DictWriter(csvfile, fieldnames=fieldnames, extrasaction='ignore')
+                writer = csv.DictWriter(csvfile, fieldnames=self.csv_headers_list, extrasaction='ignore')
                 writer.writeheader()
 
                 pool_func = partial(
                     process_single_xml,
-                    folder_path=self.folder_path_containing_xml_files,
-                    xpath_expressions=self.xpath_expressions_list
+                    folder=self.folder_path_containing_xml_files,
+                    xpath_expressions=self.xpath_expressions_list,
+                    headers=self.csv_headers_list
                 )
 
                 # Initialize the pool with the worker_init function and the terminate event
-                self._pool = multiprocessing.Pool(initializer=worker_init, initargs=(self._terminate_event,))
+                self._pool = multiprocessing.Pool(processes=self.max_proccesses, initializer=worker_init, initargs=(self._terminate_event,))
                 
                 total_sum_matches = 0
                 total_matching_files = 0
@@ -185,7 +208,7 @@ class CSVExportThread(QRunnable):
                 
                 if not self._terminate_event.is_set(): # Only show completion message if not aborted
                     self.signals.program_output_progress_set_text.emit(
-                        "Export Completed",
+                        "Export Completed!"
                         f"CSV export finished.\nTotal XML files processed: {total_xml_files_count}\n"
                         f"Total matches found: {total_sum_matches}\n"
                         f"Total files with matches: {total_matching_files}\n"
@@ -198,6 +221,7 @@ class CSVExportThread(QRunnable):
                 "CSV Export Error",
                 f"An error occurred during CSV export:\n{str(ex)}\n\nDetails:\n{detailed_error}"
             )
+
         finally:
             if self._pool:
                 self._pool.close() # Close the pool to prevent new tasks from being submitted
@@ -206,7 +230,7 @@ class CSVExportThread(QRunnable):
 
 
 # Convenience function for creating threaded operations
-def create_csv_exporter(folder_path_containing_xml_files:str, xpath_expressions_list:list, output_save_path_for_csv_export:str, csv_headers_input_list:list) -> CSVExportThread:
+def create_csv_exporter(folder_path_containing_xml_files:str, xpath_expressions_list:list, output_save_path_for_csv_export:str, csv_headers_list:list, max_proccesses:int) -> CSVExportThread:
     """Create a CSV export thread for extracting data from multiple XML files
 
     Args:
@@ -217,4 +241,4 @@ def create_csv_exporter(folder_path_containing_xml_files:str, xpath_expressions_
     Returns:
         CSVExportThread: Worker thread for exporting XML XPath evaluation results to a CSV file.
     """
-    return CSVExportThread("export", folder_path_containing_xml_files=folder_path_containing_xml_files, xpath_expressions_list=xpath_expressions_list, output_save_path_for_csv_export=output_save_path_for_csv_export, csv_headers_input_list=csv_headers_input_list)
+    return CSVExportThread("export", folder_path_containing_xml_files=folder_path_containing_xml_files, xpath_expressions_list=xpath_expressions_list, output_save_path_for_csv_export=output_save_path_for_csv_export, csv_headers_list=csv_headers_list, max_proccesses=max_proccesses)
