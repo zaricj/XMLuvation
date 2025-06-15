@@ -1,6 +1,9 @@
 # utils/xml_parser.py
 from PySide6.QtCore import QObject, QRunnable, Signal, Slot
+from PySide6.QtGui import QSyntaxHighlighter, QTextCharFormat, QColor, QFont
+from PySide6.QtWidgets import QTextEdit
 from lxml import etree as ET
+import re
 
 
 class XMLParserSignals(QObject):
@@ -71,6 +74,237 @@ class XMLUtils:
             return ET.tostring(root, encoding="unicode", pretty_print=True)
         except Exception as e:
             raise ValueError(f"Failed to format XML: {str(e)}")
+
+
+class XmlSyntaxHighlighter(QSyntaxHighlighter):
+    def __init__(self, parent=None):
+        super().__init__(parent)
+        
+        # Define text formats for different XML elements
+        self.xml_keyword_format = QTextCharFormat()
+        self.xml_keyword_format.setForeground(QColor(128, 0, 255))  # Purple for tags
+        self.xml_keyword_format.setFontWeight(QFont.Weight.Bold)
+        
+        self.xml_element_format = QTextCharFormat()
+        self.xml_element_format.setForeground(QColor(0, 0, 255))  # Blue for element names
+        
+        self.xml_attribute_format = QTextCharFormat()
+        self.xml_attribute_format.setForeground(QColor(255, 127, 0))  # Orange for attributes
+        
+        self.xml_value_format = QTextCharFormat()
+        self.xml_value_format.setForeground(QColor(0, 128, 0))  # Green for attribute values
+        
+        self.xml_comment_format = QTextCharFormat()
+        self.xml_comment_format.setForeground(QColor(128, 128, 128))  # Gray for comments
+        self.xml_comment_format.setFontItalic(True)
+        
+        self.xml_declaration_format = QTextCharFormat()
+        self.xml_declaration_format.setForeground(QColor(255, 0, 255))  # Magenta for XML declaration
+        self.xml_declaration_format.setFontWeight(QFont.Weight.Bold)
+        
+        # Define highlighting rules
+        self.highlighting_rules = []
+        
+        # XML declaration (<?xml ... ?>)
+        self.highlighting_rules.append((
+            re.compile(r'<\?xml.*?\?>'),
+            self.xml_declaration_format
+        ))
+        
+        # XML comments
+        self.highlighting_rules.append((
+            re.compile(r'<!--.*?-->', re.DOTALL),
+            self.xml_comment_format
+        ))
+        
+        # XML tags (opening and closing) - improved pattern
+        self.highlighting_rules.append((
+            re.compile(r'</?[A-Za-z0-9_:-]+'),
+            self.xml_keyword_format
+        ))
+        
+        # Tag closing brackets
+        self.highlighting_rules.append((
+            re.compile(r'[/>]+>'),
+            self.xml_keyword_format
+        ))
+        
+        # XML attributes
+        self.highlighting_rules.append((
+            re.compile(r'\b[A-Za-z0-9_:-]+(?=\s*=)'),
+            self.xml_attribute_format
+        ))
+        
+        # XML attribute values (double quotes)
+        self.highlighting_rules.append((
+            re.compile(r'"[^"]*"'),
+            self.xml_value_format
+        ))
+        
+        # XML attribute values (single quotes)
+        self.highlighting_rules.append((
+            re.compile(r"'[^']*'"),
+            self.xml_value_format
+        ))
+
+    def highlightBlock(self, text):
+        # Apply each highlighting rule
+        for pattern, format in self.highlighting_rules:
+            for match in pattern.finditer(text):
+                start, end = match.span()
+                self.setFormat(start, end - start, format)
+
+
+class XmlTextEditEnhancer:
+    """Helper class to enhance any QTextEdit with XML syntax highlighting."""
+    
+    def __init__(self, text_edit_widget: QTextEdit):
+        """Initialize the enhancer with an existing QTextEdit widget.
+        
+        Args:
+            text_edit_widget: The QTextEdit widget to enhance
+        """
+        self.text_edit = text_edit_widget
+        
+        # Apply syntax highlighter
+        self.highlighter = XmlSyntaxHighlighter(self.text_edit.document())
+        
+        # Set a monospace font for better formatting
+        font = QFont("Consolas", 10)
+        if not font.exactMatch():
+            font = QFont("Courier New", 10)
+        self.text_edit.setFont(font)
+        
+        # Set some nice defaults for XML editing
+        self.text_edit.setLineWrapMode(QTextEdit.LineWrapMode.NoWrap)
+        self.text_edit.setAcceptRichText(False)  # Plain text only for proper highlighting
+
+
+class XmlTextEdit(QTextEdit):
+    """Enhanced QTextEdit with XML syntax highlighting and formatting capabilities."""
+    
+    def __init__(self, parent=None):
+        super().__init__(parent)
+        
+        # Apply syntax highlighter
+        self.highlighter = XmlSyntaxHighlighter(self.document())
+        
+        # Set a monospace font for better formatting
+        font = QFont("Consolas", 10)
+        if not font.exactMatch():
+            font = QFont("Courier New", 10)
+        self.setFont(font)
+        
+        # Set some nice defaults for XML editing
+        self.setLineWrapMode(QTextEdit.LineWrapMode.NoWrap)
+        self.setAcceptRichText(False)  # Plain text only for proper highlighting
+        
+    def set_xml_content(self, xml_content: str, pretty_format: bool = True):
+        """Set XML content with optional pretty formatting.
+        
+        Args:
+            xml_content: XML content as string
+            pretty_format: Whether to apply pretty formatting (default: True)
+        """
+        try:
+            if pretty_format:
+                # Use your existing XMLUtils for pretty printing
+                formatted_xml = XMLUtils.pretty_print_xml(xml_content)
+                self.text_edit.setPlainText(formatted_xml)
+            else:
+                self.text_edit.setPlainText(xml_content)
+        except Exception as e:
+            # If formatting fails, just set the original content
+            self.text_edit.setPlainText(xml_content)
+            print(f"XML formatting error: {e}")
+    
+    def get_xml_content(self) -> str:
+        """Get the current XML content."""
+        return self.text_edit.toPlainText()
+    
+    def validate_current_xml(self) -> tuple[bool, str]:
+        """Validate the current XML content.
+        
+        Returns:
+            Tuple of (is_valid, error_message)
+        """
+        return XMLUtils.validate_xml_syntax(self.text_edit.toPlainText())
+    
+    def format_current_xml(self):
+        """Format the current XML content in-place."""
+        current_content = self.text_edit.toPlainText()
+        if current_content.strip():
+            try:
+                formatted = XMLUtils.pretty_print_xml(current_content)
+                # Preserve cursor position if possible
+                cursor = self.text_edit.textCursor()
+                position = cursor.position()
+                
+                self.text_edit.setPlainText(formatted)
+                
+                # Try to restore cursor position
+                cursor.setPosition(min(position, len(formatted)))
+                self.text_edit.setTextCursor(cursor)
+            except Exception as e:
+                print(f"Error formatting XML: {e}")
+
+
+# Factory function to enhance existing QTextEdit widgets
+def enhance_xml_text_edit(text_edit_widget: QTextEdit) -> XmlTextEditEnhancer:
+    """Enhance an existing QTextEdit widget with XML syntax highlighting.
+    
+    Args:
+        text_edit_widget: The QTextEdit widget to enhance
+        
+    Returns:
+        XmlTextEditEnhancer instance for additional functionality
+    """
+    return XmlTextEditEnhancer(text_edit_widget)
+
+
+# Utility functions for working with UI-created QTextEdit widgets
+def set_xml_content_to_widget(text_edit: QTextEdit, xml_content: str, pretty_format: bool = True):
+    """Set XML content to any QTextEdit widget with optional formatting.
+    
+    Args:
+        text_edit: The QTextEdit widget
+        xml_content: XML content as string
+        pretty_format: Whether to apply pretty formatting (default: True)
+    """
+    try:
+        if pretty_format:
+            formatted_xml = XMLUtils.pretty_print_xml(xml_content)
+            text_edit.setPlainText(formatted_xml)
+        else:
+            text_edit.setPlainText(xml_content)
+    except Exception as e:
+        text_edit.setPlainText(xml_content)
+        print(f"XML formatting error: {e}")
+
+
+def apply_xml_highlighting_to_widget(text_edit: QTextEdit) -> XmlSyntaxHighlighter:
+    """Apply XML syntax highlighting to any QTextEdit widget.
+    
+    Args:
+        text_edit: The QTextEdit widget to enhance
+        
+    Returns:
+        The XmlSyntaxHighlighter instance (keep reference to prevent garbage collection)
+    """
+    # Apply syntax highlighter
+    highlighter = XmlSyntaxHighlighter(text_edit.document())
+    
+    # Set monospace font
+    font = QFont("Consolas", 10)
+    if not font.exactMatch():
+        font = QFont("Courier New", 10)
+    text_edit.setFont(font)
+    
+    # Set XML-friendly settings
+    text_edit.setLineWrapMode(QTextEdit.LineWrapMode.NoWrap)
+    text_edit.setAcceptRichText(False)
+    
+    return highlighter
 
 
 class XMLParserThread(QRunnable):
