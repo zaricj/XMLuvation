@@ -296,6 +296,19 @@ QCheckBox::indicator:unchecked {
              <item>
               <layout class="QHBoxLayout" name="horizontalLayout_three">
                <item>
+                <widget class="QLabel" name="label_tag_names">
+                 <property name="maximumSize">
+                  <size>
+                   <width>68</width>
+                   <height>16777215</height>
+                  </size>
+                 </property>
+                 <property name="text">
+                  <string>Tag Names:</string>
+                 </property>
+                </widget>
+               </item>
+               <item>
                 <widget class="QComboBox" name="combobox_tag_names">
                  <property name="enabled">
                   <bool>false</bool>
@@ -304,19 +317,27 @@ QCheckBox::indicator:unchecked {
                   <bool>true</bool>
                  </property>
                  <property name="currentText">
-                  <string>Select Tag Name...</string>
+                  <string/>
                  </property>
                  <property name="currentIndex">
-                  <number>0</number>
+                  <number>-1</number>
                  </property>
                  <property name="placeholderText">
                   <string>Select Tag Name...</string>
                  </property>
-                 <item>
-                  <property name="text">
-                   <string>Select Tag Name...</string>
-                  </property>
-                 </item>
+                </widget>
+               </item>
+               <item>
+                <widget class="QLabel" name="label_tag_values">
+                 <property name="maximumSize">
+                  <size>
+                   <width>68</width>
+                   <height>16777215</height>
+                  </size>
+                 </property>
+                 <property name="text">
+                  <string>Tag Values:</string>
+                 </property>
                 </widget>
                </item>
                <item>
@@ -328,25 +349,33 @@ QCheckBox::indicator:unchecked {
                   <bool>true</bool>
                  </property>
                  <property name="currentText">
-                  <string>Select Tag Value...</string>
+                  <string/>
                  </property>
                  <property name="currentIndex">
-                  <number>0</number>
+                  <number>-1</number>
                  </property>
                  <property name="placeholderText">
                   <string>Select Tag Value...</string>
                  </property>
-                 <item>
-                  <property name="text">
-                   <string>Select Tag Value...</string>
-                  </property>
-                 </item>
                 </widget>
                </item>
               </layout>
              </item>
              <item>
               <layout class="QHBoxLayout" name="horizontalLayout_four">
+               <item>
+                <widget class="QLabel" name="label_attribute_names">
+                 <property name="maximumSize">
+                  <size>
+                   <width>68</width>
+                   <height>16777215</height>
+                  </size>
+                 </property>
+                 <property name="text">
+                  <string>Att Names:</string>
+                 </property>
+                </widget>
+               </item>
                <item>
                 <widget class="QComboBox" name="combobox_attribute_names">
                  <property name="enabled">
@@ -356,19 +385,27 @@ QCheckBox::indicator:unchecked {
                   <bool>true</bool>
                  </property>
                  <property name="currentText">
-                  <string>Select Attribute Name...</string>
+                  <string/>
                  </property>
                  <property name="currentIndex">
-                  <number>0</number>
+                  <number>-1</number>
                  </property>
                  <property name="placeholderText">
                   <string>Select Attribute Name...</string>
                  </property>
-                 <item>
-                  <property name="text">
-                   <string>Select Attribute Name...</string>
-                  </property>
-                 </item>
+                </widget>
+               </item>
+               <item>
+                <widget class="QLabel" name="label_attribute_values">
+                 <property name="maximumSize">
+                  <size>
+                   <width>68</width>
+                   <height>16777215</height>
+                  </size>
+                 </property>
+                 <property name="text">
+                  <string>Att Values:</string>
+                 </property>
                 </widget>
                </item>
                <item>
@@ -380,19 +417,14 @@ QCheckBox::indicator:unchecked {
                   <bool>true</bool>
                  </property>
                  <property name="currentText">
-                  <string>Select Attribute Value...</string>
+                  <string/>
                  </property>
                  <property name="currentIndex">
-                  <number>0</number>
+                  <number>-1</number>
                  </property>
                  <property name="placeholderText">
                   <string>Select Attribute Value...</string>
                  </property>
-                 <item>
-                  <property name="text">
-                   <string>Select Attribute Value...</string>
-                  </property>
-                 </item>
                 </widget>
                </item>
               </layout>

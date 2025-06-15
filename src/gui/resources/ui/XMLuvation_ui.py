@@ -3,7 +3,7 @@
 ################################################################################
 ## Form generated from reading UI file 'XMLuvation.ui'
 ##
-## Created by: Qt User Interface Compiler version 6.9.1
+## Created by: Qt User Interface Compiler version 6.9.0
 ##
 ## WARNING! All changes made in this file will be lost when recompiling UI file!
 ################################################################################
@@ -18,8 +18,8 @@ from PySide6.QtGui import (QBrush, QColor, QConicalGradient, QCursor,
 from PySide6.QtWidgets import (QApplication, QCheckBox, QComboBox, QGroupBox,
     QHBoxLayout, QLabel, QLineEdit, QListWidget,
     QListWidgetItem, QMainWindow, QProgressBar, QPushButton,
-    QRadioButton, QSizePolicy, QTabWidget, QTextEdit, QStatusBar,
-    QVBoxLayout, QWidget)
+    QRadioButton, QSizePolicy, QTabWidget, QTextEdit,
+    QVBoxLayout, QWidget, QStatusBar)
 from gui.resources.qrc import xmluvation_resources_rc
 
 class Ui_MainWindow(object):
@@ -252,14 +252,13 @@ class Ui_MainWindow(object):
         self.vert_layout_main.setObjectName(u"vert_layout_main")
         self.group_box_xml_input_xpath_builder = QGroupBox(self.tab_xml_evaluation)
         self.group_box_xml_input_xpath_builder.setObjectName(u"group_box_xml_input_xpath_builder")
+        self.verticalLayout_4 = QVBoxLayout(self.group_box_xml_input_xpath_builder)
         self.statusbar_xml_files_count = QStatusBar(self.group_box_xml_input_xpath_builder)
         self.statusbar_xml_files_count.setSizeGripEnabled(False)
         self.statusbar_xml_files_count.setObjectName(u"statusbar_xml_files_count")
-        self.verticalLayout_4 = QVBoxLayout(self.group_box_xml_input_xpath_builder)
         self.verticalLayout_4.setObjectName(u"verticalLayout_4")
-        
         self.verticalLayout_4.addWidget(self.statusbar_xml_files_count)
-        
+        self.verticalLayout_4.setObjectName(u"verticalLayout_4")
         self.horizontalLayout_one = QHBoxLayout()
         self.horizontalLayout_one.setObjectName(u"horizontalLayout_one")
         self.line_edit_xml_folder_path_input = QLineEdit(self.group_box_xml_input_xpath_builder)
@@ -292,16 +291,26 @@ class Ui_MainWindow(object):
 
         self.horizontalLayout_three = QHBoxLayout()
         self.horizontalLayout_three.setObjectName(u"horizontalLayout_three")
+        self.label_tag_names = QLabel(self.group_box_xml_input_xpath_builder)
+        self.label_tag_names.setObjectName(u"label_tag_names")
+        self.label_tag_names.setMaximumSize(QSize(68, 16777215))
+
+        self.horizontalLayout_three.addWidget(self.label_tag_names)
+
         self.combobox_tag_names = QComboBox(self.group_box_xml_input_xpath_builder)
-        self.combobox_tag_names.addItem("")
         self.combobox_tag_names.setObjectName(u"combobox_tag_names")
         self.combobox_tag_names.setEnabled(False)
         self.combobox_tag_names.setEditable(True)
 
         self.horizontalLayout_three.addWidget(self.combobox_tag_names)
 
+        self.label_tag_values = QLabel(self.group_box_xml_input_xpath_builder)
+        self.label_tag_values.setObjectName(u"label_tag_values")
+        self.label_tag_values.setMaximumSize(QSize(68, 16777215))
+
+        self.horizontalLayout_three.addWidget(self.label_tag_values)
+
         self.combobox_tag_values = QComboBox(self.group_box_xml_input_xpath_builder)
-        self.combobox_tag_values.addItem("")
         self.combobox_tag_values.setObjectName(u"combobox_tag_values")
         self.combobox_tag_values.setEnabled(False)
         self.combobox_tag_values.setEditable(True)
@@ -313,16 +322,26 @@ class Ui_MainWindow(object):
 
         self.horizontalLayout_four = QHBoxLayout()
         self.horizontalLayout_four.setObjectName(u"horizontalLayout_four")
+        self.label_attribute_names = QLabel(self.group_box_xml_input_xpath_builder)
+        self.label_attribute_names.setObjectName(u"label_attribute_names")
+        self.label_attribute_names.setMaximumSize(QSize(68, 16777215))
+
+        self.horizontalLayout_four.addWidget(self.label_attribute_names)
+
         self.combobox_attribute_names = QComboBox(self.group_box_xml_input_xpath_builder)
-        self.combobox_attribute_names.addItem("")
         self.combobox_attribute_names.setObjectName(u"combobox_attribute_names")
         self.combobox_attribute_names.setEnabled(False)
         self.combobox_attribute_names.setEditable(True)
 
         self.horizontalLayout_four.addWidget(self.combobox_attribute_names)
 
+        self.label_attribute_values = QLabel(self.group_box_xml_input_xpath_builder)
+        self.label_attribute_values.setObjectName(u"label_attribute_values")
+        self.label_attribute_values.setMaximumSize(QSize(68, 16777215))
+
+        self.horizontalLayout_four.addWidget(self.label_attribute_values)
+
         self.combobox_attribute_values = QComboBox(self.group_box_xml_input_xpath_builder)
-        self.combobox_attribute_values.addItem("")
         self.combobox_attribute_values.setObjectName(u"combobox_attribute_values")
         self.combobox_attribute_values.setEnabled(False)
         self.combobox_attribute_values.setEditable(True)
@@ -597,10 +616,10 @@ class Ui_MainWindow(object):
         self.retranslateUi(MainWindow)
 
         self.tabWidget.setCurrentIndex(0)
-        self.combobox_tag_names.setCurrentIndex(0)
-        self.combobox_tag_values.setCurrentIndex(0)
-        self.combobox_attribute_names.setCurrentIndex(0)
-        self.combobox_attribute_values.setCurrentIndex(0)
+        self.combobox_tag_names.setCurrentIndex(-1)
+        self.combobox_tag_values.setCurrentIndex(-1)
+        self.combobox_attribute_names.setCurrentIndex(-1)
+        self.combobox_attribute_values.setCurrentIndex(-1)
 
 
         QMetaObject.connectSlotsByName(MainWindow)
@@ -613,21 +632,17 @@ class Ui_MainWindow(object):
         self.button_browse_xml_folder.setText(QCoreApplication.translate("MainWindow", u"Browse", None))
         self.button_read_xml.setText(QCoreApplication.translate("MainWindow", u"Read XML", None))
         self.label_xpath_builder.setText(QCoreApplication.translate("MainWindow", u"Get names and values of XML tags and Attributes for XPath generation:", None))
-        self.combobox_tag_names.setItemText(0, QCoreApplication.translate("MainWindow", u"Select Tag Name...", None))
-
-        self.combobox_tag_names.setCurrentText(QCoreApplication.translate("MainWindow", u"Select Tag Name...", None))
+        self.label_tag_names.setText(QCoreApplication.translate("MainWindow", u"Tag Names:", None))
+        self.combobox_tag_names.setCurrentText("")
         self.combobox_tag_names.setPlaceholderText(QCoreApplication.translate("MainWindow", u"Select Tag Name...", None))
-        self.combobox_tag_values.setItemText(0, QCoreApplication.translate("MainWindow", u"Select Tag Value...", None))
-
-        self.combobox_tag_values.setCurrentText(QCoreApplication.translate("MainWindow", u"Select Tag Value...", None))
+        self.label_tag_values.setText(QCoreApplication.translate("MainWindow", u"Tag Values:", None))
+        self.combobox_tag_values.setCurrentText("")
         self.combobox_tag_values.setPlaceholderText(QCoreApplication.translate("MainWindow", u"Select Tag Value...", None))
-        self.combobox_attribute_names.setItemText(0, QCoreApplication.translate("MainWindow", u"Select Attribute Name...", None))
-
-        self.combobox_attribute_names.setCurrentText(QCoreApplication.translate("MainWindow", u"Select Attribute Name...", None))
+        self.label_attribute_names.setText(QCoreApplication.translate("MainWindow", u"Att Names:", None))
+        self.combobox_attribute_names.setCurrentText("")
         self.combobox_attribute_names.setPlaceholderText(QCoreApplication.translate("MainWindow", u"Select Attribute Name...", None))
-        self.combobox_attribute_values.setItemText(0, QCoreApplication.translate("MainWindow", u"Select Attribute Value...", None))
-
-        self.combobox_attribute_values.setCurrentText(QCoreApplication.translate("MainWindow", u"Select Attribute Value...", None))
+        self.label_attribute_values.setText(QCoreApplication.translate("MainWindow", u"Att Values:", None))
+        self.combobox_attribute_values.setCurrentText("")
         self.combobox_attribute_values.setPlaceholderText(QCoreApplication.translate("MainWindow", u"Select Attribute Value...", None))
         self.label_function.setText(QCoreApplication.translate("MainWindow", u"Function:", None))
         self.radio_button_equals.setText(QCoreApplication.translate("MainWindow", u"Equals", None))
@@ -644,9 +659,8 @@ class Ui_MainWindow(object):
         self.button_browse_csv.setText(QCoreApplication.translate("MainWindow", u"Browse", None))
         self.label_csv_headers_info.setText(QCoreApplication.translate("MainWindow", u"Enter CSV headers for each XPath expression (comma-separated)", None))
         self.line_edit_csv_headers_input.setPlaceholderText(QCoreApplication.translate("MainWindow", u"CSV headers based on the number of XPath expressions (comma-separated)", None))
-        self.line_edit_csv_headers_input.setClearButtonEnabled(True)
         self.button_abort_csv_export.setText(QCoreApplication.translate("MainWindow", u"Abort", None))
-        self.button_abort_csv_export.setVisible(False)
+        self.button_abort_csv_export.setHidden(True)
         self.button_start_csv_export.setText(QCoreApplication.translate("MainWindow", u"Export", None))
         self.group_box_program_output.setTitle(QCoreApplication.translate("MainWindow", u"PROGRAM OUTPUT", None))
         self.group_box_xml_output.setTitle(QCoreApplication.translate("MainWindow", u"XML OUTPUT", None))
