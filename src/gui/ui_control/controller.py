@@ -3,6 +3,7 @@ import os
 import pandas as pd
 from PySide6.QtWidgets import QMessageBox
 from utils.xpath_builder import create_xpath_validator
+from utils.csv_export import create_csv_exporter
 
 class ComboboxState:
     """
@@ -35,7 +36,7 @@ class ComboboxState:
         return self.parsed_xml_data.get("file_path")
         
     # === Contains the Logic for the ComboBoxes textChanged signal === #
-    def on_tag_name_changed(self, selected_tag:str):
+    def on_tag_name_changed(self, selected_tag: str):
             print(f"Tag name changed to: {selected_tag}")
             if not selected_tag:
                 return []
@@ -130,44 +131,44 @@ class ComboboxState:
 class CSVConversion:
     """Handles methods and logic for csv_conversion_groupbox
     """
-    def __init__(self, main_window:object):
+    def __init__(self, main_window: object, csv_file_to_convert: str, output_path_of_new_file: str, write_index: bool):
         self.main_window = main_window
         self.ui = main_window.ui
+        self.csv_file_to_convert = csv_file_to_convert
+        self.output_path_of_new_file = output_path_of_new_file
+        self.write_index = write_index
             
-    def start_csv_conversion(self):
-        csv_file_path = self.ui.line_edit_csv_conversion_path_input.text()
-        output_converted_file_path = self.ui.line_edit_csv_conversion_path_output.text()
-        write_index = self.ui.checkbox_write_index_column.isChecked()
+    def start_csv_conversion(self) -> None:
 
         try:
             # Check if QLineEdit widgets aren't empty
-            if not csv_file_path:
+            if not self.csv_file_to_convert:
                 raise FileNotFoundError
-            elif not output_converted_file_path:
+            elif not self.output_path_of_new_file:
                 raise FileNotFoundError
             
             # Detect delimiter
-            with open(csv_file_path, encoding="utf-8") as file:
+            with open(self.csv_file_to_convert, encoding="utf-8") as file:
                 sample = file.read(1024)
                 sniffer = csv.Sniffer()
                 delimiter = sniffer.sniff(sample).delimiter
 
             # Load CSV
-            df = pd.read_csv(csv_file_path, delimiter=delimiter, encoding="utf-8", engine="pyarrow")
+            df = pd.read_csv(self.csv_file_to_convert, delimiter=delimiter, encoding="utf-8", engine="pyarrow")
 
             # Get extensions
-            _, input_ext = os.path.splitext(csv_file_path)
-            _, output_ext = os.path.splitext(output_converted_file_path)
+            _, input_ext = os.path.splitext(self.csv_file_to_convert)
+            _, output_ext = os.path.splitext(self.output_path_of_new_file)
             input_ext = input_ext.lower().lstrip(".")
             output_ext = output_ext.lower().lstrip(".")
 
             # Define conversion functions
-            def to_html(df, path): df.to_html(path, index=write_index)
+            def to_html(df, path): df.to_html(path, index=self.write_index)
             def to_json(df, path): df.to_json(path, orient="records", force_ascii=False)
-            def to_md(df, path): df.to_markdown(path, index=write_index)
+            def to_md(df, path): df.to_markdown(path, index=self.write_index)
             def to_xlsx(df, path):
                 with pd.ExcelWriter(path, engine="xlsxwriter") as writer:
-                    df.to_excel(writer, index=write_index)
+                    df.to_excel(writer, index=self.write_index)
 
             conversion_map = {
                 ("csv", "html"): to_html,
@@ -183,12 +184,12 @@ class CSVConversion:
                 return
 
             # Execute conversion
-            convert_func(df, output_converted_file_path)
+            convert_func(df, self.output_path_of_new_file)
 
             QMessageBox.information(
                 self.main_window,
                 "Conversion Successful",
-                f"Successfully converted:\n{os.path.basename(csv_file_path)}\nto\n{os.path.basename(output_converted_file_path)}"
+                f"Successfully converted:\n{os.path.basename(self.csv_file_to_convert)}\nto\n{os.path.basename(self.output_path_of_new_file)}"
             )
         
         except FileNotFoundError:
@@ -197,29 +198,35 @@ class CSVConversion:
         except Exception as ex:
             msg = f"{type(ex).__name__}: {ex}"
             QMessageBox.critical(self.main_window, "Conversion Error", msg)
-            
+
+
 class AddXPathExpressionToList:
     """
-    Handles methods and logic of a GUI component.
+    Handles methods and logic of the Button event for adding XPath Expression.
     """
-    def __init__(self, main_window: object, xpath_expression:str, xpath_filters: list):
+    def __init__(self, main_window: object, xpath_expression: str, xpath_filters: list, list_widget_xpath_expressions: object):
         self.main_window = main_window
         self.ui = main_window.ui
         self.xpath_expression = xpath_expression
         self.xpath_filters = xpath_filters
+        self.list_widget_xpath_expressions = list_widget_xpath_expressions
     
         # === QListWidget HANDLER ===
-    def add_expression_to_list(self):
+    def add_expression_to_list(self) -> bool:
         """Add the entered or built XPath expression from the QLineEdit to the QListWidget for later searching
         
         Has a built in XPath validator before adding the XPath to the QListWidget
+        
+        Returns:
+            bool: If xpath expresion has been succefully added to the list True, else False
         """
         print("Add XPath to list clicked")
         try:
             # Check if the XPath input is not empty:
             if not self.xpath_expression: 
                 QMessageBox.information(self.main_window, "Empty XPath", "Please enter a valid XPath expression before adding it to the list.")
-            elif self.xpath_expression and not self.is_duplicate(self.xpath_expression, self.xpath_filters):
+                return False
+            elif self.xpath_expression and not self._is_duplicate(self.xpath_expression, self.xpath_filters):
                 validator = create_xpath_validator()
                 self.main_window._connect_xpath_builder_signals(validator)
                 # Validate the XPath expression
@@ -227,15 +234,18 @@ class AddXPathExpressionToList:
                 is_valid = validator.validate_xpath_expression()
                 if is_valid:
                     self.xpath_filters.append(self.xpath_expression)
-                    self.ui.list_widget_xpath_expressions.addItem(self.xpath_expression)
+                    self.list_widget_xpath_expressions.addItem(self.xpath_expression)
                     #print(f"Lenght of XPath Filters variable is: {len(self.xpath_filters)}")
+                    return True
             else:
                 QMessageBox.warning(self.main_window, "Duplicate XPath Expression", f"Cannot add duplicate XPath expression:\n{self.xpath_expression}")
+                return False
         except Exception as ex:
             message = f"An exception of type {type(ex).__name__} occurred. Arguments: {ex.args!r}"
             QMessageBox.critical(self.main_window, "Exception adding XPath Expression to List Widget", message)
+            return False
         
-    def is_duplicate(self, xpath_expression, xpath_filters):
+    def _is_duplicate(self, xpath_expression:str, xpath_filters:list) -> bool:
         """Checks if the XPath expressions is a duplicate. Prevents of adding same XPath expressions to QListWidget
 
         Args:
@@ -245,3 +255,65 @@ class AddXPathExpressionToList:
             bool: If XPath expression already exists in xpath_filters list, returns True if it exists, else False.
         """
         return xpath_expression in xpath_filters
+
+
+class SearchAndExportToCSV:
+    """
+    Handles methods and logic of a button event that starts the search with XPath Expression and export of component.
+    """
+    def __init__(self, main_window: object, xml_folder_path: str, xpath_filters: list, csv_folder_output_path: str, csv_headers_input: str, set_max_threads: int):
+        self.main_window = main_window
+        self.ui = main_window.ui
+        self.xml_folder_path = xml_folder_path
+        self.xpath_filters = xpath_filters
+        self.csv_folder_output_path = csv_folder_output_path
+        self.csv_headers_input = csv_headers_input
+        self.set_max_threads = set_max_threads
+        
+    # === CSV Exporting Process === #
+    def start_csv_export(self) -> None:
+        """Initializes and starts the CSV export in a new thread."""
+        try:
+            exporter = create_csv_exporter(self.xml_folder_path, self.xpath_filters, self.csv_folder_output_path, self._parse_csv_headers(self.csv_headers_input), self.set_max_threads)
+            self.main_window._connect_csv_export_signals(exporter)
+            self.main_window.thread_pool.start(exporter)
+
+            # Optional: Keep track of the worker
+            self.main_window.active_workers.append(exporter)
+            
+        except Exception as ex:
+            message = f"An exception of type {type(ex).__name__} occurred. Arguments: {ex.args!r}"
+            QMessageBox.critical(self.main_window, "Exception on starting to export results to csv file", message)
+            
+    def _parse_csv_headers(self, raw_headers: str) -> list:
+        """Splits comma-separated string into a list of headers."""
+        return [h.strip() for h in raw_headers.split(",") if h.strip()]
+
+class GenerateCSVHeader:
+    """
+    Handles methods and logic of the csv generation based on the entered XPath Expression to the QListWidget.
+    """
+    def __init__(self, main_window: object):
+        self.main_window = main_window
+        self.ui = main_window.ui
+        
+    def generate_header(self, tag_name: str, tag_value: str, attr_name: str, attr_value: str) -> str:
+        header = ""
+
+        match (tag_name, tag_value, attr_name, attr_value):
+            case (tag, "", "", ""):
+                header = tag
+            case (tag, value, "", ""):
+                header = f"{tag} {value}"
+            case (tag, "", attr, ""):
+                header = f"{tag} @{attr}"
+            case (tag, "", attr, val):
+                header = f"{tag} {attr} {val}"
+            case (tag, value, attr, ""):
+                header = f"{tag} {value} {attr}"
+            case (tag, value, attr, val):
+                header = f"{tag} {value} {attr} {val}"
+            case _:
+                header = "Header"
+        
+        return header
