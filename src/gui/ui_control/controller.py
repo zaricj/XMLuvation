@@ -2,8 +2,9 @@ import csv
 import os
 import pandas as pd
 from PySide6.QtWidgets import QMessageBox
+from utils.xpath_builder import create_xpath_validator
 
-class ComboBoxStateController:
+class ComboboxState:
     """
     Controller the states of the ComboBoxes based on the selected values. Values need to be loaded from a XML file.
     
@@ -126,7 +127,7 @@ class ComboBoxStateController:
             return []
 
 
-class CSVConversionController:
+class CSVConversion:
     """Handles methods and logic for csv_conversion_groupbox
     """
     def __init__(self, main_window:object):
@@ -196,3 +197,51 @@ class CSVConversionController:
         except Exception as ex:
             msg = f"{type(ex).__name__}: {ex}"
             QMessageBox.critical(self.main_window, "Conversion Error", msg)
+            
+class AddXPathExpressionToList:
+    """
+    Handles methods and logic of a GUI component.
+    """
+    def __init__(self, main_window: object, xpath_expression:str, xpath_filters: list):
+        self.main_window = main_window
+        self.ui = main_window.ui
+        self.xpath_expression = xpath_expression
+        self.xpath_filters = xpath_filters
+    
+        # === QListWidget HANDLER ===
+    def add_expression_to_list(self):
+        """Add the entered or built XPath expression from the QLineEdit to the QListWidget for later searching
+        
+        Has a built in XPath validator before adding the XPath to the QListWidget
+        """
+        print("Add XPath to list clicked")
+        try:
+            # Check if the XPath input is not empty:
+            if not self.xpath_expression: 
+                QMessageBox.information(self.main_window, "Empty XPath", "Please enter a valid XPath expression before adding it to the list.")
+            elif self.xpath_expression and not self.is_duplicate(self.xpath_expression, self.xpath_filters):
+                validator = create_xpath_validator()
+                self.main_window._connect_xpath_builder_signals(validator)
+                # Validate the XPath expression
+                validator.xpath_expression = self.xpath_expression
+                is_valid = validator.validate_xpath_expression()
+                if is_valid:
+                    self.xpath_filters.append(self.xpath_expression)
+                    self.ui.list_widget_xpath_expressions.addItem(self.xpath_expression)
+                    #print(f"Lenght of XPath Filters variable is: {len(self.xpath_filters)}")
+            else:
+                QMessageBox.warning(self.main_window, "Duplicate XPath Expression", f"Cannot add duplicate XPath expression:\n{self.xpath_expression}")
+        except Exception as ex:
+            message = f"An exception of type {type(ex).__name__} occurred. Arguments: {ex.args!r}"
+            QMessageBox.critical(self.main_window, "Exception adding XPath Expression to List Widget", message)
+        
+    def is_duplicate(self, xpath_expression, xpath_filters):
+        """Checks if the XPath expressions is a duplicate. Prevents of adding same XPath expressions to QListWidget
+
+        Args:
+            xpath_expression (str): XPath expression from the QLineEdit widget (line_edit_xpath_builder)
+
+        Returns:
+            bool: If XPath expression already exists in xpath_filters list, returns True if it exists, else False.
+        """
+        return xpath_expression in xpath_filters

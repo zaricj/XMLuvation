@@ -9,12 +9,11 @@ import multiprocessing
 from functools import partial
 
 from utils.config_handler import ConfigHandler
-from utils.xml_parser import (XMLUtils, 
-    create_xml_parser, create_structure_analyzer
-)
-from utils.xpath_builder import create_xpath_builder, create_xpath_validator
+from utils.xml_parser import create_xml_parser
+
+from utils.xpath_builder import create_xpath_builder
 from utils.csv_export import create_csv_exporter
-from gui.ui_control.controller import ComboBoxStateController, CSVConversionController
+from gui.ui_control.controller import ComboboxState, CSVConversion, AddXPathExpressionToList
 
 from gui.resources.ui.XMLuvation_ui import Ui_MainWindow
 
@@ -72,7 +71,7 @@ class MainWindow(QMainWindow):
         self.parsed_xml_data = {}
         
         # Instantiate the controller with a reference to the MainWindow
-        self.cb_state_controller = ComboBoxStateController(self, self.parsed_xml_data)
+        self.cb_state_controller = ComboboxState(self, self.parsed_xml_data)
         
         # Settings file for storing application settings
         self.settings = QSettings("Jovan", "XMLuvation")
@@ -314,10 +313,10 @@ class MainWindow(QMainWindow):
         self.ui.radio_button_smaller.toggled.connect(lambda checked: self.on_function_changed("smaller", checked))
         
         # List widget
-        self.ui.list_widget_xpath_expressions.itemClicked.connect(self.on_xpath_item_clicked)
+        #self.ui.list_widget_xpath_expressions.itemClicked.connect(self.on_xpath_item_clicked)
         
         # Tab widget
-        self.ui.tabWidget.currentChanged.connect(self.on_tab_changed)
+        # self.ui.tabWidget.currentChanged.connect(self.on_tab_changed)
         
         # === CSV TAB ===
         self.ui.button_browse_csv_conversion_path_input.clicked.connect(lambda: self.browse_file_helper(dialog_message="Select csv file for conversion", line_widget=self.ui.line_edit_csv_conversion_path_input, file_extension_filter="CSV File (*.csv)"))
@@ -424,63 +423,17 @@ class MainWindow(QMainWindow):
         except Exception as ex:
             self.on_error_message("Error building XPath expression", str(ex))
     
-    # === QListWidget HANDLER ===
-    def add_xpath_to_list(self):
-        """Add the entered or built XPath expression from the QLineEdit to the QListWidget for later searching
-        
-        Has a built in XPath validator before adding the XPath to the QListWidget
-        """
-        print("Add XPath to list clicked")
-        try:
-            # Check if the XPath input is not empty:
-            expression = self.ui.line_edit_xpath_builder.text().strip()
-            if not expression: 
-                QMessageBox.information(self, "Empty XPath", "Please enter a valid XPath expression before adding it to the list.")
-            elif expression and not self.is_duplicate(expression):
-                validator = create_xpath_validator()
-                self._connect_xpath_builder_signals(validator)
-                # Validate the XPath expression
-                validator.xpath_expression = expression
-                is_valid = validator.validate_xpath_expression()
-                if is_valid:
-                    self.xpath_filters.append(expression)
-                    self.ui.list_widget_xpath_expressions.addItem(expression)
-            else:
-                QMessageBox.warning(self, "Duplicate XPath Expression", f"Cannot add duplicate XPath expression:\n{expression}")
-        except Exception as ex:
-            message = f"An exception of type {type(ex).__name__} occurred. Arguments: {ex.args!r}"
-            QMessageBox.critical(self, "Exception adding XPath Expression to List Widget", message)
+
 
 
     def on_function_changed(self, function_type, checked):
         if checked:
             print(f"Function changed to: {function_type}")
     
-    
-    def on_xpath_item_clicked(self, item):
-        print(f"XPath item clicked: {item.text()}")
-    
-    
-    def on_tab_changed(self, index):
-        print(f"Tab changed to index: {index}")
-    
-    
-    def csv_browse_input(self):
-        print("CSV browse input clicked")
-        # Set CSV input path:
-        # self.ui.lineEdit.setText("path/to/input.csv")
-    
-    
-    def csv_browse_output(self):
-        print("CSV browse output clicked")
-        # Set CSV output path:
-        # self.ui.lineEdit_2.setText("path/to/output")
-    
-    
     def csv_convert(self):
         print("CSV convert clicked")
         # Initialized object 
-        self.csv_conversion_controller = CSVConversionController(self)
+        self.csv_conversion_controller = CSVConversion(self)
         self.csv_conversion_controller.start_csv_conversion()
     
     
@@ -653,6 +606,10 @@ class MainWindow(QMainWindow):
         except Exception as ex:
             message = f"An exception of type {type(ex).__name__} occurred. Arguments: {ex.args!r}"
             QMessageBox.critical(self, "Exception on starting to export results to csv file", message)
+            
+    def add_xpath_to_list(self):
+        adder = AddXPathExpressionToList(self, self.ui.line_edit_xpath_builder.text(), self.xpath_filters)
+        adder.add_expression_to_list()
     
     def to_list(self, text:str) -> list[str]:
         try:
@@ -739,18 +696,6 @@ class MainWindow(QMainWindow):
 
         # Show the context menu at the cursor's current position
         context_menu.exec(self.ui.list_widget_xpath_expressions.mapToGlobal(position))
-
-
-    def is_duplicate(self, xpath_expression):
-        """Checks if the XPath expressions is a duplicate. Prevents of adding same XPath expressions to QListWidget
-
-        Args:
-            xpath_expression (str): XPath expression from the QLineEdit widget (line_edit_xpath_builder)
-
-        Returns:
-            bool: If XPath expression already exists in xpath_filters list, returns True if it exists, else False.
-        """
-        return xpath_expression in self.xpath_filters
     
     @Slot(bool)
     def on_csv_export_started(self, state:bool):
