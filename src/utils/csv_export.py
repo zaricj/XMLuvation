@@ -93,6 +93,7 @@ class CSVExportSignals(QObject):
     program_output_progress_append = Signal(str) # Program Output aka self.ui.text_edit_program_output.append
     program_output_progress_set_text = Signal(str) # Program Output aka self.ui.text_edit_program_output.setText
     progressbar_update = Signal(int) # Progressbar aka self.ui.progressbar_main
+    visible_state_widget = Signal(bool) # For hiding/unhiding button widgets
 
 class CSVExportThread(QRunnable):
     """Worker thread for exporting XML XPath evaluation results to a CSV file."""
@@ -164,6 +165,9 @@ class CSVExportThread(QRunnable):
             return
         
         self.signals.program_output_progress_append.emit("Starting CSV export...")
+        
+        # Show the Abort button
+        self.signals.visible_state_widget.emit(True) # self.ui.button_abort_csv_export in main.py
 
         if total_xml_files_count == 0:
             self.signals.info_occurred.emit("Export Finished", "No XML files found to export.")

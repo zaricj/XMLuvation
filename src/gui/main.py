@@ -14,7 +14,7 @@ from utils.xml_parser import (XMLUtils,
 )
 from utils.xpath_builder import create_xpath_builder, create_xpath_validator
 from utils.csv_export import create_csv_exporter
-from gui.logic.controller import ComboBoxStateController, CSVConversionController
+from gui.ui_control.controller import ComboBoxStateController, CSVConversionController
 
 from gui.resources.ui.XMLuvation_ui import Ui_MainWindow
 
@@ -24,7 +24,7 @@ ConfigHandler.print_file_path(ConfigHandler())
 
 BASE_DIR = os.path.dirname(os.path.abspath(__file__))
 
-LOG_FILE_PATH: str = os.path.join("src","gui","logs","xmluvation.log")
+LOG_FILE_PATH: str = os.path.join("src","logs","xmluvation.log")
 GUI_CONFIG_FILE_PATH: str = os.path.join("src","gui","config","config.json")
 DARK_THEME_PATH = os.path.join(BASE_DIR, "resources", "themes", "dark_theme.qss")
 LIGHT_THEME_PATH = os.path.join(BASE_DIR, "resources", "themes", "light_theme.qss")
@@ -684,6 +684,7 @@ class MainWindow(QMainWindow):
         worker.signals.program_output_progress_append.connect(self.append_to_program_output)
         worker.signals.program_output_progress_set_text.connect(self.set_text_to_program_output)
         worker.signals.progressbar_update.connect(self.update_progress_bar)
+        worker.signals.visible_state_widget.connect(self.on_csv_export_started)
 
 
     def update_statusbar_xpath_listbox_count(self):
@@ -751,29 +752,33 @@ class MainWindow(QMainWindow):
         """
         return xpath_expression in self.xpath_filters
     
+    @Slot(bool)
+    def on_csv_export_started(self, state:bool):
+        self.ui.button_abort_csv_export.setVisible(state)
+        self.set_ui_widgets_disabled(True)
         
     @Slot()
     def on_csv_export_finished(self):
-        self.set_ui_enabled(False)
+        self.ui.button_abort_csv_export.setVisible(False)
+        self.set_ui_widgets_disabled(False)
         self.ui.progressbar_main.reset()
-        self.ui.button_abort_csv_export.setHidden(True)
     
     @Slot(int)
     def update_progress_bar(self, progress:int):
         self.ui.progressbar_main.setValue(progress)
 
     
-    def set_ui_enabled(self, enabled):
+    def set_ui_widgets_disabled(self, state:bool):
         # Disable buttons while exporting
-        self.ui.button_browse_xml_folder.setDisabled(enabled)
-        self.ui.button_browse_csv.setDisabled(enabled)
-        self.ui.button_read_xml.setDisabled(enabled)
-        self.ui.button_build_xpath.setDisabled(enabled)
-        self.ui.button_add_xpath_to_list.setDisabled(enabled)
-        self.ui.button_browse_csv_conversion_path_input.setDisabled(enabled)
-        self.ui.button_browse_csv_conversion_path_output.setDisabled(enabled)
-        self.ui.line_edit_xml_folder_path_input.setReadOnly(enabled)
-        self.ui.line_edit_csv_output_path.setReadOnly(enabled)
+        self.ui.button_browse_xml_folder.setDisabled(state)
+        self.ui.button_read_xml.setDisabled(state)
+        self.ui.button_build_xpath.setDisabled(state)
+        self.ui.button_add_xpath_to_list.setDisabled(state)
+        self.ui.button_browse_csv.setDisabled(state)
+        self.ui.button_browse_csv_conversion_path_input.setDisabled(state)
+        self.ui.button_browse_csv_conversion_path_output.setDisabled(state)
+        self.ui.line_edit_xml_folder_path_input.setReadOnly(state)
+        self.ui.line_edit_csv_output_path.setReadOnly(state)
         
     # ======= End FUNCTIONS FOR create_export_evaluation_group ======= #
     
