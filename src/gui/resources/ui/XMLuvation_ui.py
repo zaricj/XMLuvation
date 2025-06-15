@@ -644,6 +644,7 @@ class Ui_MainWindow(object):
         self.button_browse_csv.setText(QCoreApplication.translate("MainWindow", u"Browse", None))
         self.label_csv_headers_info.setText(QCoreApplication.translate("MainWindow", u"Enter CSV headers for each XPath expression (comma-separated)", None))
         self.line_edit_csv_headers_input.setPlaceholderText(QCoreApplication.translate("MainWindow", u"CSV headers based on the number of XPath expressions (comma-separated)", None))
+        self.line_edit_csv_headers_input.setClearButtonEnabled(True)
         self.button_abort_csv_export.setText(QCoreApplication.translate("MainWindow", u"Abort", None))
         self.button_abort_csv_export.setVisible(False)
         self.button_start_csv_export.setText(QCoreApplication.translate("MainWindow", u"Export", None))
