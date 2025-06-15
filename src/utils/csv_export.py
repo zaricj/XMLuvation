@@ -174,7 +174,7 @@ class CSVExportThread(QRunnable):
             self.signals.finished.emit()
             return
 
-        # TODO Work on new write logic)
+        # TODO Work on new write logic
         try:
             with open(self.output_save_path_for_csv_export, 'w', newline='', encoding='utf-8') as csvfile:
                 writer = csv.DictWriter(csvfile, fieldnames=self.csv_headers_list, extrasaction='ignore')
