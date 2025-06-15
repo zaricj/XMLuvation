@@ -9,7 +9,7 @@ import multiprocessing
 from functools import partial
 
 from utils.config_handler import ConfigHandler
-from utils.xml_parser import create_xml_parser
+from utils.xml_parser import create_xml_parser, apply_xml_highlighting_to_widget, set_xml_content_to_widget
 
 from utils.xpath_builder import create_xpath_builder
 from utils.csv_export import create_csv_exporter
@@ -60,6 +60,7 @@ class MainWindow(QMainWindow):
         
         self.current_read_xml_file = None
         
+        
         # Create and setup the UI
         self.ui = Ui_MainWindow()
         self.ui.setupUi(self)
@@ -70,6 +71,8 @@ class MainWindow(QMainWindow):
         # XML Data
         self.parsed_xml_data = {}
         
+        # XML Highlighter
+        self.xml_highlighter = apply_xml_highlighting_to_widget(self.ui.text_edit_xml_output)
         # Instantiate the controller with a reference to the MainWindow
         self.cb_state_controller = ComboboxState(self, self.parsed_xml_data)
         
@@ -495,6 +498,8 @@ class MainWindow(QMainWindow):
         """Handle XML parsing completion."""
         try:
             xml_content = result.get('xml_string', '')
+            # Add highlighter for XML files then add to QTextEdit
+            set_xml_content_to_widget(self.ui.text_edit_xml_output, xml_content)
             self.ui.text_edit_xml_output.setPlainText(xml_content)
             
             # Fill the combo boxes with unique tags and attributes
