@@ -84,8 +84,8 @@ class MainWindow(QMainWindow):
         #  Initialize the QThreadPool for running threads
         self.thread_pool = QThreadPool()
         max_threads = self.thread_pool.maxThreadCount() # PC's max CPU threads (I have 32 Threads on a Ryzen 9 7950X3D)
-        self.set_max_threads = round(max_threads / 8) #!!! Testing THIS IS DANGEROUS --> CRASHES SYSTEM = OutOfMemory
-        self.thread_pool.setMaxThreadCount(self.set_max_threads) # 4 Threads 
+        self.set_max_threads = max_threads
+        self.thread_pool.setMaxThreadCount(max_threads) 
         
         # Keep track of active workers (optional, for cleanup)
         self.active_workers = []
@@ -601,6 +601,9 @@ class MainWindow(QMainWindow):
             file_name, _ = QFileDialog.getOpenFileName(self, "Select XML File", "", "XML File (*.xml)")
             if file_name:
                 self.start_xml_parsing(file_name)
+                # Add the read xml files path to the xml path input field it it's not already set, improved ux
+                if not self.ui.line_edit_xml_folder_path_input.text():
+                    self.ui.line_edit_xml_folder_path_input.setText(os.path.dirname(file_name))
         except Exception as ex:
             message = f"An exception of type {type(ex).__name__} occurred. Arguments: {ex.args!r}"
             QMessageBox.critical(self, "Exception reading xml file", message)
@@ -673,6 +676,7 @@ class MainWindow(QMainWindow):
                 updated_text = header
 
             csv_headers_input.setText(updated_text)
+
 
     def on_csv_convert_event(self):
         print("CSV convert clicked")
