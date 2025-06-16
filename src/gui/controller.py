@@ -21,7 +21,7 @@ class ComboboxState:
     - 'element_count' --> len(list(root.iter())),
     - 'encoding' --> XMLUtils.get_xml_encoding(self.get_xml_file_path)
     """
-    def __init__(self, main_window:object, parsed_xml_data:dict):
+    def __init__(self, main_window: object, parsed_xml_data: dict):
         self.main_window = main_window
         self.ui = main_window.ui
         self.parsed_xml_data = parsed_xml_data
@@ -69,7 +69,7 @@ class ComboboxState:
                 QMessageBox.critical(self.main_window, "An exception occurred on tag name changed:", message)
 
 
-    def on_attribute_name_changed(self, selected_attribute:str):
+    def on_attribute_name_changed(self, selected_attribute: str):
         print(f"Attribute name changed to: {selected_attribute}")
         try:
             selected_tag = self.ui.combobox_tag_names.currentText()
