@@ -31,18 +31,17 @@
         background-color: #ffc857;
         color: #000000;
         border: none;
-        padding: 8px 14px;
+        padding: 7px 9px;
         border-radius: 6px;
         font: bold;
     }
 
     QPushButton:hover {
-        background-color: #a3803c;
+        background-color: #dbaa4a;
     }
 
     QPushButton:pressed {
-        background-color: #313338;
-        color: #ffffff;
+        background-color: #e3a834;
         padding-left: 9px; /* Creates a "pressed" effect */
         padding-top: 8px;
     }

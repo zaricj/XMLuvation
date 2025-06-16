@@ -2,6 +2,9 @@
 <ui version="4.0">
  <class>MainWindow</class>
  <widget class="QMainWindow" name="MainWindow">
+  <property name="enabled">
+   <bool>true</bool>
+  </property>
   <property name="geometry">
    <rect>
     <x>0</x>
@@ -14,6 +17,8 @@
    <font>
     <family>Arial</family>
     <pointsize>10</pointsize>
+    <italic>false</italic>
+    <bold>false</bold>
    </font>
   </property>
   <property name="windowTitle">
@@ -23,199 +28,201 @@
    <iconset resource="../qrc/xmluvation_resources.qrc">
     <normaloff>:/icons/xml_256px.ico</normaloff>:/icons/xml_256px.ico</iconset>
   </property>
+  <property name="autoFillBackground">
+   <bool>false</bool>
+  </property>
   <property name="styleSheet">
-   <string notr="true">QWidget {
-    background-color: #232428;
-    color: #ffffff;
-    font-family: Arial, sans-serif;
-    border-radius: 6px;
-}
+   <string notr="true">    QWidget {
+        background-color: #232428;
+        color: #ffffff;
+        font-family: Arial, sans-serif;
+        border-radius: 6px;
+    }
 
-QMenuBar {
-    background-color: #232428;
-    padding: 4px;
-}
+    QMenuBar {
+        background-color: #232428;
+        padding: 4px;
+    }
 
-QMenuBar::item:selected {
-    background-color: #ffc857;
-    border-radius: 4px;
-    color: #1e1e1e;
-}
+    QMenuBar::item:selected {
+        background-color: #ffc857;
+        border-radius: 4px;
+        color: #1e1e1e;
+    }
 
-QMenu {
-    background-color: #232428;
-    border: 1px solid #313338;
-    border-radius: 2px;
-}
+    QMenu {
+        background-color: #232428;
+        border: 1px solid #313338;
+        border-radius: 2px;
+    }
 
-QMenu::item:selected {
-    background-color: #ffc857;
-    color: #1e1e1e;
-}
+    QMenu::item:selected {
+        background-color: #ffc857;
+        color: #1e1e1e;
+    }
 
-QPushButton {
-    background-color: #ffc857;
-    color: #000000;
-    border: none;
-    padding: 8px 14px;
-    border-radius: 6px;
-    font: bold;
-}
+    QPushButton {
+        background-color: #ffc857;
+        color: #000000;
+        border: none;
+        padding: 7px 9px;
+        border-radius: 6px;
+        font: bold;
+    }
 
-QPushButton:hover {
-    background-color: #a3803c;
-}
+    QPushButton:hover {
+        background-color: #dbaa4a;
+    }
 
-QPushButton:pressed {
-    background-color: #313338;
-    color: #ffffff;
-    padding-left: 9px; /* Creates a &quot;pressed&quot; effect */
-    padding-top: 8px;
-}
+    QPushButton:pressed {
+        background-color: #e3a834;
+        padding-left: 9px; /* Creates a &quot;pressed&quot; effect */
+        padding-top: 8px;
+    }
 
-QLineEdit, QComboBox, QTextEdit, QStatusBar {
-    background-color: #313338;
-    border: 1px solid #4a4a4a;
-    padding: 6px;
-    border-radius: 6px;
-}
+    QPushButton:disabled {
+        background-color: #808080;
+    }
+    
+    QLineEdit, QComboBox, QTextEdit, QStatusBar {
+        background-color: #313338;
+        border: 1px solid #4a4a4a;
+        padding: 6px;
+        border-radius: 6px;
+    }
 
-QListWidget {
-    background-color: #313338;
-}
+    QListWidget {
+        background-color: #313338;
+    }
 
-QListWidget::item {
-    height: 26px;
-}
+    QListWidget::item {
+        height: 26px;
+    }
 
-QListWidget::item:selected {
-    background-color: #ffc857;
-    color: #000000;
-}
+    QListWidget::item:selected {
+        background-color: #ffc857;
+        color: #000000;
+    }
 
-QComboBox::drop-down {
-    border: none;
-    background-color: #ffc857;
-    width: 20px;
-    border-top-right-radius: 6px;
-    border-bottom-right-radius: 6px;
-    image: url(:/images/drpdwn_arrow.png)
-}
+    QComboBox::drop-down {
+        border: none;
+        background-color: #ffc857;
+        width: 20px;
+        border-top-right-radius: 6px;
+        border-bottom-right-radius: 6px;
+        image: url(:/images/drpdwn_arrow.png)
+    }
 
-QPushButton:disabled {
-    background-color: #808080;
-}
+    QComboBox:disabled {
+        background-color: #808080;    
+    }
 
-QComboBox:disabled {
-    background-color: #808080;    
-}
+    QComboBox::drop-down:disabled {
+        border: none;
+        background-color: #3d3d3d;
+    }
 
-QComboBox::drop-down:disabled {
-    border: none;
-    background-color: #3d3d3d;
-}
+    QTabWidget::pane {
+        border: 1px solid #313338;
+        border-radius: 6px;
+    }
 
-QTabWidget::pane {
-    border: 1px solid #313338;
-    border-radius: 6px;
-}
+    QTabBar::tab {
+        background-color: #232428;
+        border: 1px solid #313338;
+        padding: 8px 14px;
+        border-radius: 6px;
+        margin: 0 2px;
+    }
 
-QTabBar::tab {
-    background-color: #232428;
-    border: 1px solid #313338;
-    padding: 8px 14px;
-    border-radius: 6px;
-    margin: 0 2px;
-}
+    QTabBar::tab:selected {
+        background-color: #ffc857;
+        color: #000000;
+    }
 
-QTabBar::tab:selected {
-    background-color: #ffc857;
-    color: #000000;
-}
+    QTableView {
+        background-color: #313338;
+    }
 
-QTableView {
-    background-color: #313338;
-}
+    QGroupBox {
+        border: 1px solid #313338;
+        border-radius: 6px;
+        margin-top: 10px;
+        padding: 10px;
+        font: bold;
+    }
 
-QGroupBox {
-    border: 1px solid #313338;
-    border-radius: 6px;
-    margin-top: 10px;
-    padding: 10px;
-    font: bold;
-}
+    QGroupBox::title {
+        subcontrol-origin: margin;
+        subcontrol-position: top left;
+        left: 12px;
+        padding: 0 6px;
+    }
 
-QGroupBox::title {
-    subcontrol-origin: margin;
-    subcontrol-position: top left;
-    left: 12px;
-    padding: 0 6px;
-}
-
-QRadioButton::indicator {
-    width: 16px;
-    height: 16px;
-}
-
-
-QRadioButton:disabled {
-    color: #808080; 
-}
+    QRadioButton::indicator {
+        width: 16px;
+        height: 16px;
+    }
 
 
-QScrollBar:vertical {
-    border: none;
-    background: #232428;
-    width: 12px;
-    margin: 4px;
-    border-radius: 6px;
-}
+    QRadioButton:disabled {
+        color: #808080; 
+    }
 
-QScrollBar::handle:vertical {
-    background: #313338;
-    min-height: 20px;
-    border-radius: 6px;
-}
 
-QScrollBar::add-line:vertical, QScrollBar::sub-line:vertical {
-    height: 0px;
-}
+    QScrollBar:vertical {
+        border: none;
+        background: #232428;
+        width: 12px;
+        margin: 4px;
+        border-radius: 6px;
+    }
 
-/* Progress Bar */
-QProgressBar {
-    background-color: #313338;
-    border: 1px solid #4a4a4a;
-    border-radius: 6px;
-    text-align: center;
-    color: #ffffff;
-    padding: 2px;
-}
+    QScrollBar::handle:vertical {
+        background: #313338;
+        min-height: 20px;
+        border-radius: 6px;
+    }
 
-QProgressBar::chunk {
-    background-color: #ffc857;
-}
-/* CheckBox */
-QCheckBox {
-    spacing: 6px;
-}
+    QScrollBar::add-line:vertical, QScrollBar::sub-line:vertical {
+        height: 0px;
+    }
 
-QCheckBox::indicator {
-    width: 16px;
-    height: 16px;
-    border-radius: 4px;
-    background-color: #313338;
-    border: 1px solid #4a4a4a;
-}
+    /* Progress Bar */
+    QProgressBar {
+        background-color: #313338;
+        border: 1px solid #4a4a4a;
+        border-radius: 6px;
+        text-align: center;
+        color: #ffffff;
+        padding: 2px;
+    }
 
-QCheckBox::indicator:checked {
-    background-color: #ffc857;
-    border: 1px solid #ec971f;
-}
+    QProgressBar::chunk {
+        background-color: #ffc857;
+    }
+    /* CheckBox */
+    QCheckBox {
+        spacing: 6px;
+    }
 
-QCheckBox::indicator:unchecked {
-    background-color: #313338;
-    border: 1px solid #4a4a4a;
-}
+    QCheckBox::indicator {
+        width: 16px;
+        height: 16px;
+        border-radius: 4px;
+        background-color: #313338;
+        border: 1px solid #4a4a4a;
+    }
+
+    QCheckBox::indicator:checked {
+        background-color: #ffc857;
+        border: 1px solid #ec971f;
+    }
+
+    QCheckBox::indicator:unchecked {
+        background-color: #313338;
+        border: 1px solid #4a4a4a;
+    }
 </string>
   </property>
   <property name="iconSize">
@@ -225,14 +232,27 @@ QCheckBox::indicator:unchecked {
    </size>
   </property>
   <widget class="QWidget" name="centralwidget">
+   <property name="font">
+    <font>
+     <family>Arial</family>
+     <pointsize>10</pointsize>
+     <bold>false</bold>
+    </font>
+   </property>
    <layout class="QVBoxLayout" name="verticalLayout">
     <item>
      <widget class="QTabWidget" name="tabWidget">
+      <property name="enabled">
+       <bool>true</bool>
+      </property>
       <property name="font">
        <font>
         <family>Arial</family>
         <pointsize>10</pointsize>
-        <bold>false</bold>
+        <italic>true</italic>
+        <bold>true</bold>
+        <underline>false</underline>
+        <strikeout>false</strikeout>
        </font>
       </property>
       <property name="tabPosition">
@@ -245,6 +265,16 @@ QCheckBox::indicator:unchecked {
        <bool>false</bool>
       </property>
       <widget class="QWidget" name="tab_xml_evaluation">
+       <property name="font">
+        <font>
+         <family>Arial</family>
+         <pointsize>10</pointsize>
+         <italic>false</italic>
+         <bold>false</bold>
+         <underline>false</underline>
+         <strikeout>false</strikeout>
+        </font>
+       </property>
        <attribute name="title">
         <string>XML Evaluation</string>
        </attribute>
@@ -253,6 +283,13 @@ QCheckBox::indicator:unchecked {
          <layout class="QVBoxLayout" name="vert_layout_main">
           <item>
            <widget class="QGroupBox" name="group_box_xml_input_xpath_builder">
+            <property name="font">
+             <font>
+              <family>Arial</family>
+              <italic>false</italic>
+              <bold>true</bold>
+             </font>
+            </property>
             <property name="title">
              <string>XML FOLDER SELECTION AND XPATH BUILDER</string>
             </property>
@@ -261,6 +298,11 @@ QCheckBox::indicator:unchecked {
               <layout class="QHBoxLayout" name="horizontalLayout_one">
                <item>
                 <widget class="QLineEdit" name="line_edit_xml_folder_path_input">
+                 <property name="font">
+                  <font>
+                   <family>Arial</family>
+                  </font>
+                 </property>
                  <property name="placeholderText">
                   <string>Choose a folder that contains XML files...</string>
                  </property>
@@ -268,6 +310,13 @@ QCheckBox::indicator:unchecked {
                </item>
                <item>
                 <widget class="QPushButton" name="button_browse_xml_folder">
+                 <property name="font">
+                  <font>
+                   <family>Arial</family>
+                   <italic>false</italic>
+                   <bold>true</bold>
+                  </font>
+                 </property>
                  <property name="text">
                   <string>Browse</string>
                  </property>
@@ -275,6 +324,13 @@ QCheckBox::indicator:unchecked {
                </item>
                <item>
                 <widget class="QPushButton" name="button_read_xml">
+                 <property name="font">
+                  <font>
+                   <family>Arial</family>
+                   <italic>false</italic>
+                   <bold>true</bold>
+                  </font>
+                 </property>
                  <property name="text">
                   <string>Read XML</string>
                  </property>
@@ -284,8 +340,19 @@ QCheckBox::indicator:unchecked {
              </item>
              <item>
               <layout class="QHBoxLayout" name="horizontalLayout_two">
+               <property name="topMargin">
+                <number>3</number>
+               </property>
+               <property name="bottomMargin">
+                <number>3</number>
+               </property>
                <item>
                 <widget class="QLabel" name="label_xpath_builder">
+                 <property name="font">
+                  <font>
+                   <family>Arial</family>
+                  </font>
+                 </property>
                  <property name="text">
                   <string>Get names and values of XML tags and Attributes for XPath generation:</string>
                  </property>
@@ -295,6 +362,12 @@ QCheckBox::indicator:unchecked {
              </item>
              <item>
               <layout class="QHBoxLayout" name="horizontalLayout_three">
+               <property name="topMargin">
+                <number>1</number>
+               </property>
+               <property name="bottomMargin">
+                <number>1</number>
+               </property>
                <item>
                 <widget class="QLabel" name="label_tag_names">
                  <property name="maximumSize">
@@ -302,6 +375,16 @@ QCheckBox::indicator:unchecked {
                    <width>68</width>
                    <height>16777215</height>
                   </size>
+                 </property>
+                 <property name="font">
+                  <font>
+                   <family>Arial</family>
+                   <pointsize>9</pointsize>
+                   <italic>false</italic>
+                   <bold>true</bold>
+                   <underline>false</underline>
+                   <strikeout>false</strikeout>
+                  </font>
                  </property>
                  <property name="text">
                   <string>Tag Names:</string>
@@ -312,6 +395,11 @@ QCheckBox::indicator:unchecked {
                 <widget class="QComboBox" name="combobox_tag_names">
                  <property name="enabled">
                   <bool>false</bool>
+                 </property>
+                 <property name="font">
+                  <font>
+                   <family>Arial</family>
+                  </font>
                  </property>
                  <property name="editable">
                   <bool>true</bool>
@@ -335,6 +423,16 @@ QCheckBox::indicator:unchecked {
                    <height>16777215</height>
                   </size>
                  </property>
+                 <property name="font">
+                  <font>
+                   <family>Arial</family>
+                   <pointsize>9</pointsize>
+                   <italic>false</italic>
+                   <bold>true</bold>
+                   <underline>false</underline>
+                   <strikeout>false</strikeout>
+                  </font>
+                 </property>
                  <property name="text">
                   <string>Tag Values:</string>
                  </property>
@@ -344,6 +442,11 @@ QCheckBox::indicator:unchecked {
                 <widget class="QComboBox" name="combobox_tag_values">
                  <property name="enabled">
                   <bool>false</bool>
+                 </property>
+                 <property name="font">
+                  <font>
+                   <family>Arial</family>
+                  </font>
                  </property>
                  <property name="editable">
                   <bool>true</bool>
@@ -363,6 +466,15 @@ QCheckBox::indicator:unchecked {
              </item>
              <item>
               <layout class="QHBoxLayout" name="horizontalLayout_four">
+               <property name="spacing">
+                <number>6</number>
+               </property>
+               <property name="topMargin">
+                <number>1</number>
+               </property>
+               <property name="bottomMargin">
+                <number>1</number>
+               </property>
                <item>
                 <widget class="QLabel" name="label_attribute_names">
                  <property name="maximumSize">
@@ -371,8 +483,18 @@ QCheckBox::indicator:unchecked {
                    <height>16777215</height>
                   </size>
                  </property>
+                 <property name="font">
+                  <font>
+                   <family>Arial</family>
+                   <pointsize>9</pointsize>
+                   <italic>false</italic>
+                   <bold>true</bold>
+                   <underline>false</underline>
+                   <strikeout>false</strikeout>
+                  </font>
+                 </property>
                  <property name="text">
-                  <string>Att Names:</string>
+                  <string>Attr Names:</string>
                  </property>
                 </widget>
                </item>
@@ -380,6 +502,11 @@ QCheckBox::indicator:unchecked {
                 <widget class="QComboBox" name="combobox_attribute_names">
                  <property name="enabled">
                   <bool>false</bool>
+                 </property>
+                 <property name="font">
+                  <font>
+                   <family>Arial</family>
+                  </font>
                  </property>
                  <property name="editable">
                   <bool>true</bool>
@@ -403,8 +530,18 @@ QCheckBox::indicator:unchecked {
                    <height>16777215</height>
                   </size>
                  </property>
+                 <property name="font">
+                  <font>
+                   <family>Arial</family>
+                   <pointsize>9</pointsize>
+                   <italic>false</italic>
+                   <bold>true</bold>
+                   <underline>false</underline>
+                   <strikeout>false</strikeout>
+                  </font>
+                 </property>
                  <property name="text">
-                  <string>Att Values:</string>
+                  <string>Attr Values:</string>
                  </property>
                 </widget>
                </item>
@@ -412,6 +549,11 @@ QCheckBox::indicator:unchecked {
                 <widget class="QComboBox" name="combobox_attribute_values">
                  <property name="enabled">
                   <bool>false</bool>
+                 </property>
+                 <property name="font">
+                  <font>
+                   <family>Arial</family>
+                  </font>
                  </property>
                  <property name="editable">
                   <bool>true</bool>
@@ -431,8 +573,27 @@ QCheckBox::indicator:unchecked {
              </item>
              <item>
               <layout class="QHBoxLayout" name="horizontalLayout_five">
+               <property name="spacing">
+                <number>0</number>
+               </property>
+               <property name="topMargin">
+                <number>7</number>
+               </property>
+               <property name="bottomMargin">
+                <number>7</number>
+               </property>
                <item>
                 <widget class="QLabel" name="label_function">
+                 <property name="font">
+                  <font>
+                   <family>Arial</family>
+                   <pointsize>10</pointsize>
+                   <italic>false</italic>
+                   <bold>true</bold>
+                   <underline>false</underline>
+                   <strikeout>false</strikeout>
+                  </font>
+                 </property>
                  <property name="text">
                   <string>Function:</string>
                  </property>
@@ -440,6 +601,16 @@ QCheckBox::indicator:unchecked {
                </item>
                <item>
                 <widget class="QRadioButton" name="radio_button_equals">
+                 <property name="font">
+                  <font>
+                   <family>Arial</family>
+                   <pointsize>10</pointsize>
+                   <italic>false</italic>
+                   <bold>true</bold>
+                   <underline>false</underline>
+                   <strikeout>false</strikeout>
+                  </font>
+                 </property>
                  <property name="text">
                   <string>Equals</string>
                  </property>
@@ -450,6 +621,19 @@ QCheckBox::indicator:unchecked {
                </item>
                <item>
                 <widget class="QRadioButton" name="radio_button_contains">
+                 <property name="font">
+                  <font>
+                   <family>Arial</family>
+                   <pointsize>10</pointsize>
+                   <italic>false</italic>
+                   <bold>true</bold>
+                   <underline>false</underline>
+                   <strikeout>false</strikeout>
+                  </font>
+                 </property>
+                 <property name="styleSheet">
+                  <string notr="true"/>
+                 </property>
                  <property name="text">
                   <string>Contains</string>
                  </property>
@@ -457,6 +641,16 @@ QCheckBox::indicator:unchecked {
                </item>
                <item>
                 <widget class="QRadioButton" name="radio_button_starts_with">
+                 <property name="font">
+                  <font>
+                   <family>Arial</family>
+                   <pointsize>10</pointsize>
+                   <italic>false</italic>
+                   <bold>true</bold>
+                   <underline>false</underline>
+                   <strikeout>false</strikeout>
+                  </font>
+                 </property>
                  <property name="text">
                   <string>Starts-with</string>
                  </property>
@@ -464,6 +658,16 @@ QCheckBox::indicator:unchecked {
                </item>
                <item>
                 <widget class="QRadioButton" name="radio_button_greater">
+                 <property name="font">
+                  <font>
+                   <family>Arial</family>
+                   <pointsize>10</pointsize>
+                   <italic>false</italic>
+                   <bold>true</bold>
+                   <underline>false</underline>
+                   <strikeout>false</strikeout>
+                  </font>
+                 </property>
                  <property name="text">
                   <string>Greater</string>
                  </property>
@@ -471,6 +675,16 @@ QCheckBox::indicator:unchecked {
                </item>
                <item>
                 <widget class="QRadioButton" name="radio_button_smaller">
+                 <property name="font">
+                  <font>
+                   <family>Arial</family>
+                   <pointsize>10</pointsize>
+                   <italic>false</italic>
+                   <bold>true</bold>
+                   <underline>false</underline>
+                   <strikeout>false</strikeout>
+                  </font>
+                 </property>
                  <property name="text">
                   <string>Smaller</string>
                  </property>
@@ -482,6 +696,11 @@ QCheckBox::indicator:unchecked {
               <layout class="QHBoxLayout" name="horizontalLayout_six">
                <item>
                 <widget class="QLineEdit" name="line_edit_xpath_builder">
+                 <property name="font">
+                  <font>
+                   <family>Arial</family>
+                  </font>
+                 </property>
                  <property name="placeholderText">
                   <string>Enter a XPath expression or build one...</string>
                  </property>
@@ -489,6 +708,13 @@ QCheckBox::indicator:unchecked {
                </item>
                <item>
                 <widget class="QPushButton" name="button_build_xpath">
+                 <property name="font">
+                  <font>
+                   <family>Arial</family>
+                   <italic>false</italic>
+                   <bold>true</bold>
+                  </font>
+                 </property>
                  <property name="text">
                   <string>Build XPath</string>
                  </property>
@@ -498,6 +724,13 @@ QCheckBox::indicator:unchecked {
              </item>
              <item>
               <widget class="QPushButton" name="button_add_xpath_to_list">
+               <property name="font">
+                <font>
+                 <family>Arial</family>
+                 <italic>false</italic>
+                 <bold>true</bold>
+                </font>
+               </property>
                <property name="text">
                 <string>Add XPath Expression to list</string>
                </property>
@@ -508,26 +741,64 @@ QCheckBox::indicator:unchecked {
           </item>
           <item>
            <widget class="QGroupBox" name="group_box_xpath_expressions_list">
+            <property name="font">
+             <font>
+              <family>Arial</family>
+              <italic>false</italic>
+              <bold>true</bold>
+             </font>
+            </property>
             <property name="title">
              <string>LIST OF XPATH FILTERS TO SEARCH AND MATCH IN XML FILES</string>
             </property>
             <layout class="QVBoxLayout" name="verticalLayout_7">
              <item>
-              <widget class="QListWidget" name="list_widget_xpath_expressions"/>
+              <widget class="QListWidget" name="list_widget_xpath_expressions">
+               <property name="font">
+                <font>
+                 <family>Arial</family>
+                </font>
+               </property>
+              </widget>
              </item>
             </layout>
            </widget>
           </item>
           <item>
            <widget class="QGroupBox" name="group_box_export_to_csv">
+            <property name="font">
+             <font>
+              <family>Arial</family>
+              <italic>false</italic>
+              <bold>true</bold>
+             </font>
+            </property>
             <property name="title">
              <string>EXPORT SEARCH RESULT TO CSV FILE</string>
             </property>
             <layout class="QVBoxLayout" name="verticalLayout_8">
              <item>
+              <widget class="QLabel" name="label">
+               <property name="font">
+                <font>
+                 <family>Arial</family>
+                 <pointsize>10</pointsize>
+                </font>
+               </property>
+               <property name="text">
+                <string>Browse file path where to save the csv result:</string>
+               </property>
+              </widget>
+             </item>
+             <item>
               <layout class="QHBoxLayout" name="hor_layout_csv_input_and_export">
                <item>
                 <widget class="QLineEdit" name="line_edit_csv_output_path">
+                 <property name="font">
+                  <font>
+                   <family>Arial</family>
+                  </font>
+                 </property>
                  <property name="placeholderText">
                   <string>Choose a folder where to save the CSV evaluation...</string>
                  </property>
@@ -535,6 +806,13 @@ QCheckBox::indicator:unchecked {
                </item>
                <item>
                 <widget class="QPushButton" name="button_browse_csv">
+                 <property name="font">
+                  <font>
+                   <family>Arial</family>
+                   <italic>false</italic>
+                   <bold>true</bold>
+                  </font>
+                 </property>
                  <property name="text">
                   <string>Browse</string>
                  </property>
@@ -544,8 +822,18 @@ QCheckBox::indicator:unchecked {
              </item>
              <item>
               <widget class="QLabel" name="label_csv_headers_info">
+               <property name="font">
+                <font>
+                 <family>Arial</family>
+                 <pointsize>10</pointsize>
+                 <italic>false</italic>
+                 <bold>false</bold>
+                 <underline>false</underline>
+                 <strikeout>false</strikeout>
+                </font>
+               </property>
                <property name="text">
-                <string>Enter CSV headers for each XPath expression (comma-separated)</string>
+                <string>Enter CSV headers for each XPath expression (comma-separated):</string>
                </property>
               </widget>
              </item>
@@ -553,6 +841,11 @@ QCheckBox::indicator:unchecked {
               <layout class="QHBoxLayout" name="hor_layout_csv_headers">
                <item>
                 <widget class="QLineEdit" name="line_edit_csv_headers_input">
+                 <property name="font">
+                  <font>
+                   <family>Arial</family>
+                  </font>
+                 </property>
                  <property name="placeholderText">
                   <string>CSV headers based on the number of XPath expressions (comma-separated)</string>
                  </property>
@@ -567,6 +860,16 @@ QCheckBox::indicator:unchecked {
                  <property name="enabled">
                   <bool>true</bool>
                  </property>
+                 <property name="font">
+                  <font>
+                   <family>Arial</family>
+                   <pointsize>9</pointsize>
+                   <italic>false</italic>
+                   <bold>true</bold>
+                   <underline>false</underline>
+                   <strikeout>false</strikeout>
+                  </font>
+                 </property>
                  <property name="text">
                   <string>Abort</string>
                  </property>
@@ -577,6 +880,13 @@ QCheckBox::indicator:unchecked {
                </item>
                <item>
                 <widget class="QPushButton" name="button_start_csv_export">
+                 <property name="font">
+                  <font>
+                   <family>Arial</family>
+                   <italic>false</italic>
+                   <bold>true</bold>
+                  </font>
+                 </property>
                  <property name="text">
                   <string>Export</string>
                  </property>
@@ -589,12 +899,24 @@ QCheckBox::indicator:unchecked {
           </item>
           <item>
            <widget class="QGroupBox" name="group_box_program_output">
+            <property name="font">
+             <font>
+              <family>Arial</family>
+              <italic>false</italic>
+              <bold>true</bold>
+             </font>
+            </property>
             <property name="title">
              <string>PROGRAM OUTPUT</string>
             </property>
             <layout class="QVBoxLayout" name="verticalLayout_6">
              <item>
               <widget class="QTextEdit" name="text_edit_program_output">
+               <property name="font">
+                <font>
+                 <family>Arial</family>
+                </font>
+               </property>
                <property name="readOnly">
                 <bool>true</bool>
                </property>
@@ -609,15 +931,38 @@ QCheckBox::indicator:unchecked {
          <layout class="QVBoxLayout" name="vert_layout_xml_output">
           <item>
            <widget class="QGroupBox" name="group_box_xml_output">
+            <property name="font">
+             <font>
+              <family>Arial</family>
+              <italic>false</italic>
+              <bold>true</bold>
+             </font>
+            </property>
             <property name="title">
              <string>XML OUTPUT</string>
             </property>
             <layout class="QVBoxLayout" name="verticalLayout_5">
              <item>
-              <widget class="QTextEdit" name="text_edit_xml_output"/>
+              <widget class="QTextEdit" name="text_edit_xml_output">
+               <property name="font">
+                <font>
+                 <family>Arial</family>
+                 <pointsize>10</pointsize>
+                 <italic>false</italic>
+                 <bold>false</bold>
+                 <underline>false</underline>
+                 <strikeout>false</strikeout>
+                </font>
+               </property>
+              </widget>
              </item>
              <item>
               <widget class="QProgressBar" name="progressbar_main">
+               <property name="font">
+                <font>
+                 <family>Arial</family>
+                </font>
+               </property>
                <property name="value">
                 <number>0</number>
                </property>
@@ -634,6 +979,16 @@ QCheckBox::indicator:unchecked {
        </layout>
       </widget>
       <widget class="QWidget" name="tab_csv_conversion">
+       <property name="font">
+        <font>
+         <family>Arial</family>
+         <pointsize>10</pointsize>
+         <italic>false</italic>
+         <bold>false</bold>
+         <underline>false</underline>
+         <strikeout>false</strikeout>
+        </font>
+       </property>
        <attribute name="title">
         <string>CSV Conversion and Display</string>
        </attribute>

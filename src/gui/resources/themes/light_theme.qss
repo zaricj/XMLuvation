@@ -29,17 +29,17 @@ QPushButton {
     background-color: #ffc857;
     color: #2b2b2b;
     border: none;
-    padding: 8px 14px;
+    padding: 7px 9px;
     border-radius: 6px;
     font: bold;
 }
 
 QPushButton:hover {
-    background-color: #a3803c;
+    background-color: #dbaa4a;
 }
 
 QPushButton:pressed {
-    background-color: #ffffff;
+    background-color: #e3a834;
     padding-left: 9px; /* Creates a "pressed" effect */
     padding-top: 8px;
 }
@@ -75,16 +75,16 @@ QComboBox::drop-down {
 }
 
 QPushButton:disabled {
-    background-color: #808080;
+    background-color: #b3b3b3;
 }
 
 QComboBox:disabled {
-    background-color: #808080;    
+    background-color: #b3b3b3;    
 }
 
 QComboBox::drop-down:disabled {
     border: none;
-    background-color: #ff505050;
+    background-color: #ff8e8e8e;
 }
 
 QTabWidget::pane {
@@ -130,12 +130,12 @@ QRadioButton::indicator {
 }
 
 QRadioButton::indicator:disabled {
-    border: 1px solid #808080;
+    border: 1px solid #b3b3b3;
     border-radius: 9px;
 }
 
 QRadioButton:disabled {
-    color: #808080;
+    color: #b3b3b3;
 }
 
 QScrollBar:vertical {
