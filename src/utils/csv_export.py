@@ -146,7 +146,7 @@ class CSVExportThread(QRunnable):
         """Main execution method that routes to specific operations."""
         try:
             if self.operation == "export":
-                self._export_serach_to_csv()
+                self._export_search_to_csv()
             else:
                 raise ValueError(f"Unknown operation: {self.operation}")
 
@@ -154,7 +154,7 @@ class CSVExportThread(QRunnable):
             detailed_error = traceback.format_exc()
             self.signals.error_occurred.emit("Operation Error", f"{str(e)}\n\nDetails:\n{detailed_error}")
 
-    def _export_serach_to_csv(self):
+    def _export_search_to_csv(self):
         """Start searching all XML files in the specified folder and write its results to a specified output CSV file."""
         print(f"Using {self.max_threads} threads...")
 
