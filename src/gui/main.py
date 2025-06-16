@@ -84,8 +84,15 @@ class MainWindow(QMainWindow):
         
         # XML Highlighter
         self.xml_highlighter = apply_xml_highlighting_to_widget(self.ui.text_edit_xml_output)
+        
         # Instantiate the controller with a reference to the MainWindow
-        self.cb_state_controller = ComboboxState(main_window=self, parsed_xml_data=self.parsed_xml_data)
+        self.cb_state_controller = ComboboxState(
+            main_window=self, 
+            parsed_xml_data=self.parsed_xml_data,
+            cb_tag_name = self.ui.combobox_tag_names,
+            cb_tag_value = self.ui.combobox_tag_values,
+            cb_attr_name = self.ui.combobox_attribute_names,
+            cb_attr_value = self.ui.combobox_attribute_values)
         
         # Settings file for storing application settings
         self.settings = QSettings("Jovan", "XMLuvation")
@@ -138,12 +145,9 @@ class MainWindow(QMainWindow):
         
         # Create my custom menu bar
         self.create_menu_bar()
-    
-        self.print_widget_status()
         
         # Check thread pool status
-        status = self.get_thread_pool_status()
-        print(status) 
+        print(self.get_thread_pool_status()) 
         
 # ====================================================================================================================== #
 # === Menubar, Menubar Control and UI Events === #
@@ -604,7 +608,7 @@ class MainWindow(QMainWindow):
         worker.signals.finished.connect(self.on_csv_export_finished)
         worker.signals.error_occurred.connect(self.on_error_message)
         worker.signals.info_occurred.connect(self.on_info_message)
-        worker.signals.warning_occured.connect(self.on_warning_message)
+        worker.signals.warning_occurred.connect(self.on_warning_message)
         worker.signals.program_output_progress_append.connect(self.append_to_program_output)
         worker.signals.program_output_progress_set_text.connect(self.set_text_to_program_output)
         worker.signals.progressbar_update.connect(self.update_progress_bar)
@@ -691,6 +695,7 @@ class MainWindow(QMainWindow):
         # If the XPath Expression has been successfully added to the QListWidget, generate the CSV Header based on the combobox value
         if is_added:
             current_text = csv_headers_input.text()
+            self.update_statusbar_xpath_listbox_count()
 
             generator = GenerateCSVHeader(main_window=self)
             header = generator.generate_header(
@@ -744,7 +749,7 @@ class MainWindow(QMainWindow):
     def update_statusbar_xpath_listbox_count(self):
         self.counter = self.ui.list_widget_xpath_expressions.count()
         if self.counter != 0:
-            self.ui.statusbar_xpath_expressions.showMessage(f"Total number of items in List: {self.counter}", 5000)
+            self.ui.statusbar_xpath_expressions.showMessage(f"Total number of items in List: {self.counter}")
 
 
     def remove_selected_items(self):
@@ -756,6 +761,7 @@ class MainWindow(QMainWindow):
                 item_to_remove = self.ui.list_widget_xpath_expressions.takeItem(current_selected_item)
                 self.xpath_filters.pop(current_selected_item)
                 self.ui.text_edit_program_output.append(f"Removed item: {item_to_remove.text()} at row {current_selected_item}")
+                self.update_statusbar_xpath_listbox_count()
             else:
                 self.ui.text_edit_program_output.append("No item selected to delete.")
         except IndexError:
@@ -773,6 +779,7 @@ class MainWindow(QMainWindow):
                 self.xpath_filters.clear()
                 self.ui.list_widget_xpath_expressions.clear()
                 self.ui.text_edit_program_output.setText("Deleted all items from the list.")
+                self.update_statusbar_xpath_listbox_count()
             else:
                 self.ui.text_edit_program_output.setText("No items to delete.")
         except Exception as ex:
@@ -810,33 +817,12 @@ class MainWindow(QMainWindow):
         
     # ======= End FUNCTIONS FOR create_export_evaluation_group ======= #
     
+    def get_thread_pool_status(self) -> str:
+        """Get current thread pool status (useful for debugging).
 
-    def print_widget_status(self):
-        """Print which widgets were successfully found"""
-        print("=== XMLuvation UI Widgets Status ===")
-        print(f"XML Folder Input: {'✓' if self.ui.line_edit_xml_folder_path_input else '✗'}")
-        print(f"Browse Button: {'✓' if self.ui.button_browse_xml_folder else '✗'}")
-        print(f"Read XML Button: {'✓' if self.ui.button_read_xml else '✗'}")
-        print(f"CSV Output Path: {'✓' if self.ui.line_edit_csv_output_path else '✗'}")
-        print(f"Browse CSV Output Button: {'✓' if self.ui.button_browse_csv else '✗'}")
-        print(f"Export CSV Button: {'✓' if self.ui.button_start_csv_export else '✗'}")
-        print(f"Button CSV Conversion Input: {'✓' if self.ui.button_browse_csv_conversion_path_input else '✗'}")
-        print(f"Button CSV Conversion Output: {'✓' if self.ui.button_browse_csv_conversion_path_output else '✗'}")
-        print(f"Button CSV Conversion Convert: {'✓' if self.ui.button_csv_conversion_convert else '✗'}")
-        print(f"Tag Names Combo: {'✓' if self.ui.combobox_tag_names else '✗'}")
-        print(f"Tag Values Combo: {'✓' if self.ui.combobox_tag_values else '✗'}")
-        print(f"Attribute Names Combo: {'✓' if self.ui.combobox_attribute_names else '✗'}")
-        print(f"Attribute Values Combo: {'✓' if self.ui.combobox_attribute_values else '✗'}")
-        print(f"XPath Builder Input: {'✓' if self.ui.line_edit_xpath_builder else '✗'}")
-        print(f"Build XPath Button: {'✓' if self.ui.button_build_xpath else '✗'}")
-        print(f"XPath List Widget: {'✓' if self.ui.list_widget_xpath_expressions else '✗'}")
-        print(f"Progress Bar: {'✓' if self.ui.progressbar_main else '✗'}")
-        print(f"Program Output: {'✓' if self.ui.text_edit_program_output else '✗'}")
-        print(f"XML Output: {'✓' if self.ui.text_edit_xml_output else '✗'}")
-        print("=====================================")
-    
-    def get_thread_pool_status(self):
-        """Get current thread pool status (useful for debugging)."""
+        Returns:
+            str: Active threads: {active_count}/{max_count}
+        """
         active_count = self.thread_pool.activeThreadCount()
         max_count = self.thread_pool.maxThreadCount()
         return f"Active threads: {active_count}/{max_count}"

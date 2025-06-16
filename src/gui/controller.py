@@ -21,10 +21,24 @@ class ComboboxState:
     - 'element_count' --> len(list(root.iter())),
     - 'encoding' --> XMLUtils.get_xml_encoding(self.get_xml_file_path)
     """
-    def __init__(self, main_window: object, parsed_xml_data: dict):
+    def __init__(self, main_window: object, parsed_xml_data: dict, cb_tag_name: object, cb_tag_value: object, cb_attr_name: object, cb_attr_value: object):
+        """Constructor of ComboboxState class
+
+        Args:
+            main_window (object): Main window in main.py
+            parsed_xml_data (dict): Dictionary of the parsed XML file, fills the Comboboxes
+            cb_tag_name (object): QCombobox Widget self.ui.combobox_tag_names
+            cb_tag_value (object): QCombobox Widget self.ui.combobox_tag_values
+            cb_attr_name (object): QCombobox Widget self.ui.combobox_attribute_names
+            cb_attr_value (object): QCombobox Widget self.ui.combobox_attribute_values
+        """
         self.main_window = main_window
         self.ui = main_window.ui
         self.parsed_xml_data = parsed_xml_data
+        self.tag_name = cb_tag_name
+        self.tag_value = cb_tag_value
+        self.attr_name = cb_attr_name
+        self.attr_value = cb_attr_value
         
     def set_parsed_data(self, new_data: dict):
         self.parsed_xml_data = new_data
@@ -37,65 +51,80 @@ class ComboboxState:
         
     # === Contains the Logic for the ComboBoxes textChanged signal === #
     def on_tag_name_changed(self, selected_tag: str):
-            print(f"Tag name changed to: {selected_tag}")
-            if not selected_tag:
-                return []
-            try:
-                attributes = self.get_attributes(selected_tag)
-                self.ui.combobox_attribute_names.clear()
-                self.ui.combobox_attribute_names.addItems(attributes)
-    
-                values_xml = self.get_tag_values(selected_tag)
-                self.ui.combobox_tag_values.clear()
-                self.ui.combobox_tag_values.addItems(values_xml)
-    
-                # Disable tag value combo box if there are no values for the selected tag
-                if not values_xml or all(value.strip() == "" for value in values_xml if value is not None):
-                    self.ui.combobox_tag_values.setDisabled(True)
-                    self.ui.combobox_tag_values.clear()
-                else:
-                    self.ui.combobox_tag_values.setDisabled(False)
-    
-                # Disable attribute name and value combo boxes if there are no attributes for the selected tag
-                if not attributes:
-                    self.ui.combobox_attribute_names.setDisabled(True)
-                    self.ui.combobox_attribute_names.clear()
-                    self.ui.combobox_attribute_values.setDisabled(True)
-                    self.ui.combobox_attribute_values.clear()
-                else:
-                    self.ui.combobox_attribute_names.setDisabled(False)
-            except Exception as ex:
-                message = f"An exception of type {type(ex).__name__} occurred. Arguments: {ex.args!r}"
-                QMessageBox.critical(self.main_window, "An exception occurred on tag name changed:", message)
+        """When the Combobox for the tag name changes 
+
+        Args:
+            selected_tag (str): Currently selected value from the self.ui.combobox_tag_names
+        """
+        if not selected_tag:
+            return []
+        try:
+            attributes = self.get_attributes(selected_tag)
+            self.attr_name.clear()
+            self.attr_name.addItems(attributes)
+
+            values_xml = self.get_tag_values(selected_tag)
+            self.tag_value.clear()
+            self.tag_value.addItems(values_xml)
+
+            # Disable tag value combo box if there are no values for the selected tag
+            if not values_xml or all(value.strip() == "" for value in values_xml if value is not None):
+                self.tag_value.setDisabled(True)
+                self.tag_value.clear()
+            else:
+                self.tag_value.setDisabled(False)
+
+            # Disable attribute name and value combo boxes if there are no attributes for the selected tag
+            if not attributes:
+                self.attr_name.setDisabled(True)
+                self.attr_name.clear()
+                self.attr_value.setDisabled(True)
+                self.attr_value.clear()
+            else:
+                self.attr_name.setDisabled(False)
+                
+        except Exception as ex:
+            message = f"An exception of type {type(ex).__name__} occurred. Arguments: {ex.args!r}"
+            QMessageBox.critical(self.main_window, "An exception occurred on tag name changed:", message)
 
 
     def on_attribute_name_changed(self, selected_attribute: str):
-        print(f"Attribute name changed to: {selected_attribute}")
+        """When the Combobox for the attribute name changes 
+
+        Args:
+            selected_attribute (str): Currently selected value from the self.ui.combobox_attribute_names
+        """
         try:
-            selected_tag = self.ui.combobox_tag_names.currentText()
+            selected_tag = self.tag_name.currentText()
             attribute_values = self.get_attribute_values(selected_tag, selected_attribute)
-            self.ui.combobox_attribute_values.clear()
-            self.ui.combobox_attribute_values.addItems(attribute_values)
+            self.attr_value.clear()
+            self.attr_value.addItems(attribute_values)
 
             # Disable attribute value combo box if there are no attribute values
             if not attribute_values:
-                self.ui.combobox_attribute_values.setDisabled(True)
-                self.ui.combobox_attribute_values.clear()
+                self.attr_value.setDisabled(True)
+                self.attr_value.clear()
             else:
-                self.ui.combobox_attribute_values.setDisabled(False)
+                self.attr_value.setDisabled(False)
 
             # Disable tag value combo box if the selected tag has no values
             values_xml = self.get_tag_values(selected_tag)
 
             if not values_xml:
-                self.ui.combobox_tag_values.setDisabled(True)
-                self.ui.combobox_tag_values.clear()
+                self.tag_value.setDisabled(True)
+                self.tag_value.clear()
         except Exception as ex:
             message = f"An exception of type {type(ex).__name__} occurred. Arguments: {ex.args!r}"
             QMessageBox.critical(self.main_window,"An exception occurred on attribute name changed:", message)
 
 
     def get_attribute_values(self, selected_tag: str, selected_attribute: str):
+        """Get the attribute values based on the selected combobox values in tag name and attribute name
+
+        Args:
+            selected_tag (str): Currently selected value from the self.ui.combobox_tag_names
+            selected_attribute (str): Currently selected value from the self.ui.combobox_attribute_names
+        """
         if not selected_tag or not selected_attribute:
             return []
         try:
@@ -107,6 +136,11 @@ class ComboboxState:
 
 
     def get_tag_values(self, selected_tag: str):
+        """Get the tag values based on the selected combobox values in tag name
+
+        Args:
+            selected_tag (str): Currently selected value from the self.ui.combobox_tag_names
+        """
         if not selected_tag:
             return []
         try:
@@ -118,6 +152,11 @@ class ComboboxState:
 
 
     def get_attributes(self, selected_tag: str):
+        """Get the attribute names based on the selected combobox values in tag name
+
+        Args:
+            selected_tag (str): Currently selected value from the self.ui.combobox_tag_names
+        """
         if not selected_tag:
             return []
         try:
@@ -218,9 +257,8 @@ class AddXPathExpressionToList:
         Has a built in XPath validator before adding the XPath to the QListWidget
         
         Returns:
-            bool: If xpath expresion has been succefully added to the list True, else False
+            bool: If xpath expression has been successfully added to the list True, else False
         """
-        print("Add XPath to list clicked")
         try:
             # Check if the XPath input is not empty:
             if not self.xpath_expression: 
@@ -235,7 +273,6 @@ class AddXPathExpressionToList:
                 if is_valid:
                     self.xpath_filters.append(self.xpath_expression)
                     self.list_widget_xpath_expressions.addItem(self.xpath_expression)
-                    #print(f"Lenght of XPath Filters variable is: {len(self.xpath_filters)}")
                     return True
             else:
                 QMessageBox.warning(self.main_window, "Duplicate XPath Expression", f"Cannot add duplicate XPath expression:\n{self.xpath_expression}")
