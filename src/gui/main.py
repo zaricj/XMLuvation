@@ -6,25 +6,25 @@ import sys
 import os
 import webbrowser
 import multiprocessing
-from functools import partial
 
 from utils.config_handler import ConfigHandler
 from utils.xml_parser import create_xml_parser, apply_xml_highlighting_to_widget, set_xml_content_to_widget
 
 from utils.xpath_builder import create_xpath_builder
-from utils.csv_export import create_csv_exporter
-from gui.ui_control.controller import ComboboxState, CSVConversion, AddXPathExpressionToList, SearchAndExportToCSV, GenerateCSVHeader
+from gui.controller import ComboboxState, CSVConversion, AddXPathExpressionToList, SearchAndExportToCSV, GenerateCSVHeader
+
+from gui.widgets.path_manager_window import CustomPathsManager
 
 from gui.resources.ui.XMLuvation_ui import Ui_MainWindow
 
+
+# ConfigHandler.print_file_path(ConfigHandler())
+
 # Path Constants
-
-ConfigHandler.print_file_path(ConfigHandler())
-
-BASE_DIR = os.path.dirname(os.path.abspath(__file__))
-
+BASE_DIR = os.path.dirname(os.path.abspath(__file__)) # Folder path to main.py
 LOG_FILE_PATH: str = os.path.join("src","logs","xmluvation.log")
-GUI_CONFIG_FILE_PATH: str = os.path.join("src","gui","config","config.json")
+GUI_CONFIG_FILE_PATH: str = os.path.join("gui", "config","config.json")
+GUI_CONFIG_DIRECTORY: str = os.path.join("gui", "config")
 DARK_THEME_PATH = os.path.join(BASE_DIR, "resources", "themes", "dark_theme.qss")
 LIGHT_THEME_PATH = os.path.join(BASE_DIR, "resources", "themes", "light_theme.qss")
 ICON_PATH = os.path.join(BASE_DIR, "resources", "icons", "xml_256px.ico")
@@ -36,9 +36,18 @@ UI_FILE_NAME: str = os.path.join("gui", "resources", "ui", "XMLuvation.ui")
 UI_RESOURCES: str = os.path.join("gui", "resources", "qrc", "xmluvation_resources.qrc")
 
 # App related constants
-APP_VERSION: str = "v1.3.1"
+APP_VERSION: str = "v1.0.4"
+APP_NAME: str = "XMLuvation"
+AUTHOR: str = "Jovan"
+
 
 def initialize_theme(parent, theme_file):
+    """Initialized UI theme files (.qss)
+
+    Args:
+        parent (object): self reference
+        theme_file (str): File path to the .qss theme file
+    """
     try:
         file = QFile(theme_file)
         if file.open(QFile.ReadOnly | QFile.Text):
@@ -58,23 +67,25 @@ class MainWindow(QMainWindow):
     def __init__(self):
         super().__init__()
         
-        self.current_read_xml_file = None
-        
-        
         # Create and setup the UI
         self.ui = Ui_MainWindow()
         self.ui.setupUi(self)
         
         # Set window title with version
-        self.setWindowTitle(f"XMLuvation {APP_VERSION}")
+        self.setWindowTitle(f"{APP_NAME} {APP_VERSION} by {AUTHOR}")
         
         # XML Data
         self.parsed_xml_data = {}
+        self.current_read_xml_file = None
+        
+        # Create fixed actions ONCE and store them as instance variables
+        self._add_custom_path_action = QAction("Add Custom Path", self)
+        self._add_custom_path_action.triggered.connect(self.add_custom_path)
         
         # XML Highlighter
         self.xml_highlighter = apply_xml_highlighting_to_widget(self.ui.text_edit_xml_output)
         # Instantiate the controller with a reference to the MainWindow
-        self.cb_state_controller = ComboboxState(self, self.parsed_xml_data)
+        self.cb_state_controller = ComboboxState(main_window=self, parsed_xml_data=self.parsed_xml_data)
         
         # Settings file for storing application settings
         self.settings = QSettings("Jovan", "XMLuvation")
@@ -93,7 +104,11 @@ class MainWindow(QMainWindow):
         # Keep track of active workers (optional, for cleanup)
         self.active_workers = []
         self.xpath_filters = []
-        self.config_handler = ConfigHandler()
+        self.config_handler = ConfigHandler(
+            main_window=self,
+            config_directory=GUI_CONFIG_DIRECTORY, 
+            config_file_name=GUI_CONFIG_FILE_PATH
+        )
         
         # Connect the custom context menu for Listbox
         self.ui.list_widget_xpath_expressions.setContextMenuPolicy(Qt.CustomContextMenu)
@@ -164,32 +179,30 @@ class MainWindow(QMainWindow):
         open_menu = menu_bar.addMenu("&Open")
         open_input_action = QAction("Open XML Input Folder", self)
         open_input_action.setStatusTip("Open the XML input folder")
-        open_input_action.triggered.connect(lambda: self.open_folder_in_file_explorer(self.ui.line_edit_xml_folder_path_input.text()))
+        open_input_action.triggered.connect(lambda: self.open_folder_in_file_explorer(os.path.dirname(self.ui.line_edit_xml_folder_path_input.text())))
         open_menu.addAction(open_input_action)
         open_output_action = QAction("Open CSV Output Folder", self)
-        open_output_action.setStatusTip("Open the CSV output folder")
+        open_output_action.setStatusTip("Open the output CSV File")
         open_output_action.triggered.connect(lambda: self.open_folder_in_file_explorer(self.ui.line_edit_csv_output_path.text()))
         open_menu.addAction(open_output_action)
         open_menu.addSeparator()
         open_csv_conversion_input_action = QAction("Open CSV Conversion Input Folder", self)
         open_csv_conversion_input_action.setStatusTip("Open CSV Conversion Input Folder")
-        open_csv_conversion_input_action.triggered.connect(lambda: self.open_folder_in_file_explorer(self.ui.line_edit_csv_conversion_path_input.text()))
+        open_csv_conversion_input_action.triggered.connect(lambda: self.open_folder_in_file_explorer(os.path.dirname(self.ui.line_edit_csv_conversion_path_input.text())))
         open_menu.addAction(open_csv_conversion_input_action)
         open_csv_conversion_output_action = QAction("Open CSV Conversion Output Folder", self)
         open_csv_conversion_output_action.setStatusTip("Open CSV Conversion Output Folder")
-        open_csv_conversion_output_action.triggered.connect(lambda: self.open_folder_in_file_explorer(self.ui.line_edit_csv_conversion_path_output.text()))
+        open_csv_conversion_output_action.triggered.connect(lambda: self.open_folder_in_file_explorer(os.path.dirname(self.ui.line_edit_csv_conversion_path_output.text())))
         open_menu.addAction(open_csv_conversion_output_action)
 
         # Path Menu
         self.paths_menu = menu_bar.addMenu("&Path")
         
-        # Add custom paths
-        self.load_custom_paths()
+        # Initially populate the menu. This method will now ensure the correct order.
+        self.update_paths_menu()
 
         # Add option to add new custom path
-        add_custom_path_action = QAction("Add Custom Path", self)
-        add_custom_path_action.triggered.connect(self.add_custom_path)
-        self.paths_menu.addAction(add_custom_path_action)
+        self.paths_menu.addAction(self._add_custom_path_action)
 
         # Help Menu
         help_menu = menu_bar.addMenu("&Help")
@@ -197,56 +210,62 @@ class MainWindow(QMainWindow):
         xpath_help_action.setStatusTip("Open XPath Syntax Help")
         xpath_help_action.triggered.connect(self.open_web_xpath_help)
         help_menu.addAction(xpath_help_action)
-        about = QAction("About", self)
-        about.setStatusTip("About this program")
-        about.triggered.connect(self.about_message)
-        help_menu.addAction(about)
-        #help_menu.addAction(xpath_cheatsheet_action)
+        
+        settings_menu = menu_bar.addMenu("&Settings")
+        open_paths_manager = QAction("Manage Custom Paths", self)
+        open_paths_manager.triggered.connect(self.open_paths_manager_window)
+        settings_menu.addAction(open_paths_manager)
         
         # Theme Menu
         self.toggle_theme_action = menu_bar.addAction(self.theme_icon, "Toggle Theme")
         self.toggle_theme_action.triggered.connect(self.change_theme)
         
+
+        
     # ======= START FUNCTIONS create_menu_bar ======= #
 
     def update_paths_menu(self):
-        # Clear existing path actions, except the last one (Add Custom Path)
-        for action in self.paths_menu.actions()[:-1]:
-            self.paths_menu.removeAction(action)
+        """
+        Updates the 'Path' menu by clearing all dynamic custom path actions
+        and re-adding them based on the current configuration. Fixed actions
+        ('Add Custom Path', 'Remove Custom Path') are preserved.
+        """
+        # 1. Clear ALL actions from the menu
+        # This is the most reliable way to ensure no stale actions remain.
+        self.paths_menu.clear() 
 
-        # Add custom paths
-        custom_paths = self.config_handler.get_custom_paths()
+        # 2. Get the latest custom paths from the config handler
+        # Using the dynamic 'get' method:
+        custom_paths = self.config_handler.get("custom_paths", {})
+        
+        # 3. Add dynamic custom path actions first
         for name, path in custom_paths.items():
             action = QAction(name, self)
             action.setStatusTip(f"Open {name}")
-            action.triggered.connect(lambda checked, p=path: self.open_path(p))
-            self.paths_menu.insertAction(self.paths_menu.actions()[0], action)
+            # Connect to your desired slot, e.g., open_path or set_path_in_input
+            action.triggered.connect(lambda checked, p=path: self.set_path_in_input(p)) 
+            self.paths_menu.addAction(action)
+
+        # 4. Add a separator for visual separation if needed
+        if custom_paths: # Only add separator if there are custom paths
+            self.paths_menu.addSeparator()
+
+        # 5. Add the fixed actions (they are created once in __init__ or setup_ui)
+        self.paths_menu.addAction(self._add_custom_path_action)
 
     def add_custom_path(self):
         name, ok = QInputDialog.getText(self, "Add Custom Path", "Enter a name for the path:")
         if ok and name:
+            existing_paths = self.config_handler.get("custom_paths", {})
+            if name in existing_paths:
+                QMessageBox.warning(self, "Duplicate Name", f"A path with the name '{name}' already exists.")
+                return
+
             path, ok = QInputDialog.getText(self, "Add Custom Path", "Enter path:")
             if ok and path:
-                self.config_handler.add_custom_path(name, path)
-                self.update_paths_menu()
-
-    def load_custom_paths(self):
-        custom_paths = self.config_handler.get_custom_paths()
-        for name, path in custom_paths.items():
-            action = QAction(name, self)
-            action.setStatusTip(f"Open {name}")
-            action.triggered.connect(lambda checked, p=path: self.open_path(p))
-            self.paths_menu.addAction(action)
-
-    def about_message(self):
-        # About Message
-        program_info = "Name: XMLuvation\nVersion: 1.3.1\nCredit: Jovan\nFramework: PySide6"
-        about_message = """XMLuvation is a Python application designed to parse and evaluate XML files and use XPath to search for matches which matching results will be saved in a csv file."""
-        about_box = QMessageBox()
-        about_box.setText("About this program...")
-        about_box.setInformativeText(about_message)
-        about_box.setDetailedText(program_info)
-        about_box.exec()
+                # Use the dynamic 'set' method for nested paths
+                self.config_handler.set(f"custom_paths.{name}", path)
+                self.update_paths_menu() # Refresh the menu to show the new path
 
     def change_theme(self):
         if self.current_theme == "dark_theme.qss":
@@ -276,7 +295,14 @@ class MainWindow(QMainWindow):
 
     def open_web_xpath_help(self):
         webbrowser.open("https://www.w3schools.com/xml/xpath_syntax.asp")
-
+        
+    def open_paths_manager_window(self):
+        self.w = CustomPathsManager(main_window=self)
+        self.w.show()
+    
+    def set_path_in_input(self, path: str):
+        self.ui.line_edit_xml_folder_path_input.setText(path)
+        
 # ====================================================================================================================== #
 
     # Setup UI Widget Actions
@@ -628,7 +654,7 @@ class MainWindow(QMainWindow):
 
             # Pass into controller
             exporter = SearchAndExportToCSV(
-                self,
+                main_window=self,
                 xml_folder_path=xml_path,
                 xpath_filters=xpath_filters,
                 csv_folder_output_path=csv_output,
@@ -655,7 +681,7 @@ class MainWindow(QMainWindow):
         attr_value: str = self.ui.combobox_attribute_values.currentText()
         
         adder = AddXPathExpressionToList(
-            self, 
+            main_window=self, 
             xpath_expression=xpath_input, 
             xpath_filters=xpath_filters,
             list_widget_xpath_expressions=list_widget_xpath_expressions)
@@ -666,7 +692,7 @@ class MainWindow(QMainWindow):
         if is_added:
             current_text = csv_headers_input.text()
 
-            generator = GenerateCSVHeader(self)
+            generator = GenerateCSVHeader(main_window=self)
             header = generator.generate_header(
                 tag_name = tag_name,
                 tag_value = tag_value,
@@ -691,7 +717,7 @@ class MainWindow(QMainWindow):
         write_index = self.ui.checkbox_write_index_column.isChecked()
         
         self.csv_conversion_controller = CSVConversion(
-            self,
+            main_window=self,
             csv_file_to_convert=csv_file_to_convert, 
             output_path_of_new_file=output_path_of_new_file, 
             write_index=write_index)

@@ -456,6 +456,7 @@ class Ui_MainWindow(object):
         self.hor_layout_csv_headers.setObjectName(u"hor_layout_csv_headers")
         self.line_edit_csv_headers_input = QLineEdit(self.group_box_export_to_csv)
         self.line_edit_csv_headers_input.setObjectName(u"line_edit_csv_headers_input")
+        self.line_edit_csv_headers_input.setClearButtonEnabled(True)
 
         self.hor_layout_csv_headers.addWidget(self.line_edit_csv_headers_input)
 
@@ -651,6 +652,7 @@ class Ui_MainWindow(object):
         self.radio_button_greater.setText(QCoreApplication.translate("MainWindow", u"Greater", None))
         self.radio_button_smaller.setText(QCoreApplication.translate("MainWindow", u"Smaller", None))
         self.line_edit_xpath_builder.setPlaceholderText(QCoreApplication.translate("MainWindow", u"Enter a XPath expression or build one...", None))
+        self.line_edit_xpath_builder.setClearButtonEnabled(True)
         self.button_build_xpath.setText(QCoreApplication.translate("MainWindow", u"Build XPath", None))
         self.button_add_xpath_to_list.setText(QCoreApplication.translate("MainWindow", u"Add XPath Expression to list", None))
         self.group_box_xpath_expressions_list.setTitle(QCoreApplication.translate("MainWindow", u"LIST OF XPATH FILTERS TO SEARCH AND MATCH IN XML FILES", None))

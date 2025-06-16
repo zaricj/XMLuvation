@@ -81,18 +81,19 @@ class XmlSyntaxHighlighter(QSyntaxHighlighter):
         super().__init__(parent)
         
         # Define text formats for different XML elements
+        # Color scheme follows the Atom One Dark theme
         self.xml_keyword_format = QTextCharFormat()
-        self.xml_keyword_format.setForeground(QColor(128, 0, 255))  # Purple for tags
+        self.xml_keyword_format.setForeground(QColor(224, 108, 117))  # Red for tags
         self.xml_keyword_format.setFontWeight(QFont.Weight.Bold)
         
         self.xml_element_format = QTextCharFormat()
         self.xml_element_format.setForeground(QColor(0, 0, 255))  # Blue for element names
         
         self.xml_attribute_format = QTextCharFormat()
-        self.xml_attribute_format.setForeground(QColor(255, 127, 0))  # Orange for attributes
+        self.xml_attribute_format.setForeground(QColor(209, 150, 94))  # Orange for attributes
         
         self.xml_value_format = QTextCharFormat()
-        self.xml_value_format.setForeground(QColor(0, 128, 0))  # Green for attribute values
+        self.xml_value_format.setForeground(QColor(152, 195, 116))  # Green for attribute values
         
         self.xml_comment_format = QTextCharFormat()
         self.xml_comment_format.setForeground(QColor(128, 128, 128))  # Gray for comments
