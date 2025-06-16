@@ -326,6 +326,7 @@ class SearchAndExportToCSV:
         """Splits comma-separated string into a list of headers."""
         return [h.strip() for h in raw_headers.split(",") if h.strip()]
 
+
 class GenerateCSVHeader:
     """
     Handles methods and logic of the csv generation based on the entered XPath Expression to the QListWidget.
