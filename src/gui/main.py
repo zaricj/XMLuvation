@@ -17,6 +17,7 @@ from gui.widgets.path_manager_window import CustomPathsManager
 
 from gui.resources.ui.XMLuvation_ui import Ui_MainWindow
 
+sys.path.append(os.path.abspath(os.path.join(os.path.dirname(__file__), '..', '..')))
 
 # ConfigHandler.print_file_path(ConfigHandler())
 
