@@ -147,7 +147,7 @@ class MainWindow(QMainWindow):
         self.create_menu_bar()
         
         # Check thread pool status
-        print(self.get_thread_pool_status()) 
+        #print(self.get_thread_pool_status()) 
         
 # ====================================================================================================================== #
 # === Menubar, Menubar Control and UI Events === #
@@ -181,8 +181,8 @@ class MainWindow(QMainWindow):
 
         # Open Menu
         open_menu = menu_bar.addMenu("&Open")
-        open_input_action = QAction("Open XML input folder", self)
-        open_input_action.setStatusTip("Open the XML input folder")
+        open_input_action = QAction("Open input XML folder", self)
+        open_input_action.setStatusTip("Open input XML folder")
         open_input_action.triggered.connect(lambda: self.open_folder_in_file_explorer(os.path.dirname(self.ui.line_edit_xml_folder_path_input.text())))
         open_menu.addAction(open_input_action)
         open_output_action = QAction("Open output CSV file", self)
@@ -578,6 +578,7 @@ class MainWindow(QMainWindow):
     @Slot(bool)
     def on_csv_export_started(self, state:bool):
         self.ui.button_abort_csv_export.setVisible(state)
+        self.ui.text_edit_program_output.append(self.get_thread_pool_status())
         self.set_ui_widgets_disabled(state=True)
 
     @Slot()
