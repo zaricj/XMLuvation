@@ -47,6 +47,10 @@
         padding-top: 8px;
     }
 
+    QPushButton:disabled {
+        background-color: #808080;
+    }
+    
     QLineEdit, QComboBox, QTextEdit, QStatusBar {
         background-color: #313338;
         border: 1px solid #4a4a4a;
@@ -74,10 +78,6 @@
         border-top-right-radius: 6px;
         border-bottom-right-radius: 6px;
         image: url(:/images/drpdwn_arrow.png)
-    }
-
-    QPushButton:disabled {
-        background-color: #808080;
     }
 
     QComboBox:disabled {
