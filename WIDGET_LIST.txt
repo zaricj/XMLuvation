@@ -1,0 +1,70 @@
+========================================================================
+
+# Folder browsing and XML reading
+self.ui.button_browse_xml_folder
+self.ui.button_read_xml
+
+========================================================================
+
+# QLineEdit QtWidgets
+
+self.line_edit_xml_folder_path_input
+self.line_edit_xpath_builder
+self.line_edit_csv_output_path
+
+self.line_edit_csv_conversion_path_input # Conversion CSV to Excel
+self.line_edit_csv_conversion_path_output # Conversion CSV to Excel
+
+========================================================================
+
+# XPath building
+#self.ui.line_edit_xpath_builder
+self.ui.button_build_xpath
+self.ui.button_add_xpath_to_list
+
+========================================================================
+
+# CSV export
+self.ui.button_browse_csv
+self.ui.button_export_csv
+
+========================================================================
+
+# Combo boxes
+self.ui.combobox_tag_names
+self.ui.combobox_attribute_names
+
+========================================================================
+
+# Radio buttons
+self.ui.radio_button_equals
+self.ui.radio_button_contains
+self.ui.radio_button_starts_with
+self.ui.radio_button_greater
+self.ui.radio_button_smaller
+
+========================================================================
+
+# List widget
+self.ui.list_widget_xpath_expressions
+
+========================================================================
+
+# Tab widget
+self.ui.tabWidget
+
+========================================================================
+
+# === CSV TAB ===
+self.ui.button_browse_csv_conversion_path_input
+self.ui.button_browse_csv_conversion_path_output
+self.ui.button_csv_conversion_convert
+self.ui.checkbox_write_index_column
+
+========================================================================
+
+# QCheckBox widget
+
+self.checkbox_write_index_column
+
+========================================================================

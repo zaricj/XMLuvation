@@ -1,0 +1,11 @@
+<RCC>
+  <qresource>
+    <file>../images/Geis_logo_with_text.png</file>
+    <file>../images/Geis_no_bg.png</file>
+    <file>../images/Geis_no_bg_60x60.png</file>
+    <file>../images/dark.png</file>
+    <file>../images/drpdwn_arrow.png</file>
+    <file>../images/light.png</file>
+    <file>../icons/xml_256px.ico</file>
+  </qresource>
+</RCC>
