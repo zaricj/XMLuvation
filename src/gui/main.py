@@ -13,19 +13,27 @@ from utils.xml_parser import create_xml_parser, apply_xml_highlighting_to_widget
 from utils.xpath_builder import create_xpath_builder
 from gui.controller import ComboboxState, CSVConversion, AddXPathExpressionToList, SearchAndExportToCSV, GenerateCSVHeader
 
-from gui.widgets.path_manager_window import CustomPathsManager
+from gui.path_manager_window import CustomPathsManager
 
 from gui.resources.ui.XMLuvation_ui import Ui_MainWindow
 
 sys.path.append(os.path.abspath(os.path.join(os.path.dirname(__file__), '..', '..')))
 
-# ConfigHandler.print_file_path(ConfigHandler())
+# Check if the application is running in a PyInstaller bundle
+if getattr(sys, 'frozen', False) and hasattr(sys, '_MEIPASS'):
+    # Running in a PyInstaller bundle, BASE_DIR points to the bundle's root
+    BASE_DIR = sys._MEIPASS
+else:
+    # Running in a normal Python environment
+    BASE_DIR = os.path.dirname(os.path.abspath(__file__))
+    # At work it's C:\Users\ZaricJ\Documents\Main\02_Entwicklung_und_Tools\GitHub\XMLuvation\src\gui
+    
+print(f"BASE DIRECTORY: {BASE_DIR}")
 
 # Path Constants
-BASE_DIR = os.path.dirname(os.path.abspath(__file__)) # Folder path to main.py
 LOG_FILE_PATH: str = os.path.join("src","logs","xmluvation.log")
-GUI_CONFIG_FILE_PATH: str = os.path.join("gui", "config","config.json")
-GUI_CONFIG_DIRECTORY: str = os.path.join("gui", "config")
+GUI_CONFIG_FILE_PATH: str = os.path.join(BASE_DIR, "config","config.json")
+GUI_CONFIG_DIRECTORY: str = os.path.join(BASE_DIR, "config")
 DARK_THEME_PATH = os.path.join(BASE_DIR, "resources", "themes", "dark_theme.qss")
 LIGHT_THEME_PATH = os.path.join(BASE_DIR, "resources", "themes", "light_theme.qss")
 ICON_PATH = os.path.join(BASE_DIR, "resources", "icons", "xml_256px.ico")
@@ -33,8 +41,8 @@ DARK_THEME_QMENU_ICON = os.path.join(BASE_DIR, "resources", "images", "dark.png"
 LIGHT_THEME_QMENU_ICON = os.path.join(BASE_DIR, "resources", "images", "light.png")
 
 # Resource and UI Paths
-UI_FILE_NAME: str = os.path.join("gui", "resources", "ui", "XMLuvation.ui")
-UI_RESOURCES: str = os.path.join("gui", "resources", "qrc", "xmluvation_resources.qrc")
+UI_FILE_NAME: str = os.path.join(BASE_DIR, "resources", "ui", "XMLuvation.ui")
+UI_RESOURCES: str = os.path.join(BASE_DIR, "resources", "qrc", "xmluvation_resources.qrc")
 
 # App related constants
 APP_VERSION: str = "v1.0.4"
@@ -209,17 +217,18 @@ class MainWindow(QMainWindow):
         # Add option to add new custom path
         self.paths_menu.addAction(self._add_custom_path_action)
 
+        # Settings Menu
+        settings_menu = menu_bar.addMenu("&Settings")
+        open_paths_manager = QAction("Manage Custom Paths", self)
+        open_paths_manager.triggered.connect(self.open_paths_manager_window)
+        settings_menu.addAction(open_paths_manager)
+        
         # Help Menu
         help_menu = menu_bar.addMenu("&Help")
         xpath_help_action = QAction("XPath Help", self)
         xpath_help_action.setStatusTip("Open XPath Syntax Help")
         xpath_help_action.triggered.connect(self.open_web_xpath_help)
         help_menu.addAction(xpath_help_action)
-        
-        settings_menu = menu_bar.addMenu("&Settings")
-        open_paths_manager = QAction("Manage Custom Paths", self)
-        open_paths_manager.triggered.connect(self.open_paths_manager_window)
-        settings_menu.addAction(open_paths_manager)
         
         # Theme Menu
         self.toggle_theme_action = menu_bar.addAction(self.theme_icon, "Toggle Theme")
