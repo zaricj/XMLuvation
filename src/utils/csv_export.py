@@ -74,12 +74,6 @@ def process_single_xml(
                             # If the XPath explicitly asks for text() or @attribute,
                             # the result might directly be a string or a more specific type.
                             # The original code's `str(result)` here might be intended
-                            # for something like getting the full XML string of the element,
-                            # but if `results` already contains the text/attribute value (as expected from lxml),
-                            # then directly using `result` might be more appropriate.
-                            # Assuming `lxml`'s xpath returns the actual value for text()/attribute,
-                            # this `isinstance(result, ET._Element)` might not be hit for those cases.
-                            # Let's keep the original logic for now as it's what was provided.
                             match_content = str(result)
                         else:
                             match_content = result.text.strip() if result.text else result.tag
@@ -93,7 +87,6 @@ def process_single_xml(
 
                     row: dict[str, str] = {
                         "Filename": xml_file,
-                        "XPath_Expression": expression,
                         header: match_content,
                         "Match_Index": str(i + 1) # 1-based index for matches
                     }
@@ -112,7 +105,7 @@ class CSVExportSignals(QObject):
     finished = Signal()
     error_occurred = Signal(str, str) # QMessageBox.critical
     info_occurred = Signal(str, str) # QMessageBox.information
-    warning_occured = Signal(str, str) # QMessageBox.warning
+    warning_occurred = Signal(str, str) # QMessageBox.warning
     program_output_progress_append = Signal(str) # Program Output aka self.ui.text_edit_program_output.append
     program_output_progress_set_text = Signal(str) # Program Output aka self.ui.text_edit_program_output.setText
     progressbar_update = Signal(int) # Progressbar aka self.ui.progressbar_main
@@ -166,7 +159,7 @@ class CSVExportThread(QRunnable):
         print(f"Using {self.max_threads} threads...")
 
         if not os.path.exists(self.folder_path_containing_xml_files) or not os.path.isdir(self.folder_path_containing_xml_files):
-            self.signals.warning_occured.emit("XML Folder not found", "Please set the path to the folder that contains XML files to process.")
+            self.signals.warning_occurred.emit("XML Folder not found", "Please set the path to the folder that contains XML files to process.")
             self.signals.finished.emit() # Ensure finished signal is emitted on early exit
             return
 
@@ -177,17 +170,17 @@ class CSVExportThread(QRunnable):
 
         # Check if csv output folder path has been set
         if not self.output_save_path_for_csv_export:
-            self.signals.warning_occured.emit("CSV Output Path is Empty", "Please set an output folder path for the csv file.")
+            self.signals.warning_occurred.emit("CSV Output Path is Empty", "Please set an output folder path for the csv file.")
             self.signals.finished.emit()
             return
         # Check if csv headers and xpath expressions list length is 0 on both
         if csv_headers_size == 0 and xpath_expressions_size == 0:
-            self.signals.warning_occured.emit("Headers and Expressions empty", "No csv headers and XPath expression found, please add some.")
+            self.signals.warning_occurred.emit("Headers and Expressions empty", "No csv headers and XPath expression found, please add some.")
             self.signals.finished.emit()
             return
         # Check if csv headers length is not the same as the length of xpath expressions
         elif csv_headers_size != xpath_expressions_size:
-            self.signals.warning_occured.emit(
+            self.signals.warning_occurred.emit(
                 "CSV Header Size Warning",
                 f"Input of CSV headers is not the same length as the XPath expressions\nCSV {csv_headers_size} / XPath {xpath_expressions_size}"
             )
@@ -207,7 +200,7 @@ class CSVExportThread(QRunnable):
         try:
             with open(self.output_save_path_for_csv_export, 'w', newline='', encoding='utf-8') as csvfile:
                 # Define the fixed headers that will always be present in the CSV
-                fixed_headers = ["Filename", "XPath_Expression", "Match_Index"]
+                fixed_headers = ["Filename", "Match_Index"]
                 # Combine fixed headers with the dynamic XPath headers
                 # Ensure no duplicates if a dynamic header happens to be one of the fixed ones.
                 # Using a set to preserve uniqueness, then converting back to list to maintain order.
