@@ -85,7 +85,7 @@ class Ui_MainWindow(object):
 #endif
         MainWindow.setPalette(palette)
         font = QFont()
-        font.setFamilies([u"Segoe UI"])
+        font.setFamilies([u"Microsoft YaHei UI"])
         font.setPointSize(10)
         font.setBold(False)
         font.setItalic(False)
@@ -95,6 +95,7 @@ class Ui_MainWindow(object):
         icon.addFile(u":/icons/xml_256px.ico", QSize(), QIcon.Mode.Normal, QIcon.State.Off)
         MainWindow.setWindowIcon(icon)
         MainWindow.setAutoFillBackground(False)
+        MainWindow.setStyleSheet(u"")
         MainWindow.setIconSize(QSize(256, 256))
         self.centralwidget = QWidget(MainWindow)
         self.centralwidget.setObjectName(u"centralwidget")
@@ -105,7 +106,7 @@ class Ui_MainWindow(object):
         self.tabWidget.setObjectName(u"tabWidget")
         self.tabWidget.setEnabled(True)
         font1 = QFont()
-        font1.setFamilies([u"Segoe UI"])
+        font1.setFamilies([u"Microsoft YaHei UI"])
         font1.setPointSize(10)
         font1.setBold(True)
         font1.setItalic(True)
@@ -117,7 +118,7 @@ class Ui_MainWindow(object):
         self.tab_xml_evaluation = QWidget()
         self.tab_xml_evaluation.setObjectName(u"tab_xml_evaluation")
         font2 = QFont()
-        font2.setFamilies([u"Segoe UI"])
+        font2.setFamilies([u"Microsoft YaHei UI"])
         font2.setPointSize(10)
         font2.setBold(False)
         font2.setItalic(False)
@@ -130,17 +131,17 @@ class Ui_MainWindow(object):
         self.vert_layout_main.setObjectName(u"vert_layout_main")
         self.group_box_xml_input_xpath_builder = QGroupBox(self.tab_xml_evaluation)
         self.group_box_xml_input_xpath_builder.setObjectName(u"group_box_xml_input_xpath_builder")
-        self.statusbar_xml_files_count = QStatusBar(self.group_box_xml_input_xpath_builder)
-        self.statusbar_xml_files_count.setSizeGripEnabled(False)
-        self.statusbar_xml_files_count.setObjectName(u"statusbar_xml_files_count")
         font3 = QFont()
-        font3.setFamilies([u"Arial"])
+        font3.setFamilies([u"Microsoft YaHei UI"])
         font3.setPointSize(10)
         font3.setBold(True)
         font3.setItalic(False)
         font3.setUnderline(False)
         font3.setStrikeOut(False)
         self.group_box_xml_input_xpath_builder.setFont(font3)
+        self.statusbar_xml_files_count = QStatusBar(self.group_box_xml_input_xpath_builder)
+        self.statusbar_xml_files_count.setSizeGripEnabled(False)
+        self.statusbar_xml_files_count.setObjectName(u"statusbar_xml_files_count")
         self.verticalLayout_4 = QVBoxLayout(self.group_box_xml_input_xpath_builder)
         self.verticalLayout_4.setObjectName(u"verticalLayout_4")
         self.verticalLayout_4.addWidget(self.statusbar_xml_files_count)
@@ -148,7 +149,7 @@ class Ui_MainWindow(object):
         self.horizontalLayout_one.setObjectName(u"horizontalLayout_one")
         self.line_edit_xml_folder_path_input = QLineEdit(self.group_box_xml_input_xpath_builder)
         self.line_edit_xml_folder_path_input.setObjectName(u"line_edit_xml_folder_path_input")
-        self.line_edit_xml_folder_path_input.setFont(font3)
+        self.line_edit_xml_folder_path_input.setFont(font2)
         self.line_edit_xml_folder_path_input.setClearButtonEnabled(True)
 
         self.horizontalLayout_one.addWidget(self.line_edit_xml_folder_path_input)
@@ -173,7 +174,7 @@ class Ui_MainWindow(object):
         self.horizontalLayout_two.setContentsMargins(-1, 3, -1, 3)
         self.label_xpath_builder = QLabel(self.group_box_xml_input_xpath_builder)
         self.label_xpath_builder.setObjectName(u"label_xpath_builder")
-        self.label_xpath_builder.setFont(font3)
+        self.label_xpath_builder.setFont(font2)
 
         self.horizontalLayout_two.addWidget(self.label_xpath_builder)
 
@@ -187,8 +188,8 @@ class Ui_MainWindow(object):
         self.label_tag_names.setObjectName(u"label_tag_names")
         self.label_tag_names.setMaximumSize(QSize(68, 16777215))
         font4 = QFont()
-        font4.setFamilies([u"Arial"])
-        font4.setPointSize(9)
+        font4.setFamilies([u"Microsoft YaHei UI"])
+        font4.setPointSize(8)
         font4.setBold(True)
         font4.setItalic(False)
         font4.setUnderline(False)
@@ -261,7 +262,7 @@ class Ui_MainWindow(object):
         self.verticalLayout_4.addLayout(self.horizontalLayout_four)
 
         self.horizontalLayout_five = QHBoxLayout()
-        self.horizontalLayout_five.setSpacing(0)
+        self.horizontalLayout_five.setSpacing(20)
         self.horizontalLayout_five.setObjectName(u"horizontalLayout_five")
         self.horizontalLayout_five.setContentsMargins(-1, 7, -1, 7)
         self.label_function = QLabel(self.group_box_xml_input_xpath_builder)
@@ -309,7 +310,7 @@ class Ui_MainWindow(object):
         self.horizontalLayout_six.setObjectName(u"horizontalLayout_six")
         self.line_edit_xpath_builder = QLineEdit(self.group_box_xml_input_xpath_builder)
         self.line_edit_xpath_builder.setObjectName(u"line_edit_xpath_builder")
-        self.line_edit_xpath_builder.setFont(font3)
+        self.line_edit_xpath_builder.setFont(font2)
         self.line_edit_xpath_builder.setClearButtonEnabled(True)
 
         self.horizontalLayout_six.addWidget(self.line_edit_xpath_builder)
@@ -339,7 +340,8 @@ class Ui_MainWindow(object):
         self.verticalLayout_7.setObjectName(u"verticalLayout_7")
         self.list_widget_xpath_expressions = QListWidget(self.group_box_xpath_expressions_list)
         self.list_widget_xpath_expressions.setObjectName(u"list_widget_xpath_expressions")
-        self.list_widget_xpath_expressions.setFont(font3)
+        self.list_widget_xpath_expressions.setFont(font2)
+
         self.statusbar_xpath_expressions = QStatusBar(self.group_box_xpath_expressions_list)
         self.statusbar_xpath_expressions.setSizeGripEnabled(False)
         self.statusbar_xpath_expressions.setObjectName(u"statusbar_xpath_expressions")
@@ -347,6 +349,7 @@ class Ui_MainWindow(object):
 
         self.verticalLayout_7.addWidget(self.list_widget_xpath_expressions)
         self.verticalLayout_7.addWidget(self.statusbar_xpath_expressions)
+
 
         self.vert_layout_main.addWidget(self.group_box_xpath_expressions_list)
 
@@ -357,7 +360,7 @@ class Ui_MainWindow(object):
         self.verticalLayout_8.setObjectName(u"verticalLayout_8")
         self.label = QLabel(self.group_box_export_to_csv)
         self.label.setObjectName(u"label")
-        self.label.setFont(font3)
+        self.label.setFont(font2)
 
         self.verticalLayout_8.addWidget(self.label)
 
@@ -365,7 +368,7 @@ class Ui_MainWindow(object):
         self.hor_layout_csv_input_and_export.setObjectName(u"hor_layout_csv_input_and_export")
         self.line_edit_csv_output_path = QLineEdit(self.group_box_export_to_csv)
         self.line_edit_csv_output_path.setObjectName(u"line_edit_csv_output_path")
-        self.line_edit_csv_output_path.setFont(font3)
+        self.line_edit_csv_output_path.setFont(font2)
         self.line_edit_csv_output_path.setClearButtonEnabled(True)
 
         self.hor_layout_csv_input_and_export.addWidget(self.line_edit_csv_output_path)
@@ -381,14 +384,7 @@ class Ui_MainWindow(object):
 
         self.label_csv_headers_info = QLabel(self.group_box_export_to_csv)
         self.label_csv_headers_info.setObjectName(u"label_csv_headers_info")
-        font5 = QFont()
-        font5.setFamilies([u"Arial"])
-        font5.setPointSize(10)
-        font5.setBold(False)
-        font5.setItalic(False)
-        font5.setUnderline(False)
-        font5.setStrikeOut(False)
-        self.label_csv_headers_info.setFont(font5)
+        self.label_csv_headers_info.setFont(font2)
 
         self.verticalLayout_8.addWidget(self.label_csv_headers_info)
 
@@ -396,7 +392,7 @@ class Ui_MainWindow(object):
         self.hor_layout_csv_headers.setObjectName(u"hor_layout_csv_headers")
         self.line_edit_csv_headers_input = QLineEdit(self.group_box_export_to_csv)
         self.line_edit_csv_headers_input.setObjectName(u"line_edit_csv_headers_input")
-        self.line_edit_csv_headers_input.setFont(font3)
+        self.line_edit_csv_headers_input.setFont(font2)
         self.line_edit_csv_headers_input.setClearButtonEnabled(True)
 
         self.hor_layout_csv_headers.addWidget(self.line_edit_csv_headers_input)
@@ -409,7 +405,7 @@ class Ui_MainWindow(object):
         self.button_abort_csv_export = QPushButton(self.group_box_export_to_csv)
         self.button_abort_csv_export.setObjectName(u"button_abort_csv_export")
         self.button_abort_csv_export.setEnabled(True)
-        self.button_abort_csv_export.setFont(font4)
+        self.button_abort_csv_export.setFont(font3)
         self.button_abort_csv_export.setFlat(False)
         self.button_abort_csv_export.setHidden(True)
 
@@ -434,7 +430,7 @@ class Ui_MainWindow(object):
         self.verticalLayout_6.setObjectName(u"verticalLayout_6")
         self.text_edit_program_output = QTextEdit(self.group_box_program_output)
         self.text_edit_program_output.setObjectName(u"text_edit_program_output")
-        self.text_edit_program_output.setFont(font3)
+        self.text_edit_program_output.setFont(font2)
         self.text_edit_program_output.setReadOnly(True)
 
         self.verticalLayout_6.addWidget(self.text_edit_program_output)
@@ -494,13 +490,13 @@ class Ui_MainWindow(object):
         palette1.setBrush(QPalette.ColorGroup.Disabled, QPalette.ColorRole.Accent, brush1)
 #endif
         self.text_edit_xml_output.setPalette(palette1)
-        self.text_edit_xml_output.setFont(font5)
+        self.text_edit_xml_output.setFont(font2)
 
         self.verticalLayout_5.addWidget(self.text_edit_xml_output)
 
         self.progressbar_main = QProgressBar(self.group_box_xml_output)
         self.progressbar_main.setObjectName(u"progressbar_main")
-        self.progressbar_main.setFont(font3)
+        self.progressbar_main.setFont(font2)
         self.progressbar_main.setValue(0)
 
         self.verticalLayout_5.addWidget(self.progressbar_main)
@@ -530,13 +526,15 @@ class Ui_MainWindow(object):
         sizePolicy.setHeightForWidth(self.label_csv_conversion_title.sizePolicy().hasHeightForWidth())
         self.label_csv_conversion_title.setSizePolicy(sizePolicy)
         self.label_csv_conversion_title.setMaximumSize(QSize(16777215, 60))
-        font6 = QFont()
-        font6.setFamilies([u"Arial"])
-        font6.setPointSize(32)
-        font6.setBold(True)
-        font6.setUnderline(True)
-        font6.setKerning(True)
-        self.label_csv_conversion_title.setFont(font6)
+        font5 = QFont()
+        font5.setFamilies([u"Microsoft YaHei UI"])
+        font5.setPointSize(32)
+        font5.setBold(True)
+        font5.setItalic(False)
+        font5.setUnderline(True)
+        font5.setStrikeOut(False)
+        font5.setKerning(True)
+        self.label_csv_conversion_title.setFont(font5)
         self.label_csv_conversion_title.setStyleSheet(u"color: rgb(255, 200, 87);")
 
         self.verticalLayout_2.addWidget(self.label_csv_conversion_title)
@@ -544,10 +542,7 @@ class Ui_MainWindow(object):
         self.label_csv_conversion_desc = QLabel(self.groupbox_csv_conversion)
         self.label_csv_conversion_desc.setObjectName(u"label_csv_conversion_desc")
         self.label_csv_conversion_desc.setMaximumSize(QSize(16777215, 60))
-        font7 = QFont()
-        font7.setFamilies([u"Arial"])
-        font7.setPointSize(10)
-        self.label_csv_conversion_desc.setFont(font7)
+        self.label_csv_conversion_desc.setFont(font2)
 
         self.verticalLayout_2.addWidget(self.label_csv_conversion_desc)
 

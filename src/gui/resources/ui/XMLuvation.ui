@@ -313,7 +313,7 @@
   </property>
   <property name="font">
    <font>
-    <family>Segoe UI</family>
+    <family>Microsoft YaHei UI</family>
     <pointsize>10</pointsize>
     <italic>false</italic>
     <bold>false</bold>
@@ -330,6 +330,9 @@
   <property name="autoFillBackground">
    <bool>false</bool>
   </property>
+  <property name="styleSheet">
+   <string notr="true"/>
+  </property>
   <property name="iconSize">
    <size>
     <width>256</width>
@@ -339,7 +342,7 @@
   <widget class="QWidget" name="centralwidget">
    <property name="font">
     <font>
-     <family>Segoe UI</family>
+     <family>Microsoft YaHei UI</family>
      <pointsize>10</pointsize>
      <italic>false</italic>
      <bold>false</bold>
@@ -354,7 +357,7 @@
       </property>
       <property name="font">
        <font>
-        <family>Segoe UI</family>
+        <family>Microsoft YaHei UI</family>
         <pointsize>10</pointsize>
         <italic>true</italic>
         <bold>true</bold>
@@ -374,7 +377,7 @@
       <widget class="QWidget" name="tab_xml_evaluation">
        <property name="font">
         <font>
-         <family>Segoe UI</family>
+         <family>Microsoft YaHei UI</family>
          <pointsize>10</pointsize>
          <italic>false</italic>
          <bold>false</bold>
@@ -392,7 +395,7 @@
            <widget class="QGroupBox" name="group_box_xml_input_xpath_builder">
             <property name="font">
              <font>
-              <family>Arial</family>
+              <family>Microsoft YaHei UI</family>
               <pointsize>10</pointsize>
               <italic>false</italic>
               <bold>true</bold>
@@ -410,10 +413,10 @@
                 <widget class="QLineEdit" name="line_edit_xml_folder_path_input">
                  <property name="font">
                   <font>
-                   <family>Arial</family>
+                   <family>Microsoft YaHei UI</family>
                    <pointsize>10</pointsize>
                    <italic>false</italic>
-                   <bold>true</bold>
+                   <bold>false</bold>
                    <underline>false</underline>
                    <strikeout>false</strikeout>
                   </font>
@@ -430,7 +433,7 @@
                 <widget class="QPushButton" name="button_browse_xml_folder">
                  <property name="font">
                   <font>
-                   <family>Arial</family>
+                   <family>Microsoft YaHei UI</family>
                    <pointsize>10</pointsize>
                    <italic>false</italic>
                    <bold>true</bold>
@@ -447,7 +450,7 @@
                 <widget class="QPushButton" name="button_read_xml">
                  <property name="font">
                   <font>
-                   <family>Arial</family>
+                   <family>Microsoft YaHei UI</family>
                    <pointsize>10</pointsize>
                    <italic>false</italic>
                    <bold>true</bold>
@@ -474,10 +477,10 @@
                 <widget class="QLabel" name="label_xpath_builder">
                  <property name="font">
                   <font>
-                   <family>Arial</family>
+                   <family>Microsoft YaHei UI</family>
                    <pointsize>10</pointsize>
                    <italic>false</italic>
-                   <bold>true</bold>
+                   <bold>false</bold>
                    <underline>false</underline>
                    <strikeout>false</strikeout>
                   </font>
@@ -507,8 +510,8 @@
                  </property>
                  <property name="font">
                   <font>
-                   <family>Arial</family>
-                   <pointsize>9</pointsize>
+                   <family>Microsoft YaHei UI</family>
+                   <pointsize>8</pointsize>
                    <italic>false</italic>
                    <bold>true</bold>
                    <underline>false</underline>
@@ -527,7 +530,7 @@
                  </property>
                  <property name="font">
                   <font>
-                   <family>Arial</family>
+                   <family>Microsoft YaHei UI</family>
                    <pointsize>10</pointsize>
                    <italic>false</italic>
                    <bold>true</bold>
@@ -559,8 +562,8 @@
                  </property>
                  <property name="font">
                   <font>
-                   <family>Arial</family>
-                   <pointsize>9</pointsize>
+                   <family>Microsoft YaHei UI</family>
+                   <pointsize>8</pointsize>
                    <italic>false</italic>
                    <bold>true</bold>
                    <underline>false</underline>
@@ -579,7 +582,7 @@
                  </property>
                  <property name="font">
                   <font>
-                   <family>Arial</family>
+                   <family>Microsoft YaHei UI</family>
                    <pointsize>10</pointsize>
                    <italic>false</italic>
                    <bold>true</bold>
@@ -624,8 +627,8 @@
                  </property>
                  <property name="font">
                   <font>
-                   <family>Arial</family>
-                   <pointsize>9</pointsize>
+                   <family>Microsoft YaHei UI</family>
+                   <pointsize>8</pointsize>
                    <italic>false</italic>
                    <bold>true</bold>
                    <underline>false</underline>
@@ -644,7 +647,7 @@
                  </property>
                  <property name="font">
                   <font>
-                   <family>Arial</family>
+                   <family>Microsoft YaHei UI</family>
                    <pointsize>10</pointsize>
                    <italic>false</italic>
                    <bold>true</bold>
@@ -676,8 +679,8 @@
                  </property>
                  <property name="font">
                   <font>
-                   <family>Arial</family>
-                   <pointsize>9</pointsize>
+                   <family>Microsoft YaHei UI</family>
+                   <pointsize>8</pointsize>
                    <italic>false</italic>
                    <bold>true</bold>
                    <underline>false</underline>
@@ -696,7 +699,7 @@
                  </property>
                  <property name="font">
                   <font>
-                   <family>Arial</family>
+                   <family>Microsoft YaHei UI</family>
                    <pointsize>10</pointsize>
                    <italic>false</italic>
                    <bold>true</bold>
@@ -723,7 +726,7 @@
              <item>
               <layout class="QHBoxLayout" name="horizontalLayout_five">
                <property name="spacing">
-                <number>0</number>
+                <number>20</number>
                </property>
                <property name="topMargin">
                 <number>7</number>
@@ -735,7 +738,7 @@
                 <widget class="QLabel" name="label_function">
                  <property name="font">
                   <font>
-                   <family>Arial</family>
+                   <family>Microsoft YaHei UI</family>
                    <pointsize>10</pointsize>
                    <italic>false</italic>
                    <bold>true</bold>
@@ -752,7 +755,7 @@
                 <widget class="QRadioButton" name="radio_button_equals">
                  <property name="font">
                   <font>
-                   <family>Arial</family>
+                   <family>Microsoft YaHei UI</family>
                    <pointsize>10</pointsize>
                    <italic>false</italic>
                    <bold>true</bold>
@@ -772,7 +775,7 @@
                 <widget class="QRadioButton" name="radio_button_contains">
                  <property name="font">
                   <font>
-                   <family>Arial</family>
+                   <family>Microsoft YaHei UI</family>
                    <pointsize>10</pointsize>
                    <italic>false</italic>
                    <bold>true</bold>
@@ -792,7 +795,7 @@
                 <widget class="QRadioButton" name="radio_button_starts_with">
                  <property name="font">
                   <font>
-                   <family>Arial</family>
+                   <family>Microsoft YaHei UI</family>
                    <pointsize>10</pointsize>
                    <italic>false</italic>
                    <bold>true</bold>
@@ -809,7 +812,7 @@
                 <widget class="QRadioButton" name="radio_button_greater">
                  <property name="font">
                   <font>
-                   <family>Arial</family>
+                   <family>Microsoft YaHei UI</family>
                    <pointsize>10</pointsize>
                    <italic>false</italic>
                    <bold>true</bold>
@@ -826,7 +829,7 @@
                 <widget class="QRadioButton" name="radio_button_smaller">
                  <property name="font">
                   <font>
-                   <family>Arial</family>
+                   <family>Microsoft YaHei UI</family>
                    <pointsize>10</pointsize>
                    <italic>false</italic>
                    <bold>true</bold>
@@ -847,10 +850,10 @@
                 <widget class="QLineEdit" name="line_edit_xpath_builder">
                  <property name="font">
                   <font>
-                   <family>Arial</family>
+                   <family>Microsoft YaHei UI</family>
                    <pointsize>10</pointsize>
                    <italic>false</italic>
-                   <bold>true</bold>
+                   <bold>false</bold>
                    <underline>false</underline>
                    <strikeout>false</strikeout>
                   </font>
@@ -867,7 +870,7 @@
                 <widget class="QPushButton" name="button_build_xpath">
                  <property name="font">
                   <font>
-                   <family>Arial</family>
+                   <family>Microsoft YaHei UI</family>
                    <pointsize>10</pointsize>
                    <italic>false</italic>
                    <bold>true</bold>
@@ -886,7 +889,7 @@
               <widget class="QPushButton" name="button_add_xpath_to_list">
                <property name="font">
                 <font>
-                 <family>Arial</family>
+                 <family>Microsoft YaHei UI</family>
                  <pointsize>10</pointsize>
                  <italic>false</italic>
                  <bold>true</bold>
@@ -906,7 +909,7 @@
            <widget class="QGroupBox" name="group_box_xpath_expressions_list">
             <property name="font">
              <font>
-              <family>Arial</family>
+              <family>Microsoft YaHei UI</family>
               <pointsize>10</pointsize>
               <italic>false</italic>
               <bold>true</bold>
@@ -922,10 +925,10 @@
               <widget class="QListWidget" name="list_widget_xpath_expressions">
                <property name="font">
                 <font>
-                 <family>Arial</family>
+                 <family>Microsoft YaHei UI</family>
                  <pointsize>10</pointsize>
                  <italic>false</italic>
-                 <bold>true</bold>
+                 <bold>false</bold>
                  <underline>false</underline>
                  <strikeout>false</strikeout>
                 </font>
@@ -939,7 +942,7 @@
            <widget class="QGroupBox" name="group_box_export_to_csv">
             <property name="font">
              <font>
-              <family>Arial</family>
+              <family>Microsoft YaHei UI</family>
               <pointsize>10</pointsize>
               <italic>false</italic>
               <bold>true</bold>
@@ -955,10 +958,10 @@
               <widget class="QLabel" name="label">
                <property name="font">
                 <font>
-                 <family>Arial</family>
+                 <family>Microsoft YaHei UI</family>
                  <pointsize>10</pointsize>
                  <italic>false</italic>
-                 <bold>true</bold>
+                 <bold>false</bold>
                  <underline>false</underline>
                  <strikeout>false</strikeout>
                 </font>
@@ -974,10 +977,10 @@
                 <widget class="QLineEdit" name="line_edit_csv_output_path">
                  <property name="font">
                   <font>
-                   <family>Arial</family>
+                   <family>Microsoft YaHei UI</family>
                    <pointsize>10</pointsize>
                    <italic>false</italic>
-                   <bold>true</bold>
+                   <bold>false</bold>
                    <underline>false</underline>
                    <strikeout>false</strikeout>
                   </font>
@@ -994,7 +997,7 @@
                 <widget class="QPushButton" name="button_browse_csv">
                  <property name="font">
                   <font>
-                   <family>Arial</family>
+                   <family>Microsoft YaHei UI</family>
                    <pointsize>10</pointsize>
                    <italic>false</italic>
                    <bold>true</bold>
@@ -1013,7 +1016,7 @@
               <widget class="QLabel" name="label_csv_headers_info">
                <property name="font">
                 <font>
-                 <family>Arial</family>
+                 <family>Microsoft YaHei UI</family>
                  <pointsize>10</pointsize>
                  <italic>false</italic>
                  <bold>false</bold>
@@ -1032,10 +1035,10 @@
                 <widget class="QLineEdit" name="line_edit_csv_headers_input">
                  <property name="font">
                   <font>
-                   <family>Arial</family>
+                   <family>Microsoft YaHei UI</family>
                    <pointsize>10</pointsize>
                    <italic>false</italic>
-                   <bold>true</bold>
+                   <bold>false</bold>
                    <underline>false</underline>
                    <strikeout>false</strikeout>
                   </font>
@@ -1059,8 +1062,8 @@
                  </property>
                  <property name="font">
                   <font>
-                   <family>Arial</family>
-                   <pointsize>9</pointsize>
+                   <family>Microsoft YaHei UI</family>
+                   <pointsize>10</pointsize>
                    <italic>false</italic>
                    <bold>true</bold>
                    <underline>false</underline>
@@ -1079,7 +1082,7 @@
                 <widget class="QPushButton" name="button_start_csv_export">
                  <property name="font">
                   <font>
-                   <family>Arial</family>
+                   <family>Microsoft YaHei UI</family>
                    <pointsize>10</pointsize>
                    <italic>false</italic>
                    <bold>true</bold>
@@ -1101,7 +1104,7 @@
            <widget class="QGroupBox" name="group_box_program_output">
             <property name="font">
              <font>
-              <family>Arial</family>
+              <family>Microsoft YaHei UI</family>
               <pointsize>10</pointsize>
               <italic>false</italic>
               <bold>true</bold>
@@ -1117,10 +1120,10 @@
               <widget class="QTextEdit" name="text_edit_program_output">
                <property name="font">
                 <font>
-                 <family>Arial</family>
+                 <family>Microsoft YaHei UI</family>
                  <pointsize>10</pointsize>
                  <italic>false</italic>
-                 <bold>true</bold>
+                 <bold>false</bold>
                  <underline>false</underline>
                  <strikeout>false</strikeout>
                 </font>
@@ -1141,7 +1144,7 @@
            <widget class="QGroupBox" name="group_box_xml_output">
             <property name="font">
              <font>
-              <family>Arial</family>
+              <family>Microsoft YaHei UI</family>
               <pointsize>10</pointsize>
               <italic>false</italic>
               <bold>true</bold>
@@ -1455,7 +1458,7 @@
                </property>
                <property name="font">
                 <font>
-                 <family>Arial</family>
+                 <family>Microsoft YaHei UI</family>
                  <pointsize>10</pointsize>
                  <italic>false</italic>
                  <bold>false</bold>
@@ -1469,10 +1472,10 @@
               <widget class="QProgressBar" name="progressbar_main">
                <property name="font">
                 <font>
-                 <family>Arial</family>
+                 <family>Microsoft YaHei UI</family>
                  <pointsize>10</pointsize>
                  <italic>false</italic>
-                 <bold>true</bold>
+                 <bold>false</bold>
                  <underline>false</underline>
                  <strikeout>false</strikeout>
                 </font>
@@ -1495,7 +1498,7 @@
       <widget class="QWidget" name="tab_csv_conversion">
        <property name="font">
         <font>
-         <family>Segoe UI</family>
+         <family>Microsoft YaHei UI</family>
          <pointsize>10</pointsize>
          <italic>false</italic>
          <bold>false</bold>
@@ -1535,10 +1538,12 @@
              </property>
              <property name="font">
               <font>
-               <family>Arial</family>
+               <family>Microsoft YaHei UI</family>
                <pointsize>32</pointsize>
+               <italic>false</italic>
                <bold>true</bold>
                <underline>true</underline>
+               <strikeout>false</strikeout>
                <kerning>true</kerning>
               </font>
              </property>
@@ -1560,8 +1565,12 @@
              </property>
              <property name="font">
               <font>
-               <family>Arial</family>
+               <family>Microsoft YaHei UI</family>
                <pointsize>10</pointsize>
+               <italic>false</italic>
+               <bold>false</bold>
+               <underline>false</underline>
+               <strikeout>false</strikeout>
               </font>
              </property>
              <property name="text">
