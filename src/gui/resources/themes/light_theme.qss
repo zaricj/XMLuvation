@@ -1,5 +1,6 @@
 QWidget {
     background-color: #ececec;
+    color: #000000;
     border-radius: 6px;
 }
 
