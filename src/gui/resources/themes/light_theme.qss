@@ -44,6 +44,10 @@ QPushButton:pressed {
     padding-top: 8px;
 }
 
+QPushButton:disabled {
+    background-color: #b3b3b3;
+}
+
 QLineEdit, QComboBox, QTextEdit, QStatusBar {
     background-color: #ffffff;
     border: 1px solid #cccccc;
@@ -72,10 +76,6 @@ QComboBox::drop-down {
     border-top-right-radius: 6px;
     border-bottom-right-radius: 6px;
     image: url(:/images/drpdwn_arrow.png)
-}
-
-QPushButton:disabled {
-    background-color: #b3b3b3;
 }
 
 QComboBox:disabled {

@@ -291,6 +291,7 @@ class Ui_MainWindow(object):
         font5 = QFont()
         font5.setFamilies([u"Arial"])
         self.line_edit_xml_folder_path_input.setFont(font5)
+        self.line_edit_xml_folder_path_input.setClearButtonEnabled(True)
 
         self.horizontalLayout_one.addWidget(self.line_edit_xml_folder_path_input)
 
@@ -458,6 +459,7 @@ class Ui_MainWindow(object):
         self.line_edit_xpath_builder = QLineEdit(self.group_box_xml_input_xpath_builder)
         self.line_edit_xpath_builder.setObjectName(u"line_edit_xpath_builder")
         self.line_edit_xpath_builder.setFont(font5)
+        self.line_edit_xpath_builder.setClearButtonEnabled(True)
 
         self.horizontalLayout_six.addWidget(self.line_edit_xpath_builder)
 
@@ -516,6 +518,7 @@ class Ui_MainWindow(object):
         self.line_edit_csv_output_path = QLineEdit(self.group_box_export_to_csv)
         self.line_edit_csv_output_path.setObjectName(u"line_edit_csv_output_path")
         self.line_edit_csv_output_path.setFont(font5)
+        self.line_edit_csv_output_path.setClearButtonEnabled(True)
 
         self.hor_layout_csv_input_and_export.addWidget(self.line_edit_csv_output_path)
 
@@ -539,6 +542,7 @@ class Ui_MainWindow(object):
         self.line_edit_csv_headers_input = QLineEdit(self.group_box_export_to_csv)
         self.line_edit_csv_headers_input.setObjectName(u"line_edit_csv_headers_input")
         self.line_edit_csv_headers_input.setFont(font5)
+        self.line_edit_csv_headers_input.setClearButtonEnabled(True)
 
         self.hor_layout_csv_headers.addWidget(self.line_edit_csv_headers_input)
 

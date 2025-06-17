@@ -22,10 +22,10 @@ sys.path.append(os.path.abspath(os.path.join(os.path.dirname(__file__), '..', '.
 # Check if the application is running in a PyInstaller bundle
 if getattr(sys, 'frozen', False) and hasattr(sys, '_MEIPASS'):
     # Running in a PyInstaller bundle, BASE_DIR points to the bundle's root
-    BASE_DIR = sys._MEIPASS
+    BASE_DIR: str = sys._MEIPASS
 else:
     # Running in a normal Python environment
-    BASE_DIR = os.path.dirname(os.path.abspath(__file__))
+    BASE_DIR: str = os.path.dirname(os.path.abspath(__file__))
     # At work it's C:\Users\ZaricJ\Documents\Main\02_Entwicklung_und_Tools\GitHub\XMLuvation\src\gui
     
 print(f"BASE DIRECTORY: {BASE_DIR}")
@@ -34,11 +34,11 @@ print(f"BASE DIRECTORY: {BASE_DIR}")
 LOG_FILE_PATH: str = os.path.join("src","logs","xmluvation.log")
 GUI_CONFIG_FILE_PATH: str = os.path.join(BASE_DIR, "config","config.json")
 GUI_CONFIG_DIRECTORY: str = os.path.join(BASE_DIR, "config")
-DARK_THEME_PATH = os.path.join(BASE_DIR, "resources", "themes", "dark_theme.qss")
-LIGHT_THEME_PATH = os.path.join(BASE_DIR, "resources", "themes", "light_theme.qss")
-ICON_PATH = os.path.join(BASE_DIR, "resources", "icons", "xml_256px.ico")
-DARK_THEME_QMENU_ICON = os.path.join(BASE_DIR, "resources", "images", "dark.png")
-LIGHT_THEME_QMENU_ICON = os.path.join(BASE_DIR, "resources", "images", "light.png")
+DARK_THEME_PATH: str = os.path.join(BASE_DIR, "resources", "themes", "dark_theme.qss")
+LIGHT_THEME_PATH: str = os.path.join(BASE_DIR, "resources", "themes", "light_theme.qss")
+ICON_PATH: str = os.path.join(BASE_DIR, "resources", "icons", "xml_256px.ico")
+DARK_THEME_QMENU_ICON: str = os.path.join(BASE_DIR, "resources", "images", "dark.png")
+LIGHT_THEME_QMENU_ICON: str = os.path.join(BASE_DIR, "resources", "images", "light.png")
 
 # Resource and UI Paths
 UI_FILE_NAME: str = os.path.join(BASE_DIR, "resources", "ui", "XMLuvation.ui")
