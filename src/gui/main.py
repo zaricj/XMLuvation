@@ -11,11 +11,11 @@ from utils.config_handler import ConfigHandler
 from utils.xml_parser import create_xml_parser, apply_xml_highlighting_to_widget, set_xml_content_to_widget
 
 from utils.xpath_builder import create_xpath_builder
-from controller import ComboboxState, CSVConversion, AddXPathExpressionToList, SearchAndExportToCSV, GenerateCSVHeader
+from gui.controller import ComboboxState, CSVConversion, AddXPathExpressionToList, SearchAndExportToCSV, GenerateCSVHeader
 
-from path_manager_window import CustomPathsManager
+from gui.path_manager_window import CustomPathsManager
 
-from resources.ui.XMLuvation_ui import Ui_MainWindow
+from gui.resources.ui.XMLuvation_ui import Ui_MainWindow
 
 sys.path.append(os.path.abspath(os.path.join(os.path.dirname(__file__), '..', '..')))
 

@@ -1,6 +1,5 @@
 from PySide6.QtWidgets import QWidget, QMessageBox
 import os
-from PySide6.QtGui import QCloseEvent
 
 from utils.config_handler import ConfigHandler
 from gui.resources.ui.CustomPathsManager_ui import Ui_Form

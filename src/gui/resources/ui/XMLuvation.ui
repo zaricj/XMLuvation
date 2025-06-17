@@ -13,12 +13,311 @@
     <height>1000</height>
    </rect>
   </property>
+  <property name="palette">
+   <palette>
+    <active>
+     <colorrole role="WindowText">
+      <brush brushstyle="SolidPattern">
+       <color alpha="255">
+        <red>255</red>
+        <green>255</green>
+        <blue>255</blue>
+       </color>
+      </brush>
+     </colorrole>
+     <colorrole role="Button">
+      <brush brushstyle="SolidPattern">
+       <color alpha="255">
+        <red>255</red>
+        <green>200</green>
+        <blue>87</blue>
+       </color>
+      </brush>
+     </colorrole>
+     <colorrole role="Dark">
+      <brush brushstyle="SolidPattern">
+       <color alpha="255">
+        <red>54</red>
+        <green>54</green>
+        <blue>54</blue>
+       </color>
+      </brush>
+     </colorrole>
+     <colorrole role="Text">
+      <brush brushstyle="SolidPattern">
+       <color alpha="255">
+        <red>255</red>
+        <green>255</green>
+        <blue>255</blue>
+       </color>
+      </brush>
+     </colorrole>
+     <colorrole role="BrightText">
+      <brush brushstyle="SolidPattern">
+       <color alpha="255">
+        <red>255</red>
+        <green>255</green>
+        <blue>127</blue>
+       </color>
+      </brush>
+     </colorrole>
+     <colorrole role="ButtonText">
+      <brush brushstyle="SolidPattern">
+       <color alpha="255">
+        <red>0</red>
+        <green>0</green>
+        <blue>0</blue>
+       </color>
+      </brush>
+     </colorrole>
+     <colorrole role="Base">
+      <brush brushstyle="SolidPattern">
+       <color alpha="255">
+        <red>49</red>
+        <green>51</green>
+        <blue>56</blue>
+       </color>
+      </brush>
+     </colorrole>
+     <colorrole role="Window">
+      <brush brushstyle="SolidPattern">
+       <color alpha="255">
+        <red>35</red>
+        <green>36</green>
+        <blue>40</blue>
+       </color>
+      </brush>
+     </colorrole>
+     <colorrole role="Highlight">
+      <brush brushstyle="SolidPattern">
+       <color alpha="255">
+        <red>211</red>
+        <green>162</green>
+        <blue>72</blue>
+       </color>
+      </brush>
+     </colorrole>
+     <colorrole role="HighlightedText">
+      <brush brushstyle="SolidPattern">
+       <color alpha="255">
+        <red>0</red>
+        <green>0</green>
+        <blue>0</blue>
+       </color>
+      </brush>
+     </colorrole>
+     <colorrole role="Accent">
+      <brush brushstyle="SolidPattern">
+       <color alpha="255">
+        <red>255</red>
+        <green>200</green>
+        <blue>87</blue>
+       </color>
+      </brush>
+     </colorrole>
+    </active>
+    <inactive>
+     <colorrole role="WindowText">
+      <brush brushstyle="SolidPattern">
+       <color alpha="255">
+        <red>255</red>
+        <green>255</green>
+        <blue>255</blue>
+       </color>
+      </brush>
+     </colorrole>
+     <colorrole role="Button">
+      <brush brushstyle="SolidPattern">
+       <color alpha="255">
+        <red>255</red>
+        <green>200</green>
+        <blue>87</blue>
+       </color>
+      </brush>
+     </colorrole>
+     <colorrole role="Dark">
+      <brush brushstyle="SolidPattern">
+       <color alpha="255">
+        <red>54</red>
+        <green>54</green>
+        <blue>54</blue>
+       </color>
+      </brush>
+     </colorrole>
+     <colorrole role="Text">
+      <brush brushstyle="SolidPattern">
+       <color alpha="255">
+        <red>255</red>
+        <green>255</green>
+        <blue>255</blue>
+       </color>
+      </brush>
+     </colorrole>
+     <colorrole role="BrightText">
+      <brush brushstyle="SolidPattern">
+       <color alpha="255">
+        <red>255</red>
+        <green>255</green>
+        <blue>127</blue>
+       </color>
+      </brush>
+     </colorrole>
+     <colorrole role="ButtonText">
+      <brush brushstyle="SolidPattern">
+       <color alpha="255">
+        <red>0</red>
+        <green>0</green>
+        <blue>0</blue>
+       </color>
+      </brush>
+     </colorrole>
+     <colorrole role="Base">
+      <brush brushstyle="SolidPattern">
+       <color alpha="255">
+        <red>49</red>
+        <green>51</green>
+        <blue>56</blue>
+       </color>
+      </brush>
+     </colorrole>
+     <colorrole role="Window">
+      <brush brushstyle="SolidPattern">
+       <color alpha="255">
+        <red>35</red>
+        <green>36</green>
+        <blue>40</blue>
+       </color>
+      </brush>
+     </colorrole>
+     <colorrole role="Highlight">
+      <brush brushstyle="SolidPattern">
+       <color alpha="255">
+        <red>211</red>
+        <green>162</green>
+        <blue>72</blue>
+       </color>
+      </brush>
+     </colorrole>
+     <colorrole role="HighlightedText">
+      <brush brushstyle="SolidPattern">
+       <color alpha="255">
+        <red>0</red>
+        <green>0</green>
+        <blue>0</blue>
+       </color>
+      </brush>
+     </colorrole>
+     <colorrole role="Accent">
+      <brush brushstyle="SolidPattern">
+       <color alpha="255">
+        <red>255</red>
+        <green>200</green>
+        <blue>87</blue>
+       </color>
+      </brush>
+     </colorrole>
+    </inactive>
+    <disabled>
+     <colorrole role="WindowText">
+      <brush brushstyle="SolidPattern">
+       <color alpha="255">
+        <red>54</red>
+        <green>54</green>
+        <blue>54</blue>
+       </color>
+      </brush>
+     </colorrole>
+     <colorrole role="Button">
+      <brush brushstyle="SolidPattern">
+       <color alpha="255">
+        <red>255</red>
+        <green>200</green>
+        <blue>87</blue>
+       </color>
+      </brush>
+     </colorrole>
+     <colorrole role="Dark">
+      <brush brushstyle="SolidPattern">
+       <color alpha="255">
+        <red>54</red>
+        <green>54</green>
+        <blue>54</blue>
+       </color>
+      </brush>
+     </colorrole>
+     <colorrole role="Text">
+      <brush brushstyle="SolidPattern">
+       <color alpha="255">
+        <red>54</red>
+        <green>54</green>
+        <blue>54</blue>
+       </color>
+      </brush>
+     </colorrole>
+     <colorrole role="BrightText">
+      <brush brushstyle="SolidPattern">
+       <color alpha="255">
+        <red>255</red>
+        <green>255</green>
+        <blue>127</blue>
+       </color>
+      </brush>
+     </colorrole>
+     <colorrole role="ButtonText">
+      <brush brushstyle="SolidPattern">
+       <color alpha="255">
+        <red>54</red>
+        <green>54</green>
+        <blue>54</blue>
+       </color>
+      </brush>
+     </colorrole>
+     <colorrole role="Base">
+      <brush brushstyle="SolidPattern">
+       <color alpha="255">
+        <red>35</red>
+        <green>36</green>
+        <blue>40</blue>
+       </color>
+      </brush>
+     </colorrole>
+     <colorrole role="Window">
+      <brush brushstyle="SolidPattern">
+       <color alpha="255">
+        <red>35</red>
+        <green>36</green>
+        <blue>40</blue>
+       </color>
+      </brush>
+     </colorrole>
+     <colorrole role="HighlightedText">
+      <brush brushstyle="SolidPattern">
+       <color alpha="255">
+        <red>0</red>
+        <green>0</green>
+        <blue>0</blue>
+       </color>
+      </brush>
+     </colorrole>
+     <colorrole role="Accent">
+      <brush brushstyle="SolidPattern">
+       <color alpha="255">
+        <red>255</red>
+        <green>200</green>
+        <blue>87</blue>
+       </color>
+      </brush>
+     </colorrole>
+    </disabled>
+   </palette>
+  </property>
   <property name="font">
    <font>
-    <family>Arial</family>
+    <family>Segoe UI</family>
     <pointsize>10</pointsize>
     <italic>false</italic>
     <bold>false</bold>
+    <underline>false</underline>
    </font>
   </property>
   <property name="windowTitle">
@@ -31,200 +330,6 @@
   <property name="autoFillBackground">
    <bool>false</bool>
   </property>
-  <property name="styleSheet">
-   <string notr="true">    QWidget {
-        background-color: #232428;
-        color: #ffffff;
-        font-family: Arial, sans-serif;
-        border-radius: 6px;
-    }
-
-    QMenuBar {
-        background-color: #232428;
-        padding: 4px;
-    }
-
-    QMenuBar::item:selected {
-        background-color: #ffc857;
-        border-radius: 4px;
-        color: #1e1e1e;
-    }
-
-    QMenu {
-        background-color: #232428;
-        border: 1px solid #313338;
-        border-radius: 2px;
-    }
-
-    QMenu::item:selected {
-        background-color: #ffc857;
-        color: #1e1e1e;
-    }
-
-    QPushButton {
-        background-color: #ffc857;
-        color: #000000;
-        border: none;
-        padding: 7px 9px;
-        border-radius: 6px;
-        font: bold;
-    }
-
-    QPushButton:hover {
-        background-color: #dbaa4a;
-    }
-
-    QPushButton:pressed {
-        background-color: #e3a834;
-        padding-left: 9px; /* Creates a &quot;pressed&quot; effect */
-        padding-top: 8px;
-    }
-
-    QPushButton:disabled {
-        background-color: #808080;
-    }
-    
-    QLineEdit, QComboBox, QTextEdit, QStatusBar {
-        background-color: #313338;
-        border: 1px solid #4a4a4a;
-        padding: 6px;
-        border-radius: 6px;
-    }
-
-    QListWidget {
-        background-color: #313338;
-    }
-
-    QListWidget::item {
-        height: 26px;
-    }
-
-    QListWidget::item:selected {
-        background-color: #ffc857;
-        color: #000000;
-    }
-
-    QComboBox::drop-down {
-        border: none;
-        background-color: #ffc857;
-        width: 20px;
-        border-top-right-radius: 6px;
-        border-bottom-right-radius: 6px;
-        image: url(:/images/drpdwn_arrow.png)
-    }
-
-    QComboBox:disabled {
-        background-color: #808080;    
-    }
-
-    QComboBox::drop-down:disabled {
-        border: none;
-        background-color: #3d3d3d;
-    }
-
-    QTabWidget::pane {
-        border: 1px solid #313338;
-        border-radius: 6px;
-    }
-
-    QTabBar::tab {
-        background-color: #232428;
-        border: 1px solid #313338;
-        padding: 8px 14px;
-        border-radius: 6px;
-        margin: 0 2px;
-    }
-
-    QTabBar::tab:selected {
-        background-color: #ffc857;
-        color: #000000;
-    }
-
-    QTableView {
-        background-color: #313338;
-    }
-
-    QGroupBox {
-        border: 1px solid #313338;
-        border-radius: 6px;
-        margin-top: 10px;
-        padding: 10px;
-        font: bold;
-    }
-
-    QGroupBox::title {
-        subcontrol-origin: margin;
-        subcontrol-position: top left;
-        left: 12px;
-        padding: 0 6px;
-    }
-
-    QRadioButton::indicator {
-        width: 16px;
-        height: 16px;
-    }
-
-
-    QRadioButton:disabled {
-        color: #808080; 
-    }
-
-
-    QScrollBar:vertical {
-        border: none;
-        background: #232428;
-        width: 12px;
-        margin: 4px;
-        border-radius: 6px;
-    }
-
-    QScrollBar::handle:vertical {
-        background: #313338;
-        min-height: 20px;
-        border-radius: 6px;
-    }
-
-    QScrollBar::add-line:vertical, QScrollBar::sub-line:vertical {
-        height: 0px;
-    }
-
-    /* Progress Bar */
-    QProgressBar {
-        background-color: #313338;
-        border: 1px solid #4a4a4a;
-        border-radius: 6px;
-        text-align: center;
-        color: #ffffff;
-        padding: 2px;
-    }
-
-    QProgressBar::chunk {
-        background-color: #ffc857;
-    }
-    /* CheckBox */
-    QCheckBox {
-        spacing: 6px;
-    }
-
-    QCheckBox::indicator {
-        width: 16px;
-        height: 16px;
-        border-radius: 4px;
-        background-color: #313338;
-        border: 1px solid #4a4a4a;
-    }
-
-    QCheckBox::indicator:checked {
-        background-color: #ffc857;
-        border: 1px solid #ec971f;
-    }
-
-    QCheckBox::indicator:unchecked {
-        background-color: #313338;
-        border: 1px solid #4a4a4a;
-    }
-</string>
-  </property>
   <property name="iconSize">
    <size>
     <width>256</width>
@@ -234,9 +339,11 @@
   <widget class="QWidget" name="centralwidget">
    <property name="font">
     <font>
-     <family>Arial</family>
+     <family>Segoe UI</family>
      <pointsize>10</pointsize>
+     <italic>false</italic>
      <bold>false</bold>
+     <underline>false</underline>
     </font>
    </property>
    <layout class="QVBoxLayout" name="verticalLayout">
@@ -247,7 +354,7 @@
       </property>
       <property name="font">
        <font>
-        <family>Arial</family>
+        <family>Segoe UI</family>
         <pointsize>10</pointsize>
         <italic>true</italic>
         <bold>true</bold>
@@ -267,7 +374,7 @@
       <widget class="QWidget" name="tab_xml_evaluation">
        <property name="font">
         <font>
-         <family>Arial</family>
+         <family>Segoe UI</family>
          <pointsize>10</pointsize>
          <italic>false</italic>
          <bold>false</bold>
@@ -286,8 +393,11 @@
             <property name="font">
              <font>
               <family>Arial</family>
+              <pointsize>10</pointsize>
               <italic>false</italic>
               <bold>true</bold>
+              <underline>false</underline>
+              <strikeout>false</strikeout>
              </font>
             </property>
             <property name="title">
@@ -301,10 +411,18 @@
                  <property name="font">
                   <font>
                    <family>Arial</family>
+                   <pointsize>10</pointsize>
+                   <italic>false</italic>
+                   <bold>true</bold>
+                   <underline>false</underline>
+                   <strikeout>false</strikeout>
                   </font>
                  </property>
                  <property name="placeholderText">
                   <string>Choose a folder that contains XML files...</string>
+                 </property>
+                 <property name="clearButtonEnabled">
+                  <bool>true</bool>
                  </property>
                 </widget>
                </item>
@@ -313,8 +431,11 @@
                  <property name="font">
                   <font>
                    <family>Arial</family>
+                   <pointsize>10</pointsize>
                    <italic>false</italic>
                    <bold>true</bold>
+                   <underline>false</underline>
+                   <strikeout>false</strikeout>
                   </font>
                  </property>
                  <property name="text">
@@ -327,8 +448,11 @@
                  <property name="font">
                   <font>
                    <family>Arial</family>
+                   <pointsize>10</pointsize>
                    <italic>false</italic>
                    <bold>true</bold>
+                   <underline>false</underline>
+                   <strikeout>false</strikeout>
                   </font>
                  </property>
                  <property name="text">
@@ -351,6 +475,11 @@
                  <property name="font">
                   <font>
                    <family>Arial</family>
+                   <pointsize>10</pointsize>
+                   <italic>false</italic>
+                   <bold>true</bold>
+                   <underline>false</underline>
+                   <strikeout>false</strikeout>
                   </font>
                  </property>
                  <property name="text">
@@ -399,6 +528,11 @@
                  <property name="font">
                   <font>
                    <family>Arial</family>
+                   <pointsize>10</pointsize>
+                   <italic>false</italic>
+                   <bold>true</bold>
+                   <underline>false</underline>
+                   <strikeout>false</strikeout>
                   </font>
                  </property>
                  <property name="editable">
@@ -446,6 +580,11 @@
                  <property name="font">
                   <font>
                    <family>Arial</family>
+                   <pointsize>10</pointsize>
+                   <italic>false</italic>
+                   <bold>true</bold>
+                   <underline>false</underline>
+                   <strikeout>false</strikeout>
                   </font>
                  </property>
                  <property name="editable">
@@ -506,6 +645,11 @@
                  <property name="font">
                   <font>
                    <family>Arial</family>
+                   <pointsize>10</pointsize>
+                   <italic>false</italic>
+                   <bold>true</bold>
+                   <underline>false</underline>
+                   <strikeout>false</strikeout>
                   </font>
                  </property>
                  <property name="editable">
@@ -553,6 +697,11 @@
                  <property name="font">
                   <font>
                    <family>Arial</family>
+                   <pointsize>10</pointsize>
+                   <italic>false</italic>
+                   <bold>true</bold>
+                   <underline>false</underline>
+                   <strikeout>false</strikeout>
                   </font>
                  </property>
                  <property name="editable">
@@ -699,10 +848,18 @@
                  <property name="font">
                   <font>
                    <family>Arial</family>
+                   <pointsize>10</pointsize>
+                   <italic>false</italic>
+                   <bold>true</bold>
+                   <underline>false</underline>
+                   <strikeout>false</strikeout>
                   </font>
                  </property>
                  <property name="placeholderText">
                   <string>Enter a XPath expression or build one...</string>
+                 </property>
+                 <property name="clearButtonEnabled">
+                  <bool>true</bool>
                  </property>
                 </widget>
                </item>
@@ -711,8 +868,11 @@
                  <property name="font">
                   <font>
                    <family>Arial</family>
+                   <pointsize>10</pointsize>
                    <italic>false</italic>
                    <bold>true</bold>
+                   <underline>false</underline>
+                   <strikeout>false</strikeout>
                   </font>
                  </property>
                  <property name="text">
@@ -727,8 +887,11 @@
                <property name="font">
                 <font>
                  <family>Arial</family>
+                 <pointsize>10</pointsize>
                  <italic>false</italic>
                  <bold>true</bold>
+                 <underline>false</underline>
+                 <strikeout>false</strikeout>
                 </font>
                </property>
                <property name="text">
@@ -744,8 +907,11 @@
             <property name="font">
              <font>
               <family>Arial</family>
+              <pointsize>10</pointsize>
               <italic>false</italic>
               <bold>true</bold>
+              <underline>false</underline>
+              <strikeout>false</strikeout>
              </font>
             </property>
             <property name="title">
@@ -757,6 +923,11 @@
                <property name="font">
                 <font>
                  <family>Arial</family>
+                 <pointsize>10</pointsize>
+                 <italic>false</italic>
+                 <bold>true</bold>
+                 <underline>false</underline>
+                 <strikeout>false</strikeout>
                 </font>
                </property>
               </widget>
@@ -769,8 +940,11 @@
             <property name="font">
              <font>
               <family>Arial</family>
+              <pointsize>10</pointsize>
               <italic>false</italic>
               <bold>true</bold>
+              <underline>false</underline>
+              <strikeout>false</strikeout>
              </font>
             </property>
             <property name="title">
@@ -783,6 +957,10 @@
                 <font>
                  <family>Arial</family>
                  <pointsize>10</pointsize>
+                 <italic>false</italic>
+                 <bold>true</bold>
+                 <underline>false</underline>
+                 <strikeout>false</strikeout>
                 </font>
                </property>
                <property name="text">
@@ -797,10 +975,18 @@
                  <property name="font">
                   <font>
                    <family>Arial</family>
+                   <pointsize>10</pointsize>
+                   <italic>false</italic>
+                   <bold>true</bold>
+                   <underline>false</underline>
+                   <strikeout>false</strikeout>
                   </font>
                  </property>
                  <property name="placeholderText">
                   <string>Choose a folder where to save the CSV evaluation...</string>
+                 </property>
+                 <property name="clearButtonEnabled">
+                  <bool>true</bool>
                  </property>
                 </widget>
                </item>
@@ -809,8 +995,11 @@
                  <property name="font">
                   <font>
                    <family>Arial</family>
+                   <pointsize>10</pointsize>
                    <italic>false</italic>
                    <bold>true</bold>
+                   <underline>false</underline>
+                   <strikeout>false</strikeout>
                   </font>
                  </property>
                  <property name="text">
@@ -844,10 +1033,18 @@
                  <property name="font">
                   <font>
                    <family>Arial</family>
+                   <pointsize>10</pointsize>
+                   <italic>false</italic>
+                   <bold>true</bold>
+                   <underline>false</underline>
+                   <strikeout>false</strikeout>
                   </font>
                  </property>
                  <property name="placeholderText">
                   <string>CSV headers based on the number of XPath expressions (comma-separated)</string>
+                 </property>
+                 <property name="clearButtonEnabled">
+                  <bool>true</bool>
                  </property>
                 </widget>
                </item>
@@ -883,8 +1080,11 @@
                  <property name="font">
                   <font>
                    <family>Arial</family>
+                   <pointsize>10</pointsize>
                    <italic>false</italic>
                    <bold>true</bold>
+                   <underline>false</underline>
+                   <strikeout>false</strikeout>
                   </font>
                  </property>
                  <property name="text">
@@ -902,8 +1102,11 @@
             <property name="font">
              <font>
               <family>Arial</family>
+              <pointsize>10</pointsize>
               <italic>false</italic>
               <bold>true</bold>
+              <underline>false</underline>
+              <strikeout>false</strikeout>
              </font>
             </property>
             <property name="title">
@@ -915,6 +1118,11 @@
                <property name="font">
                 <font>
                  <family>Arial</family>
+                 <pointsize>10</pointsize>
+                 <italic>false</italic>
+                 <bold>true</bold>
+                 <underline>false</underline>
+                 <strikeout>false</strikeout>
                 </font>
                </property>
                <property name="readOnly">
@@ -934,8 +1142,11 @@
             <property name="font">
              <font>
               <family>Arial</family>
+              <pointsize>10</pointsize>
               <italic>false</italic>
               <bold>true</bold>
+              <underline>false</underline>
+              <strikeout>false</strikeout>
              </font>
             </property>
             <property name="title">
@@ -944,6 +1155,304 @@
             <layout class="QVBoxLayout" name="verticalLayout_5">
              <item>
               <widget class="QTextEdit" name="text_edit_xml_output">
+               <property name="palette">
+                <palette>
+                 <active>
+                  <colorrole role="WindowText">
+                   <brush brushstyle="SolidPattern">
+                    <color alpha="255">
+                     <red>255</red>
+                     <green>255</green>
+                     <blue>255</blue>
+                    </color>
+                   </brush>
+                  </colorrole>
+                  <colorrole role="Button">
+                   <brush brushstyle="SolidPattern">
+                    <color alpha="255">
+                     <red>255</red>
+                     <green>200</green>
+                     <blue>87</blue>
+                    </color>
+                   </brush>
+                  </colorrole>
+                  <colorrole role="Dark">
+                   <brush brushstyle="SolidPattern">
+                    <color alpha="255">
+                     <red>54</red>
+                     <green>54</green>
+                     <blue>54</blue>
+                    </color>
+                   </brush>
+                  </colorrole>
+                  <colorrole role="Text">
+                   <brush brushstyle="SolidPattern">
+                    <color alpha="255">
+                     <red>255</red>
+                     <green>255</green>
+                     <blue>255</blue>
+                    </color>
+                   </brush>
+                  </colorrole>
+                  <colorrole role="BrightText">
+                   <brush brushstyle="SolidPattern">
+                    <color alpha="255">
+                     <red>255</red>
+                     <green>255</green>
+                     <blue>127</blue>
+                    </color>
+                   </brush>
+                  </colorrole>
+                  <colorrole role="ButtonText">
+                   <brush brushstyle="SolidPattern">
+                    <color alpha="255">
+                     <red>0</red>
+                     <green>0</green>
+                     <blue>0</blue>
+                    </color>
+                   </brush>
+                  </colorrole>
+                  <colorrole role="Base">
+                   <brush brushstyle="SolidPattern">
+                    <color alpha="255">
+                     <red>49</red>
+                     <green>51</green>
+                     <blue>56</blue>
+                    </color>
+                   </brush>
+                  </colorrole>
+                  <colorrole role="Window">
+                   <brush brushstyle="SolidPattern">
+                    <color alpha="255">
+                     <red>35</red>
+                     <green>36</green>
+                     <blue>40</blue>
+                    </color>
+                   </brush>
+                  </colorrole>
+                  <colorrole role="Highlight">
+                   <brush brushstyle="SolidPattern">
+                    <color alpha="255">
+                     <red>211</red>
+                     <green>162</green>
+                     <blue>72</blue>
+                    </color>
+                   </brush>
+                  </colorrole>
+                  <colorrole role="HighlightedText">
+                   <brush brushstyle="SolidPattern">
+                    <color alpha="255">
+                     <red>0</red>
+                     <green>0</green>
+                     <blue>0</blue>
+                    </color>
+                   </brush>
+                  </colorrole>
+                  <colorrole role="Accent">
+                   <brush brushstyle="SolidPattern">
+                    <color alpha="255">
+                     <red>255</red>
+                     <green>200</green>
+                     <blue>87</blue>
+                    </color>
+                   </brush>
+                  </colorrole>
+                 </active>
+                 <inactive>
+                  <colorrole role="WindowText">
+                   <brush brushstyle="SolidPattern">
+                    <color alpha="255">
+                     <red>255</red>
+                     <green>255</green>
+                     <blue>255</blue>
+                    </color>
+                   </brush>
+                  </colorrole>
+                  <colorrole role="Button">
+                   <brush brushstyle="SolidPattern">
+                    <color alpha="255">
+                     <red>255</red>
+                     <green>200</green>
+                     <blue>87</blue>
+                    </color>
+                   </brush>
+                  </colorrole>
+                  <colorrole role="Dark">
+                   <brush brushstyle="SolidPattern">
+                    <color alpha="255">
+                     <red>54</red>
+                     <green>54</green>
+                     <blue>54</blue>
+                    </color>
+                   </brush>
+                  </colorrole>
+                  <colorrole role="Text">
+                   <brush brushstyle="SolidPattern">
+                    <color alpha="255">
+                     <red>255</red>
+                     <green>255</green>
+                     <blue>255</blue>
+                    </color>
+                   </brush>
+                  </colorrole>
+                  <colorrole role="BrightText">
+                   <brush brushstyle="SolidPattern">
+                    <color alpha="255">
+                     <red>255</red>
+                     <green>255</green>
+                     <blue>127</blue>
+                    </color>
+                   </brush>
+                  </colorrole>
+                  <colorrole role="ButtonText">
+                   <brush brushstyle="SolidPattern">
+                    <color alpha="255">
+                     <red>0</red>
+                     <green>0</green>
+                     <blue>0</blue>
+                    </color>
+                   </brush>
+                  </colorrole>
+                  <colorrole role="Base">
+                   <brush brushstyle="SolidPattern">
+                    <color alpha="255">
+                     <red>49</red>
+                     <green>51</green>
+                     <blue>56</blue>
+                    </color>
+                   </brush>
+                  </colorrole>
+                  <colorrole role="Window">
+                   <brush brushstyle="SolidPattern">
+                    <color alpha="255">
+                     <red>35</red>
+                     <green>36</green>
+                     <blue>40</blue>
+                    </color>
+                   </brush>
+                  </colorrole>
+                  <colorrole role="Highlight">
+                   <brush brushstyle="SolidPattern">
+                    <color alpha="255">
+                     <red>211</red>
+                     <green>162</green>
+                     <blue>72</blue>
+                    </color>
+                   </brush>
+                  </colorrole>
+                  <colorrole role="HighlightedText">
+                   <brush brushstyle="SolidPattern">
+                    <color alpha="255">
+                     <red>0</red>
+                     <green>0</green>
+                     <blue>0</blue>
+                    </color>
+                   </brush>
+                  </colorrole>
+                  <colorrole role="Accent">
+                   <brush brushstyle="SolidPattern">
+                    <color alpha="255">
+                     <red>255</red>
+                     <green>200</green>
+                     <blue>87</blue>
+                    </color>
+                   </brush>
+                  </colorrole>
+                 </inactive>
+                 <disabled>
+                  <colorrole role="WindowText">
+                   <brush brushstyle="SolidPattern">
+                    <color alpha="255">
+                     <red>54</red>
+                     <green>54</green>
+                     <blue>54</blue>
+                    </color>
+                   </brush>
+                  </colorrole>
+                  <colorrole role="Button">
+                   <brush brushstyle="SolidPattern">
+                    <color alpha="255">
+                     <red>255</red>
+                     <green>200</green>
+                     <blue>87</blue>
+                    </color>
+                   </brush>
+                  </colorrole>
+                  <colorrole role="Dark">
+                   <brush brushstyle="SolidPattern">
+                    <color alpha="255">
+                     <red>54</red>
+                     <green>54</green>
+                     <blue>54</blue>
+                    </color>
+                   </brush>
+                  </colorrole>
+                  <colorrole role="Text">
+                   <brush brushstyle="SolidPattern">
+                    <color alpha="255">
+                     <red>54</red>
+                     <green>54</green>
+                     <blue>54</blue>
+                    </color>
+                   </brush>
+                  </colorrole>
+                  <colorrole role="BrightText">
+                   <brush brushstyle="SolidPattern">
+                    <color alpha="255">
+                     <red>255</red>
+                     <green>255</green>
+                     <blue>127</blue>
+                    </color>
+                   </brush>
+                  </colorrole>
+                  <colorrole role="ButtonText">
+                   <brush brushstyle="SolidPattern">
+                    <color alpha="255">
+                     <red>54</red>
+                     <green>54</green>
+                     <blue>54</blue>
+                    </color>
+                   </brush>
+                  </colorrole>
+                  <colorrole role="Base">
+                   <brush brushstyle="SolidPattern">
+                    <color alpha="255">
+                     <red>35</red>
+                     <green>36</green>
+                     <blue>40</blue>
+                    </color>
+                   </brush>
+                  </colorrole>
+                  <colorrole role="Window">
+                   <brush brushstyle="SolidPattern">
+                    <color alpha="255">
+                     <red>35</red>
+                     <green>36</green>
+                     <blue>40</blue>
+                    </color>
+                   </brush>
+                  </colorrole>
+                  <colorrole role="HighlightedText">
+                   <brush brushstyle="SolidPattern">
+                    <color alpha="255">
+                     <red>0</red>
+                     <green>0</green>
+                     <blue>0</blue>
+                    </color>
+                   </brush>
+                  </colorrole>
+                  <colorrole role="Accent">
+                   <brush brushstyle="SolidPattern">
+                    <color alpha="255">
+                     <red>255</red>
+                     <green>200</green>
+                     <blue>87</blue>
+                    </color>
+                   </brush>
+                  </colorrole>
+                 </disabled>
+                </palette>
+               </property>
                <property name="font">
                 <font>
                  <family>Arial</family>
@@ -961,6 +1470,11 @@
                <property name="font">
                 <font>
                  <family>Arial</family>
+                 <pointsize>10</pointsize>
+                 <italic>false</italic>
+                 <bold>true</bold>
+                 <underline>false</underline>
+                 <strikeout>false</strikeout>
                 </font>
                </property>
                <property name="value">
@@ -981,7 +1495,7 @@
       <widget class="QWidget" name="tab_csv_conversion">
        <property name="font">
         <font>
-         <family>Arial</family>
+         <family>Segoe UI</family>
          <pointsize>10</pointsize>
          <italic>false</italic>
          <bold>false</bold>
@@ -1069,6 +1583,9 @@ Supported output file types: Excel, Markdown, HTML and JSON</string>
                <property name="placeholderText">
                 <string>Choose a CSV file for conversion...</string>
                </property>
+               <property name="clearButtonEnabled">
+                <bool>true</bool>
+               </property>
               </widget>
              </item>
              <item>
@@ -1089,6 +1606,9 @@ Supported output file types: Excel, Markdown, HTML and JSON</string>
                </property>
                <property name="placeholderText">
                 <string>Choose where to save the converted CSV file..</string>
+               </property>
+               <property name="clearButtonEnabled">
+                <bool>true</bool>
                </property>
               </widget>
              </item>
