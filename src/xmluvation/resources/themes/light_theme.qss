@@ -30,7 +30,6 @@ QPushButton {
     border: none;
     padding: 7px 9px;
     border-radius: 6px;
-    font: bold;
 }
 
 QPushButton:hover {
