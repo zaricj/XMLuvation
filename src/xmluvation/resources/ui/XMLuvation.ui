@@ -324,7 +324,7 @@
    <string>XMLuvation</string>
   </property>
   <property name="windowIcon">
-   <iconset resource="../qrc/xmluvation_resources.qrc">
+   <iconset>
     <normaloff>:/icons/xml_256px.ico</normaloff>:/icons/xml_256px.ico</iconset>
   </property>
   <property name="autoFillBackground">

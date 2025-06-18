@@ -1,0 +1,85 @@
+{
+ "version": "auto-py-to-exe-configuration_v1",
+ "pyinstallerOptions": [
+  {
+   "optionDest": "noconfirm",
+   "value": true
+  },
+  {
+   "optionDest": "filenames",
+   "value": "C:/Users/ZaricJ/Documents/Main/02_Entwicklung_und_Tools/GitHub/XMLuvation/src/gui/main.py"
+  },
+  {
+   "optionDest": "onefile",
+   "value": false
+  },
+  {
+   "optionDest": "console",
+   "value": false
+  },
+  {
+   "optionDest": "icon_file",
+   "value": "C:/Users/ZaricJ/Documents/Main/02_Entwicklung_und_Tools/GitHub/XMLuvation/src/gui/resources/icons/xml_256px.ico"
+  },
+  {
+   "optionDest": "name",
+   "value": "XMLuvation"
+  },
+  {
+   "optionDest": "clean_build",
+   "value": false
+  },
+  {
+   "optionDest": "strip",
+   "value": false
+  },
+  {
+   "optionDest": "noupx",
+   "value": false
+  },
+  {
+   "optionDest": "disable_windowed_traceback",
+   "value": false
+  },
+  {
+   "optionDest": "uac_admin",
+   "value": false
+  },
+  {
+   "optionDest": "uac_uiaccess",
+   "value": false
+  },
+  {
+   "optionDest": "argv_emulation",
+   "value": false
+  },
+  {
+   "optionDest": "bootloader_ignore_signals",
+   "value": false
+  },
+  {
+   "optionDest": "datas",
+   "value": "C:/Users/ZaricJ/Documents/Main/02_Entwicklung_und_Tools/GitHub/XMLuvation/src/utils;utils/"
+  },
+  {
+   "optionDest": "datas",
+   "value": "C:/Users/ZaricJ/Documents/Main/02_Entwicklung_und_Tools/GitHub/XMLuvation/src/gui;gui/"
+  },
+  {
+   "optionDest": "datas",
+   "value": "C:/Users/ZaricJ/Documents/Main/02_Entwicklung_und_Tools/GitHub/XMLuvation/src/gui/resources;gui/resources/"
+  },
+  {
+   "optionDest": "datas",
+   "value": "C:/Users/ZaricJ/Documents/Main/02_Entwicklung_und_Tools/GitHub/XMLuvation/src/gui/config;config/"
+  },
+  {
+   "optionDest": "pathex",
+   "value": "C:/Users/ZaricJ/Documents/Main/02_Entwicklung_und_Tools/GitHub/XMLuvation/src"
+  }
+ ],
+ "nonPyinstallerOptions": {
+  "increaseRecursionLimit": true,
+  "manualArguments": ""
+ }
+}

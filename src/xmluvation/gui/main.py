@@ -7,42 +7,41 @@ import os
 import webbrowser
 import multiprocessing
 
-from utils.config_handler import ConfigHandler
-from utils.xml_parser import create_xml_parser, apply_xml_highlighting_to_widget, set_xml_content_to_widget
+from xmluvation.modules.config_handler import ConfigHandler
+from xmluvation.modules.xml_parser import create_xml_parser, apply_xml_highlighting_to_widget, set_xml_content_to_widget
+from xmluvation.modules.xpath_builder import create_xpath_builder
 
-from utils.xpath_builder import create_xpath_builder
-from gui.controller import ComboboxState, CSVConversion, AddXPathExpressionToList, SearchAndExportToCSV, GenerateCSVHeader
+from xmluvation.gui.controller import ComboboxState, CSVConversion, AddXPathExpressionToList, SearchAndExportToCSV, GenerateCSVHeader
+from xmluvation.widget.path_manager import CustomPathsManager
 
-from gui.path_manager_window import CustomPathsManager
-
-from gui.resources.ui.XMLuvation_ui import Ui_MainWindow
+from xmluvation.resources.ui.XMLuvation_ui import Ui_MainWindow
 
 sys.path.append(os.path.abspath(os.path.join(os.path.dirname(__file__), '..', '..')))
+
+CURRENT_DIR = os.path.dirname(os.path.abspath(__file__))
 
 # Check if the application is running in a PyInstaller bundle
 if getattr(sys, 'frozen', False) and hasattr(sys, '_MEIPASS'):
     # Running in a PyInstaller bundle, BASE_DIR points to the bundle's root
-    BASE_DIR: str = sys._MEIPASS
+    ROOT_DIR: str = sys._MEIPASS
 else:
     # Running in a normal Python environment
-    BASE_DIR: str = os.path.dirname(os.path.abspath(__file__))
-    # At work it's C:\Users\ZaricJ\Documents\Main\02_Entwicklung_und_Tools\GitHub\XMLuvation\src\gui
-    
-print(f"BASE DIRECTORY: {BASE_DIR}")
+    ROOT_DIR: str = os.path.dirname(CURRENT_DIR)
+    # At work it's C:\Users\ZaricJ\Documents\Main\02_Entwicklung_und_Tools\GitHub\XMLuvation\src\xmluvation
 
 # Path Constants
-LOG_FILE_PATH: str = os.path.join("src","logs","xmluvation.log")
-GUI_CONFIG_FILE_PATH: str = os.path.join(BASE_DIR, "config","config.json")
-GUI_CONFIG_DIRECTORY: str = os.path.join(BASE_DIR, "config")
-DARK_THEME_PATH: str = os.path.join(BASE_DIR, "resources", "themes", "dark_theme.qss")
-LIGHT_THEME_PATH: str = os.path.join(BASE_DIR, "resources", "themes", "light_theme.qss")
-ICON_PATH: str = os.path.join(BASE_DIR, "resources", "icons", "xml_256px.ico")
-DARK_THEME_QMENU_ICON: str = os.path.join(BASE_DIR, "resources", "images", "dark.png")
-LIGHT_THEME_QMENU_ICON: str = os.path.join(BASE_DIR, "resources", "images", "light.png")
+# LOG_FILE_PATH: str = os.path.join(ROOT_DIR, "logs","xmluvation.log")
+GUI_CONFIG_FILE_PATH: str = os.path.join(ROOT_DIR, "config","config.json")
+GUI_CONFIG_DIRECTORY: str = os.path.join(ROOT_DIR, "config")
+DARK_THEME_PATH: str = os.path.join(ROOT_DIR, "resources", "themes", "dark_theme.qss")
+LIGHT_THEME_PATH: str = os.path.join(ROOT_DIR, "resources", "themes", "light_theme.qss")
+ICON_PATH: str = os.path.join(ROOT_DIR, "resources", "icons", "xml_256px.ico")
+DARK_THEME_QMENU_ICON: str = os.path.join(ROOT_DIR, "resources", "images", "dark.png")
+LIGHT_THEME_QMENU_ICON: str = os.path.join(ROOT_DIR, "resources", "images", "light.png")
 
 # Resource and UI Paths
-UI_FILE_NAME: str = os.path.join(BASE_DIR, "resources", "ui", "XMLuvation.ui")
-UI_RESOURCES: str = os.path.join(BASE_DIR, "resources", "qrc", "xmluvation_resources.qrc")
+UI_FILE_NAME: str = os.path.join(ROOT_DIR, "resources", "ui", "XMLuvation.ui")
+UI_RESOURCES: str = os.path.join(ROOT_DIR, "resources", "qrc", "xmluvation_resources.qrc")
 
 # App related constants
 APP_VERSION: str = "v1.0.4"
@@ -182,7 +181,6 @@ class MainWindow(QMainWindow):
         clear_action.setStatusTip("Clear the output")
         clear_action.triggered.connect(self.clear_output)
         file_menu.addAction(clear_action)
-        file_menu.addSeparator()
         exit_action = QAction("E&xit", self)
         exit_action.setStatusTip("Exit the application")
         exit_action.triggered.connect(self.close)

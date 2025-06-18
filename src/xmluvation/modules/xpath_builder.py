@@ -1,5 +1,5 @@
 # utils/xpath_builder.py
-from PySide6.QtCore import QObject, QRunnable, Signal, Slot
+from PySide6.QtCore import QObject, QRunnable, Signal
 from lxml import etree as ET
 from typing import Optional, Dict, List, Tuple
 

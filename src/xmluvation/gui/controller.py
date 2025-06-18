@@ -2,8 +2,8 @@ import csv
 import os
 import pandas as pd
 from PySide6.QtWidgets import QMessageBox
-from utils.xpath_builder import create_xpath_validator
-from utils.csv_export import create_csv_exporter
+from xmluvation.modules.xpath_builder import create_xpath_validator
+from xmluvation.modules.csv_export import create_csv_exporter
 
 class ComboboxState:
     """

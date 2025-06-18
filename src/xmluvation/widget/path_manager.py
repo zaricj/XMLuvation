@@ -1,22 +1,23 @@
 from PySide6.QtWidgets import QWidget, QMessageBox
 import os
 
-from utils.config_handler import ConfigHandler
-from gui.resources.ui.CustomPathsManager_ui import Ui_Form
+from xmluvation.modules.config_handler import ConfigHandler
+from xmluvation.resources.ui.CustomPathsManager_ui import Ui_Form
+
+CURRENT_DIR = os.path.dirname(os.path.abspath(__file__))
 
 # Path Constants
-BASE_DIR = os.path.dirname(os.path.abspath(__file__)) # Folder path to path_manager_window.py
-print(f"OTHER: {BASE_DIR}")
-# At work it's C:\Users\ZaricJ\Documents\Main\02_Entwicklung_und_Tools\GitHub\XMLuvation\src\gui
+ROOT_DIR = os.path.dirname(CURRENT_DIR) # Folder path to path_manager_window.py
+# At work it's C:\Users\ZaricJ\Documents\Main\02_Entwicklung_und_Tools\GitHub\XMLuvation\src\xmluvation
 
-LOG_FILE_PATH: str = os.path.join(BASE_DIR,"logs","xmluvation.log")
-GUI_CONFIG_FILE_PATH: str = os.path.join(BASE_DIR, "config","config.json")
-GUI_CONFIG_DIRECTORY: str = os.path.join(BASE_DIR, "config")
-DARK_THEME_PATH = os.path.join(BASE_DIR, "resources", "themes", "dark_theme.qss")
-LIGHT_THEME_PATH = os.path.join(BASE_DIR, "resources", "themes", "light_theme.qss")
-ICON_PATH = os.path.join(BASE_DIR, "resources", "icons", "xml_256px.ico")
-DARK_THEME_QMENU_ICON = os.path.join(BASE_DIR, "resources", "images", "dark.png")
-LIGHT_THEME_QMENU_ICON = os.path.join(BASE_DIR, "resources", "images", "light.png")
+# LOG_FILE_PATH: str = os.path.join(ROOT_DIR,"logs","xmluvation.log")
+GUI_CONFIG_FILE_PATH: str = os.path.join(ROOT_DIR, "config","config.json")
+GUI_CONFIG_DIRECTORY: str = os.path.join(ROOT_DIR, "config")
+DARK_THEME_PATH = os.path.join(ROOT_DIR, "resources", "themes", "dark_theme.qss")
+LIGHT_THEME_PATH = os.path.join(ROOT_DIR, "resources", "themes", "light_theme.qss")
+ICON_PATH = os.path.join(ROOT_DIR, "resources", "icons", "xml_256px.ico")
+DARK_THEME_QMENU_ICON = os.path.join(ROOT_DIR, "resources", "images", "dark.png")
+LIGHT_THEME_QMENU_ICON = os.path.join(ROOT_DIR, "resources", "images", "light.png")
 
 # Resource and UI Paths
 UI_RESOURCES: str = os.path.join("gui", "resources", "qrc", "xmluvation_resources.qrc")
