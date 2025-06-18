@@ -336,14 +336,14 @@ class LobsterProfileExportCleanupHandler:
         """Initializes and starts the lobster profile cleanup as a new thread."""
         try:
             cleaner = create_lobster_profile_cleaner(self.csv_file_path, self.profiles_folder_path)
-            self.main_window._connect_csv_export_signals(cleaner)
+            self.main_window._connect_file_cleanup_signals(cleaner)
             self.main_window.thread_pool.start(cleaner)
             # Optional: Keep track of the worker
             self.main_window.active_workers.append(cleaner)
             
         except Exception as ex:
             message = f"An exception of type {type(ex).__name__} occurred. Arguments: {ex.args!r}"
-            QMessageBox.critical(self.main_window, "Exception on starting to export results to csv file", message)
+            QMessageBox.critical(self.main_window, "Exception on starting to clean up lobster xml files in specified folder", message)
 
 
 class ParseXMLFileHandler:

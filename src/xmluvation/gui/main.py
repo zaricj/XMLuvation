@@ -362,6 +362,11 @@ class MainWindow(QMainWindow):
         self.ui.button_browse_csv_conversion_path_output.clicked.connect(lambda: self.browse_save_file_as_helper(dialog_message="Save as", line_widget=self.ui.line_edit_csv_conversion_path_output, file_extension_filter="Excel file (*.xlsx);;JSON file (*.json);;Markdown file (*.md);;HTML file (*.html)"))
         self.ui.button_csv_conversion_convert.clicked.connect(self.on_csv_convert_event)
         self.ui.checkbox_write_index_column.toggled.connect(self.on_write_index_toggled)
+        
+        # Button
+        self.ui.button_profile_cleanup_browse_csv_file_path.clicked.connect(lambda: self.browse_file_helper(dialog_message="Select csv file", line_widget=self.ui.line_edit_profile_cleanup_csv_file_path, file_extension_filter="CSV File (*.csv)"))
+        self.ui.button_profile_cleanup_browse_folder_path.clicked.connect(lambda: self.browse_folder_helper(dialog_message="Select directory that contains XML files", line_widget=self.ui.line_edit_profile_cleanup_folder_path))
+        self.ui.button_profile_cleanup_cleanup_start.clicked.connect(self.on_lobster_profile_cleanup_event)
 
 
     # === Helper Methods === #
@@ -620,8 +625,9 @@ class MainWindow(QMainWindow):
             profiles_folder_path = self.ui.line_edit_profile_cleanup_folder_path.text()
 
             self.lobster_profile_cleaner = LobsterProfileExportCleanupHandler(
-                main_window=csv_file,
-                csv_file_path=profiles_folder_path)
+                main_window=self,
+                csv_file_path=csv_file,
+                profiles_folder_path=profiles_folder_path)
 
             self.lobster_profile_cleaner.start_lobster_profile_cleanup()
             
