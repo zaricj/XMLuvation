@@ -3,7 +3,7 @@
 ################################################################################
 ## Form generated from reading UI file 'CustomPathsManager.ui'
 ##
-## Created by: Qt User Interface Compiler version 6.9.0
+## Created by: Qt User Interface Compiler version 6.9.1
 ##
 ## WARNING! All changes made in this file will be lost when recompiling UI file!
 ################################################################################
@@ -18,7 +18,6 @@ from PySide6.QtGui import (QBrush, QColor, QConicalGradient, QCursor,
 from PySide6.QtWidgets import (QApplication, QComboBox, QFormLayout, QFrame,
     QHBoxLayout, QLabel, QLineEdit, QPushButton,
     QSizePolicy, QVBoxLayout, QWidget)
-
 from xmluvation.resources.qrc import xmluvation_resources_rc
 
 class Ui_Form(object):

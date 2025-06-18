@@ -1,4 +1,4 @@
-from gui.resources.qrc import xmluvation_resources_rc
+from xmluvation.resources.qrc import xmluvation_resources_rc
 
 add statusbars under these:
 
