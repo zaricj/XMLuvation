@@ -9,8 +9,8 @@
    <rect>
     <x>0</x>
     <y>0</y>
-    <width>1305</width>
-    <height>1000</height>
+    <width>1182</width>
+    <height>972</height>
    </rect>
   </property>
   <property name="palette">
@@ -1509,150 +1509,276 @@
        <attribute name="title">
         <string>CSV Conversion and Display</string>
        </attribute>
-       <layout class="QVBoxLayout" name="verticalLayout_3">
+       <layout class="QVBoxLayout" name="verticalLayout_13">
         <item>
-         <widget class="QGroupBox" name="groupbox_csv_conversion">
-          <property name="maximumSize">
-           <size>
-            <width>16777215</width>
-            <height>16777215</height>
-           </size>
-          </property>
-          <property name="title">
-           <string>CSV Conversion</string>
-          </property>
-          <layout class="QVBoxLayout" name="verticalLayout_2">
-           <item>
-            <widget class="QLabel" name="label_csv_conversion_title">
-             <property name="sizePolicy">
-              <sizepolicy hsizetype="Preferred" vsizetype="Preferred">
-               <horstretch>0</horstretch>
-               <verstretch>0</verstretch>
-              </sizepolicy>
-             </property>
-             <property name="maximumSize">
-              <size>
-               <width>16777215</width>
-               <height>60</height>
-              </size>
-             </property>
-             <property name="font">
-              <font>
-               <family>Microsoft YaHei UI</family>
-               <pointsize>32</pointsize>
-               <italic>false</italic>
-               <bold>true</bold>
-               <underline>true</underline>
-               <strikeout>false</strikeout>
-               <kerning>true</kerning>
-              </font>
-             </property>
-             <property name="styleSheet">
-              <string notr="true">color: rgb(255, 200, 87);</string>
-             </property>
-             <property name="text">
-              <string>CSV Conversion</string>
-             </property>
-            </widget>
-           </item>
-           <item>
-            <widget class="QLabel" name="label_csv_conversion_desc">
-             <property name="maximumSize">
-              <size>
-               <width>16777215</width>
-               <height>60</height>
-              </size>
-             </property>
-             <property name="font">
-              <font>
-               <family>Microsoft YaHei UI</family>
-               <pointsize>10</pointsize>
-               <italic>false</italic>
-               <bold>false</bold>
-               <underline>false</underline>
-               <strikeout>false</strikeout>
-              </font>
-             </property>
-             <property name="text">
-              <string>Convert CSV File to a different file type with the Pandas module
+         <layout class="QHBoxLayout" name="hor_layout_tab2_main">
+          <item>
+           <widget class="QGroupBox" name="groupbox_csv_conversion">
+            <property name="maximumSize">
+             <size>
+              <width>16777215</width>
+              <height>16777215</height>
+             </size>
+            </property>
+            <property name="title">
+             <string>CSV Conversion</string>
+            </property>
+            <layout class="QVBoxLayout" name="verticalLayout_2">
+             <item>
+              <widget class="QLabel" name="label_csv_conversion_title">
+               <property name="sizePolicy">
+                <sizepolicy hsizetype="Preferred" vsizetype="Preferred">
+                 <horstretch>0</horstretch>
+                 <verstretch>0</verstretch>
+                </sizepolicy>
+               </property>
+               <property name="maximumSize">
+                <size>
+                 <width>16777215</width>
+                 <height>60</height>
+                </size>
+               </property>
+               <property name="font">
+                <font>
+                 <family>Microsoft YaHei UI</family>
+                 <pointsize>32</pointsize>
+                 <italic>false</italic>
+                 <bold>true</bold>
+                 <underline>false</underline>
+                 <strikeout>false</strikeout>
+                 <kerning>true</kerning>
+                </font>
+               </property>
+               <property name="styleSheet">
+                <string notr="true">color: rgb(255, 200, 87);</string>
+               </property>
+               <property name="text">
+                <string>CSV Conversion</string>
+               </property>
+              </widget>
+             </item>
+             <item>
+              <widget class="QLabel" name="label_csv_conversion_desc">
+               <property name="maximumSize">
+                <size>
+                 <width>16777215</width>
+                 <height>60</height>
+                </size>
+               </property>
+               <property name="font">
+                <font>
+                 <family>Microsoft YaHei UI</family>
+                 <pointsize>10</pointsize>
+                 <italic>false</italic>
+                 <bold>false</bold>
+                 <underline>false</underline>
+                 <strikeout>false</strikeout>
+                </font>
+               </property>
+               <property name="text">
+                <string>Convert CSV File to a different file type with the Pandas module
 Supported output file types: Excel, Markdown, HTML and JSON</string>
-             </property>
-            </widget>
-           </item>
-           <item>
-            <layout class="QHBoxLayout" name="hor_layout_csv_path_input">
-             <property name="leftMargin">
-              <number>0</number>
-             </property>
-             <property name="topMargin">
-              <number>0</number>
-             </property>
-             <item>
-              <widget class="QLineEdit" name="line_edit_csv_conversion_path_input">
-               <property name="placeholderText">
-                <string>Choose a CSV file for conversion...</string>
-               </property>
-               <property name="clearButtonEnabled">
-                <bool>true</bool>
                </property>
               </widget>
              </item>
              <item>
-              <widget class="QPushButton" name="button_browse_csv_conversion_path_input">
+              <layout class="QHBoxLayout" name="hor_layout_csv_path_input">
+               <property name="leftMargin">
+                <number>0</number>
+               </property>
+               <property name="topMargin">
+                <number>0</number>
+               </property>
+               <item>
+                <widget class="QLineEdit" name="line_edit_csv_conversion_path_input">
+                 <property name="placeholderText">
+                  <string>Select a CSV file for conversion...</string>
+                 </property>
+                 <property name="clearButtonEnabled">
+                  <bool>true</bool>
+                 </property>
+                </widget>
+               </item>
+               <item>
+                <widget class="QPushButton" name="button_browse_csv_conversion_path_input">
+                 <property name="text">
+                  <string>Browse</string>
+                 </property>
+                </widget>
+               </item>
+              </layout>
+             </item>
+             <item>
+              <layout class="QHBoxLayout" name="hor_layout_csv_conversion_path_output">
+               <item>
+                <widget class="QLineEdit" name="line_edit_csv_conversion_path_output">
+                 <property name="text">
+                  <string/>
+                 </property>
+                 <property name="placeholderText">
+                  <string>Select where to save the converted CSV file..</string>
+                 </property>
+                 <property name="clearButtonEnabled">
+                  <bool>true</bool>
+                 </property>
+                </widget>
+               </item>
+               <item>
+                <widget class="QPushButton" name="button_browse_csv_conversion_path_output">
+                 <property name="text">
+                  <string>Browse</string>
+                 </property>
+                </widget>
+               </item>
+              </layout>
+             </item>
+             <item>
+              <widget class="QPushButton" name="button_csv_conversion_convert">
                <property name="text">
-                <string>Browse</string>
+                <string>Convert CSV File</string>
+               </property>
+              </widget>
+             </item>
+             <item>
+              <widget class="QCheckBox" name="checkbox_write_index_column">
+               <property name="text">
+                <string>Write Index Column?</string>
                </property>
               </widget>
              </item>
             </layout>
-           </item>
-           <item>
-            <layout class="QHBoxLayout" name="hor_layout_csv_conversion_path_output">
+           </widget>
+          </item>
+          <item>
+           <widget class="QGroupBox" name="groupbox_lobster_profiles_cleanup">
+            <property name="title">
+             <string>Lobster Profiles Export Cleanup</string>
+            </property>
+            <layout class="QVBoxLayout" name="verticalLayout_10">
              <item>
-              <widget class="QLineEdit" name="line_edit_csv_conversion_path_output">
+              <widget class="QLabel" name="label_title_profile_cleanup">
+               <property name="font">
+                <font>
+                 <family>Microsoft YaHei UI</family>
+                 <pointsize>32</pointsize>
+                 <italic>false</italic>
+                 <bold>true</bold>
+                 <underline>false</underline>
+                 <strikeout>false</strikeout>
+                </font>
+               </property>
+               <property name="styleSheet">
+                <string notr="true">color: rgb(255, 200, 87);</string>
+               </property>
                <property name="text">
-                <string/>
+                <string>Profile Cleanup</string>
                </property>
-               <property name="placeholderText">
-                <string>Choose where to save the converted CSV file..</string>
-               </property>
-               <property name="clearButtonEnabled">
+              </widget>
+             </item>
+             <item>
+              <layout class="QVBoxLayout" name="verticalLayout_3">
+               <item>
+                <widget class="QLabel" name="label_file_path_profile_cleanup">
+                 <property name="text">
+                  <string>File path of the CSV export file of all profiles in the system:</string>
+                 </property>
+                </widget>
+               </item>
+               <item>
+                <layout class="QHBoxLayout" name="horizontalLayout_4">
+                 <item>
+                  <widget class="QLineEdit" name="line_edit_profile_cleanup_csv_file_path">
+                   <property name="text">
+                    <string/>
+                   </property>
+                   <property name="placeholderText">
+                    <string>Select the export file containing all lobster profiles...</string>
+                   </property>
+                  </widget>
+                 </item>
+                 <item>
+                  <widget class="QPushButton" name="button_profile_cleanup_browse_csv_file_path">
+                   <property name="minimumSize">
+                    <size>
+                     <width>96</width>
+                     <height>0</height>
+                    </size>
+                   </property>
+                   <property name="maximumSize">
+                    <size>
+                     <width>96</width>
+                     <height>16777215</height>
+                    </size>
+                   </property>
+                   <property name="text">
+                    <string>Browse File</string>
+                   </property>
+                  </widget>
+                 </item>
+                </layout>
+               </item>
+               <item>
+                <layout class="QVBoxLayout" name="verticalLayout_9">
+                 <item>
+                  <widget class="QLabel" name="label_folder_path_profile_cleanup">
+                   <property name="text">
+                    <string>Folder directory path of the profiles export as XML files:</string>
+                   </property>
+                  </widget>
+                 </item>
+                 <item>
+                  <layout class="QHBoxLayout" name="horizontalLayout_3">
+                   <item>
+                    <widget class="QLineEdit" name="line_edit_profile_cleanup_folder_path">
+                     <property name="placeholderText">
+                      <string>Select the folder path that contains all profiles...</string>
+                     </property>
+                    </widget>
+                   </item>
+                   <item>
+                    <widget class="QPushButton" name="button_profile_cleanup_browse_folder_path">
+                     <property name="text">
+                      <string>Browse Folder</string>
+                     </property>
+                    </widget>
+                   </item>
+                  </layout>
+                 </item>
+                </layout>
+               </item>
+               <item>
+                <widget class="QPushButton" name="button_profile_cleanup_cleanup_start">
+                 <property name="text">
+                  <string>Clean up XML files</string>
+                 </property>
+                </widget>
+               </item>
+              </layout>
+             </item>
+            </layout>
+           </widget>
+          </item>
+         </layout>
+        </item>
+        <item>
+         <layout class="QVBoxLayout" name="verticalLayout_14">
+          <item>
+           <widget class="QGroupBox" name="group_box_tab2_program_output">
+            <property name="title">
+             <string>Output</string>
+            </property>
+            <layout class="QHBoxLayout" name="horizontalLayout">
+             <item>
+              <widget class="QTextEdit" name="text_edit_csv_conversion_tab_program_output">
+               <property name="readOnly">
                 <bool>true</bool>
                </property>
               </widget>
              </item>
-             <item>
-              <widget class="QPushButton" name="button_browse_csv_conversion_path_output">
-               <property name="text">
-                <string>Browse</string>
-               </property>
-              </widget>
-             </item>
             </layout>
-           </item>
-           <item>
-            <widget class="QPushButton" name="button_csv_conversion_convert">
-             <property name="text">
-              <string>Convert CSV File</string>
-             </property>
-            </widget>
-           </item>
-           <item>
-            <widget class="QCheckBox" name="checkbox_write_index_column">
-             <property name="text">
-              <string>Write Index Column?</string>
-             </property>
-            </widget>
-           </item>
-           <item>
-            <widget class="QTextEdit" name="text_edit_csv_conversion_output">
-             <property name="readOnly">
-              <bool>true</bool>
-             </property>
-            </widget>
-           </item>
-          </layout>
-         </widget>
+           </widget>
+          </item>
+         </layout>
         </item>
        </layout>
       </widget>
