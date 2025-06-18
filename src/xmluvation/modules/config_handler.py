@@ -31,13 +31,10 @@ class ConfigHandler:
         """Saves the current configuration to the JSON file."""
         with open(self.config_file_name, "w", encoding="utf-8") as f:
             json.dump(self.data, f, indent=4)
-        
-        # Reload data
-        self.data = self._load_config()
 
     def _get_nested_key(self, keys: list[str]):
         """Helper to navigate to the correct nested dictionary."""
-        current_data = self.data
+        current_data = self._load_config()
         for i, key in enumerate(keys):
             if key not in current_data:
                 return None, None # Key not found, or not a dict
@@ -64,7 +61,7 @@ class ConfigHandler:
     def get(self, key_path: str, default: any = None):
         """Gets a configuration value, handling nested keys (e.g., 'section.subsection.key')."""
         keys = key_path.split('.')
-        current_data = self.data
+        current_data = self._load_config()
         for key in keys:
             if isinstance(current_data, dict) and key in current_data:
                 current_data = current_data[key]

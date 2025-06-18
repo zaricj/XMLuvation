@@ -249,6 +249,9 @@ class MainWindow(QMainWindow):
         # 2. Get the latest custom paths from the config handler
         # Using the dynamic 'get' method:
         custom_paths = self.config_handler.get("custom_paths", {})
+        print("GUI PATHS MENU UPDATE WITH FOLLOWING VALUES FROM CONFIG FILE")
+        for key, value in custom_paths.items():
+            print(key, value)
         
         # 3. Add dynamic custom path actions first
         for name, path in custom_paths.items():

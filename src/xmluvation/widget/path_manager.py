@@ -111,8 +111,8 @@ class CustomPathsManager(QWidget):
                 self.config_handler.delete(f"custom_paths.{custom_path_name}")
                 
                 self.ui.combobox_path_names.removeItem(custom_path_name_index)
-                self.main_window.update_paths_menu() 
                 self.clear_all_inputs()
+                self.main_window.update_paths_menu() 
                 
         except Exception as ex:
             QMessageBox.critical(self, "Error while trying to delete action", 
