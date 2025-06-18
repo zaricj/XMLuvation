@@ -436,7 +436,7 @@
                    <family>Microsoft YaHei UI</family>
                    <pointsize>10</pointsize>
                    <italic>false</italic>
-                   <bold>true</bold>
+                   <bold>false</bold>
                    <underline>false</underline>
                    <strikeout>false</strikeout>
                   </font>
@@ -453,7 +453,7 @@
                    <family>Microsoft YaHei UI</family>
                    <pointsize>10</pointsize>
                    <italic>false</italic>
-                   <bold>true</bold>
+                   <bold>false</bold>
                    <underline>false</underline>
                    <strikeout>false</strikeout>
                   </font>
@@ -873,7 +873,7 @@
                    <family>Microsoft YaHei UI</family>
                    <pointsize>10</pointsize>
                    <italic>false</italic>
-                   <bold>true</bold>
+                   <bold>false</bold>
                    <underline>false</underline>
                    <strikeout>false</strikeout>
                   </font>
@@ -892,7 +892,7 @@
                  <family>Microsoft YaHei UI</family>
                  <pointsize>10</pointsize>
                  <italic>false</italic>
-                 <bold>true</bold>
+                 <bold>false</bold>
                  <underline>false</underline>
                  <strikeout>false</strikeout>
                 </font>
@@ -1000,7 +1000,7 @@
                    <family>Microsoft YaHei UI</family>
                    <pointsize>10</pointsize>
                    <italic>false</italic>
-                   <bold>true</bold>
+                   <bold>false</bold>
                    <underline>false</underline>
                    <strikeout>false</strikeout>
                   </font>
@@ -1065,7 +1065,7 @@
                    <family>Microsoft YaHei UI</family>
                    <pointsize>10</pointsize>
                    <italic>false</italic>
-                   <bold>true</bold>
+                   <bold>false</bold>
                    <underline>false</underline>
                    <strikeout>false</strikeout>
                   </font>
@@ -1085,7 +1085,7 @@
                    <family>Microsoft YaHei UI</family>
                    <pointsize>10</pointsize>
                    <italic>false</italic>
-                   <bold>true</bold>
+                   <bold>false</bold>
                    <underline>false</underline>
                    <strikeout>false</strikeout>
                   </font>

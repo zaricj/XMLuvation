@@ -20,7 +20,6 @@ from PySide6.QtWidgets import (QApplication, QCheckBox, QComboBox, QGroupBox,
     QListWidgetItem, QMainWindow, QProgressBar, QPushButton,
     QRadioButton, QSizePolicy, QTabWidget, QTextEdit,
     QVBoxLayout, QWidget, QStatusBar)
-
 from xmluvation.resources.qrc import xmluvation_resources_rc
 
 class Ui_MainWindow(object):
@@ -157,13 +156,13 @@ class Ui_MainWindow(object):
 
         self.button_browse_xml_folder = QPushButton(self.group_box_xml_input_xpath_builder)
         self.button_browse_xml_folder.setObjectName(u"button_browse_xml_folder")
-        self.button_browse_xml_folder.setFont(font3)
+        self.button_browse_xml_folder.setFont(font2)
 
         self.horizontalLayout_one.addWidget(self.button_browse_xml_folder)
 
         self.button_read_xml = QPushButton(self.group_box_xml_input_xpath_builder)
         self.button_read_xml.setObjectName(u"button_read_xml")
-        self.button_read_xml.setFont(font3)
+        self.button_read_xml.setFont(font2)
 
         self.horizontalLayout_one.addWidget(self.button_read_xml)
 
@@ -318,7 +317,7 @@ class Ui_MainWindow(object):
 
         self.button_build_xpath = QPushButton(self.group_box_xml_input_xpath_builder)
         self.button_build_xpath.setObjectName(u"button_build_xpath")
-        self.button_build_xpath.setFont(font3)
+        self.button_build_xpath.setFont(font2)
 
         self.horizontalLayout_six.addWidget(self.button_build_xpath)
 
@@ -327,7 +326,7 @@ class Ui_MainWindow(object):
 
         self.button_add_xpath_to_list = QPushButton(self.group_box_xml_input_xpath_builder)
         self.button_add_xpath_to_list.setObjectName(u"button_add_xpath_to_list")
-        self.button_add_xpath_to_list.setFont(font3)
+        self.button_add_xpath_to_list.setFont(font2)
 
         self.verticalLayout_4.addWidget(self.button_add_xpath_to_list)
 
@@ -376,7 +375,7 @@ class Ui_MainWindow(object):
 
         self.button_browse_csv = QPushButton(self.group_box_export_to_csv)
         self.button_browse_csv.setObjectName(u"button_browse_csv")
-        self.button_browse_csv.setFont(font3)
+        self.button_browse_csv.setFont(font2)
 
         self.hor_layout_csv_input_and_export.addWidget(self.button_browse_csv)
 
@@ -406,15 +405,14 @@ class Ui_MainWindow(object):
         self.button_abort_csv_export = QPushButton(self.group_box_export_to_csv)
         self.button_abort_csv_export.setObjectName(u"button_abort_csv_export")
         self.button_abort_csv_export.setEnabled(True)
-        self.button_abort_csv_export.setFont(font3)
+        self.button_abort_csv_export.setFont(font2)
         self.button_abort_csv_export.setHidden(True)
-
-
+        
         self.hor_layout_button_export_and_abort.addWidget(self.button_abort_csv_export)
 
         self.button_start_csv_export = QPushButton(self.group_box_export_to_csv)
         self.button_start_csv_export.setObjectName(u"button_start_csv_export")
-        self.button_start_csv_export.setFont(font3)
+        self.button_start_csv_export.setFont(font2)
 
         self.hor_layout_button_export_and_abort.addWidget(self.button_start_csv_export)
 
