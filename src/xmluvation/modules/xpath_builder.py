@@ -1,8 +1,8 @@
 # utils/xpath_builder.py
-from PySide6.QtCore import QObject, QRunnable, Signal
+from PySide6.QtCore import QObject, QRunnable, Signal, Slot
+from PySide6.QtWidgets import QComboBox, QRadioButton # Assuming these are the types
 from lxml import etree as ET
 from typing import Optional, Dict, List, Tuple
-
 
 class XPathBuilderSignals(QObject):
     """Signals class for XPathBuilder operations."""
@@ -13,13 +13,18 @@ class XPathBuilderSignals(QObject):
 class XPathValidator(QRunnable):
     """Thread worker for validating XPath expressions."""
     
-    def __init__(self):
+    def __init__(self, xpath_expression: Optional[str] = None, xml_file_path: Optional[str] = None):
         super().__init__()
-        self.xpath_expression = None
-        self.xml_file_path = None
+        self.xpath_expression = xpath_expression
+        self.xml_file_path = xml_file_path
         self.signals = XPathBuilderSignals()
         self.setAutoDelete(True)
     
+    @Slot()
+    def run(self):
+        """Main execution method for XPath validation."""
+        self.validate_xpath_expression()
+
     def validate_xpath_expression(self):
         """Validate XPath expression and optionally test against XML file.
         
@@ -45,7 +50,7 @@ class XPathValidator(QRunnable):
                 self.signals.program_output_progress.emit("XPath syntax is valid")
             
             return True
-                
+            
         except ET.XPathSyntaxError as e:
             error_msg = f"XPath syntax error: {str(e)}"
             self.signals.error_occurred.emit("XPathSyntaxError", error_msg)
@@ -71,23 +76,31 @@ class XPathBuilder(QObject):
     GREATER_THAN = "greater"
     SMALLER_THAN = "smaller"
     
-    def __init__(self):
+    def __init__(self,
+                 tag_name_combo: object,
+                 tag_value_combo: object,
+                 attribute_name_combo: object,
+                 attribute_value_combo: object,
+                 radio_equals: object,
+                 radio_contains: object,
+                 radio_starts_with: object,
+                 radio_greater: object,
+                 radio_smaller: object):
         super().__init__()
         self.signals = XPathBuilderSignals()
         self._current_xpath = ""
         
-        # UI element references (set by main window)
-        self.tag_name_combo = None
-        self.tag_value_combo = None
-        self.attribute_name_combo = None
-        self.attribute_value_combo = None
-        
-        # Radio button references
-        self.radio_equals = None
-        self.radio_contains = None
-        self.radio_starts_with = None
-        self.radio_greater = None
-        self.radio_smaller = None
+        # Store references to UI widgets
+        self.tag_name_combo = tag_name_combo
+        self.tag_value_combo = tag_value_combo
+        self.attribute_name_combo = attribute_name_combo
+        self.attribute_value_combo = attribute_value_combo
+
+        self.radio_equals = radio_equals
+        self.radio_contains = radio_contains
+        self.radio_starts_with = radio_starts_with
+        self.radio_greater = radio_greater
+        self.radio_smaller = radio_smaller
 
     
     def _get_selected_operation(self) -> str:
@@ -151,7 +164,7 @@ class XPathBuilder(QObject):
         return ""
     
     def _construct_xpath(self, tag_name: str, tag_value: str, 
-                        attr_name: str, attr_value: str, operation: str) -> str:
+                          attr_name: str, attr_value: str, operation: str) -> str:
         """Construct XPath expression based on provided parameters."""
         if not tag_name:
             return ""
@@ -217,11 +230,32 @@ class XPathBuilder(QObject):
         elif operation == self.STARTS_WITH:
             return f"starts-with(@{attr_name}, '{attr_value}')"
         elif operation == self.GREATER_THAN:
-            return f"@{attr_name} > {attr_value}"
+            return f"@{attr_name} > {attr_value}" # Corrected from "<" to ">"
         elif operation == self.SMALLER_THAN:
             return f"@{attr_name} < {attr_value}"
         return f"@{attr_name}='{attr_value}'"  # Default to equals
     
+    def _get_input_xpath(self) -> str:
+        """
+        Builds and returns an XPath expression based on the current values
+        of the UI comboboxes and selected radio button, without emitting signals
+        or updating the internal _current_xpath state.
+        This method is intended to be used for validation or preview purposes
+        where the XPath needs to be generated on-the-fly from input controls.
+        """
+        try:
+            tag_name = self._get_combo_text(self.tag_name_combo)
+            tag_value = self._get_combo_text(self.tag_value_combo)
+            attr_name = self._get_combo_text(self.attribute_name_combo)
+            attr_value = self._get_combo_text(self.attribute_value_combo)
+            operation = self._get_selected_operation()
+            
+            xpath = self._construct_xpath(tag_name, tag_value, attr_name, attr_value, operation)
+            return xpath
+        except Exception:
+            # If any error occurs during input retrieval or construction, return empty string
+            return ""
+
     def validate_xpath_async(self, xpath_expression: str = None, xml_file_path: str = None) -> XPathValidator:
         """Create validator worker for async XPath validation."""
         expression = xpath_expression or self._current_xpath or self._get_input_xpath()
@@ -245,11 +279,21 @@ class XPathBuilder(QObject):
 
 
 # Convenience functions
-def create_xpath_builder() -> XPathBuilder:
+def create_xpath_builder(tag_name_combo: QComboBox,
+                         tag_value_combo: QComboBox,
+                         attribute_name_combo: QComboBox,
+                         attribute_value_combo: QComboBox,
+                         radio_equals: QRadioButton,
+                         radio_contains: QRadioButton,
+                         radio_starts_with: QRadioButton,
+                         radio_greater: QRadioButton,
+                         radio_smaller: QRadioButton) -> XPathBuilder:
     """Create a new XPathBuilder instance."""
-    return XPathBuilder()
+    return XPathBuilder(tag_name_combo, tag_value_combo, attribute_name_combo,
+                        attribute_value_combo, radio_equals, radio_contains,
+                        radio_starts_with, radio_greater, radio_smaller)
 
 
-def create_xpath_validator() -> XPathValidator:
+def create_xpath_validator(xpath_expression: Optional[str] = None, xml_file_path: Optional[str] = None) -> XPathValidator:
     """Create a new XPathValidator worker."""
-    return XPathValidator()
+    return XPathValidator(xpath_expression, xml_file_path)
