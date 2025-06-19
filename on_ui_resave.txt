@@ -1,4 +1,4 @@
-from gui.resources.qrc import xmluvation_resources_rc
+from xmluvation.resources.qrc import xmluvation_resources_rc
 
 add statusbars under these:
 
@@ -27,3 +27,9 @@ group_box_xml_input_xpath_builder
         self.verticalLayout_4 = QVBoxLayout(self.group_box_xml_input_xpath_builder)
         self.verticalLayout_4.setObjectName(u"verticalLayout_4")
         self.verticalLayout_4.addWidget(self.statusbar_xml_files_count)
+
+
+
+
+
+        self.button_abort_csv_export.setHidden(True)

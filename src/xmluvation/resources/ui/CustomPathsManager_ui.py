@@ -18,7 +18,8 @@ from PySide6.QtGui import (QBrush, QColor, QConicalGradient, QCursor,
 from PySide6.QtWidgets import (QApplication, QComboBox, QFormLayout, QFrame,
     QHBoxLayout, QLabel, QLineEdit, QPushButton,
     QSizePolicy, QVBoxLayout, QWidget)
-from gui.resources.qrc import xmluvation_resources_rc
+
+from xmluvation.resources.qrc import xmluvation_resources_rc
 
 class Ui_Form(object):
     def setupUi(self, Form):

@@ -18,7 +18,7 @@ def process_single_xml(
     folder: str,
     xpath_expressions: List[str],
     headers: List[str],
-    terminate_event: threading.Event # Pass the terminate event directly
+    terminate_event: threading.Event # Pass the terminated event directly
 ) -> Tuple[List[Dict[str, str]], int, int]:
     """Process a single XML file and return its results as a list of dictionaries,
     where each dictionary represents a single XPath match for a CSV row.
@@ -40,7 +40,7 @@ def process_single_xml(
     except (ET.XMLSyntaxError, Exception) as e: # Catching general Exception for file read errors
         # Log the error for debugging, but continue processing other files
         print(f"Error parsing XML file {xml_file}: {e}")
-        return [], 0, 0 # Return empty results if file cannot be parsed
+        return [], 0, 0 # Return empty results if a file cannot be parsed
 
     for expression, header in zip(xpath_expressions, headers):
         if terminate_event.is_set():
@@ -146,7 +146,7 @@ class CSVExportThread(QRunnable):
         """Main execution method that routes to specific operations."""
         try:
             if self.operation == "export":
-                self._export_serach_to_csv()
+                self._export_search_to_csv()
             else:
                 raise ValueError(f"Unknown operation: {self.operation}")
 
@@ -154,7 +154,7 @@ class CSVExportThread(QRunnable):
             detailed_error = traceback.format_exc()
             self.signals.error_occurred.emit("Operation Error", f"{str(e)}\n\nDetails:\n{detailed_error}")
 
-    def _export_serach_to_csv(self):
+    def _export_search_to_csv(self):
         """Start searching all XML files in the specified folder and write its results to a specified output CSV file."""
         print(f"Using {self.max_threads} threads...")
 
@@ -168,7 +168,7 @@ class CSVExportThread(QRunnable):
         xml_files_list = [f for f in os.listdir(self.folder_path_containing_xml_files) if f.lower().endswith('.xml')]
         total_xml_files_count = len(xml_files_list)
 
-        # Check if csv output folder path has been set
+        # Check if the csv output folder path has been set
         if not self.output_save_path_for_csv_export:
             self.signals.warning_occurred.emit("CSV Output Path is Empty", "Please set an output folder path for the csv file.")
             self.signals.finished.emit()
@@ -178,7 +178,7 @@ class CSVExportThread(QRunnable):
             self.signals.warning_occurred.emit("Headers and Expressions empty", "No csv headers and XPath expression found, please add some.")
             self.signals.finished.emit()
             return
-        # Check if csv headers length is not the same as the length of xpath expressions
+        # Check if csv headers length is different from the length of xpath expressions
         elif csv_headers_size != xpath_expressions_size:
             self.signals.warning_occurred.emit(
                 "CSV Header Size Warning",
@@ -203,7 +203,7 @@ class CSVExportThread(QRunnable):
                 fixed_headers = ["Filename", "Match_Index"]
                 # Combine fixed headers with the dynamic XPath headers
                 # Ensure no duplicates if a dynamic header happens to be one of the fixed ones.
-                # Using a set to preserve uniqueness, then converting back to list to maintain order.
+                # Using a set to preserve uniqueness, then convert back to list to maintain order.
                 all_csv_headers = fixed_headers + [
                     h for h in self.csv_headers_list if h not in fixed_headers
                 ]
@@ -260,7 +260,7 @@ class CSVExportThread(QRunnable):
                         # Optionally, you can add more detailed error reporting here
                         processed_files_count += 1 # Still count it as processed for progress bar
 
-                if not self._terminate_event.is_set(): # Only show completion message if not aborted
+                if not self._terminate_event.is_set(): # Only show a completion message if not aborted
                     self.signals.program_output_progress_set_text.emit(
                         f"CSV export finished.\nTotal XML files processed: {total_xml_files_count}\n"
                         f"Total matches found: {total_sum_matches}\n"
@@ -278,10 +278,10 @@ class CSVExportThread(QRunnable):
         finally:
             if self._pool:
                 # Proper shutdown for ThreadPoolExecutor
-                # This ensures all submitted tasks are completed or cancelled.
+                # This ensures all submitted tasks are completed or canceled.
                 # Setting wait=True ensures that all threads have finished before proceeding.
                 self._pool.shutdown(wait=True)
-            self.signals.finished.emit() # Always emit finished, even on abort or error
+            self.signals.finished.emit() # Emit always finished, even on abort or error
 
 
 # Convenience function for creating threaded operations
@@ -292,6 +292,7 @@ def create_csv_exporter(folder_path_containing_xml_files:str, xpath_expressions_
         folder_path_containing_xml_files (str): Folder path that contains the XML files, use self.ui.line_edit_xml_folder_path_input
         xpath_expressions_list (list): List of XPath expressions to use and search XML file, use self.ui.list_widget_xpath_expressions
         output_save_path_for_csv_export (str): Folder path where the search result should be exported to as a CSV file, use self.ui.line_edit_csv_output_path
+        csv_headers_list (list): Returns a list of the entered CSV headers for the export part of the process
         max_threads (int): The maximum number of threads to use in the thread pool.
 
     Returns:
@@ -303,5 +304,5 @@ def create_csv_exporter(folder_path_containing_xml_files:str, xpath_expressions_
         xpath_expressions_list=xpath_expressions_list,
         output_save_path_for_csv_export=output_save_path_for_csv_export,
         csv_headers_list=csv_headers_list,
-        max_threads=max_threads # Renamed from max_proccesses to max_threads for clarity
+        max_threads=max_threads # Renamed from max_processes to max_threads for clarity
     )

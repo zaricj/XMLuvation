@@ -1,9 +1,9 @@
-from PySide6.QtWidgets import QMessageBox
+from PySide6.QtWidgets import QMessageBox, QMainWindow
 import os
 import json
 
 class ConfigHandler:
-    def __init__(self, config_directory: str, config_file_name: str, main_window: object = None):
+    def __init__(self, config_directory: str, config_file_name: str, main_window: QMainWindow = None):
         """Initializes the ConfigHandler with a specific JSON configuration file."""
         self.config_directory = config_directory
         self.config_file_name = config_file_name
@@ -21,8 +21,8 @@ class ConfigHandler:
                 with open(self.config_file_name, "r", encoding="utf-8") as f:
                     return json.load(f)
             except json.JSONDecodeError:
-                parent_widget = self.main_window if self.main_window else None 
-                QMessageBox.warning(parent_widget, "Load config warning", 
+                parent_widget = self.main_window if self.main_window else None
+                QMessageBox.warning(parent_widget, "Load config warning",
                                     f"Warning: {self.config_file_name} contains invalid JSON. Resetting configuration file.")
         self.reset_config()
         return {}
@@ -31,13 +31,10 @@ class ConfigHandler:
         """Saves the current configuration to the JSON file."""
         with open(self.config_file_name, "w", encoding="utf-8") as f:
             json.dump(self.data, f, indent=4)
-        
-        # Reload data
-        self.data = self._load_config()
 
     def _get_nested_key(self, keys: list[str]):
         """Helper to navigate to the correct nested dictionary."""
-        current_data = self.data
+        current_data = self._load_config()
         for i, key in enumerate(keys):
             if key not in current_data:
                 return None, None # Key not found, or not a dict
@@ -64,7 +61,7 @@ class ConfigHandler:
     def get(self, key_path: str, default: any = None):
         """Gets a configuration value, handling nested keys (e.g., 'section.subsection.key')."""
         keys = key_path.split('.')
-        current_data = self.data
+        current_data = self._load_config()
         for key in keys:
             if isinstance(current_data, dict) and key in current_data:
                 current_data = current_data[key]
@@ -100,7 +97,7 @@ class ConfigHandler:
         self.config_file_name = new_config_file_name
         self.config_file_name = os.path.join(self.config_directory, self.config_file_name)
         self.data = self._load_config()
-    
+
     # get_all_keys needs to decide if it returns all top-level keys
     # or keys of a specific nested section. Let's make it more flexible.
     def get_all_keys(self, key_path: str = None) -> list[str]:

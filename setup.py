@@ -11,7 +11,7 @@ with open('HISTORY.rst') as history_file:
     history = history_file.read()
 
 requirements = ["PySide6==6.9.1",
-"altgraph==0.17.4"
+"altgraph==0.17.4",
 "auto-py-to-exe==2.46.0",
 "bottle==0.13.3",
 "bottle-websocket==0.2.9",
@@ -85,6 +85,6 @@ setup(
     test_suite='tests',
     tests_require=test_requirements,
     url='https://github.com/zaricj/xmluvation',
-    version='0.1.0',
+    version='1.0.4',
     zip_safe=False,
 )
