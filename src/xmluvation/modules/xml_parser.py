@@ -17,14 +17,14 @@ class XMLParserSignals(QObject):
 
 class XMLUtils:
     """Utility class for XML operations that don't require threading."""
-    
+
     @staticmethod
     def validate_xml_syntax(xml_content: str) -> tuple[bool, str]:
         """Validate XML syntax without parsing the full document.
-        
+
         Args:
             xml_content: XML content as string
-            
+
         Returns:
             Tuple of (is_valid, error_message)
         """
@@ -35,14 +35,14 @@ class XMLUtils:
             return False, f"XML syntax error: {str(e)}"
         except Exception as e:
             return False, f"Validation error: {str(e)}"
-    
+
     @staticmethod
     def get_xml_encoding(file_path: str) -> str:
         """Extract encoding from XML file declaration.
-        
+
         Args:
             file_path: Path to XML file
-            
+
         Returns:
             Encoding string (default: 'utf-8')
         """
@@ -58,14 +58,14 @@ class XMLUtils:
         except Exception:
             pass
         return 'utf-8'
-    
+
     @staticmethod
     def pretty_print_xml(xml_content: str) -> str:
         """Format XML content with proper indentation.
-        
+
         Args:
             xml_content: Raw XML content
-            
+
         Returns:
             Pretty-formatted XML string
         """
@@ -79,69 +79,69 @@ class XMLUtils:
 class XmlSyntaxHighlighter(QSyntaxHighlighter):
     def __init__(self, parent=None):
         super().__init__(parent)
-        
+
         # Define text formats for different XML elements
         # Color scheme follows the Atom One Dark theme
         self.xml_keyword_format = QTextCharFormat()
         self.xml_keyword_format.setForeground(QColor(224, 108, 117))  # Red for tags
         self.xml_keyword_format.setFontWeight(QFont.Weight.Bold)
-        
+
         self.xml_element_format = QTextCharFormat()
         self.xml_element_format.setForeground(QColor(0, 0, 255))  # Blue for element names
-        
+
         self.xml_attribute_format = QTextCharFormat()
         self.xml_attribute_format.setForeground(QColor(209, 150, 94))  # Orange for attributes
-        
+
         self.xml_value_format = QTextCharFormat()
         self.xml_value_format.setForeground(QColor(152, 195, 116))  # Green for attribute values
-        
+
         self.xml_comment_format = QTextCharFormat()
         self.xml_comment_format.setForeground(QColor(128, 128, 128))  # Gray for comments
         self.xml_comment_format.setFontItalic(True)
-        
+
         self.xml_declaration_format = QTextCharFormat()
         self.xml_declaration_format.setForeground(QColor(255, 0, 255))  # Magenta for XML declaration
         self.xml_declaration_format.setFontWeight(QFont.Weight.Bold)
-        
+
         # Define highlighting rules
         self.highlighting_rules = []
-        
+
         # XML declaration (<?xml ... ?>)
         self.highlighting_rules.append((
             re.compile(r'<\?xml.*?\?>'),
             self.xml_declaration_format
         ))
-        
+
         # XML comments
         self.highlighting_rules.append((
             re.compile(r'<!--.*?-->', re.DOTALL),
             self.xml_comment_format
         ))
-        
+
         # XML tags (opening and closing) - improved pattern
         self.highlighting_rules.append((
             re.compile(r'</?[A-Za-z0-9_:-]+'),
             self.xml_keyword_format
         ))
-        
+
         # Tag closing brackets
         self.highlighting_rules.append((
             re.compile(r'[/>]+>'),
             self.xml_keyword_format
         ))
-        
+
         # XML attributes
         self.highlighting_rules.append((
             re.compile(r'\b[A-Za-z0-9_:-]+(?=\s*=)'),
             self.xml_attribute_format
         ))
-        
+
         # XML attribute values (double quotes)
         self.highlighting_rules.append((
             re.compile(r'"[^"]*"'),
             self.xml_value_format
         ))
-        
+
         # XML attribute values (single quotes)
         self.highlighting_rules.append((
             re.compile(r"'[^']*'"),
@@ -158,24 +158,24 @@ class XmlSyntaxHighlighter(QSyntaxHighlighter):
 
 class XmlTextEditEnhancer:
     """Helper class to enhance any QTextEdit with XML syntax highlighting."""
-    
+
     def __init__(self, text_edit_widget: QTextEdit):
         """Initialize the enhancer with an existing QTextEdit widget.
-        
+
         Args:
             text_edit_widget: The QTextEdit widget to enhance
         """
         self.text_edit = text_edit_widget
-        
+
         # Apply syntax highlighter
         self.highlighter = XmlSyntaxHighlighter(self.text_edit.document())
-        
+
         # Set a monospace font for better formatting
         font = QFont("Consolas", 10)
         if not font.exactMatch():
             font = QFont("Courier New", 10)
         self.text_edit.setFont(font)
-        
+
         # Set some nice defaults for XML editing
         self.text_edit.setLineWrapMode(QTextEdit.LineWrapMode.NoWrap)
         self.text_edit.setAcceptRichText(False)  # Plain text only for proper highlighting
@@ -183,26 +183,26 @@ class XmlTextEditEnhancer:
 
 class XmlTextEdit(QTextEdit):
     """Enhanced QTextEdit with XML syntax highlighting and formatting capabilities."""
-    
+
     def __init__(self, parent=None):
         super().__init__(parent)
-        
+
         # Apply syntax highlighter
         self.highlighter = XmlSyntaxHighlighter(self.document())
-        
+
         # Set a monospace font for better formatting
         font = QFont("Consolas", 10)
         if not font.exactMatch():
             font = QFont("Courier New", 10)
         self.setFont(font)
-        
+
         # Set some nice defaults for XML editing
         self.setLineWrapMode(QTextEdit.LineWrapMode.NoWrap)
         self.setAcceptRichText(False)  # Plain text only for proper highlighting
-        
+
     def set_xml_content(self, xml_content: str, pretty_format: bool = True):
         """Set XML content with optional pretty formatting.
-        
+
         Args:
             xml_content: XML content as string
             pretty_format: Whether to apply pretty formatting (default: True)
@@ -218,19 +218,19 @@ class XmlTextEdit(QTextEdit):
             # If formatting fails, just set the original content
             self.text_edit.setPlainText(xml_content)
             print(f"XML formatting error: {e}")
-    
+
     def get_xml_content(self) -> str:
         """Get the current XML content."""
         return self.text_edit.toPlainText()
-    
+
     def validate_current_xml(self) -> tuple[bool, str]:
         """Validate the current XML content.
-        
+
         Returns:
             Tuple of (is_valid, error_message)
         """
         return XMLUtils.validate_xml_syntax(self.text_edit.toPlainText())
-    
+
     def format_current_xml(self):
         """Format the current XML content in-place."""
         current_content = self.text_edit.toPlainText()
@@ -240,9 +240,9 @@ class XmlTextEdit(QTextEdit):
                 # Preserve cursor position if possible
                 cursor = self.text_edit.textCursor()
                 position = cursor.position()
-                
+
                 self.text_edit.setPlainText(formatted)
-                
+
                 # Try to restore cursor position
                 cursor.setPosition(min(position, len(formatted)))
                 self.text_edit.setTextCursor(cursor)
@@ -253,10 +253,10 @@ class XmlTextEdit(QTextEdit):
 # Factory function to enhance existing QTextEdit widgets
 def enhance_xml_text_edit(text_edit_widget: QTextEdit) -> XmlTextEditEnhancer:
     """Enhance an existing QTextEdit widget with XML syntax highlighting.
-    
+
     Args:
         text_edit_widget: The QTextEdit widget to enhance
-        
+
     Returns:
         XmlTextEditEnhancer instance for additional functionality
     """
@@ -266,7 +266,7 @@ def enhance_xml_text_edit(text_edit_widget: QTextEdit) -> XmlTextEditEnhancer:
 # Utility functions for working with UI-created QTextEdit widgets
 def set_xml_content_to_widget(text_edit: QTextEdit, xml_content: str, pretty_format: bool = True):
     """Set XML content to any QTextEdit widget with optional formatting.
-    
+
     Args:
         text_edit: The QTextEdit widget
         xml_content: XML content as string
@@ -285,44 +285,44 @@ def set_xml_content_to_widget(text_edit: QTextEdit, xml_content: str, pretty_for
 
 def apply_xml_highlighting_to_widget(text_edit: QTextEdit) -> XmlSyntaxHighlighter:
     """Apply XML syntax highlighting to any QTextEdit widget.
-    
+
     Args:
         text_edit: The QTextEdit widget to enhance
-        
+
     Returns:
         The XmlSyntaxHighlighter instance (keep reference to prevent garbage collection)
     """
     # Apply syntax highlighter
     highlighter = XmlSyntaxHighlighter(text_edit.document())
-    
+
     # Set monospace font
     font = QFont("Consolas", 10)
     if not font.exactMatch():
         font = QFont("Courier New", 10)
     text_edit.setFont(font)
-    
+
     # Set XML-friendly settings
     text_edit.setLineWrapMode(QTextEdit.LineWrapMode.NoWrap)
     text_edit.setAcceptRichText(False)
-    
+
     return highlighter
 
 
 class XMLParserThread(QRunnable):
     """Worker thread for various XML operations."""
-    
+
     def __init__(self, operation: str, **kwargs):
         super().__init__()
         self.operation = operation
         self.kwargs = kwargs
         self.signals = XMLParserSignals()
         self.setAutoDelete(True)
-        
+
         # Operation parameters
         self.xml_file_path = kwargs.get('xml_file_path')
         self.xml_content = kwargs.get('xml_content')
         self.namespace_map = kwargs.get('namespace_map', {})
-        
+
     @Slot()
     def run(self):
         """Main execution method that routes to specific operations."""
@@ -333,10 +333,10 @@ class XMLParserThread(QRunnable):
                 self._analyze_structure()
             else:
                 raise ValueError(f"Unknown operation: {self.operation}")
-                
+
         except Exception as e:
             self.signals.error_occurred.emit("Operation Error", str(e))
-    
+
     def _parse_xml(self):
         """Parse XML file and extract comprehensive information."""
         tree = ET.parse(self.xml_file_path)
@@ -401,23 +401,22 @@ class XMLParserThread(QRunnable):
         self.signals.program_output_progress.emit("XML parsing completed successfully!")
         self.signals.finished.emit(result)
 
-    
     def _analyze_structure(self):
         """Analyze XML document structure and provide detailed statistics."""
         self.signals.program_output_progress.emit("Analyzing XML structure...")
-        
+
         tree = ET.parse(self.xml_file_path)
         root = tree.getroot()
-        
+
         # Comprehensive structure analysis
         element_stats = {}
         depth_levels = {}
         max_depth = 0
-        
+
         def analyze_element(elem, depth=0):
             nonlocal max_depth
             max_depth = max(max_depth, depth)
-            
+
             tag = elem.tag
             if tag not in element_stats:
                 element_stats[tag] = {
@@ -428,37 +427,37 @@ class XMLParserThread(QRunnable):
                     'attributes': set(),
                     'depths': set()
                 }
-            
+
             stats = element_stats[tag]
             stats['count'] += 1
             stats['depths'].add(depth)
-            
+
             if elem.text and elem.text.strip():
                 stats['has_text'] += 1
-            
+
             if elem.attrib:
                 stats['has_attributes'] += 1
                 stats['attributes'].update(elem.attrib.keys())
-            
+
             if len(elem) > 0:
                 stats['has_children'] += 1
-            
+
             # Track depth distribution
             if depth not in depth_levels:
                 depth_levels[depth] = 0
             depth_levels[depth] += 1
-            
+
             # Recurse through children
             for child in elem:
                 analyze_element(child, depth + 1)
-        
+
         analyze_element(root)
-        
+
         # Convert sets to lists for JSON serialization
         for tag_stats in element_stats.values():
             tag_stats['attributes'] = sorted(tag_stats['attributes'])
             tag_stats['depths'] = sorted(tag_stats['depths'])
-        
+
         result = {
             'file_path': self.xml_file_path,
             'root_element': root.tag,
@@ -469,10 +468,10 @@ class XMLParserThread(QRunnable):
             'depth_distribution': depth_levels,
             'namespaces': self._extract_namespaces(root)
         }
-        
+
         self.signals.finished.emit(result)
         self.signals.program_output_progress.emit("Structure analysis completed!")
-    
+
     def _extract_namespaces(self, root):
         """Extract all namespaces used in the document."""
         namespaces = {}
@@ -486,6 +485,7 @@ class XMLParserThread(QRunnable):
 def create_xml_parser(xml_file_path: str) -> XMLParserThread:
     """Create a parser thread for basic XML parsing."""
     return XMLParserThread('parse', xml_file_path=xml_file_path)
+
 
 def create_structure_analyzer(xml_file_path: str) -> XMLParserThread:
     """Create a structure analyzer thread for detailed XML analysis."""
