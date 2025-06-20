@@ -9,8 +9,8 @@ from concurrent.futures import ThreadPoolExecutor # Changed from multiprocessing
 import threading # Used for the Event object
 from functools import partial
 
-# The _terminate_event is now an instance of threading.Event and will be managed
-# within the CSVExportThread instance, rather than a global multiprocessing.Event.
+# The _terminate_event is now an instance of threading. Event and will be managed
+# within the CSVExportThread instance, rather than a global multiprocessing.Event
 # It will be passed to the process_single_xml function via partial.
 
 def process_single_xml(
@@ -110,6 +110,7 @@ class CSVExportSignals(QObject):
     program_output_progress_set_text = Signal(str) # Program Output aka self.ui.text_edit_program_output.setText
     progressbar_update = Signal(int) # Progressbar aka self.ui.progressbar_main
     visible_state_widget = Signal(bool) # For hiding/unhiding button widgets
+
 
 class CSVExportThread(QRunnable):
     """Worker thread for exporting XML XPath evaluation results to a CSV file."""
