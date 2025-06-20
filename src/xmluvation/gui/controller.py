@@ -1,10 +1,10 @@
 import csv
 import os
 import pandas as pd
-from PySide6.QtWidgets import QMessageBox, QComboBox, QRadioButton, QListWidget, QMainWindow
+from PySide6.QtWidgets import QMessageBox, QComboBox, QRadioButton, QListWidget, QPushButton, QMainWindow
 from xmluvation.modules.xpath_builder import create_xpath_validator, create_xpath_builder
 from xmluvation.modules.csv_export import create_csv_exporter
-from xmluvation.modules.file_cleanup import create_lobster_profile_cleaner
+from xmluvation.modules.file_cleanup import create_lobster_profile_cleaner, create_csv_column_dropper
 from xmluvation.modules.xml_parser import create_xml_parser
 
 
@@ -348,6 +348,45 @@ class LobsterProfileExportCleanupHandler:
             QMessageBox.critical(self.main_window, "Exception on starting to clean up lobster xml files in specified folder", message)
 
 
+class CSVColumnDropHandler:
+    """_summary_"""
+    def __init__(self, main_window: QMainWindow = None, csv_file_path: str = None, column_to_drop: str = None, column_to_drop_index: int = None, csv_header_combobox: QComboBox = None, drop_header_button: QPushButton = None):
+        self.main_window = main_window
+        self.csv_file_path = csv_file_path
+        self.column_to_drop = column_to_drop
+        self.column_to_drop_index = column_to_drop_index
+        self.csv_header_combobox = csv_header_combobox
+        self.drop_header_button = drop_header_button
+        
+    def start_csv_column_drop(self) -> None:
+        try:
+            dropper = create_csv_column_dropper(self.csv_file_path, self.column_to_drop, self.column_to_drop_index)
+            self.main_window._connect_file_cleanup_signals(dropper)
+            self.main_window.thread_pool.start(dropper)
+            # Optional: Keep track of the worker
+            self.main_window.active_workers.append(dropper)
+        except Exception as ex:
+            message = f"An exception of type {type(ex).__name__} occurred. Arguments: {ex.args!r}"
+            QMessageBox.critical(self.main_window, "Exception on starting to drop selected CSV header", message)
+        
+    def on_csv_input_file_path_changed(self) -> None:
+        try:
+            if not self.csv_file_path:
+                self.csv_header_combobox.setDisabled(True)
+                self.drop_header_button.setDisabled(True)
+                self.csv_header_combobox.clear()
+                return
+            else:
+                if os.path.isfile(self.csv_file_path) and self.csv_file_path.endswith(".csv"):
+                    headers = pd.read_csv(self.csv_file_path).columns # Get headers of CSV file
+                    self.csv_header_combobox.addItems(headers)  # Add headers to the combo box
+                    self.csv_header_combobox.setDisabled(False)
+                    self.drop_header_button.setDisabled(False)
+        except Exception as ex:
+            message = f"An exception of type {type(ex).__name__} occurred. Arguments: {ex.args!r}"
+            QMessageBox.critical(self.main_window, "Exception adding read csv headers to the combobox", message)
+
+
 class ParseXMLFileHandler:
     """Handles methods and logic of the XML parsing."""
     def __init__(self, main_window: QMainWindow, xml_file_path: str):
@@ -370,8 +409,8 @@ class ParseXMLFileHandler:
 
 class XPathBuildHandler:
     """Handles methods and logic of the XPath Build event based on the combobox values"""
-    def __init__(self, main_window: QMainWindow, # More specific type hint
-                    tag_name_combo: QComboBox, # More specific type hints for clarity
+    def __init__(self, main_window: QMainWindow,
+                    tag_name_combo: QComboBox,
                     tag_value_combo: QComboBox,
                     attribute_name_combo: QComboBox,
                     attribute_value_combo: QComboBox,
@@ -382,7 +421,7 @@ class XPathBuildHandler:
                     radio_smaller: QRadioButton
                     ):
 
-        self.main_window = main_window # Corrected: Removed the comma
+        self.main_window = main_window
         self.ui = main_window.ui
         self.tag_name_combo = tag_name_combo
         self.tag_value_combo = tag_value_combo
@@ -393,19 +432,6 @@ class XPathBuildHandler:
         self.radio_starts_with = radio_starts_with
         self.radio_greater = radio_greater
         self.radio_smaller = radio_smaller
-
-        # Create the XPathBuilder instance during initialization
-        self.builder = create_xpath_builder(
-            self.tag_name_combo,
-            self.tag_value_combo,
-            self.attribute_name_combo,
-            self.attribute_value_combo,
-            self.radio_equals,
-            self.radio_contains,
-            self.radio_starts_with,
-            self.radio_greater,
-            self.radio_smaller
-        )
 
     def start_xpath_build(self) -> None:
         """Triggers the XPath building process and updates the UI."""
@@ -437,8 +463,6 @@ class XPathBuildHandler:
 
 class GenerateCSVHeaderHandler:
     """Handles methods and logic of the csv generation based on the entered XPath Expression to the QListWidget."""
-    def __init__(self, main_window: QMainWindow):
-        self.main_window = main_window
 
     @staticmethod
     def generate_header(tag_name: str, tag_value: str, attr_name: str, attr_value: str) -> str:
