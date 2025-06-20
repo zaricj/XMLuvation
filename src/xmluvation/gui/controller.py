@@ -311,7 +311,8 @@ class SearchAndExportToCSVHandler:
     def start_csv_export(self) -> None:
         """Initializes and starts the CSV export in a new thread."""
         try:
-            self.current_exporter = create_csv_exporter(self.xml_folder_path, self.xpath_filters, self.csv_folder_output_path, self._parse_csv_headers(self.csv_headers_input), self.set_max_threads)
+            exporter = create_csv_exporter(self.xml_folder_path, self.xpath_filters, self.csv_folder_output_path, self._parse_csv_headers(self.csv_headers_input), self.set_max_threads)
+            self.current_exporter = exporter
             self.main_window._connect_csv_export_signals(self.current_exporter)
             self.main_window.thread_pool.start(self.current_exporter)
 
@@ -323,9 +324,17 @@ class SearchAndExportToCSVHandler:
             QMessageBox.critical(self.main_window, "Exception on starting to export results to csv file", message)
     
     def stop_csv_export(self) -> None:
-            self.current_exporter = create_csv_exporter(self.xml_folder_path, self.xpath_filters, self.csv_folder_output_path, self._parse_csv_headers(self.csv_headers_input), self.set_max_threads)
+        """Signals the currently running CSV export to stop."""
+        if self.current_exporter:
+            # Check if the thread is still running before attempting to stop it
+            # QThreadPool.activeThreadCount() or check if the QRunnable is still in pool
+            # For simplicity, we just call stop() and rely on the QRunnable's internal logic
             self.current_exporter.stop()
-            self.current_exporter = None 
+            self.current_exporter = None # Clear the reference once stopped
+        else:
+            # This case should ideally not be hit if the button is correctly enabled/disabled
+            # based on whether an export is running.
+            self.main_window.signals.program_output_progress_append.emit("No active CSV export thread found.")
 
     @staticmethod
     def _parse_csv_headers(raw_headers: str) -> list:
