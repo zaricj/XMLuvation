@@ -131,6 +131,9 @@ class Ui_MainWindow(object):
         self.vert_layout_main.setObjectName(u"vert_layout_main")
         self.group_box_xml_input_xpath_builder = QGroupBox(self.tab_xml_evaluation)
         self.group_box_xml_input_xpath_builder.setObjectName(u"group_box_xml_input_xpath_builder")
+        self.statusbar_xml_files_count = QStatusBar(self.group_box_xml_input_xpath_builder)
+        self.statusbar_xml_files_count.setSizeGripEnabled(False)
+        self.statusbar_xml_files_count.setObjectName(u"statusbar_xml_files_count")
         font3 = QFont()
         font3.setFamilies([u"Microsoft YaHei UI"])
         font3.setPointSize(10)
@@ -139,11 +142,6 @@ class Ui_MainWindow(object):
         font3.setUnderline(False)
         font3.setStrikeOut(False)
         self.group_box_xml_input_xpath_builder.setFont(font3)
-
-        self.statusbar_xml_files_count = QStatusBar(self.group_box_xml_input_xpath_builder)
-        self.statusbar_xml_files_count.setSizeGripEnabled(False)
-        self.statusbar_xml_files_count.setObjectName(u"statusbar_xml_files_count")
-
         self.verticalLayout_4 = QVBoxLayout(self.group_box_xml_input_xpath_builder)
         self.verticalLayout_4.setObjectName(u"verticalLayout_4")
         self.verticalLayout_4.addWidget(self.statusbar_xml_files_count)
@@ -408,7 +406,7 @@ class Ui_MainWindow(object):
         self.button_abort_csv_export.setObjectName(u"button_abort_csv_export")
         self.button_abort_csv_export.setEnabled(True)
         self.button_abort_csv_export.setFont(font2)
-        self.button_abort_csv_export.setHidden(True)
+        self.button_abort_csv_export.setFlat(False)
 
         self.hor_layout_button_export_and_abort.addWidget(self.button_abort_csv_export)
 
@@ -690,6 +688,42 @@ class Ui_MainWindow(object):
 
         self.verticalLayout_10.addLayout(self.verticalLayout_3)
 
+        self.horizontalLayout_6 = QHBoxLayout()
+        self.horizontalLayout_6.setObjectName(u"horizontalLayout_6")
+        self.label_csv_headers_combobox = QLabel(self.groupbox_lobster_profiles_cleanup)
+        self.label_csv_headers_combobox.setObjectName(u"label_csv_headers_combobox")
+        sizePolicy2 = QSizePolicy(QSizePolicy.Policy.Maximum, QSizePolicy.Policy.Preferred)
+        sizePolicy2.setHorizontalStretch(0)
+        sizePolicy2.setVerticalStretch(0)
+        sizePolicy2.setHeightForWidth(self.label_csv_headers_combobox.sizePolicy().hasHeightForWidth())
+        self.label_csv_headers_combobox.setSizePolicy(sizePolicy2)
+        self.label_csv_headers_combobox.setFont(font2)
+
+        self.horizontalLayout_6.addWidget(self.label_csv_headers_combobox)
+
+        self.combobox_csv_headers = QComboBox(self.groupbox_lobster_profiles_cleanup)
+        self.combobox_csv_headers.setObjectName(u"combobox_csv_headers")
+        self.combobox_csv_headers.setEnabled(False)
+        sizePolicy3 = QSizePolicy(QSizePolicy.Policy.Preferred, QSizePolicy.Policy.Fixed)
+        sizePolicy3.setHorizontalStretch(0)
+        sizePolicy3.setVerticalStretch(0)
+        sizePolicy3.setHeightForWidth(self.combobox_csv_headers.sizePolicy().hasHeightForWidth())
+        self.combobox_csv_headers.setSizePolicy(sizePolicy3)
+
+        self.horizontalLayout_6.addWidget(self.combobox_csv_headers)
+
+        self.button_drop_csv_header = QPushButton(self.groupbox_lobster_profiles_cleanup)
+        self.button_drop_csv_header.setObjectName(u"button_drop_csv_header")
+        self.button_drop_csv_header.setEnabled(False)
+        sizePolicy1.setHeightForWidth(self.button_drop_csv_header.sizePolicy().hasHeightForWidth())
+        self.button_drop_csv_header.setSizePolicy(sizePolicy1)
+        self.button_drop_csv_header.setFont(font2)
+
+        self.horizontalLayout_6.addWidget(self.button_drop_csv_header)
+
+
+        self.verticalLayout_10.addLayout(self.horizontalLayout_6)
+
 
         self.hor_layout_tab2_main.addWidget(self.groupbox_lobster_profiles_cleanup)
 
@@ -793,6 +827,8 @@ class Ui_MainWindow(object):
         self.line_edit_profile_cleanup_folder_path.setPlaceholderText(QCoreApplication.translate("MainWindow", u"Select the folder path that contains all profiles...", None))
         self.button_profile_cleanup_browse_folder_path.setText(QCoreApplication.translate("MainWindow", u"Browse", None))
         self.button_profile_cleanup_cleanup_start.setText(QCoreApplication.translate("MainWindow", u"Clean up XML files", None))
+        self.label_csv_headers_combobox.setText(QCoreApplication.translate("MainWindow", u"Current CSV file headers:", None))
+        self.button_drop_csv_header.setText(QCoreApplication.translate("MainWindow", u"Drop Header", None))
         self.group_box_tab2_program_output.setTitle(QCoreApplication.translate("MainWindow", u"OUTPUT", None))
         self.tabWidget.setTabText(self.tabWidget.indexOf(self.tab_csv_conversion), QCoreApplication.translate("MainWindow", u"CSV Conversion and Cleanup", None))
     # retranslateUi
