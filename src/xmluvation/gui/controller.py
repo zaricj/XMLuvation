@@ -305,21 +305,27 @@ class SearchAndExportToCSVHandler:
         self.csv_folder_output_path = csv_folder_output_path
         self.csv_headers_input = csv_headers_input
         self.set_max_threads = set_max_threads
+        self.current_exporter = None 
 
     # === CSV Exporting Process === #
     def start_csv_export(self) -> None:
         """Initializes and starts the CSV export in a new thread."""
         try:
-            exporter = create_csv_exporter(self.xml_folder_path, self.xpath_filters, self.csv_folder_output_path, self._parse_csv_headers(self.csv_headers_input), self.set_max_threads)
-            self.main_window._connect_csv_export_signals(exporter)
-            self.main_window.thread_pool.start(exporter)
+            self.current_exporter = create_csv_exporter(self.xml_folder_path, self.xpath_filters, self.csv_folder_output_path, self._parse_csv_headers(self.csv_headers_input), self.set_max_threads)
+            self.main_window._connect_csv_export_signals(self.current_exporter)
+            self.main_window.thread_pool.start(self.current_exporter)
 
             # Optional: Keep track of the worker
-            self.main_window.active_workers.append(exporter)
+            self.main_window.active_workers.append(self.current_exporter)
 
         except Exception as ex:
             message = f"An exception of type {type(ex).__name__} occurred. Arguments: {ex.args!r}"
             QMessageBox.critical(self.main_window, "Exception on starting to export results to csv file", message)
+    
+    def stop_csv_export(self) -> None:
+            self.current_exporter = create_csv_exporter(self.xml_folder_path, self.xpath_filters, self.csv_folder_output_path, self._parse_csv_headers(self.csv_headers_input), self.set_max_threads)
+            self.current_exporter.stop()
+            self.current_exporter = None 
 
     @staticmethod
     def _parse_csv_headers(raw_headers: str) -> list:

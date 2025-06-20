@@ -406,7 +406,7 @@ class Ui_MainWindow(object):
         self.button_abort_csv_export.setObjectName(u"button_abort_csv_export")
         self.button_abort_csv_export.setEnabled(True)
         self.button_abort_csv_export.setFont(font2)
-        self.button_abort_csv_export.setFlat(False)
+        self.button_abort_csv_export.setHidden(True)
 
         self.hor_layout_button_export_and_abort.addWidget(self.button_abort_csv_export)
 

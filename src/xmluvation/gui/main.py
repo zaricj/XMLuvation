@@ -67,6 +67,8 @@ class MainWindow(QMainWindow):
         # XML Data
         self.parsed_xml_data = {}
         self.current_read_xml_file = None
+        
+        self.csv_exporter_handler = None 
 
         # Create fixed actions ONCE and store them as instance variables
         self._add_custom_path_action = QAction("Add Custom Path", self)
@@ -358,6 +360,7 @@ class MainWindow(QMainWindow):
         self.ui.button_add_xpath_to_list.clicked.connect(self.on_xpath_add_to_list_event)
         # CSV export
         self.ui.button_start_csv_export.clicked.connect(self.on_csv_export_event)
+        self.ui.button_abort_csv_export.clicked.connect(self.on_csv_export_stop_event)
         self.ui.button_browse_csv_conversion_path_input.clicked.connect(
             lambda: self.browse_file_helper(dialog_message="Select csv file for conversion",
                                             line_widget=self.ui.line_edit_csv_conversion_path_input,
@@ -449,23 +452,17 @@ class MainWindow(QMainWindow):
                                  f"Error exporting CSV: {message}")
 
     # ====================================================================================================================== #
-
-    def on_function_changed(self, function_type, checked):
-        if checked:
-            print(f"Function changed to: {function_type}")
-
-
+    
     def on_write_index_toggled(self, checked):
-        print(f"Write index column: {checked}")
         message_with_index = """
-        Data will look like  this:
+        Data will look like this:
 
         | Index           | Header 1   | Header 2    |
         |-------------------|-------------------|-------------------|
         | 1                  | Data...         | Data...        |
         """
         message_without_index = """
-        Data will look like  this:
+        Data will look like this:
 
         | Header 1 | Header 2      |
         |------------------|-------------------|
@@ -550,7 +547,7 @@ class MainWindow(QMainWindow):
             xpath_filters = self.xpath_filters  # Already a property
 
             # Pass into controller
-            exporter = SearchAndExportToCSVHandler(
+            self.csv_exporter_handler = SearchAndExportToCSVHandler(
                 main_window=self,
                 xml_folder_path=xml_path,
                 xpath_filters=xpath_filters,
@@ -558,10 +555,31 @@ class MainWindow(QMainWindow):
                 csv_headers_input=headers,
                 set_max_threads=max_threads
             )
-            exporter.start_csv_export()
+            self.csv_exporter_handler.start_csv_export()
+            
+            if self.ui.button_abort_csv_export.clicked:
+                self.csv_exporter_handler.stop_csv_export()
+                
         except Exception as ex:
             message = f"An exception of type {type(ex).__name__} occurred. Arguments: {ex.args!r}"
             QMessageBox.critical(self, "Exception on starting to search and export to csv", message)
+
+
+
+    def on_csv_export_stop_event(self):
+        """Signals the currently running CSV export to stop."""
+        try:
+            # Check if an exporter handler instance exists and if there's an active export
+            if self.csv_exporter_handler:
+                self.csv_exporter_handler.stop_csv_export()
+                self.csv_exporter_handler = None 
+            else:
+                QMessageBox.information(self, "No Active Export", "There is no CSV export currently running to abort.")
+
+        except Exception as ex:
+            message = f"An exception of type {type(ex).__name__} occurred. Arguments: {ex.args!r}"
+            QMessageBox.critical(self, "Exception on stopping CSV export", message)
+
 
 
     # On added xpath to list button has been clicked
@@ -591,7 +609,7 @@ class MainWindow(QMainWindow):
                 current_text = csv_headers_input.text()
                 self.update_statusbar_xpath_listbox_count()
 
-                generator = GenerateCSVHeaderHandler(main_window=self)
+                generator = GenerateCSVHeaderHandler()
                 header = generator.generate_header(
                     tag_name=tag_name,
                     tag_value=tag_value,
@@ -605,6 +623,7 @@ class MainWindow(QMainWindow):
                 else:
                     updated_text = header
                 csv_headers_input.setText(updated_text)
+                
         except Exception as ex:
             message = f"An exception of type {type(ex).__name__} occurred. Arguments: {ex.args!r}"
             QMessageBox.critical(self, "Exception on starting add xpath to list widget", message)
