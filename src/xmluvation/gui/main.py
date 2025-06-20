@@ -44,7 +44,7 @@ UI_FILE_NAME: str = os.path.join(ROOT_DIR, "resources", "ui", "XMLuvation.ui")
 UI_RESOURCES: str = os.path.join(ROOT_DIR, "resources", "qrc", "xmluvation_resources.qrc")
 
 # App related constants
-APP_VERSION: str = "v1.0.4"
+APP_VERSION: str = "v1.0.6"
 APP_NAME: str = "XMLuvation"
 AUTHOR: str = "Jovan"
 
@@ -67,8 +67,8 @@ class MainWindow(QMainWindow):
         # XML Data
         self.parsed_xml_data = {}
         self.current_read_xml_file = None
-        
-        self.csv_exporter_handler = None 
+
+        self.csv_exporter_handler = None
 
         # Create fixed actions ONCE and store them as instance variables
         self._add_custom_path_action = QAction("Add Custom Path", self)
@@ -336,14 +336,6 @@ class MainWindow(QMainWindow):
         self.ui.combobox_tag_names.currentTextChanged.connect(self.cb_state_controller.on_tag_name_changed)
         self.ui.combobox_attribute_names.currentTextChanged.connect(self.cb_state_controller.on_attribute_name_changed)
 
-        # Radio buttons
-        self.ui.radio_button_equals.toggled.connect(lambda checked: self.on_function_changed("equals", checked))
-        self.ui.radio_button_contains.toggled.connect(lambda checked: self.on_function_changed("contains", checked))
-        self.ui.radio_button_starts_with.toggled.connect(
-            lambda checked: self.on_function_changed("starts_with", checked))
-        self.ui.radio_button_greater.toggled.connect(lambda checked: self.on_function_changed("greater", checked))
-        self.ui.radio_button_smaller.toggled.connect(lambda checked: self.on_function_changed("smaller", checked))
-
         # Buttons
         # Folder browsing and XML reading
         self.ui.button_browse_xml_folder.clicked.connect(
@@ -377,13 +369,13 @@ class MainWindow(QMainWindow):
             lambda: self.browse_file_helper(dialog_message="Select csv file",
                                             line_widget=self.ui.line_edit_profile_cleanup_csv_file_path,
                                             file_extension_filter="CSV File (*.csv)"))
-        
+
         self.ui.button_profile_cleanup_browse_folder_path.clicked.connect(
             lambda: self.browse_folder_helper(dialog_message="Select directory that contains XML files",
                                             line_widget=self.ui.line_edit_profile_cleanup_folder_path))
-        
+
         self.ui.button_profile_cleanup_cleanup_start.clicked.connect(self.on_lobster_profile_cleanup_event)
-        
+
         self.ui.button_drop_csv_header.clicked.connect(self.on_csv_header_drop_event)
 
     # === Helper Methods === #
@@ -452,7 +444,7 @@ class MainWindow(QMainWindow):
                                  f"Error exporting CSV: {message}")
 
     # ====================================================================================================================== #
-    
+
     def on_write_index_toggled(self, checked):
         message_with_index = """
         Data will look like this:
@@ -556,10 +548,7 @@ class MainWindow(QMainWindow):
                 set_max_threads=max_threads
             )
             self.csv_exporter_handler.start_csv_export()
-            
-            if self.ui.button_abort_csv_export.clicked:
-                self.csv_exporter_handler.stop_csv_export()
-                
+
         except Exception as ex:
             message = f"An exception of type {type(ex).__name__} occurred. Arguments: {ex.args!r}"
             QMessageBox.critical(self, "Exception on starting to search and export to csv", message)
@@ -572,7 +561,7 @@ class MainWindow(QMainWindow):
             # Check if an exporter handler instance exists and if there's an active export
             if self.csv_exporter_handler:
                 self.csv_exporter_handler.stop_csv_export()
-                self.csv_exporter_handler = None 
+                self.csv_exporter_handler = None
             else:
                 QMessageBox.information(self, "No Active Export", "There is no CSV export currently running to abort.")
 
@@ -587,8 +576,8 @@ class MainWindow(QMainWindow):
         try:
             """Adds entered XPath Expression to the QListWidget"""
             # Initialize the UI element and pass them to the class
-            xpath_input = self.ui.line_edit_xpath_builder.text()
-            xpath_filters = self.xpath_filters  # Already a property
+            xpath_input: str = self.ui.line_edit_xpath_builder.text()
+            xpath_filters: list[str] = self.xpath_filters  # Already a property
             csv_headers_input = self.ui.line_edit_csv_headers_input
             list_widget_xpath_expressions = self.ui.list_widget_xpath_expressions
             tag_name: str = self.ui.combobox_tag_names.currentText()
@@ -623,7 +612,7 @@ class MainWindow(QMainWindow):
                 else:
                     updated_text = header
                 csv_headers_input.setText(updated_text)
-                
+
         except Exception as ex:
             message = f"An exception of type {type(ex).__name__} occurred. Arguments: {ex.args!r}"
             QMessageBox.critical(self, "Exception on starting add xpath to list widget", message)
@@ -680,7 +669,7 @@ class MainWindow(QMainWindow):
             column_to_drop=column_to_drop,
             column_to_drop_index=column_to_drop_index
         )
-        
+
         drop_column.start_csv_column_drop()
 
 
@@ -690,7 +679,7 @@ class MainWindow(QMainWindow):
         column_to_drop_index = self.ui.combobox_csv_headers.currentIndex()
         csv_header_combobox = self.ui.combobox_csv_headers
         drop_header_button = self.ui.button_drop_csv_header
-        
+
         CSVColumnDropHandler(
             main_window=self,
             csv_file_path=csv_file_path,
@@ -852,7 +841,7 @@ class MainWindow(QMainWindow):
             message (str): Message to send to the QTextEdit Widget
         """
         self.ui.text_edit_csv_conversion_tab_program_output.setText(message)
-        
+
     @Slot(str)
     def on_column_dropped_successfully(self, index: int):
         """Handle the QComboBox on CSV Header drop

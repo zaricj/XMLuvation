@@ -250,7 +250,7 @@ class AddXPathExpressionToListHandler:
         self.list_widget_xpath_expressions = list_widget_xpath_expressions
 
         # === QListWidget HANDLER ===
-    def add_expression_to_list(self) -> bool:
+    def add_expression_to_list(self) -> bool | None:
         """Add the entered or built XPath expression from the QLineEdit to the QListWidget for later searching
 
         Has a built-in XPath validator before adding the XPath to the QListWidget
@@ -305,7 +305,7 @@ class SearchAndExportToCSVHandler:
         self.csv_folder_output_path = csv_folder_output_path
         self.csv_headers_input = csv_headers_input
         self.set_max_threads = set_max_threads
-        self.current_exporter = None 
+        self.current_exporter = None
 
     # === CSV Exporting Process === #
     def start_csv_export(self) -> None:
@@ -322,7 +322,7 @@ class SearchAndExportToCSVHandler:
         except Exception as ex:
             message = f"An exception of type {type(ex).__name__} occurred. Arguments: {ex.args!r}"
             QMessageBox.critical(self.main_window, "Exception on starting to export results to csv file", message)
-    
+
     def stop_csv_export(self) -> None:
         """Signals the currently running CSV export to stop."""
         if self.current_exporter:
@@ -372,7 +372,7 @@ class CSVColumnDropHandler:
         self.column_to_drop_index = column_to_drop_index
         self.csv_header_combobox = csv_header_combobox
         self.drop_header_button = drop_header_button
-        
+
     def start_csv_column_drop(self) -> None:
         try:
             dropper = create_csv_column_dropper(self.csv_file_path, self.column_to_drop, self.column_to_drop_index)
@@ -383,7 +383,7 @@ class CSVColumnDropHandler:
         except Exception as ex:
             message = f"An exception of type {type(ex).__name__} occurred. Arguments: {ex.args!r}"
             QMessageBox.critical(self.main_window, "Exception on starting to drop selected CSV header", message)
-        
+
     def on_csv_input_file_path_changed(self) -> None:
         try:
             if not self.csv_file_path:
