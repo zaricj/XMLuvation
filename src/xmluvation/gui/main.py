@@ -58,6 +58,7 @@ class MainWindow(QMainWindow):
         super().__init__()
 
         # Create and set up the UI
+        self.paths_menu = None
         self.ui = Ui_MainWindow()
         self.ui.setupUi(self)
 
