@@ -9,7 +9,7 @@ from concurrent.futures import ThreadPoolExecutor # Changed from multiprocessing
 import threading # Used for the Event object
 from functools import partial
 
-# The _terminate_event is now an instance of threading. Event and will be managed
+# _terminate_event is now an instance of threading. Event and will be managed
 # within the CSVExportThread instance, rather than a global multiprocessing.Event
 # It will be passed to the process_single_xml function via partial.
 
@@ -108,6 +108,7 @@ class CSVExportSignals(QObject):
     warning_occurred = Signal(str, str) # QMessageBox.warning
     program_output_progress_append = Signal(str) # Program Output aka self.ui.text_edit_program_output.append
     program_output_progress_set_text = Signal(str) # Program Output aka self.ui.text_edit_program_output.setText
+    file_processing_progress = Signal(str) # File processed update for self.ui.label_file_processing
     progressbar_update = Signal(int) # Progressbar aka self.ui.progressbar_main
     visible_state_widget = Signal(bool) # For hiding/unhiding button widgets
 
@@ -253,11 +254,11 @@ class CSVExportThread(QRunnable):
 
                         progress = int((processed_files_count / total_xml_files_count) * 100)
                         self.signals.progressbar_update.emit(progress)
-                        self.signals.program_output_progress_append.emit(f"Processed file {processed_files_count} of {total_xml_files_count}")
+                        self.signals.file_processing_progress.emit(f"Processed file {processed_files_count} of {total_xml_files_count}")
 
                     except Exception as future_exception:
                         # Handle exceptions that occurred in the worker thread
-                        self.signals.program_output_progress_append.emit(f"Error processing a file: {future_exception}")
+                        self.signals.file_processing_progress.emit(f"Error processing a file: {future_exception}")
                         # Optionally, you can add more detailed error reporting here
                         processed_files_count += 1 # Still count it as processed for progress bar
 

@@ -908,14 +908,21 @@ class MainWindow(QMainWindow):
     @Slot(bool)
     def on_csv_export_started(self, state: bool):
         self.ui.button_abort_csv_export.setVisible(state)
+        self.ui.label_file_processing.setVisible(state)
         self.ui.text_edit_program_output.append(self.get_thread_pool_status())
         self.set_ui_widgets_disabled(state=True)
 
     @Slot()
     def on_csv_export_finished(self):
         self.ui.button_abort_csv_export.setVisible(False)
-        self.set_ui_widgets_disabled(False)
+        self.ui.label_file_processing.setVisible(False)
+        self.set_ui_widgets_disabled(state=False)
         self.ui.progressbar_main.reset()
+
+    @Slot(str)
+    def on_file_processing(self, message: str):
+        """Handle QLabel progress updates for file processing."""
+        self.ui.label_file_processing.setText(message)
 
     @Slot(int)
     def update_progress_bar(self, progress: int):
@@ -941,6 +948,7 @@ class MainWindow(QMainWindow):
         worker.signals.warning_occurred.connect(self.on_warning_message)
         worker.signals.program_output_progress_append.connect(self.append_to_program_output)
         worker.signals.program_output_progress_set_text.connect(self.set_text_to_program_output)
+        worker.signals.file_processing_progress.connect(self.on_file_processing)
         worker.signals.progressbar_update.connect(self.update_progress_bar)
         worker.signals.visible_state_widget.connect(self.on_csv_export_started)
 

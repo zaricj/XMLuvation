@@ -131,9 +131,6 @@ class Ui_MainWindow(object):
         self.vert_layout_main.setObjectName(u"vert_layout_main")
         self.group_box_xml_input_xpath_builder = QGroupBox(self.tab_xml_evaluation)
         self.group_box_xml_input_xpath_builder.setObjectName(u"group_box_xml_input_xpath_builder")
-        self.statusbar_xml_files_count = QStatusBar(self.group_box_xml_input_xpath_builder)
-        self.statusbar_xml_files_count.setSizeGripEnabled(False)
-        self.statusbar_xml_files_count.setObjectName(u"statusbar_xml_files_count")
         font3 = QFont()
         font3.setFamilies([u"Microsoft YaHei UI"])
         font3.setPointSize(10)
@@ -141,6 +138,9 @@ class Ui_MainWindow(object):
         font3.setItalic(False)
         font3.setUnderline(False)
         font3.setStrikeOut(False)
+        self.statusbar_xml_files_count = QStatusBar(self.group_box_xml_input_xpath_builder)
+        self.statusbar_xml_files_count.setSizeGripEnabled(False)
+        self.statusbar_xml_files_count.setObjectName(u"statusbar_xml_files_count")
         self.group_box_xml_input_xpath_builder.setFont(font3)
         self.verticalLayout_4 = QVBoxLayout(self.group_box_xml_input_xpath_builder)
         self.verticalLayout_4.setObjectName(u"verticalLayout_4")
@@ -500,6 +500,14 @@ class Ui_MainWindow(object):
 
         self.verticalLayout_5.addWidget(self.progressbar_main)
 
+        self.label_file_processing = QLabel(self.group_box_xml_output)
+        self.label_file_processing.setObjectName(u"label_file_processing")
+        self.label_file_processing.setFont(font3)
+        self.label_file_processing.setStyleSheet(u"color: #ffc857;")
+        self.label_file_processing.setHidden(True)
+
+        self.verticalLayout_5.addWidget(self.label_file_processing)
+
 
         self.vert_layout_xml_output.addWidget(self.group_box_xml_output)
 
@@ -806,6 +814,7 @@ class Ui_MainWindow(object):
         self.group_box_program_output.setTitle(QCoreApplication.translate("MainWindow", u"PROGRAM OUTPUT", None))
         self.group_box_xml_output.setTitle(QCoreApplication.translate("MainWindow", u"XML OUTPUT", None))
         self.progressbar_main.setFormat(QCoreApplication.translate("MainWindow", u"%p%", None))
+        self.label_file_processing.setText("")
         self.tabWidget.setTabText(self.tabWidget.indexOf(self.tab_xml_evaluation), QCoreApplication.translate("MainWindow", u"XML Evaluation", None))
         self.groupbox_csv_conversion.setTitle(QCoreApplication.translate("MainWindow", u"CSV CONVERSION", None))
         self.label_csv_conversion_title.setText(QCoreApplication.translate("MainWindow", u"CSV Conversion", None))
@@ -819,10 +828,10 @@ class Ui_MainWindow(object):
         self.button_csv_conversion_convert.setText(QCoreApplication.translate("MainWindow", u"Convert CSV File", None))
         self.checkbox_write_index_column.setText(QCoreApplication.translate("MainWindow", u"Write Index Column?", None))
         self.groupbox_lobster_profiles_cleanup.setTitle(QCoreApplication.translate("MainWindow", u"PROFILE EXPORT CLEAN UP", None))
-        self.label_title_profile_cleanup.setText(QCoreApplication.translate("MainWindow", u"Profile clean up", None))
+        self.label_title_profile_cleanup.setText(QCoreApplication.translate("MainWindow", u"CSV File Clean Up", None))
         self.label_2.setText(QCoreApplication.translate("MainWindow", u"Lobster profiles export clean up with the help of the csv export of system profiles", None))
         self.line_edit_profile_cleanup_csv_file_path.setText("")
-        self.line_edit_profile_cleanup_csv_file_path.setPlaceholderText(QCoreApplication.translate("MainWindow", u"Select the export file containing all lobster profiles...", None))
+        self.line_edit_profile_cleanup_csv_file_path.setPlaceholderText(QCoreApplication.translate("MainWindow", u"Select the csv file containing all lobster profiles...", None))
         self.button_profile_cleanup_browse_csv_file_path.setText(QCoreApplication.translate("MainWindow", u"Browse", None))
         self.line_edit_profile_cleanup_folder_path.setPlaceholderText(QCoreApplication.translate("MainWindow", u"Select the folder path that contains all profiles...", None))
         self.button_profile_cleanup_browse_folder_path.setText(QCoreApplication.translate("MainWindow", u"Browse", None))

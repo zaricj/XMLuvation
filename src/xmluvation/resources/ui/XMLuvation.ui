@@ -1488,6 +1488,26 @@
                </property>
               </widget>
              </item>
+             <item>
+              <widget class="QLabel" name="label_file_processing">
+               <property name="font">
+                <font>
+                 <family>Microsoft YaHei UI</family>
+                 <pointsize>10</pointsize>
+                 <italic>false</italic>
+                 <bold>true</bold>
+                 <underline>false</underline>
+                 <strikeout>false</strikeout>
+                </font>
+               </property>
+               <property name="styleSheet">
+                <string notr="true">color: #ffc857;</string>
+               </property>
+               <property name="text">
+                <string/>
+               </property>
+              </widget>
+             </item>
             </layout>
            </widget>
           </item>
@@ -1751,7 +1771,7 @@ Supported output file types: Excel, Markdown, HTML and JSON</string>
                 <string notr="true">color: rgb(255, 200, 87);</string>
                </property>
                <property name="text">
-                <string>Profile clean up</string>
+                <string>CSV File Clean Up</string>
                </property>
               </widget>
              </item>
@@ -1792,7 +1812,7 @@ Supported output file types: Excel, Markdown, HTML and JSON</string>
                     <string/>
                    </property>
                    <property name="placeholderText">
-                    <string>Select the export file containing all lobster profiles...</string>
+                    <string>Select the csv file containing all lobster profiles...</string>
                    </property>
                    <property name="clearButtonEnabled">
                     <bool>true</bool>
