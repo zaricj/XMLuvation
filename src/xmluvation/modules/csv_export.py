@@ -31,12 +31,14 @@ def process_single_xml(
     file_rows: List[Dict[str, str]] = [] # Will store dictionaries for CSV rows
     file_total_matches: int = 0
     file_matched_any_xpath: int = 0 # 1 if any XPath matches in this file, 0 otherwise
+    row: dict[str, str] = {}
 
     try:
         # ET.parse involves file I/O, which often releases the GIL,
         # allowing other threads to run concurrently.
         tree = ET.parse(file_path)
         root = tree.getroot()
+
     except (ET.XMLSyntaxError, Exception) as e: # Catching general Exception for file read errors
         # Log the error for debugging, but continue processing other files
         print(f"Error parsing XML file {xml_file}: {e}")
@@ -64,7 +66,6 @@ def process_single_xml(
 
             if results:
                 for i, result in enumerate(results):
-                    match_content = ""
                     if isinstance(result, ET._Element):
                         # For element nodes, we need to decide what content to extract.
                         # Original logic: if ends_with_text_or_attribute is true,
@@ -75,8 +76,21 @@ def process_single_xml(
                             # the result might directly be a string or a more specific type.
                             # The original code's `str(result)` here might be intended
                             match_content = str(result)
+
+                            row: dict[str, str] = {
+                                "Filename": os.path.splitext(xml_file)[0],
+                                header: match_content
+                            }
+
                         else:
                             match_content = result.text.strip() if result.text else result.tag
+
+                            row: dict[str, str] = {
+                                "Filename": os.path.splitext(xml_file)[0],
+                                header: match_content,
+                                "Matches": str(i + 1)
+                            }
+
                     elif isinstance(result, str):
                         match_content = result.strip()
                     elif isinstance(result, (int, float)):
@@ -85,11 +99,6 @@ def process_single_xml(
                     else:
                         match_content = str(result) # Fallback for any other type
 
-                    row: dict[str, str] = {
-                        "Filename": xml_file,
-                        header: match_content,
-                        "Match_Index": str(i + 1) # 1-based index for matches
-                    }
                     file_rows.append(row)
             # else: no results, pass as before
         except Exception as e:
