@@ -3,6 +3,7 @@ from PySide6.QtCore import QObject, QRunnable, Signal, Slot
 from PySide6.QtGui import QSyntaxHighlighter, QTextCharFormat, QColor, QFont
 from PySide6.QtWidgets import QTextEdit
 from lxml import etree as ET
+from lxml.etree import _Comment, _ProcessingInstruction
 import re
 
 
@@ -339,67 +340,74 @@ class XMLParserThread(QRunnable):
 
     def _parse_xml(self):
         """Parse XML file and extract comprehensive information."""
-        tree = ET.parse(self.xml_file_path)
-        root = tree.getroot()
+        try:
+            tree = ET.parse(self.xml_file_path)
+            root = tree.getroot()
 
-        xml_string = ET.tostring(root, encoding="unicode", pretty_print=True)
+            xml_string = ET.tostring(root, encoding="unicode", pretty_print=True)
 
-        # Structures for comprehensive and contextual XML info
-        tags = set()
-        tag_values = set()
-        attributes = set()
-        attribute_values = set()
-        namespaces = set()
+            # Structures for comprehensive and contextual XML info
+            tags = set()
+            tag_values = set()
+            attributes = set()
+            attribute_values = set()
+            namespaces = set()
 
-        tag_to_values = {}  # e.g., {"author": ["Gambardella, Matthew", "Ralls, Kim", ...]}
-        tag_to_attributes = {}  # e.g., {"book": ["id"]}
-        tag_attr_to_values = {}  # e.g., {("book", "id"): ["bk101", "bk102", ...]}
+            tag_to_values = {}  # e.g., {"author": ["Gambardella, Matthew", "Ralls, Kim", ...]}
+            tag_to_attributes = {}  # e.g., {"book": ["id"]}
+            tag_attr_to_values = {}  # e.g., {("book", "id"): ["bk101", "bk102", ...]}
 
-        for elem in root.iter():
-            tag = elem.tag
-            tags.add(tag)
+            for elem in root.iter():
+                if isinstance(elem, (_Comment, _ProcessingInstruction)): # Added safeguard for comments
+                    continue # Skip comment line
+                else:
+                    tag = elem.tag
+                    tags.add(tag)
 
-            # Namespace extraction
-            if '}' in tag:
-                namespace = tag.split('}')[0][1:]
-                namespaces.add(namespace)
+                # Namespace extraction
+                if '}' in tag:
+                    namespace = tag.split('}')[0][1:]
+                    namespaces.add(namespace)
 
-            # Text content mapping
-            if elem.text and elem.text.strip():
-                value = elem.text.strip()
-                tag_values.add(value)
-                tag_to_values.setdefault(tag, set()).add(value)
+                # Text content mapping
+                if elem.text and elem.text.strip():
+                    value = elem.text.strip()
+                    tag_values.add(value)
+                    tag_to_values.setdefault(tag, set()).add(value)
 
-            # Attributes
-            for attr, val in elem.attrib.items():
-                attributes.add(attr)
-                attribute_values.add(val)
-                tag_to_attributes.setdefault(tag, set()).add(attr)
-                tag_attr_to_values.setdefault((tag, attr), set()).add(val)
+                # Attributes
+                for attr, val in elem.attrib.items():
+                    attributes.add(attr)
+                    attribute_values.add(val)
+                    tag_to_attributes.setdefault(tag, set()).add(attr)
+                    tag_attr_to_values.setdefault((tag, attr), set()).add(val)
 
-        # Convert sets to sorted lists
-        tag_to_values = {k: sorted(v) for k, v in tag_to_values.items()}
-        tag_to_attributes = {k: sorted(v) for k, v in tag_to_attributes.items()}
-        tag_attr_to_values = {k: sorted(v) for k, v in tag_attr_to_values.items()}
+            # Convert sets to sorted lists
+            tag_to_values = {k: sorted(v) for k, v in tag_to_values.items()}
+            tag_to_attributes = {k: sorted(v) for k, v in tag_to_attributes.items()}
+            tag_attr_to_values = {k: sorted(v) for k, v in tag_attr_to_values.items()}
 
-        result = {
-            'xml_string': xml_string,
-            'tags': sorted(tags),
-            'tag_values': sorted(tag_values),
-            'attributes': sorted(attributes),
-            'attribute_values': sorted(attribute_values),
-            'namespaces': sorted(namespaces),
-            'file_path': self.xml_file_path,
-            'root_tag': root.tag,
-            'element_count': len(list(root.iter())),
-            'encoding': XMLUtils.get_xml_encoding(self.xml_file_path),
-            'tag_to_values': tag_to_values,
-            'tag_to_attributes': tag_to_attributes,
-            'tag_attr_to_values': tag_attr_to_values,
-        }
+            result = {
+                'xml_string': xml_string,
+                'tags': sorted(tags),
+                'tag_values': sorted(tag_values),
+                'attributes': sorted(attributes),
+                'attribute_values': sorted(attribute_values),
+                'namespaces': sorted(namespaces),
+                'file_path': self.xml_file_path,
+                'root_tag': root.tag,
+                'element_count': len(list(root.iter())),
+                'encoding': XMLUtils.get_xml_encoding(self.xml_file_path),
+                'tag_to_values': tag_to_values,
+                'tag_to_attributes': tag_to_attributes,
+                'tag_attr_to_values': tag_attr_to_values,
+            }
 
-        self.signals.program_output_progress.emit("XML parsing completed successfully!")
-        self.signals.finished.emit(result)
+            self.signals.program_output_progress.emit("XML parsing completed successfully!")
+            self.signals.finished.emit(result)
+        except Exception as ex:
+            message = f"An exception of type {type(ex).__name__} occurred. Arguments: {ex.args!r}"
+            self.signals.error_occurred.emit("Exception on parsing xml file", message)
 
     def _analyze_structure(self):
         """Analyze XML document structure and provide detailed statistics."""

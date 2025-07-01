@@ -200,14 +200,31 @@ class CSVConversionHandler:
             _, output_ext = os.path.splitext(self.output_path_of_new_file)
             input_ext = input_ext.lower().lstrip(".")
             output_ext = output_ext.lower().lstrip(".")
-
+            sheet_name = "Result"
+            
             # Define conversion functions
             def to_html(df, path): df.to_html(path, index=self.write_index)
             def to_json(df, path): df.to_json(path, orient="records", force_ascii=False)
             def to_md(df, path): df.to_markdown(path, index=self.write_index)
             def to_xlsx(df, path):
                 with pd.ExcelWriter(path, engine="xlsxwriter") as writer:
-                    df.to_excel(writer, index=self.write_index)
+                    df.to_excel(writer, sheet_name=sheet_name, index=self.write_index)
+                    # Add Excel Table formatting
+                    workbook = writer.book
+                    worksheet = writer.sheets[sheet_name]
+                    (max_row, max_col) = df.shape
+                    
+                    column_settings = [{"header": col} for col in df.columns]
+                    
+                    worksheet.add_table(0, 0, max_row, max_col - 1, {
+                            "columns": column_settings,
+                            "style": "Table Style Medium 16",
+                            "name": f"{sheet_name[:30]}",  # Optional: Table name (must be <=31 chars)
+                            "autofilter": True  # Set True if you want Excel filter buttons
+                        })
+
+                    # Optional: Improve column width
+                    worksheet.set_column(0, max_col - 1, 18)
 
             conversion_map = {
                 ("csv", "html"): to_html,

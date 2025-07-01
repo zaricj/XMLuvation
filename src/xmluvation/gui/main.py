@@ -44,7 +44,7 @@ UI_FILE_NAME: str = os.path.join(ROOT_DIR, "resources", "ui", "XMLuvation.ui")
 UI_RESOURCES: str = os.path.join(ROOT_DIR, "resources", "qrc", "xmluvation_resources.qrc")
 
 # App related constants
-APP_VERSION: str = "v1.0.6"
+APP_VERSION: str = "v1.0.3"
 APP_NAME: str = "XMLuvation"
 AUTHOR: str = "Jovan"
 
@@ -63,7 +63,7 @@ class MainWindow(QMainWindow):
         self.ui.setupUi(self)
 
         # Set window title with a version
-        self.setWindowTitle(f"{APP_NAME} {APP_VERSION} by {AUTHOR}")
+        self.setWindowTitle(f"{APP_NAME} {APP_VERSION}")
 
         # XML Data
         self.parsed_xml_data = {}
