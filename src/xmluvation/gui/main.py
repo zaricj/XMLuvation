@@ -510,6 +510,7 @@ class MainWindow(QMainWindow):
             # This assumes 'self.ui' is an object holding references to your PySide6 UI widgets.
             builder = XPathBuildHandler(
                 main_window=self,
+                line_edit_xpath_builder=self.ui.line_edit_xpath_builder,
                 tag_name_combo=self.ui.combobox_tag_names,
                 tag_value_combo=self.ui.combobox_tag_values,
                 attribute_name_combo=self.ui.combobox_attribute_names,
@@ -555,7 +556,6 @@ class MainWindow(QMainWindow):
             QMessageBox.critical(self, "Exception on starting to search and export to csv", message)
 
 
-
     def on_csv_export_stop_event(self):
         """Signals the currently running CSV export to stop."""
         try:
@@ -569,7 +569,6 @@ class MainWindow(QMainWindow):
         except Exception as ex:
             message = f"An exception of type {type(ex).__name__} occurred. Arguments: {ex.args!r}"
             QMessageBox.critical(self, "Exception on stopping CSV export", message)
-
 
 
     # On added xpath to list button has been clicked
@@ -594,7 +593,7 @@ class MainWindow(QMainWindow):
 
             is_added = adder.add_expression_to_list()
 
-            # If the XPath Expression has been successfully added to the QListWidget, generate the CSV Header based on the combobox value
+            # If the XPath Expression has been successfully added to the QListWidget, generate the CSV Header based on the combobox values
             if is_added:
                 current_text = csv_headers_input.text()
                 self.update_statusbar_xpath_listbox_count()
@@ -943,6 +942,7 @@ class MainWindow(QMainWindow):
         worker.signals.error_occurred.connect(self.on_error_message)
 
     def _connect_csv_export_signals(self, worker):
+        """Connect signals for CSV export operations.   """
         worker.signals.finished.connect(self.on_csv_export_finished)
         worker.signals.error_occurred.connect(self.on_error_message)
         worker.signals.info_occurred.connect(self.on_info_message)
