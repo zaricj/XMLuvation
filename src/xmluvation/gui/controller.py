@@ -1,7 +1,7 @@
 import csv
 import os
 import pandas as pd
-from PySide6.QtWidgets import QMessageBox, QComboBox, QRadioButton, QListWidget, QPushButton, QMainWindow
+from PySide6.QtWidgets import QMessageBox, QComboBox, QRadioButton, QListWidget, QPushButton, QLineEdit, QMainWindow
 from xmluvation.modules.xpath_builder import create_xpath_validator, create_xpath_builder
 from xmluvation.modules.csv_export import create_csv_exporter
 from xmluvation.modules.file_cleanup import create_lobster_profile_cleaner, create_csv_column_dropper
@@ -425,6 +425,7 @@ class ParseXMLFileHandler:
 class XPathBuildHandler:
     """Handles methods and logic of the XPath Build event based on the combobox values"""
     def __init__(self, main_window: QMainWindow,
+                    line_edit_xpath_builder: QLineEdit,
                     tag_name_combo: QComboBox,
                     tag_value_combo: QComboBox,
                     attribute_name_combo: QComboBox,
@@ -437,7 +438,7 @@ class XPathBuildHandler:
                     ):
 
         self.main_window = main_window
-        self.ui = main_window.ui
+        self.line_edit_xpath_builder = line_edit_xpath_builder
         self.tag_name_combo = tag_name_combo
         self.tag_value_combo = tag_value_combo
         self.attribute_name_combo = attribute_name_combo
@@ -469,7 +470,7 @@ class XPathBuildHandler:
             xpath_expression = builder.build_xpath_expression()
 
             # Add built XPath Expression to the QLineEdit Widget for the XPath
-            self.ui.line_edit_xpath_builder.setText(xpath_expression)
+            self.line_edit_xpath_builder.setText(xpath_expression)
 
         except Exception as ex:
             message = f"An exception of type {type(ex).__name__} occurred. Arguments: {ex.args!r}"
