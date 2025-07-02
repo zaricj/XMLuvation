@@ -19,11 +19,17 @@ group_box_xml_input_xpath_builder
 
         self.group_box_xml_input_xpath_builder = QGroupBox(self.tab_xml_evaluation)
         self.group_box_xml_input_xpath_builder.setObjectName(u"group_box_xml_input_xpath_builder")
-        
+        font3 = QFont()
+        font3.setFamilies([u"Microsoft YaHei UI"])
+        font3.setPointSize(10)
+        font3.setBold(True)
+        font3.setItalic(False)
+        font3.setUnderline(False)
+        font3.setStrikeOut(False)
+        self.group_box_xml_input_xpath_builder.setFont(font3)
         self.statusbar_xml_files_count = QStatusBar(self.group_box_xml_input_xpath_builder)
         self.statusbar_xml_files_count.setSizeGripEnabled(False)
         self.statusbar_xml_files_count.setObjectName(u"statusbar_xml_files_count")
-        
         self.verticalLayout_4 = QVBoxLayout(self.group_box_xml_input_xpath_builder)
         self.verticalLayout_4.setObjectName(u"verticalLayout_4")
         self.verticalLayout_4.addWidget(self.statusbar_xml_files_count)

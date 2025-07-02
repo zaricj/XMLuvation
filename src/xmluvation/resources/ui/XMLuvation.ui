@@ -486,7 +486,7 @@
                   </font>
                  </property>
                  <property name="text">
-                  <string>Get names and values of XML tags and Attributes for XPath generation:</string>
+                  <string>Get the names and values of XML tags and attributes for XPath generation:</string>
                  </property>
                 </widget>
                </item>
@@ -1788,7 +1788,7 @@ Supported output file types: Excel, Markdown, HTML and JSON</string>
                 </font>
                </property>
                <property name="text">
-                <string>Lobster profiles export clean up with the help of the csv export of system profiles</string>
+                <string>Mainly used for Lobster profiles export from the system, as a CSV file.</string>
                </property>
               </widget>
              </item>

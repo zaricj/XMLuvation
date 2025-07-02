@@ -18,8 +18,8 @@ from PySide6.QtGui import (QBrush, QColor, QConicalGradient, QCursor,
 from PySide6.QtWidgets import (QApplication, QCheckBox, QComboBox, QGroupBox,
     QHBoxLayout, QLabel, QLineEdit, QListWidget,
     QListWidgetItem, QMainWindow, QProgressBar, QPushButton,
-    QRadioButton, QSizePolicy, QTabWidget, QTextEdit,
-    QVBoxLayout, QWidget, QStatusBar)
+    QRadioButton, QSizePolicy, QTabWidget, QTextEdit, QStatusBar,
+    QVBoxLayout, QWidget)
 from xmluvation.resources.qrc import xmluvation_resources_rc
 
 class Ui_MainWindow(object):
@@ -138,10 +138,10 @@ class Ui_MainWindow(object):
         font3.setItalic(False)
         font3.setUnderline(False)
         font3.setStrikeOut(False)
+        self.group_box_xml_input_xpath_builder.setFont(font3)
         self.statusbar_xml_files_count = QStatusBar(self.group_box_xml_input_xpath_builder)
         self.statusbar_xml_files_count.setSizeGripEnabled(False)
         self.statusbar_xml_files_count.setObjectName(u"statusbar_xml_files_count")
-        self.group_box_xml_input_xpath_builder.setFont(font3)
         self.verticalLayout_4 = QVBoxLayout(self.group_box_xml_input_xpath_builder)
         self.verticalLayout_4.setObjectName(u"verticalLayout_4")
         self.verticalLayout_4.addWidget(self.statusbar_xml_files_count)
@@ -780,7 +780,7 @@ class Ui_MainWindow(object):
         self.line_edit_xml_folder_path_input.setPlaceholderText(QCoreApplication.translate("MainWindow", u"Choose a folder that contains XML files...", None))
         self.button_browse_xml_folder.setText(QCoreApplication.translate("MainWindow", u"Browse", None))
         self.button_read_xml.setText(QCoreApplication.translate("MainWindow", u"Read XML", None))
-        self.label_xpath_builder.setText(QCoreApplication.translate("MainWindow", u"Get names and values of XML tags and Attributes for XPath generation:", None))
+        self.label_xpath_builder.setText(QCoreApplication.translate("MainWindow", u"Get the names and values of XML tags and attributes for XPath generation:", None))
         self.label_tag_names.setText(QCoreApplication.translate("MainWindow", u"Tag Names:", None))
         self.combobox_tag_names.setCurrentText("")
         self.combobox_tag_names.setPlaceholderText(QCoreApplication.translate("MainWindow", u"Select Tag Name...", None))
@@ -829,7 +829,7 @@ class Ui_MainWindow(object):
         self.checkbox_write_index_column.setText(QCoreApplication.translate("MainWindow", u"Write Index Column?", None))
         self.groupbox_lobster_profiles_cleanup.setTitle(QCoreApplication.translate("MainWindow", u"PROFILE EXPORT CLEAN UP", None))
         self.label_title_profile_cleanup.setText(QCoreApplication.translate("MainWindow", u"CSV File Clean Up", None))
-        self.label_2.setText(QCoreApplication.translate("MainWindow", u"Lobster profiles export clean up with the help of the csv export of system profiles", None))
+        self.label_2.setText(QCoreApplication.translate("MainWindow", u"Mainly used for Lobster profiles export from the system, as a CSV file.", None))
         self.line_edit_profile_cleanup_csv_file_path.setText("")
         self.line_edit_profile_cleanup_csv_file_path.setPlaceholderText(QCoreApplication.translate("MainWindow", u"Select the csv file containing all lobster profiles...", None))
         self.button_profile_cleanup_browse_csv_file_path.setText(QCoreApplication.translate("MainWindow", u"Browse", None))
