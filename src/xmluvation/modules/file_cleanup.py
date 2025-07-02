@@ -86,7 +86,7 @@ class FileCleanupThread(QRunnable):
 
         if not self.csv_file_path:
             self.signals.warning_occurred.emit("CSV file not found",
-                                               "Please select the CSV file that contains the current export all Lobster profiles")
+                                               "Please select the CSV file that contains the current export of all Lobster profiles")
             return
 
         if not self.profiles_folder_path:
@@ -115,12 +115,12 @@ class FileCleanupThread(QRunnable):
 
 # Convenience function for creating threaded operations
 def create_lobster_profile_cleaner(csv_file_path: str, profiles_folder_path: str) -> FileCleanupThread:
-    return FileCleanupThread("cleanup",
+    return FileCleanupThread(operation="cleanup",
                              csv_file_path=csv_file_path,
                              profiles_folder_path=profiles_folder_path)
     
 def create_csv_column_dropper(csv_file_path: str, column_to_drop: str, column_to_drop_index: int) -> FileCleanupThread:
-    return FileCleanupThread("drop_csv_column",
+    return FileCleanupThread(operation="drop_csv_column",
                              csv_file_path=csv_file_path,
                              column_to_drop=column_to_drop,
                              column_to_drop_index=column_to_drop_index)

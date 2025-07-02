@@ -44,7 +44,7 @@ UI_FILE_NAME: str = os.path.join(ROOT_DIR, "resources", "ui", "XMLuvation.ui")
 UI_RESOURCES: str = os.path.join(ROOT_DIR, "resources", "qrc", "xmluvation_resources.qrc")
 
 # App related constants
-APP_VERSION: str = "v1.0.3"
+APP_VERSION: str = "v1.0.1"
 APP_NAME: str = "XMLuvation"
 AUTHOR: str = "Jovan"
 

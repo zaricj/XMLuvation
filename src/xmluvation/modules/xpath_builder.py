@@ -89,7 +89,7 @@ class XPathBuilder(QObject):
                 radio_smaller: QRadioButton):
         super().__init__()
         self.signals = XPathBuilderSignals()
-        self._current_xpath = ""
+        self._current_xpath = None
 
         # Store references to UI widgets
         self.tag_name_combo = tag_name_combo

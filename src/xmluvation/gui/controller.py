@@ -348,10 +348,7 @@ class SearchAndExportToCSVHandler:
             # For simplicity, we just call stop() and rely on the QRunnable's internal logic
             self.current_exporter.stop()
             self.current_exporter = None # Clear the reference once stopped
-        else:
-            # This case should ideally not be hit if the button is correctly enabled/disabled
-            # based on whether an export is running.
-            self.main_window.signals.program_output_progress_append.emit("No active CSV export thread found.")
+
 
     @staticmethod
     def _parse_csv_headers(raw_headers: str) -> list:

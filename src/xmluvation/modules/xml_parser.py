@@ -492,9 +492,9 @@ class XMLParserThread(QRunnable):
 # Convenience functions for creating threaded operations
 def create_xml_parser(xml_file_path: str) -> XMLParserThread:
     """Create a parser thread for basic XML parsing."""
-    return XMLParserThread('parse', xml_file_path=xml_file_path)
+    return XMLParserThread(operation='parse', xml_file_path=xml_file_path)
 
 
 def create_structure_analyzer(xml_file_path: str) -> XMLParserThread:
     """Create a structure analyzer thread for detailed XML analysis."""
-    return XMLParserThread('analyze', xml_file_path=xml_file_path)
+    return XMLParserThread(operation='analyze', xml_file_path=xml_file_path)

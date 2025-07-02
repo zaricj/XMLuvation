@@ -310,10 +310,10 @@ def create_csv_exporter(folder_path_containing_xml_files:str, xpath_expressions_
         CSVExportThread: Worker thread for exporting XML XPath evaluation results to a CSV file.
     """
     return CSVExportThread(
-        "export",
+        operation="export",
         folder_path_containing_xml_files=folder_path_containing_xml_files,
         xpath_expressions_list=xpath_expressions_list,
         output_save_path_for_csv_export=output_save_path_for_csv_export,
         csv_headers_list=csv_headers_list,
-        max_threads=max_threads # Renamed from max_processes to max_threads for clarity
+        max_threads=max_threads
     )
