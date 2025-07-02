@@ -8,24 +8,31 @@
 ## WARNING! All changes made in this file will be lost when recompiling UI file!
 ################################################################################
 
-from PySide6.QtCore import (QCoreApplication, QDate, QDateTime, QLocale,
-    QMetaObject, QObject, QPoint, QRect,
-    QSize, QTime, QUrl, Qt)
-from PySide6.QtGui import (QBrush, QColor, QConicalGradient, QCursor,
-    QFont, QFontDatabase, QGradient, QIcon,
-    QImage, QKeySequence, QLinearGradient, QPainter,
-    QPalette, QPixmap, QRadialGradient, QTransform)
-from PySide6.QtWidgets import (QApplication, QComboBox, QFormLayout, QFrame,
-    QHBoxLayout, QLabel, QLineEdit, QPushButton,
-    QSizePolicy, QVBoxLayout, QWidget)
+from PySide6.QtCore import (
+    QCoreApplication,
+    QMetaObject,
+    QSize,
+)
+from PySide6.QtGui import (
+    QIcon,
+)
+from PySide6.QtWidgets import (
+    QComboBox,
+    QFormLayout,
+    QFrame,
+    QHBoxLayout,
+    QLabel,
+    QLineEdit,
+    QPushButton,
+    QVBoxLayout,
+)
 
-from xmluvation.resources.qrc import xmluvation_resources_rc
 
 class Ui_Form(object):
     def setupUi(self, Form):
         if not Form.objectName():
             Form.setObjectName(u"Form")
-        Form.resize(689, 195)
+        Form.resize(513, 195)
         icon = QIcon()
         icon.addFile(u":/icons/xml_256px.ico", QSize(), QIcon.Mode.Normal, QIcon.State.Off)
         Form.setWindowIcon(icon)
@@ -112,6 +119,7 @@ class Ui_Form(object):
 
         self.combobox_path_names = QComboBox(Form)
         self.combobox_path_names.setObjectName(u"combobox_path_names")
+        self.combobox_path_names.setPlaceholderText(u"Custom paths...")
 
         self.hor_layout_main.addWidget(self.combobox_path_names)
 
@@ -170,6 +178,7 @@ class Ui_Form(object):
 
         self.label_text_desc = QLabel(Form)
         self.label_text_desc.setObjectName(u"label_text_desc")
+        self.label_text_desc.setWordWrap(True)
         self.label_text_desc.setMargin(0)
         self.label_text_desc.setIndent(-1)
 
@@ -192,7 +201,6 @@ class Ui_Form(object):
     def retranslateUi(self, Form):
         Form.setWindowTitle(QCoreApplication.translate("Form", u"Custom Paths Manager", None))
         self.label_combobox_desc.setText(QCoreApplication.translate("Form", u"Select a custom path here:", None))
-        self.combobox_path_names.setPlaceholderText(QCoreApplication.translate("Form", u"Custom path names...", None))
         self.button_load_action.setText(QCoreApplication.translate("Form", u"Load Path", None))
         self.button_delete_action.setText(QCoreApplication.translate("Form", u"Delete Path", None))
         self.label_path_name.setText(QCoreApplication.translate("Form", u"Path Name:", None))
