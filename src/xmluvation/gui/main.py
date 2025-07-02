@@ -580,10 +580,6 @@ class MainWindow(QMainWindow):
             xpath_filters: list[str] = self.xpath_filters  # Already a property
             csv_headers_input = self.ui.line_edit_csv_headers_input
             list_widget_xpath_expressions = self.ui.list_widget_xpath_expressions
-            tag_name: str = self.ui.combobox_tag_names.currentText()
-            tag_value: str = self.ui.combobox_tag_values.currentText()
-            attr_name: str = self.ui.combobox_attribute_names.currentText()
-            attr_value: str = self.ui.combobox_attribute_values.currentText()
 
             adder = AddXPathExpressionToListHandler(
                 main_window=self,
@@ -598,13 +594,14 @@ class MainWindow(QMainWindow):
                 current_text = csv_headers_input.text()
                 self.update_statusbar_xpath_listbox_count()
 
-                generator = GenerateCSVHeaderHandler()
-                header = generator.generate_header(
-                    tag_name=tag_name,
-                    tag_value=tag_value,
-                    attr_name=attr_name,
-                    attr_value=attr_value
-                )
+                generator = GenerateCSVHeaderHandler(self,
+                                                    tag_name_combo=self.ui.combobox_tag_names,
+                                                    tag_value_combo=self.ui.combobox_tag_values,
+                                                    attribute_name_combo=self.ui.combobox_attribute_names,
+                                                    attribute_value_combo=self.ui.combobox_attribute_values,
+                                                    csv_headers_input=self.ui.line_edit_csv_headers_input)
+                
+                header = generator.generate_header()
 
                 # Append with a separator (e.g., comma) if needed
                 if current_text:

@@ -304,9 +304,10 @@ class AddXPathExpressionToListHandler:
 
         Args:
             xpath_expression (str): XPath expression from the QLineEdit widget (line_edit_xpath_builder)
+            xpath_filters (list): A list that contains 
 
         Returns:
-            bool: If XPath expression already exists in the xpath_filters list, returns True if it exists, else False.
+            bool: Returns True if XPath expression already exists in the xpath_filters list, returns True if it exists, else False.
         """
         return xpath_expression in xpath_filters
 
@@ -493,12 +494,31 @@ class XPathBuildHandler:
 
 class GenerateCSVHeaderHandler:
     """Handles methods and logic of the csv generation based on the entered XPath Expression to the QListWidget."""
+    
+    def __init__(self, main_window: QMainWindow,
+                    tag_name_combo: QComboBox,
+                    tag_value_combo: QComboBox,
+                    attribute_name_combo: QComboBox,
+                    attribute_value_combo: QComboBox,
+                    csv_headers_input: QLineEdit
+                ):
+        
+        self.main_window = main_window
+        self.tag_name_combo = tag_name_combo
+        self.tag_value_combo = tag_value_combo
+        self.attribute_name_combo = attribute_name_combo
+        self.attribute_value_combo = attribute_value_combo
+        self.csv_headers_input = csv_headers_input
 
-    @staticmethod
-    def generate_header(tag_name: str, tag_value: str, attr_name: str, attr_value: str) -> str:
-
+    def generate_header(self) -> str:
         header = ""
-
+        
+        tag_name = self.tag_name_combo.currentText()
+        tag_value = self.tag_value_combo.currentText()
+        attr_name = self.attribute_name_combo.currentText()
+        attr_value = self.attribute_value_combo.currentText()
+        headers_list: list[str] = self.csv_headers_input.text().split(",")
+        
         match (tag_name, tag_value, attr_name, attr_value):
             case (tag, "", "", ""):
                 header = tag
@@ -514,6 +534,20 @@ class GenerateCSVHeaderHandler:
                 header = f"{tag} {value} {attr} {val}"
             case _:
                 header = "Header"
+                
+        if not self._is_duplicate(header, headers_list):
+            return header
+    
+    @staticmethod 
+    def _is_duplicate(header:str, headers_list: str) -> bool:
+        """Checks if the header is a duplicate. Prevents from adding the same header to the QLineEdit input for headers.
 
-        return header
+        Args:
+            header (str): Headers input
+
+        Returns:
+            bool: Returns True if the header already exists in the headers list else False
+        """
+        
+        return header in headers_list
 
