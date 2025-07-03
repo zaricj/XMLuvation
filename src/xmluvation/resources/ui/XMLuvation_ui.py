@@ -350,7 +350,6 @@ class Ui_MainWindow(object):
         self.verticalLayout_7.addWidget(self.list_widget_xpath_expressions)
         self.verticalLayout_7.addWidget(self.statusbar_xpath_expressions)
 
-
         self.vert_layout_main.addWidget(self.group_box_xpath_expressions_list)
 
         self.group_box_export_to_csv = QGroupBox(self.tab_xml_evaluation)
@@ -406,7 +405,7 @@ class Ui_MainWindow(object):
         self.button_abort_csv_export.setObjectName(u"button_abort_csv_export")
         self.button_abort_csv_export.setEnabled(True)
         self.button_abort_csv_export.setFont(font2)
-        self.button_abort_csv_export.setHidden(True)
+        self.button_abort_csv_export.setHidden(False)
 
         self.hor_layout_button_export_and_abort.addWidget(self.button_abort_csv_export)
 
@@ -449,7 +448,7 @@ class Ui_MainWindow(object):
         self.verticalLayout_5.setObjectName(u"verticalLayout_5")
         self.text_edit_xml_output = QTextEdit(self.group_box_xml_output)
         self.text_edit_xml_output.setObjectName(u"text_edit_xml_output")
-        sizePolicy = QSizePolicy(QSizePolicy.Policy.Minimum, QSizePolicy.Policy.Expanding)
+        sizePolicy = QSizePolicy(QSizePolicy.Policy.MinimumExpanding, QSizePolicy.Policy.Expanding)
         sizePolicy.setHorizontalStretch(0)
         sizePolicy.setVerticalStretch(0)
         sizePolicy.setHeightForWidth(self.text_edit_xml_output.sizePolicy().hasHeightForWidth())
@@ -535,8 +534,8 @@ class Ui_MainWindow(object):
         self.label_file_processing = QLabel(self.group_box_xml_output)
         self.label_file_processing.setObjectName(u"label_file_processing")
         self.label_file_processing.setFont(font3)
-        self.label_file_processing.setHidden(True)
         self.label_file_processing.setStyleSheet(u"color: #ffc857;")
+        self.label_file_processing.setHidden(True)
 
         self.verticalLayout_5.addWidget(self.label_file_processing)
 

@@ -1159,7 +1159,7 @@
              <item>
               <widget class="QTextEdit" name="text_edit_xml_output">
                <property name="sizePolicy">
-                <sizepolicy hsizetype="Minimum" vsizetype="Expanding">
+                <sizepolicy hsizetype="MinimumExpanding" vsizetype="Expanding">
                  <horstretch>0</horstretch>
                  <verstretch>0</verstretch>
                 </sizepolicy>
