@@ -34,8 +34,13 @@ group_box_xml_input_xpath_builder
         self.verticalLayout_4.setObjectName(u"verticalLayout_4")
         self.verticalLayout_4.addWidget(self.statusbar_xml_files_count)
 
-
-
-
+        ============================
+        # Hide These Buttons/Widgets #
+        ============================
+        
+        self.button_find_next.setHidden(True)
+        self.button_find_previous.setHidden(True)
+        self.line_edit_xml_output_find_text.setHidden(True)
 
         self.button_abort_csv_export.setHidden(True)
+        self.label_file_processing.setHidden(True)
