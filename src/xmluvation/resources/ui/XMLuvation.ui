@@ -1158,6 +1158,12 @@
             <layout class="QVBoxLayout" name="verticalLayout_5">
              <item>
               <widget class="QTextEdit" name="text_edit_xml_output">
+               <property name="sizePolicy">
+                <sizepolicy hsizetype="Minimum" vsizetype="Expanding">
+                 <horstretch>0</horstretch>
+                 <verstretch>0</verstretch>
+                </sizepolicy>
+               </property>
                <property name="palette">
                 <palette>
                  <active>
@@ -1466,7 +1472,65 @@
                  <strikeout>false</strikeout>
                 </font>
                </property>
+               <property name="readOnly">
+                <bool>true</bool>
+               </property>
               </widget>
+             </item>
+             <item>
+              <layout class="QHBoxLayout" name="hor_layout_find_functionality">
+               <item>
+                <widget class="QLineEdit" name="line_edit_xml_output_find_text">
+                 <property name="font">
+                  <font>
+                   <family>Microsoft YaHei UI</family>
+                   <pointsize>10</pointsize>
+                   <italic>false</italic>
+                   <bold>false</bold>
+                   <underline>false</underline>
+                   <strikeout>false</strikeout>
+                  </font>
+                 </property>
+                 <property name="placeholderText">
+                  <string>Find text in summary...</string>
+                 </property>
+                </widget>
+               </item>
+               <item>
+                <widget class="QPushButton" name="button_find_next">
+                 <property name="font">
+                  <font>
+                   <family>Microsoft YaHei UI</family>
+                   <pointsize>10</pointsize>
+                   <italic>false</italic>
+                   <bold>false</bold>
+                   <underline>false</underline>
+                   <strikeout>false</strikeout>
+                  </font>
+                 </property>
+                 <property name="text">
+                  <string>Next</string>
+                 </property>
+                </widget>
+               </item>
+               <item>
+                <widget class="QPushButton" name="button_find_previous">
+                 <property name="font">
+                  <font>
+                   <family>Microsoft YaHei UI</family>
+                   <pointsize>10</pointsize>
+                   <italic>false</italic>
+                   <bold>false</bold>
+                   <underline>false</underline>
+                   <strikeout>false</strikeout>
+                  </font>
+                 </property>
+                 <property name="text">
+                  <string>Previous</string>
+                 </property>
+                </widget>
+               </item>
+              </layout>
              </item>
              <item>
               <widget class="QProgressBar" name="progressbar_main">
@@ -1788,7 +1852,7 @@ Supported output file types: Excel, Markdown, HTML and JSON</string>
                 </font>
                </property>
                <property name="text">
-                <string>Mainly used for Lobster profiles export from the system, as a CSV file.</string>
+                <string>Mainly used for Lobster profiles that have been exported as a CSV file.</string>
                </property>
               </widget>
              </item>
