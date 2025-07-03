@@ -6,7 +6,7 @@
    <rect>
     <x>0</x>
     <y>0</y>
-    <width>689</width>
+    <width>513</width>
     <height>195</height>
    </rect>
   </property>
@@ -108,7 +108,7 @@
      <item>
       <widget class="QComboBox" name="combobox_path_names">
        <property name="placeholderText">
-        <string>Custom path names...</string>
+        <string notr="true">Custom paths...</string>
        </property>
       </widget>
      </item>
@@ -203,6 +203,9 @@
       <widget class="QLabel" name="label_text_desc">
        <property name="text">
         <string>User created paths manager, you can load a custom path any change it's values here or you can delete the path.</string>
+       </property>
+       <property name="wordWrap">
+        <bool>true</bool>
        </property>
        <property name="margin">
         <number>0</number>

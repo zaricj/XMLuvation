@@ -486,7 +486,7 @@
                   </font>
                  </property>
                  <property name="text">
-                  <string>Get names and values of XML tags and Attributes for XPath generation:</string>
+                  <string>Get the names and values of XML tags and attributes for XPath generation:</string>
                  </property>
                 </widget>
                </item>
@@ -1158,6 +1158,12 @@
             <layout class="QVBoxLayout" name="verticalLayout_5">
              <item>
               <widget class="QTextEdit" name="text_edit_xml_output">
+               <property name="sizePolicy">
+                <sizepolicy hsizetype="MinimumExpanding" vsizetype="Expanding">
+                 <horstretch>0</horstretch>
+                 <verstretch>0</verstretch>
+                </sizepolicy>
+               </property>
                <property name="palette">
                 <palette>
                  <active>
@@ -1466,7 +1472,65 @@
                  <strikeout>false</strikeout>
                 </font>
                </property>
+               <property name="readOnly">
+                <bool>true</bool>
+               </property>
               </widget>
+             </item>
+             <item>
+              <layout class="QHBoxLayout" name="hor_layout_find_functionality">
+               <item>
+                <widget class="QLineEdit" name="line_edit_xml_output_find_text">
+                 <property name="font">
+                  <font>
+                   <family>Microsoft YaHei UI</family>
+                   <pointsize>10</pointsize>
+                   <italic>false</italic>
+                   <bold>false</bold>
+                   <underline>false</underline>
+                   <strikeout>false</strikeout>
+                  </font>
+                 </property>
+                 <property name="placeholderText">
+                  <string>Find text in summary...</string>
+                 </property>
+                </widget>
+               </item>
+               <item>
+                <widget class="QPushButton" name="button_find_next">
+                 <property name="font">
+                  <font>
+                   <family>Microsoft YaHei UI</family>
+                   <pointsize>10</pointsize>
+                   <italic>false</italic>
+                   <bold>false</bold>
+                   <underline>false</underline>
+                   <strikeout>false</strikeout>
+                  </font>
+                 </property>
+                 <property name="text">
+                  <string>Next</string>
+                 </property>
+                </widget>
+               </item>
+               <item>
+                <widget class="QPushButton" name="button_find_previous">
+                 <property name="font">
+                  <font>
+                   <family>Microsoft YaHei UI</family>
+                   <pointsize>10</pointsize>
+                   <italic>false</italic>
+                   <bold>false</bold>
+                   <underline>false</underline>
+                   <strikeout>false</strikeout>
+                  </font>
+                 </property>
+                 <property name="text">
+                  <string>Previous</string>
+                 </property>
+                </widget>
+               </item>
+              </layout>
              </item>
              <item>
               <widget class="QProgressBar" name="progressbar_main">
@@ -1485,6 +1549,26 @@
                </property>
                <property name="format">
                 <string>%p%</string>
+               </property>
+              </widget>
+             </item>
+             <item>
+              <widget class="QLabel" name="label_file_processing">
+               <property name="font">
+                <font>
+                 <family>Microsoft YaHei UI</family>
+                 <pointsize>10</pointsize>
+                 <italic>false</italic>
+                 <bold>true</bold>
+                 <underline>false</underline>
+                 <strikeout>false</strikeout>
+                </font>
+               </property>
+               <property name="styleSheet">
+                <string notr="true">color: #ffc857;</string>
+               </property>
+               <property name="text">
+                <string/>
                </property>
               </widget>
              </item>
@@ -1751,7 +1835,7 @@ Supported output file types: Excel, Markdown, HTML and JSON</string>
                 <string notr="true">color: rgb(255, 200, 87);</string>
                </property>
                <property name="text">
-                <string>Profile clean up</string>
+                <string>CSV File Clean Up</string>
                </property>
               </widget>
              </item>
@@ -1768,7 +1852,7 @@ Supported output file types: Excel, Markdown, HTML and JSON</string>
                 </font>
                </property>
                <property name="text">
-                <string>Lobster profiles export clean up with the help of the csv export of system profiles</string>
+                <string>Mainly used for Lobster profiles that have been exported as a CSV file.</string>
                </property>
               </widget>
              </item>
@@ -1792,7 +1876,7 @@ Supported output file types: Excel, Markdown, HTML and JSON</string>
                     <string/>
                    </property>
                    <property name="placeholderText">
-                    <string>Select the export file containing all lobster profiles...</string>
+                    <string>Select the csv file containing all lobster profiles...</string>
                    </property>
                    <property name="clearButtonEnabled">
                     <bool>true</bool>
@@ -1889,6 +1973,72 @@ Supported output file types: Excel, Markdown, HTML and JSON</string>
                  </property>
                  <property name="text">
                   <string>Clean up XML files</string>
+                 </property>
+                </widget>
+               </item>
+              </layout>
+             </item>
+             <item>
+              <layout class="QHBoxLayout" name="horizontalLayout_6">
+               <item>
+                <widget class="QLabel" name="label_csv_headers_combobox">
+                 <property name="sizePolicy">
+                  <sizepolicy hsizetype="Maximum" vsizetype="Preferred">
+                   <horstretch>0</horstretch>
+                   <verstretch>0</verstretch>
+                  </sizepolicy>
+                 </property>
+                 <property name="font">
+                  <font>
+                   <family>Microsoft YaHei UI</family>
+                   <pointsize>10</pointsize>
+                   <italic>false</italic>
+                   <bold>false</bold>
+                   <underline>false</underline>
+                   <strikeout>false</strikeout>
+                  </font>
+                 </property>
+                 <property name="text">
+                  <string>Current CSV file headers:</string>
+                 </property>
+                </widget>
+               </item>
+               <item>
+                <widget class="QComboBox" name="combobox_csv_headers">
+                 <property name="enabled">
+                  <bool>false</bool>
+                 </property>
+                 <property name="sizePolicy">
+                  <sizepolicy hsizetype="Preferred" vsizetype="Fixed">
+                   <horstretch>0</horstretch>
+                   <verstretch>0</verstretch>
+                  </sizepolicy>
+                 </property>
+                </widget>
+               </item>
+               <item>
+                <widget class="QPushButton" name="button_drop_csv_header">
+                 <property name="enabled">
+                  <bool>false</bool>
+                 </property>
+                 <property name="sizePolicy">
+                  <sizepolicy hsizetype="Maximum" vsizetype="Fixed">
+                   <horstretch>0</horstretch>
+                   <verstretch>0</verstretch>
+                  </sizepolicy>
+                 </property>
+                 <property name="font">
+                  <font>
+                   <family>Microsoft YaHei UI</family>
+                   <pointsize>10</pointsize>
+                   <italic>false</italic>
+                   <bold>false</bold>
+                   <underline>false</underline>
+                   <strikeout>false</strikeout>
+                  </font>
+                 </property>
+                 <property name="text">
+                  <string>Drop Header</string>
                  </property>
                 </widget>
                </item>

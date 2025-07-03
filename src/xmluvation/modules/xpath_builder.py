@@ -78,18 +78,18 @@ class XPathBuilder(QObject):
     SMALLER_THAN = "smaller"
 
     def __init__(self,
-                 tag_name_combo: QComboBox,
-                 tag_value_combo: QComboBox,
-                 attribute_name_combo: QComboBox,
-                 attribute_value_combo: QComboBox,
-                 radio_equals: QRadioButton,
-                 radio_contains: QRadioButton,
-                 radio_starts_with: QRadioButton,
-                 radio_greater: QRadioButton,
-                 radio_smaller: QRadioButton):
+                tag_name_combo: QComboBox,
+                tag_value_combo: QComboBox,
+                attribute_name_combo: QComboBox,
+                attribute_value_combo: QComboBox,
+                radio_equals: QRadioButton,
+                radio_contains: QRadioButton,
+                radio_starts_with: QRadioButton,
+                radio_greater: QRadioButton,
+                radio_smaller: QRadioButton):
         super().__init__()
         self.signals = XPathBuilderSignals()
-        self._current_xpath = ""
+        self._current_xpath = None
 
         # Store references to UI widgets
         self.tag_name_combo = tag_name_combo
