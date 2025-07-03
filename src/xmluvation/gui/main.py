@@ -44,7 +44,7 @@ UI_FILE_NAME: str = os.path.join(ROOT_DIR, "resources", "ui", "XMLuvation.ui")
 UI_RESOURCES: str = os.path.join(ROOT_DIR, "resources", "qrc", "xmluvation_resources.qrc")
 
 # App related constants
-APP_VERSION: str = "v1.0.1"
+APP_VERSION: str = "v1.1.0"
 APP_NAME: str = "XMLuvation"
 AUTHOR: str = "Jovan"
 
@@ -800,7 +800,7 @@ class MainWindow(QMainWindow):
         menu.addAction(find_action)
         
         # Show the context menu at the cursor's current position
-        menu.exec_(self.ui.text_edit_xml_output.mapToGlobal(position))
+        menu.exec(self.ui.text_edit_xml_output.mapToGlobal(position))
 
     def set_ui_widgets_disabled(self, state: bool):
         # Disable buttons while exporting
