@@ -168,8 +168,6 @@ class CSVExportThread(QRunnable):
 
     def _export_search_to_csv(self):
         """Start searching all XML files in the specified folder and write its results to a specified output CSV file."""
-        print(f"Using {self.max_threads} threads...")
-
         if not os.path.exists(self.folder_path_containing_xml_files) or not os.path.isdir(self.folder_path_containing_xml_files):
             self.signals.warning_occurred.emit("XML Folder not found", "Please set the path to the folder that contains XML files to process.")
             self.signals.finished.emit() # Ensure finished signal is emitted on early exit
