@@ -1,5 +1,5 @@
 from PySide6.QtWidgets import (QApplication, QMainWindow, QMenu, QFileDialog, QMessageBox, QInputDialog)
-from PySide6.QtGui import QIcon, QAction, QCloseEvent
+from PySide6.QtGui import QIcon, QAction, QCloseEvent, QShortcut, QKeySequence
 from PySide6.QtCore import Qt, Signal, Slot, QFile, QTextStream, QIODevice, QSettings, QThreadPool
 
 import sys
@@ -11,7 +11,7 @@ from xmluvation.modules.xml_parser import apply_xml_highlighting_to_widget, set_
 
 from xmluvation.gui.controller import ComboboxStateHandler, CSVConversionHandler, AddXPathExpressionToListHandler, \
     SearchAndExportToCSVHandler, GenerateCSVHeaderHandler, LobsterProfileExportCleanupHandler, ParseXMLFileHandler, \
-    XPathBuildHandler, CSVColumnDropHandler
+    XPathBuildHandler, CSVColumnDropHandler, SearchXMLOutputTextHandler
 from xmluvation.widget.path_manager import CustomPathsManager
 
 from xmluvation.resources.ui.XMLuvation_ui import Ui_MainWindow
@@ -86,6 +86,12 @@ class MainWindow(QMainWindow):
             cb_tag_value=self.ui.combobox_tag_values,
             cb_attr_name=self.ui.combobox_attribute_names,
             cb_attr_value=self.ui.combobox_attribute_values)
+        
+        # Instantiate the XML Output search handler
+        self.xml_text_searcher = SearchXMLOutputTextHandler(
+            main_window=self,
+            line_edit_xml_output_find_text=self.ui.line_edit_xml_output_find_text,
+            text_edit_xml_output=self.ui.text_edit_xml_output)
 
         # Settings file for storing application settings
         self.settings = QSettings("Jovan", "XMLuvation")
@@ -114,6 +120,10 @@ class MainWindow(QMainWindow):
         # Connect the custom context menu for Listbox
         self.ui.list_widget_xpath_expressions.setContextMenuPolicy(Qt.CustomContextMenu)
         self.ui.list_widget_xpath_expressions.customContextMenuRequested.connect(self.show_context_menu)
+        
+        # Connect the Find action to the default context menu of the XML Output QTextEdit widget
+        self.ui.text_edit_xml_output.setContextMenuPolicy(Qt.CustomContextMenu)
+        self.ui.text_edit_xml_output.customContextMenuRequested.connect(self.show_custom_context_menu)
 
         # Theme Icons in QMenu
         self.light_mode_icon = QIcon(LIGHT_THEME_QMENU_ICON)
@@ -327,6 +337,11 @@ class MainWindow(QMainWindow):
     # Setup UI Widget Actions
     def setup_connections(self):
         """Setup all signal-slot connections"""
+        
+        # Keyboard shortcuts
+        self.shortcut_find = QShortcut(QKeySequence(Qt.Modifier.CTRL | Qt.Key.Key_F), self)
+        # Connect the shortcut's activated signal to the toggle function
+        self.shortcut_find.activated.connect(self.toggle_xml_output_search_widgets)
 
         # QLineWidgets
         self.ui.line_edit_xml_folder_path_input.textChanged.connect(self.update_xml_file_count)
@@ -337,7 +352,8 @@ class MainWindow(QMainWindow):
         self.ui.combobox_tag_names.currentTextChanged.connect(self.cb_state_controller.on_tag_name_changed)
         self.ui.combobox_attribute_names.currentTextChanged.connect(self.cb_state_controller.on_attribute_name_changed)
 
-        # Buttons
+        # ========= START QPushButtons START ========= #
+        
         # Folder browsing and XML reading
         self.ui.button_browse_xml_folder.clicked.connect(
             lambda: self.browse_folder_helper(dialog_message="Select directory that contains XML files",
@@ -350,10 +366,14 @@ class MainWindow(QMainWindow):
                                                                                         file_extension_filter="CSV File (*.csv)"))
         # XPath building
         self.ui.button_build_xpath.clicked.connect(self.on_build_xpath_expression_event)
+        
         self.ui.button_add_xpath_to_list.clicked.connect(self.on_xpath_add_to_list_event)
+        
         # CSV export
         self.ui.button_start_csv_export.clicked.connect(self.on_csv_export_event)
+        
         self.ui.button_abort_csv_export.clicked.connect(self.on_csv_export_stop_event)
+        
         self.ui.button_browse_csv_conversion_path_input.clicked.connect(
             lambda: self.browse_file_helper(dialog_message="Select csv file for conversion",
                                             line_widget=self.ui.line_edit_csv_conversion_path_input,
@@ -363,21 +383,28 @@ class MainWindow(QMainWindow):
                                                     line_widget=self.ui.line_edit_csv_conversion_path_output,
                                                     file_extension_filter="Excel file (*.xlsx);;JSON file (*.json);;Markdown file (*.md);;HTML file (*.html)"))
         self.ui.button_csv_conversion_convert.clicked.connect(self.on_csv_convert_event)
-        self.ui.checkbox_write_index_column.toggled.connect(self.on_write_index_toggled)
-
-        # Button
+        
         self.ui.button_profile_cleanup_browse_csv_file_path.clicked.connect(
             lambda: self.browse_file_helper(dialog_message="Select csv file",
                                             line_widget=self.ui.line_edit_profile_cleanup_csv_file_path,
                                             file_extension_filter="CSV File (*.csv)"))
-
+        
         self.ui.button_profile_cleanup_browse_folder_path.clicked.connect(
             lambda: self.browse_folder_helper(dialog_message="Select directory that contains XML files",
                                             line_widget=self.ui.line_edit_profile_cleanup_folder_path))
-
+        
         self.ui.button_profile_cleanup_cleanup_start.clicked.connect(self.on_lobster_profile_cleanup_event)
-
+        
         self.ui.button_drop_csv_header.clicked.connect(self.on_csv_header_drop_event)
+        
+        # Button signals for XML output search functionality
+        self.ui.button_find_next.clicked.connect(self.on_xml_output_search_next)
+        self.ui.button_find_previous.clicked.connect(self.on_xml_output_search_previous)
+        
+        # ========= END QPushButtons END ========= #
+        
+        # QCheckBox
+        self.ui.checkbox_write_index_column.toggled.connect(self.on_write_index_toggled)
 
     # === Helper Methods === #
 
@@ -488,7 +515,7 @@ class MainWindow(QMainWindow):
 
     # On read XML file button has been clicked
     def on_read_xml_file_event(self):
-        print("Read XML files clicked")
+        """On read XML file button clicked, opens FileDialog and after choosing a XML file, it's content is then inserted into a QTextEdit widget"""
         try:
             file_name, _ = QFileDialog.getOpenFileName(self, "Select XML File", "", "XML File (*.xml)")
             if file_name:
@@ -685,6 +712,12 @@ class MainWindow(QMainWindow):
             csv_header_combobox=csv_header_combobox,
             drop_header_button=drop_header_button
         ).on_csv_input_file_path_changed()
+        
+    def on_xml_output_search_next(self):
+        self.xml_text_searcher.search_next()
+        
+    def on_xml_output_search_previous(self):
+        self.xml_text_searcher.search_previous()
 
 
     # Statusbar update function
@@ -759,7 +792,15 @@ class MainWindow(QMainWindow):
 
         # Show the context menu at the cursor's current position
         context_menu.exec(self.ui.list_widget_xpath_expressions.mapToGlobal(position))
-
+        
+    def show_custom_context_menu(self, position):
+        menu = self.ui.text_edit_xml_output.createStandardContextMenu()
+        find_action = QAction("Find", self, shortcut=QKeySequence(Qt.Modifier.CTRL | Qt.Key.Key_F))
+        find_action.triggered.connect(self.toggle_xml_output_search_widgets)
+        menu.addAction(find_action)
+        
+        # Show the context menu at the cursor's current position
+        menu.exec_(self.ui.text_edit_xml_output.mapToGlobal(position))
 
     def set_ui_widgets_disabled(self, state: bool):
         # Disable buttons while exporting
@@ -785,6 +826,22 @@ class MainWindow(QMainWindow):
         active_count = self.thread_pool.activeThreadCount()
         max_count = self.thread_pool.maxThreadCount()
         return f"Active threads: {active_count}/{max_count}"
+    
+    @Slot()
+    def toggle_xml_output_search_widgets(self):
+        is_input_search_hidden = self.ui.line_edit_xml_output_find_text.isHidden()
+        is_btn_next_hidden = self.ui.button_find_next.isHidden()
+        is_btn_prev_hidden = self.ui.button_find_previous.isHidden()
+        
+        if is_input_search_hidden and is_btn_next_hidden and is_btn_prev_hidden:
+            self.ui.line_edit_xml_output_find_text.setHidden(False)
+            self.ui.button_find_next.setHidden(False)
+            self.ui.button_find_previous.setHidden(False)
+        else:
+            self.ui.line_edit_xml_output_find_text.setHidden(True)
+            self.ui.line_edit_xml_output_find_text.clear()
+            self.ui.button_find_next.setHidden(True)
+            self.ui.button_find_previous.setHidden(True)
 
     # === EVENT HANDLERS FOR QMessageBoxes === #
     @Slot(str, str)  # QMessageBox.critical type shit
@@ -906,7 +963,7 @@ class MainWindow(QMainWindow):
     def on_csv_export_started(self, state: bool):
         self.ui.button_abort_csv_export.setVisible(state)
         self.ui.label_file_processing.setVisible(state)
-        self.ui.text_edit_program_output.append(self.get_thread_pool_status())
+        #self.ui.text_edit_program_output.append(self.get_thread_pool_status())
         self.set_ui_widgets_disabled(state=True)
 
     @Slot()
