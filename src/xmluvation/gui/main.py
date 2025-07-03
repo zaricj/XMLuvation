@@ -712,10 +712,12 @@ class MainWindow(QMainWindow):
             csv_header_combobox=csv_header_combobox,
             drop_header_button=drop_header_button
         ).on_csv_input_file_path_changed()
-        
+
+
     def on_xml_output_search_next(self):
         self.xml_text_searcher.search_next()
-        
+
+
     def on_xml_output_search_previous(self):
         self.xml_text_searcher.search_previous()
 
@@ -792,7 +794,8 @@ class MainWindow(QMainWindow):
 
         # Show the context menu at the cursor's current position
         context_menu.exec(self.ui.list_widget_xpath_expressions.mapToGlobal(position))
-        
+
+
     def show_custom_context_menu(self, position):
         menu = self.ui.text_edit_xml_output.createStandardContextMenu()
         find_action = QAction("Find", self, shortcut=QKeySequence(Qt.Modifier.CTRL | Qt.Key.Key_F))
@@ -801,6 +804,7 @@ class MainWindow(QMainWindow):
         
         # Show the context menu at the cursor's current position
         menu.exec(self.ui.text_edit_xml_output.mapToGlobal(position))
+
 
     def set_ui_widgets_disabled(self, state: bool):
         # Disable buttons while exporting

@@ -1142,6 +1142,12 @@
          <layout class="QVBoxLayout" name="vert_layout_xml_output">
           <item>
            <widget class="QGroupBox" name="group_box_xml_output">
+            <property name="sizePolicy">
+             <sizepolicy hsizetype="MinimumExpanding" vsizetype="Preferred">
+              <horstretch>0</horstretch>
+              <verstretch>0</verstretch>
+             </sizepolicy>
+            </property>
             <property name="font">
              <font>
               <family>Microsoft YaHei UI</family>

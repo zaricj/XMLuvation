@@ -405,7 +405,7 @@ class Ui_MainWindow(object):
         self.button_abort_csv_export.setObjectName(u"button_abort_csv_export")
         self.button_abort_csv_export.setEnabled(True)
         self.button_abort_csv_export.setFont(font2)
-        self.button_abort_csv_export.setHidden(False)
+        self.button_abort_csv_export.setHidden(True)
 
         self.hor_layout_button_export_and_abort.addWidget(self.button_abort_csv_export)
 
@@ -443,16 +443,21 @@ class Ui_MainWindow(object):
         self.vert_layout_xml_output.setObjectName(u"vert_layout_xml_output")
         self.group_box_xml_output = QGroupBox(self.tab_xml_evaluation)
         self.group_box_xml_output.setObjectName(u"group_box_xml_output")
+        sizePolicy = QSizePolicy(QSizePolicy.Policy.MinimumExpanding, QSizePolicy.Policy.Preferred)
+        sizePolicy.setHorizontalStretch(0)
+        sizePolicy.setVerticalStretch(0)
+        sizePolicy.setHeightForWidth(self.group_box_xml_output.sizePolicy().hasHeightForWidth())
+        self.group_box_xml_output.setSizePolicy(sizePolicy)
         self.group_box_xml_output.setFont(font3)
         self.verticalLayout_5 = QVBoxLayout(self.group_box_xml_output)
         self.verticalLayout_5.setObjectName(u"verticalLayout_5")
         self.text_edit_xml_output = QTextEdit(self.group_box_xml_output)
         self.text_edit_xml_output.setObjectName(u"text_edit_xml_output")
-        sizePolicy = QSizePolicy(QSizePolicy.Policy.MinimumExpanding, QSizePolicy.Policy.Expanding)
-        sizePolicy.setHorizontalStretch(0)
-        sizePolicy.setVerticalStretch(0)
-        sizePolicy.setHeightForWidth(self.text_edit_xml_output.sizePolicy().hasHeightForWidth())
-        self.text_edit_xml_output.setSizePolicy(sizePolicy)
+        sizePolicy1 = QSizePolicy(QSizePolicy.Policy.MinimumExpanding, QSizePolicy.Policy.Expanding)
+        sizePolicy1.setHorizontalStretch(0)
+        sizePolicy1.setVerticalStretch(0)
+        sizePolicy1.setHeightForWidth(self.text_edit_xml_output.sizePolicy().hasHeightForWidth())
+        self.text_edit_xml_output.setSizePolicy(sizePolicy1)
         palette1 = QPalette()
         palette1.setBrush(QPalette.ColorGroup.Active, QPalette.ColorRole.WindowText, brush)
         palette1.setBrush(QPalette.ColorGroup.Active, QPalette.ColorRole.Button, brush1)
@@ -521,7 +526,6 @@ class Ui_MainWindow(object):
 
         self.hor_layout_find_functionality.addWidget(self.button_find_previous)
 
-
         self.verticalLayout_5.addLayout(self.hor_layout_find_functionality)
 
         self.progressbar_main = QProgressBar(self.group_box_xml_output)
@@ -539,9 +543,7 @@ class Ui_MainWindow(object):
 
         self.verticalLayout_5.addWidget(self.label_file_processing)
 
-
         self.vert_layout_xml_output.addWidget(self.group_box_xml_output)
-
 
         self.horizontalLayout_2.addLayout(self.vert_layout_xml_output)
 
@@ -561,11 +563,11 @@ class Ui_MainWindow(object):
         self.verticalLayout_2.setObjectName(u"verticalLayout_2")
         self.label_csv_conversion_title = QLabel(self.groupbox_csv_conversion)
         self.label_csv_conversion_title.setObjectName(u"label_csv_conversion_title")
-        sizePolicy1 = QSizePolicy(QSizePolicy.Policy.Preferred, QSizePolicy.Policy.Preferred)
-        sizePolicy1.setHorizontalStretch(0)
-        sizePolicy1.setVerticalStretch(0)
-        sizePolicy1.setHeightForWidth(self.label_csv_conversion_title.sizePolicy().hasHeightForWidth())
-        self.label_csv_conversion_title.setSizePolicy(sizePolicy1)
+        sizePolicy2 = QSizePolicy(QSizePolicy.Policy.Preferred, QSizePolicy.Policy.Preferred)
+        sizePolicy2.setHorizontalStretch(0)
+        sizePolicy2.setVerticalStretch(0)
+        sizePolicy2.setHeightForWidth(self.label_csv_conversion_title.sizePolicy().hasHeightForWidth())
+        self.label_csv_conversion_title.setSizePolicy(sizePolicy2)
         self.label_csv_conversion_title.setMaximumSize(QSize(16777215, 60))
         font5 = QFont()
         font5.setFamilies([u"Microsoft YaHei UI"])
@@ -634,11 +636,11 @@ class Ui_MainWindow(object):
 
         self.checkbox_write_index_column = QCheckBox(self.groupbox_csv_conversion)
         self.checkbox_write_index_column.setObjectName(u"checkbox_write_index_column")
-        sizePolicy2 = QSizePolicy(QSizePolicy.Policy.Maximum, QSizePolicy.Policy.Fixed)
-        sizePolicy2.setHorizontalStretch(0)
-        sizePolicy2.setVerticalStretch(0)
-        sizePolicy2.setHeightForWidth(self.checkbox_write_index_column.sizePolicy().hasHeightForWidth())
-        self.checkbox_write_index_column.setSizePolicy(sizePolicy2)
+        sizePolicy3 = QSizePolicy(QSizePolicy.Policy.Maximum, QSizePolicy.Policy.Fixed)
+        sizePolicy3.setHorizontalStretch(0)
+        sizePolicy3.setVerticalStretch(0)
+        sizePolicy3.setHeightForWidth(self.checkbox_write_index_column.sizePolicy().hasHeightForWidth())
+        self.checkbox_write_index_column.setSizePolicy(sizePolicy3)
 
         self.horizontalLayout_5.addWidget(self.checkbox_write_index_column)
 
@@ -731,11 +733,11 @@ class Ui_MainWindow(object):
         self.horizontalLayout_6.setObjectName(u"horizontalLayout_6")
         self.label_csv_headers_combobox = QLabel(self.groupbox_lobster_profiles_cleanup)
         self.label_csv_headers_combobox.setObjectName(u"label_csv_headers_combobox")
-        sizePolicy3 = QSizePolicy(QSizePolicy.Policy.Maximum, QSizePolicy.Policy.Preferred)
-        sizePolicy3.setHorizontalStretch(0)
-        sizePolicy3.setVerticalStretch(0)
-        sizePolicy3.setHeightForWidth(self.label_csv_headers_combobox.sizePolicy().hasHeightForWidth())
-        self.label_csv_headers_combobox.setSizePolicy(sizePolicy3)
+        sizePolicy4 = QSizePolicy(QSizePolicy.Policy.Maximum, QSizePolicy.Policy.Preferred)
+        sizePolicy4.setHorizontalStretch(0)
+        sizePolicy4.setVerticalStretch(0)
+        sizePolicy4.setHeightForWidth(self.label_csv_headers_combobox.sizePolicy().hasHeightForWidth())
+        self.label_csv_headers_combobox.setSizePolicy(sizePolicy4)
         self.label_csv_headers_combobox.setFont(font2)
 
         self.horizontalLayout_6.addWidget(self.label_csv_headers_combobox)
@@ -743,19 +745,19 @@ class Ui_MainWindow(object):
         self.combobox_csv_headers = QComboBox(self.groupbox_lobster_profiles_cleanup)
         self.combobox_csv_headers.setObjectName(u"combobox_csv_headers")
         self.combobox_csv_headers.setEnabled(False)
-        sizePolicy4 = QSizePolicy(QSizePolicy.Policy.Preferred, QSizePolicy.Policy.Fixed)
-        sizePolicy4.setHorizontalStretch(0)
-        sizePolicy4.setVerticalStretch(0)
-        sizePolicy4.setHeightForWidth(self.combobox_csv_headers.sizePolicy().hasHeightForWidth())
-        self.combobox_csv_headers.setSizePolicy(sizePolicy4)
+        sizePolicy5 = QSizePolicy(QSizePolicy.Policy.Preferred, QSizePolicy.Policy.Fixed)
+        sizePolicy5.setHorizontalStretch(0)
+        sizePolicy5.setVerticalStretch(0)
+        sizePolicy5.setHeightForWidth(self.combobox_csv_headers.sizePolicy().hasHeightForWidth())
+        self.combobox_csv_headers.setSizePolicy(sizePolicy5)
 
         self.horizontalLayout_6.addWidget(self.combobox_csv_headers)
 
         self.button_drop_csv_header = QPushButton(self.groupbox_lobster_profiles_cleanup)
         self.button_drop_csv_header.setObjectName(u"button_drop_csv_header")
         self.button_drop_csv_header.setEnabled(False)
-        sizePolicy2.setHeightForWidth(self.button_drop_csv_header.sizePolicy().hasHeightForWidth())
-        self.button_drop_csv_header.setSizePolicy(sizePolicy2)
+        sizePolicy3.setHeightForWidth(self.button_drop_csv_header.sizePolicy().hasHeightForWidth())
+        self.button_drop_csv_header.setSizePolicy(sizePolicy3)
         self.button_drop_csv_header.setFont(font2)
 
         self.horizontalLayout_6.addWidget(self.button_drop_csv_header)
