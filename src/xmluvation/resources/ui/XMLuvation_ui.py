@@ -16,10 +16,11 @@ from PySide6.QtGui import (QBrush, QColor, QConicalGradient, QCursor,
     QImage, QKeySequence, QLinearGradient, QPainter,
     QPalette, QPixmap, QRadialGradient, QTransform)
 from PySide6.QtWidgets import (QApplication, QCheckBox, QComboBox, QGroupBox,
-    QHBoxLayout, QLabel, QLineEdit, QListWidget,
-    QListWidgetItem, QMainWindow, QProgressBar, QPushButton,
-    QRadioButton, QSizePolicy, QTabWidget, QTextEdit, QStatusBar,
-    QVBoxLayout, QWidget)
+    QHBoxLayout, QLabel, QLayout, QLineEdit,
+    QListWidget, QListWidgetItem, QMainWindow, QProgressBar,
+    QPushButton, QRadioButton, QSizePolicy, QSplitter,
+    QTabWidget, QTextEdit, QVBoxLayout, QWidget)
+
 from xmluvation.resources.qrc import xmluvation_resources_rc
 
 class Ui_MainWindow(object):
@@ -27,7 +28,7 @@ class Ui_MainWindow(object):
         if not MainWindow.objectName():
             MainWindow.setObjectName(u"MainWindow")
         MainWindow.setEnabled(True)
-        MainWindow.resize(1182, 972)
+        MainWindow.resize(1151, 961)
         palette = QPalette()
         brush = QBrush(QColor(255, 255, 255, 255))
         brush.setStyle(Qt.BrushStyle.SolidPattern)
@@ -117,6 +118,11 @@ class Ui_MainWindow(object):
         self.tabWidget.setUsesScrollButtons(False)
         self.tab_xml_evaluation = QWidget()
         self.tab_xml_evaluation.setObjectName(u"tab_xml_evaluation")
+        sizePolicy = QSizePolicy(QSizePolicy.Policy.Minimum, QSizePolicy.Policy.Preferred)
+        sizePolicy.setHorizontalStretch(0)
+        sizePolicy.setVerticalStretch(0)
+        sizePolicy.setHeightForWidth(self.tab_xml_evaluation.sizePolicy().hasHeightForWidth())
+        self.tab_xml_evaluation.setSizePolicy(sizePolicy)
         font2 = QFont()
         font2.setFamilies([u"Microsoft YaHei UI"])
         font2.setPointSize(10)
@@ -125,12 +131,21 @@ class Ui_MainWindow(object):
         font2.setUnderline(False)
         font2.setStrikeOut(False)
         self.tab_xml_evaluation.setFont(font2)
-        self.horizontalLayout_2 = QHBoxLayout(self.tab_xml_evaluation)
-        self.horizontalLayout_2.setObjectName(u"horizontalLayout_2")
-        self.vert_layout_main = QVBoxLayout()
+        self.verticalLayout_4 = QVBoxLayout(self.tab_xml_evaluation)
+        self.verticalLayout_4.setObjectName(u"verticalLayout_4")
+        self.splitter = QSplitter(self.tab_xml_evaluation)
+        self.splitter.setObjectName(u"splitter")
+        self.splitter.setOrientation(Qt.Orientation.Horizontal)
+        self.layoutWidget_2 = QWidget(self.splitter)
+        self.layoutWidget_2.setObjectName(u"layoutWidget_2")
+        self.vert_layout_main = QVBoxLayout(self.layoutWidget_2)
         self.vert_layout_main.setObjectName(u"vert_layout_main")
-        self.group_box_xml_input_xpath_builder = QGroupBox(self.tab_xml_evaluation)
+        self.vert_layout_main.setSizeConstraint(QLayout.SizeConstraint.SetDefaultConstraint)
+        self.vert_layout_main.setContentsMargins(0, 0, 0, 0)
+        self.group_box_xml_input_xpath_builder = QGroupBox(self.layoutWidget_2)
         self.group_box_xml_input_xpath_builder.setObjectName(u"group_box_xml_input_xpath_builder")
+        sizePolicy.setHeightForWidth(self.group_box_xml_input_xpath_builder.sizePolicy().hasHeightForWidth())
+        self.group_box_xml_input_xpath_builder.setSizePolicy(sizePolicy)
         font3 = QFont()
         font3.setFamilies([u"Microsoft YaHei UI"])
         font3.setPointSize(10)
@@ -139,12 +154,16 @@ class Ui_MainWindow(object):
         font3.setUnderline(False)
         font3.setStrikeOut(False)
         self.group_box_xml_input_xpath_builder.setFont(font3)
-        self.statusbar_xml_files_count = QStatusBar(self.group_box_xml_input_xpath_builder)
-        self.statusbar_xml_files_count.setSizeGripEnabled(False)
+        self.verticalLayout_7 = QVBoxLayout(self.group_box_xml_input_xpath_builder)
+        self.verticalLayout_7.setObjectName(u"verticalLayout_7")
+        self.statusbar_xml_files_count = QLabel(self.group_box_xml_input_xpath_builder)
         self.statusbar_xml_files_count.setObjectName(u"statusbar_xml_files_count")
-        self.verticalLayout_4 = QVBoxLayout(self.group_box_xml_input_xpath_builder)
-        self.verticalLayout_4.setObjectName(u"verticalLayout_4")
-        self.verticalLayout_4.addWidget(self.statusbar_xml_files_count)
+        sizePolicy.setHeightForWidth(self.statusbar_xml_files_count.sizePolicy().hasHeightForWidth())
+        self.statusbar_xml_files_count.setSizePolicy(sizePolicy)
+        self.statusbar_xml_files_count.setStyleSheet(u"")
+
+        self.verticalLayout_7.addWidget(self.statusbar_xml_files_count)
+
         self.horizontalLayout_one = QHBoxLayout()
         self.horizontalLayout_one.setObjectName(u"horizontalLayout_one")
         self.line_edit_xml_folder_path_input = QLineEdit(self.group_box_xml_input_xpath_builder)
@@ -167,25 +186,29 @@ class Ui_MainWindow(object):
         self.horizontalLayout_one.addWidget(self.button_read_xml)
 
 
-        self.verticalLayout_4.addLayout(self.horizontalLayout_one)
+        self.verticalLayout_7.addLayout(self.horizontalLayout_one)
 
         self.horizontalLayout_two = QHBoxLayout()
         self.horizontalLayout_two.setObjectName(u"horizontalLayout_two")
         self.horizontalLayout_two.setContentsMargins(-1, 3, -1, 3)
         self.label_xpath_builder = QLabel(self.group_box_xml_input_xpath_builder)
         self.label_xpath_builder.setObjectName(u"label_xpath_builder")
+        sizePolicy.setHeightForWidth(self.label_xpath_builder.sizePolicy().hasHeightForWidth())
+        self.label_xpath_builder.setSizePolicy(sizePolicy)
         self.label_xpath_builder.setFont(font2)
 
         self.horizontalLayout_two.addWidget(self.label_xpath_builder)
 
 
-        self.verticalLayout_4.addLayout(self.horizontalLayout_two)
+        self.verticalLayout_7.addLayout(self.horizontalLayout_two)
 
         self.horizontalLayout_three = QHBoxLayout()
         self.horizontalLayout_three.setObjectName(u"horizontalLayout_three")
         self.horizontalLayout_three.setContentsMargins(-1, 1, -1, 1)
         self.label_tag_names = QLabel(self.group_box_xml_input_xpath_builder)
         self.label_tag_names.setObjectName(u"label_tag_names")
+        sizePolicy.setHeightForWidth(self.label_tag_names.sizePolicy().hasHeightForWidth())
+        self.label_tag_names.setSizePolicy(sizePolicy)
         self.label_tag_names.setMaximumSize(QSize(68, 16777215))
         font4 = QFont()
         font4.setFamilies([u"Microsoft YaHei UI"])
@@ -201,6 +224,11 @@ class Ui_MainWindow(object):
         self.combobox_tag_names = QComboBox(self.group_box_xml_input_xpath_builder)
         self.combobox_tag_names.setObjectName(u"combobox_tag_names")
         self.combobox_tag_names.setEnabled(False)
+        sizePolicy1 = QSizePolicy(QSizePolicy.Policy.Minimum, QSizePolicy.Policy.Fixed)
+        sizePolicy1.setHorizontalStretch(0)
+        sizePolicy1.setVerticalStretch(0)
+        sizePolicy1.setHeightForWidth(self.combobox_tag_names.sizePolicy().hasHeightForWidth())
+        self.combobox_tag_names.setSizePolicy(sizePolicy1)
         self.combobox_tag_names.setFont(font3)
         self.combobox_tag_names.setEditable(True)
 
@@ -208,6 +236,8 @@ class Ui_MainWindow(object):
 
         self.label_tag_values = QLabel(self.group_box_xml_input_xpath_builder)
         self.label_tag_values.setObjectName(u"label_tag_values")
+        sizePolicy.setHeightForWidth(self.label_tag_values.sizePolicy().hasHeightForWidth())
+        self.label_tag_values.setSizePolicy(sizePolicy)
         self.label_tag_values.setMaximumSize(QSize(68, 16777215))
         self.label_tag_values.setFont(font4)
 
@@ -216,13 +246,15 @@ class Ui_MainWindow(object):
         self.combobox_tag_values = QComboBox(self.group_box_xml_input_xpath_builder)
         self.combobox_tag_values.setObjectName(u"combobox_tag_values")
         self.combobox_tag_values.setEnabled(False)
+        sizePolicy1.setHeightForWidth(self.combobox_tag_values.sizePolicy().hasHeightForWidth())
+        self.combobox_tag_values.setSizePolicy(sizePolicy1)
         self.combobox_tag_values.setFont(font3)
         self.combobox_tag_values.setEditable(True)
 
         self.horizontalLayout_three.addWidget(self.combobox_tag_values)
 
 
-        self.verticalLayout_4.addLayout(self.horizontalLayout_three)
+        self.verticalLayout_7.addLayout(self.horizontalLayout_three)
 
         self.horizontalLayout_four = QHBoxLayout()
         self.horizontalLayout_four.setSpacing(6)
@@ -230,6 +262,8 @@ class Ui_MainWindow(object):
         self.horizontalLayout_four.setContentsMargins(-1, 1, -1, 1)
         self.label_attribute_names = QLabel(self.group_box_xml_input_xpath_builder)
         self.label_attribute_names.setObjectName(u"label_attribute_names")
+        sizePolicy.setHeightForWidth(self.label_attribute_names.sizePolicy().hasHeightForWidth())
+        self.label_attribute_names.setSizePolicy(sizePolicy)
         self.label_attribute_names.setMaximumSize(QSize(68, 16777215))
         self.label_attribute_names.setFont(font4)
 
@@ -238,6 +272,8 @@ class Ui_MainWindow(object):
         self.combobox_attribute_names = QComboBox(self.group_box_xml_input_xpath_builder)
         self.combobox_attribute_names.setObjectName(u"combobox_attribute_names")
         self.combobox_attribute_names.setEnabled(False)
+        sizePolicy1.setHeightForWidth(self.combobox_attribute_names.sizePolicy().hasHeightForWidth())
+        self.combobox_attribute_names.setSizePolicy(sizePolicy1)
         self.combobox_attribute_names.setFont(font3)
         self.combobox_attribute_names.setEditable(True)
 
@@ -245,6 +281,8 @@ class Ui_MainWindow(object):
 
         self.label_attribute_values = QLabel(self.group_box_xml_input_xpath_builder)
         self.label_attribute_values.setObjectName(u"label_attribute_values")
+        sizePolicy.setHeightForWidth(self.label_attribute_values.sizePolicy().hasHeightForWidth())
+        self.label_attribute_values.setSizePolicy(sizePolicy)
         self.label_attribute_values.setMaximumSize(QSize(68, 16777215))
         self.label_attribute_values.setFont(font4)
 
@@ -253,13 +291,15 @@ class Ui_MainWindow(object):
         self.combobox_attribute_values = QComboBox(self.group_box_xml_input_xpath_builder)
         self.combobox_attribute_values.setObjectName(u"combobox_attribute_values")
         self.combobox_attribute_values.setEnabled(False)
+        sizePolicy1.setHeightForWidth(self.combobox_attribute_values.sizePolicy().hasHeightForWidth())
+        self.combobox_attribute_values.setSizePolicy(sizePolicy1)
         self.combobox_attribute_values.setFont(font3)
         self.combobox_attribute_values.setEditable(True)
 
         self.horizontalLayout_four.addWidget(self.combobox_attribute_values)
 
 
-        self.verticalLayout_4.addLayout(self.horizontalLayout_four)
+        self.verticalLayout_7.addLayout(self.horizontalLayout_four)
 
         self.horizontalLayout_five = QHBoxLayout()
         self.horizontalLayout_five.setSpacing(20)
@@ -267,6 +307,8 @@ class Ui_MainWindow(object):
         self.horizontalLayout_five.setContentsMargins(-1, 7, -1, 7)
         self.label_function = QLabel(self.group_box_xml_input_xpath_builder)
         self.label_function.setObjectName(u"label_function")
+        sizePolicy.setHeightForWidth(self.label_function.sizePolicy().hasHeightForWidth())
+        self.label_function.setSizePolicy(sizePolicy)
         self.label_function.setFont(font3)
 
         self.horizontalLayout_five.addWidget(self.label_function)
@@ -287,6 +329,8 @@ class Ui_MainWindow(object):
 
         self.radio_button_starts_with = QRadioButton(self.group_box_xml_input_xpath_builder)
         self.radio_button_starts_with.setObjectName(u"radio_button_starts_with")
+        sizePolicy1.setHeightForWidth(self.radio_button_starts_with.sizePolicy().hasHeightForWidth())
+        self.radio_button_starts_with.setSizePolicy(sizePolicy1)
         self.radio_button_starts_with.setFont(font3)
 
         self.horizontalLayout_five.addWidget(self.radio_button_starts_with)
@@ -304,7 +348,7 @@ class Ui_MainWindow(object):
         self.horizontalLayout_five.addWidget(self.radio_button_smaller)
 
 
-        self.verticalLayout_4.addLayout(self.horizontalLayout_five)
+        self.verticalLayout_7.addLayout(self.horizontalLayout_five)
 
         self.horizontalLayout_six = QHBoxLayout()
         self.horizontalLayout_six.setObjectName(u"horizontalLayout_six")
@@ -322,46 +366,61 @@ class Ui_MainWindow(object):
         self.horizontalLayout_six.addWidget(self.button_build_xpath)
 
 
-        self.verticalLayout_4.addLayout(self.horizontalLayout_six)
+        self.verticalLayout_7.addLayout(self.horizontalLayout_six)
 
         self.button_add_xpath_to_list = QPushButton(self.group_box_xml_input_xpath_builder)
         self.button_add_xpath_to_list.setObjectName(u"button_add_xpath_to_list")
         self.button_add_xpath_to_list.setFont(font2)
 
-        self.verticalLayout_4.addWidget(self.button_add_xpath_to_list)
+        self.verticalLayout_7.addWidget(self.button_add_xpath_to_list)
 
 
         self.vert_layout_main.addWidget(self.group_box_xml_input_xpath_builder)
 
-        self.group_box_xpath_expressions_list = QGroupBox(self.tab_xml_evaluation)
+        self.group_box_xpath_expressions_list = QGroupBox(self.layoutWidget_2)
         self.group_box_xpath_expressions_list.setObjectName(u"group_box_xpath_expressions_list")
+        sizePolicy.setHeightForWidth(self.group_box_xpath_expressions_list.sizePolicy().hasHeightForWidth())
+        self.group_box_xpath_expressions_list.setSizePolicy(sizePolicy)
         self.group_box_xpath_expressions_list.setFont(font3)
-        self.verticalLayout_7 = QVBoxLayout(self.group_box_xpath_expressions_list)
-        self.verticalLayout_7.setObjectName(u"verticalLayout_7")
+        self.verticalLayout_8 = QVBoxLayout(self.group_box_xpath_expressions_list)
+        self.verticalLayout_8.setObjectName(u"verticalLayout_8")
         self.list_widget_xpath_expressions = QListWidget(self.group_box_xpath_expressions_list)
         self.list_widget_xpath_expressions.setObjectName(u"list_widget_xpath_expressions")
+        sizePolicy2 = QSizePolicy(QSizePolicy.Policy.Minimum, QSizePolicy.Policy.Expanding)
+        sizePolicy2.setHorizontalStretch(0)
+        sizePolicy2.setVerticalStretch(0)
+        sizePolicy2.setHeightForWidth(self.list_widget_xpath_expressions.sizePolicy().hasHeightForWidth())
+        self.list_widget_xpath_expressions.setSizePolicy(sizePolicy2)
         self.list_widget_xpath_expressions.setFont(font2)
 
-        self.statusbar_xpath_expressions = QStatusBar(self.group_box_xpath_expressions_list)
-        self.statusbar_xpath_expressions.setSizeGripEnabled(False)
-        self.statusbar_xpath_expressions.setObjectName(u"statusbar_xpath_expressions")
-        self.statusbar_xpath_expressions.setStyleSheet("color: #ffc857;")
+        self.verticalLayout_8.addWidget(self.list_widget_xpath_expressions)
 
-        self.verticalLayout_7.addWidget(self.list_widget_xpath_expressions)
-        self.verticalLayout_7.addWidget(self.statusbar_xpath_expressions)
+        self.statusbar_xpath_expressions = QLabel(self.group_box_xpath_expressions_list)
+        self.statusbar_xpath_expressions.setObjectName(u"statusbar_xpath_expressions")
+        sizePolicy.setHeightForWidth(self.statusbar_xpath_expressions.sizePolicy().hasHeightForWidth())
+        self.statusbar_xpath_expressions.setSizePolicy(sizePolicy)
+        self.statusbar_xpath_expressions.setFont(font3)
+        self.statusbar_xpath_expressions.setStyleSheet(u"")
+
+        self.verticalLayout_8.addWidget(self.statusbar_xpath_expressions)
+
 
         self.vert_layout_main.addWidget(self.group_box_xpath_expressions_list)
 
-        self.group_box_export_to_csv = QGroupBox(self.tab_xml_evaluation)
+        self.group_box_export_to_csv = QGroupBox(self.layoutWidget_2)
         self.group_box_export_to_csv.setObjectName(u"group_box_export_to_csv")
+        sizePolicy.setHeightForWidth(self.group_box_export_to_csv.sizePolicy().hasHeightForWidth())
+        self.group_box_export_to_csv.setSizePolicy(sizePolicy)
         self.group_box_export_to_csv.setFont(font3)
-        self.verticalLayout_8 = QVBoxLayout(self.group_box_export_to_csv)
-        self.verticalLayout_8.setObjectName(u"verticalLayout_8")
-        self.label = QLabel(self.group_box_export_to_csv)
-        self.label.setObjectName(u"label")
-        self.label.setFont(font2)
+        self.verticalLayout_11 = QVBoxLayout(self.group_box_export_to_csv)
+        self.verticalLayout_11.setObjectName(u"verticalLayout_11")
+        self.label_csv_export_input = QLabel(self.group_box_export_to_csv)
+        self.label_csv_export_input.setObjectName(u"label_csv_export_input")
+        sizePolicy.setHeightForWidth(self.label_csv_export_input.sizePolicy().hasHeightForWidth())
+        self.label_csv_export_input.setSizePolicy(sizePolicy)
+        self.label_csv_export_input.setFont(font2)
 
-        self.verticalLayout_8.addWidget(self.label)
+        self.verticalLayout_11.addWidget(self.label_csv_export_input)
 
         self.hor_layout_csv_input_and_export = QHBoxLayout()
         self.hor_layout_csv_input_and_export.setObjectName(u"hor_layout_csv_input_and_export")
@@ -379,25 +438,29 @@ class Ui_MainWindow(object):
         self.hor_layout_csv_input_and_export.addWidget(self.button_browse_csv)
 
 
-        self.verticalLayout_8.addLayout(self.hor_layout_csv_input_and_export)
+        self.verticalLayout_11.addLayout(self.hor_layout_csv_input_and_export)
 
         self.label_csv_headers_info = QLabel(self.group_box_export_to_csv)
         self.label_csv_headers_info.setObjectName(u"label_csv_headers_info")
+        sizePolicy.setHeightForWidth(self.label_csv_headers_info.sizePolicy().hasHeightForWidth())
+        self.label_csv_headers_info.setSizePolicy(sizePolicy)
         self.label_csv_headers_info.setFont(font2)
 
-        self.verticalLayout_8.addWidget(self.label_csv_headers_info)
+        self.verticalLayout_11.addWidget(self.label_csv_headers_info)
 
         self.hor_layout_csv_headers = QHBoxLayout()
         self.hor_layout_csv_headers.setObjectName(u"hor_layout_csv_headers")
         self.line_edit_csv_headers_input = QLineEdit(self.group_box_export_to_csv)
         self.line_edit_csv_headers_input.setObjectName(u"line_edit_csv_headers_input")
+        sizePolicy1.setHeightForWidth(self.line_edit_csv_headers_input.sizePolicy().hasHeightForWidth())
+        self.line_edit_csv_headers_input.setSizePolicy(sizePolicy1)
         self.line_edit_csv_headers_input.setFont(font2)
         self.line_edit_csv_headers_input.setClearButtonEnabled(True)
 
         self.hor_layout_csv_headers.addWidget(self.line_edit_csv_headers_input)
 
 
-        self.verticalLayout_8.addLayout(self.hor_layout_csv_headers)
+        self.verticalLayout_11.addLayout(self.hor_layout_csv_headers)
 
         self.hor_layout_button_export_and_abort = QHBoxLayout()
         self.hor_layout_button_export_and_abort.setObjectName(u"hor_layout_button_export_and_abort")
@@ -405,7 +468,7 @@ class Ui_MainWindow(object):
         self.button_abort_csv_export.setObjectName(u"button_abort_csv_export")
         self.button_abort_csv_export.setEnabled(True)
         self.button_abort_csv_export.setFont(font2)
-        self.button_abort_csv_export.setHidden(True)
+        self.button_abort_csv_export.setFlat(False)
 
         self.hor_layout_button_export_and_abort.addWidget(self.button_abort_csv_export)
 
@@ -416,48 +479,50 @@ class Ui_MainWindow(object):
         self.hor_layout_button_export_and_abort.addWidget(self.button_start_csv_export)
 
 
-        self.verticalLayout_8.addLayout(self.hor_layout_button_export_and_abort)
+        self.verticalLayout_11.addLayout(self.hor_layout_button_export_and_abort)
 
 
         self.vert_layout_main.addWidget(self.group_box_export_to_csv)
 
-        self.group_box_program_output = QGroupBox(self.tab_xml_evaluation)
+        self.group_box_program_output = QGroupBox(self.layoutWidget_2)
         self.group_box_program_output.setObjectName(u"group_box_program_output")
+        sizePolicy.setHeightForWidth(self.group_box_program_output.sizePolicy().hasHeightForWidth())
+        self.group_box_program_output.setSizePolicy(sizePolicy)
         self.group_box_program_output.setFont(font3)
-        self.verticalLayout_6 = QVBoxLayout(self.group_box_program_output)
-        self.verticalLayout_6.setObjectName(u"verticalLayout_6")
+        self.verticalLayout_12 = QVBoxLayout(self.group_box_program_output)
+        self.verticalLayout_12.setObjectName(u"verticalLayout_12")
         self.text_edit_program_output = QTextEdit(self.group_box_program_output)
         self.text_edit_program_output.setObjectName(u"text_edit_program_output")
+        sizePolicy2.setHeightForWidth(self.text_edit_program_output.sizePolicy().hasHeightForWidth())
+        self.text_edit_program_output.setSizePolicy(sizePolicy2)
         self.text_edit_program_output.setFont(font2)
         self.text_edit_program_output.setReadOnly(True)
 
-        self.verticalLayout_6.addWidget(self.text_edit_program_output)
+        self.verticalLayout_12.addWidget(self.text_edit_program_output)
 
 
         self.vert_layout_main.addWidget(self.group_box_program_output)
 
-
-        self.horizontalLayout_2.addLayout(self.vert_layout_main)
-
-        self.vert_layout_xml_output = QVBoxLayout()
+        self.splitter.addWidget(self.layoutWidget_2)
+        self.layoutWidget = QWidget(self.splitter)
+        self.layoutWidget.setObjectName(u"layoutWidget")
+        self.vert_layout_xml_output = QVBoxLayout(self.layoutWidget)
         self.vert_layout_xml_output.setObjectName(u"vert_layout_xml_output")
-        self.group_box_xml_output = QGroupBox(self.tab_xml_evaluation)
+        self.vert_layout_xml_output.setContentsMargins(0, 0, 0, 0)
+        self.group_box_xml_output = QGroupBox(self.layoutWidget)
         self.group_box_xml_output.setObjectName(u"group_box_xml_output")
-        sizePolicy = QSizePolicy(QSizePolicy.Policy.MinimumExpanding, QSizePolicy.Policy.Preferred)
-        sizePolicy.setHorizontalStretch(0)
-        sizePolicy.setVerticalStretch(0)
-        sizePolicy.setHeightForWidth(self.group_box_xml_output.sizePolicy().hasHeightForWidth())
-        self.group_box_xml_output.setSizePolicy(sizePolicy)
+        sizePolicy3 = QSizePolicy(QSizePolicy.Policy.Preferred, QSizePolicy.Policy.Expanding)
+        sizePolicy3.setHorizontalStretch(0)
+        sizePolicy3.setVerticalStretch(0)
+        sizePolicy3.setHeightForWidth(self.group_box_xml_output.sizePolicy().hasHeightForWidth())
+        self.group_box_xml_output.setSizePolicy(sizePolicy3)
         self.group_box_xml_output.setFont(font3)
-        self.verticalLayout_5 = QVBoxLayout(self.group_box_xml_output)
-        self.verticalLayout_5.setObjectName(u"verticalLayout_5")
+        self.verticalLayout_6 = QVBoxLayout(self.group_box_xml_output)
+        self.verticalLayout_6.setObjectName(u"verticalLayout_6")
         self.text_edit_xml_output = QTextEdit(self.group_box_xml_output)
         self.text_edit_xml_output.setObjectName(u"text_edit_xml_output")
-        sizePolicy1 = QSizePolicy(QSizePolicy.Policy.MinimumExpanding, QSizePolicy.Policy.Expanding)
-        sizePolicy1.setHorizontalStretch(0)
-        sizePolicy1.setVerticalStretch(0)
-        sizePolicy1.setHeightForWidth(self.text_edit_xml_output.sizePolicy().hasHeightForWidth())
-        self.text_edit_xml_output.setSizePolicy(sizePolicy1)
+        sizePolicy3.setHeightForWidth(self.text_edit_xml_output.sizePolicy().hasHeightForWidth())
+        self.text_edit_xml_output.setSizePolicy(sizePolicy3)
         palette1 = QPalette()
         palette1.setBrush(QPalette.ColorGroup.Active, QPalette.ColorRole.WindowText, brush)
         palette1.setBrush(QPalette.ColorGroup.Active, QPalette.ColorRole.Button, brush1)
@@ -501,51 +566,53 @@ class Ui_MainWindow(object):
         self.text_edit_xml_output.setFont(font2)
         self.text_edit_xml_output.setReadOnly(True)
 
-        self.verticalLayout_5.addWidget(self.text_edit_xml_output)
+        self.verticalLayout_6.addWidget(self.text_edit_xml_output)
 
         self.hor_layout_find_functionality = QHBoxLayout()
         self.hor_layout_find_functionality.setObjectName(u"hor_layout_find_functionality")
         self.line_edit_xml_output_find_text = QLineEdit(self.group_box_xml_output)
         self.line_edit_xml_output_find_text.setObjectName(u"line_edit_xml_output_find_text")
         self.line_edit_xml_output_find_text.setFont(font2)
-        self.line_edit_xml_output_find_text.setHidden(True)
 
         self.hor_layout_find_functionality.addWidget(self.line_edit_xml_output_find_text)
 
         self.button_find_next = QPushButton(self.group_box_xml_output)
         self.button_find_next.setObjectName(u"button_find_next")
         self.button_find_next.setFont(font2)
-        self.button_find_next.setHidden(True)
 
         self.hor_layout_find_functionality.addWidget(self.button_find_next)
 
         self.button_find_previous = QPushButton(self.group_box_xml_output)
         self.button_find_previous.setObjectName(u"button_find_previous")
         self.button_find_previous.setFont(font2)
-        self.button_find_previous.setHidden(True)
 
         self.hor_layout_find_functionality.addWidget(self.button_find_previous)
 
-        self.verticalLayout_5.addLayout(self.hor_layout_find_functionality)
+
+        self.verticalLayout_6.addLayout(self.hor_layout_find_functionality)
 
         self.progressbar_main = QProgressBar(self.group_box_xml_output)
         self.progressbar_main.setObjectName(u"progressbar_main")
         self.progressbar_main.setFont(font2)
         self.progressbar_main.setValue(0)
 
-        self.verticalLayout_5.addWidget(self.progressbar_main)
+        self.verticalLayout_6.addWidget(self.progressbar_main)
 
         self.label_file_processing = QLabel(self.group_box_xml_output)
         self.label_file_processing.setObjectName(u"label_file_processing")
+        sizePolicy.setHeightForWidth(self.label_file_processing.sizePolicy().hasHeightForWidth())
+        self.label_file_processing.setSizePolicy(sizePolicy)
         self.label_file_processing.setFont(font3)
-        self.label_file_processing.setStyleSheet(u"color: #ffc857;")
-        self.label_file_processing.setHidden(True)
+        self.label_file_processing.setStyleSheet(u"")
 
-        self.verticalLayout_5.addWidget(self.label_file_processing)
+        self.verticalLayout_6.addWidget(self.label_file_processing)
+
 
         self.vert_layout_xml_output.addWidget(self.group_box_xml_output)
 
-        self.horizontalLayout_2.addLayout(self.vert_layout_xml_output)
+        self.splitter.addWidget(self.layoutWidget)
+
+        self.verticalLayout_4.addWidget(self.splitter)
 
         self.tabWidget.addTab(self.tab_xml_evaluation, "")
         self.tab_csv_conversion = QWidget()
@@ -563,11 +630,11 @@ class Ui_MainWindow(object):
         self.verticalLayout_2.setObjectName(u"verticalLayout_2")
         self.label_csv_conversion_title = QLabel(self.groupbox_csv_conversion)
         self.label_csv_conversion_title.setObjectName(u"label_csv_conversion_title")
-        sizePolicy2 = QSizePolicy(QSizePolicy.Policy.Preferred, QSizePolicy.Policy.Preferred)
-        sizePolicy2.setHorizontalStretch(0)
-        sizePolicy2.setVerticalStretch(0)
-        sizePolicy2.setHeightForWidth(self.label_csv_conversion_title.sizePolicy().hasHeightForWidth())
-        self.label_csv_conversion_title.setSizePolicy(sizePolicy2)
+        sizePolicy4 = QSizePolicy(QSizePolicy.Policy.Preferred, QSizePolicy.Policy.Preferred)
+        sizePolicy4.setHorizontalStretch(0)
+        sizePolicy4.setVerticalStretch(0)
+        sizePolicy4.setHeightForWidth(self.label_csv_conversion_title.sizePolicy().hasHeightForWidth())
+        self.label_csv_conversion_title.setSizePolicy(sizePolicy4)
         self.label_csv_conversion_title.setMaximumSize(QSize(16777215, 60))
         font5 = QFont()
         font5.setFamilies([u"Microsoft YaHei UI"])
@@ -636,11 +703,11 @@ class Ui_MainWindow(object):
 
         self.checkbox_write_index_column = QCheckBox(self.groupbox_csv_conversion)
         self.checkbox_write_index_column.setObjectName(u"checkbox_write_index_column")
-        sizePolicy3 = QSizePolicy(QSizePolicy.Policy.Maximum, QSizePolicy.Policy.Fixed)
-        sizePolicy3.setHorizontalStretch(0)
-        sizePolicy3.setVerticalStretch(0)
-        sizePolicy3.setHeightForWidth(self.checkbox_write_index_column.sizePolicy().hasHeightForWidth())
-        self.checkbox_write_index_column.setSizePolicy(sizePolicy3)
+        sizePolicy5 = QSizePolicy(QSizePolicy.Policy.Maximum, QSizePolicy.Policy.Fixed)
+        sizePolicy5.setHorizontalStretch(0)
+        sizePolicy5.setVerticalStretch(0)
+        sizePolicy5.setHeightForWidth(self.checkbox_write_index_column.sizePolicy().hasHeightForWidth())
+        self.checkbox_write_index_column.setSizePolicy(sizePolicy5)
 
         self.horizontalLayout_5.addWidget(self.checkbox_write_index_column)
 
@@ -733,11 +800,11 @@ class Ui_MainWindow(object):
         self.horizontalLayout_6.setObjectName(u"horizontalLayout_6")
         self.label_csv_headers_combobox = QLabel(self.groupbox_lobster_profiles_cleanup)
         self.label_csv_headers_combobox.setObjectName(u"label_csv_headers_combobox")
-        sizePolicy4 = QSizePolicy(QSizePolicy.Policy.Maximum, QSizePolicy.Policy.Preferred)
-        sizePolicy4.setHorizontalStretch(0)
-        sizePolicy4.setVerticalStretch(0)
-        sizePolicy4.setHeightForWidth(self.label_csv_headers_combobox.sizePolicy().hasHeightForWidth())
-        self.label_csv_headers_combobox.setSizePolicy(sizePolicy4)
+        sizePolicy6 = QSizePolicy(QSizePolicy.Policy.Maximum, QSizePolicy.Policy.Preferred)
+        sizePolicy6.setHorizontalStretch(0)
+        sizePolicy6.setVerticalStretch(0)
+        sizePolicy6.setHeightForWidth(self.label_csv_headers_combobox.sizePolicy().hasHeightForWidth())
+        self.label_csv_headers_combobox.setSizePolicy(sizePolicy6)
         self.label_csv_headers_combobox.setFont(font2)
 
         self.horizontalLayout_6.addWidget(self.label_csv_headers_combobox)
@@ -745,19 +812,19 @@ class Ui_MainWindow(object):
         self.combobox_csv_headers = QComboBox(self.groupbox_lobster_profiles_cleanup)
         self.combobox_csv_headers.setObjectName(u"combobox_csv_headers")
         self.combobox_csv_headers.setEnabled(False)
-        sizePolicy5 = QSizePolicy(QSizePolicy.Policy.Preferred, QSizePolicy.Policy.Fixed)
-        sizePolicy5.setHorizontalStretch(0)
-        sizePolicy5.setVerticalStretch(0)
-        sizePolicy5.setHeightForWidth(self.combobox_csv_headers.sizePolicy().hasHeightForWidth())
-        self.combobox_csv_headers.setSizePolicy(sizePolicy5)
+        sizePolicy7 = QSizePolicy(QSizePolicy.Policy.Preferred, QSizePolicy.Policy.Fixed)
+        sizePolicy7.setHorizontalStretch(0)
+        sizePolicy7.setVerticalStretch(0)
+        sizePolicy7.setHeightForWidth(self.combobox_csv_headers.sizePolicy().hasHeightForWidth())
+        self.combobox_csv_headers.setSizePolicy(sizePolicy7)
 
         self.horizontalLayout_6.addWidget(self.combobox_csv_headers)
 
         self.button_drop_csv_header = QPushButton(self.groupbox_lobster_profiles_cleanup)
         self.button_drop_csv_header.setObjectName(u"button_drop_csv_header")
         self.button_drop_csv_header.setEnabled(False)
-        sizePolicy3.setHeightForWidth(self.button_drop_csv_header.sizePolicy().hasHeightForWidth())
-        self.button_drop_csv_header.setSizePolicy(sizePolicy3)
+        sizePolicy5.setHeightForWidth(self.button_drop_csv_header.sizePolicy().hasHeightForWidth())
+        self.button_drop_csv_header.setSizePolicy(sizePolicy5)
         self.button_drop_csv_header.setFont(font2)
 
         self.horizontalLayout_6.addWidget(self.button_drop_csv_header)
@@ -810,6 +877,7 @@ class Ui_MainWindow(object):
     def retranslateUi(self, MainWindow):
         MainWindow.setWindowTitle(QCoreApplication.translate("MainWindow", u"XMLuvation", None))
         self.group_box_xml_input_xpath_builder.setTitle(QCoreApplication.translate("MainWindow", u"XML FOLDER SELECTION AND XPATH BUILDER", None))
+        self.statusbar_xml_files_count.setText("")
         self.line_edit_xml_folder_path_input.setPlaceholderText(QCoreApplication.translate("MainWindow", u"Choose a folder that contains XML files...", None))
         self.button_browse_xml_folder.setText(QCoreApplication.translate("MainWindow", u"Browse", None))
         self.button_read_xml.setText(QCoreApplication.translate("MainWindow", u"Read XML", None))
@@ -836,8 +904,9 @@ class Ui_MainWindow(object):
         self.button_build_xpath.setText(QCoreApplication.translate("MainWindow", u"Build XPath", None))
         self.button_add_xpath_to_list.setText(QCoreApplication.translate("MainWindow", u"Add XPath Expression to list", None))
         self.group_box_xpath_expressions_list.setTitle(QCoreApplication.translate("MainWindow", u"LIST OF XPATH FILTERS TO SEARCH AND MATCH IN XML FILES", None))
+        self.statusbar_xpath_expressions.setText("")
         self.group_box_export_to_csv.setTitle(QCoreApplication.translate("MainWindow", u"EXPORT SEARCH RESULT TO CSV FILE", None))
-        self.label.setText(QCoreApplication.translate("MainWindow", u"Browse file path where to save the csv result:", None))
+        self.label_csv_export_input.setText(QCoreApplication.translate("MainWindow", u"Browse file path where to save the csv result:", None))
         self.line_edit_csv_output_path.setPlaceholderText(QCoreApplication.translate("MainWindow", u"Choose a folder where to save the CSV evaluation...", None))
         self.button_browse_csv.setText(QCoreApplication.translate("MainWindow", u"Browse", None))
         self.label_csv_headers_info.setText(QCoreApplication.translate("MainWindow", u"Enter CSV headers for each XPath expression (comma-separated):", None))
