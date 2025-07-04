@@ -1,4 +1,4 @@
-from PySide6.QtWidgets import (QApplication, QMainWindow, QMenu, QFileDialog, QMessageBox, QInputDialog)
+from PySide6.QtWidgets import (QApplication, QMainWindow, QMenu, QFileDialog, QMessageBox, QInputDialog, QStatusBar)
 from PySide6.QtGui import QIcon, QAction, QCloseEvent, QShortcut, QKeySequence
 from PySide6.QtCore import Qt, Signal, Slot, QFile, QTextStream, QIODevice, QSettings, QThreadPool
 
@@ -146,6 +146,9 @@ class MainWindow(QMainWindow):
 
         # Setup connections and initialize components
         self.setup_connections()
+        
+        # Setup statusbars and hide widgets/buttons for .iu files when editing .iu file in Qt Designer
+        self.setup_widgets_and_visibility_states()
 
         # Create my custom menu bar
         self.create_menu_bar()
@@ -405,6 +408,16 @@ class MainWindow(QMainWindow):
         
         # QCheckBox
         self.ui.checkbox_write_index_column.toggled.connect(self.on_write_index_toggled)
+        
+    
+    def setup_widgets_and_visibility_states(self):
+        """Setup widgets states"""
+        # Hide buttons/widgets
+        self.ui.button_find_next.setHidden(True)
+        self.ui.button_find_previous.setHidden(True)
+        self.ui.button_abort_csv_export.setHidden(True)
+        self.ui.label_file_processing.setHidden(True)
+        self.ui.line_edit_xml_output_find_text.setHidden(True)
 
     # === Helper Methods === #
 
@@ -732,17 +745,17 @@ class MainWindow(QMainWindow):
                 xml_files_count: int = sum(1 for f in os.listdir(folder) if f.endswith(".xml"))
                 if xml_files_count >= 1:
                     self.ui.statusbar_xml_files_count.setStyleSheet("color: #47de65")
-                    self.ui.statusbar_xml_files_count.showMessage(f"Found {xml_files_count} XML Files")
+                    self.ui.statusbar_xml_files_count.setText(f"Found {xml_files_count} XML Files")
         except Exception as ex:
             message = f"An exception of type {type(ex).__name__} occurred. Arguments: {ex.args!r}"
             self.ui.statusbar_xml_files_count.setStyleSheet("color: #ed2828")
-            self.ui.statusbar_xml_files_count.showMessage(f"Error counting XML files: {message}")
+            self.ui.statusbar_xml_files_count.setText(f"Error counting XML files: {message}")
 
 
     def update_statusbar_xpath_listbox_count(self):
         self.counter = self.ui.list_widget_xpath_expressions.count()
         if self.counter != 0:
-            self.ui.statusbar_xpath_expressions.showMessage(f"Total number of items in List: {self.counter}")
+            self.ui.statusbar_xpath_expressions.setText(f"Total number of items in List: {self.counter}")
 
 
     def remove_selected_items(self):
