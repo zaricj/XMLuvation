@@ -29,7 +29,7 @@
         background-color: #ffc857;
         color: #000000;
         border: none;
-        padding: 6px 8px;
+        padding: 5px 7px;
         border-radius: 6px;
         border: 1px solid #4a4a4a;
     }
@@ -48,11 +48,27 @@
         background-color: #808080;
     }
 
-    QLineEdit, QComboBox, QTextEdit, QStatusBar {
+    QLineEdit, QComboBox, QTextEdit {
         background-color: #313338;
         border: 1px solid #4a4a4a;
-        padding: 6px;
+        padding: 2px 3px;
         border-radius: 6px;
+    }
+
+    QLabel#statusbar_xpath_expressions {
+        background-color: rgb(49, 51, 56);
+        border: 1px solid #4a4a4a;
+        color: #ffc857;
+    }
+
+    QLabel#statusbar_xml_files_count {
+        background-color: rgb(49, 51, 56);
+        border: 1px solid #4a4a4a;
+    }
+    
+    QLabel#label_file_processing {
+        background-color: rgb(49, 51, 56);
+        border: 1px solid #4a4a4a;
     }
 
     QListWidget {
@@ -132,7 +148,6 @@
     QRadioButton:disabled {
         color: #808080;
     }
-
 
     QScrollBar:vertical {
         border: none;

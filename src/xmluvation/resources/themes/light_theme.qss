@@ -28,7 +28,7 @@ QPushButton {
     background-color: #ffc857;
     color: #2b2b2b;
     border: none;
-    padding: 6px 8px;
+    padding: 5px 7px;
     border-radius: 6px;
     border: 1px solid #000000;
 }
@@ -47,11 +47,27 @@ QPushButton:disabled {
     background-color: #b3b3b3;
 }
 
-QLineEdit, QComboBox, QTextEdit, QStatusBar {
+QLineEdit, QComboBox, QTextEdit {
     background-color: #ffffff;
     border: 1px solid #cccccc;
-    padding: 6px;
+    padding: 2px 3px;
     border-radius: 6px;
+}
+
+QLabel#statusbar_xpath_expressions {
+    background-color: #ffffff;
+    border: 1px solid #cccccc;
+    color: #ffc857;
+}
+
+QLabel#statusbar_xml_files_count {
+    background-color: #ffffff;
+    border: 1px solid #cccccc;
+}
+
+QLabel#label_file_processing {
+    background-color: #ffffff;
+    border: 1px solid #cccccc;
 }
 
 QListWidget {
