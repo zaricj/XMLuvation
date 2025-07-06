@@ -33,7 +33,6 @@ class XPathValidator(QRunnable):
         """
         try:
             # First, validate syntax
-            self.signals.program_output_progress.emit("Validating XPath syntax...")
             ET.XPath(self.xpath_expression)
 
             # If an XML file provided, test the expression
@@ -47,9 +46,7 @@ class XPathValidator(QRunnable):
                 result_count = len(results) if isinstance(results, list) else 1
 
                 self.signals.program_output_progress.emit(f"XPath is valid and returned {result_count} result(s)")
-            else:
-                self.signals.program_output_progress.emit("XPath syntax is valid")
-
+                
             return True
 
         except ET.XPathSyntaxError as e:
