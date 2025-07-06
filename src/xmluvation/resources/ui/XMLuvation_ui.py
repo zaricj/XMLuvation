@@ -8,20 +8,14 @@
 ## WARNING! All changes made in this file will be lost when recompiling UI file!
 ################################################################################
 
-from PySide6.QtCore import (QCoreApplication, QDate, QDateTime, QLocale,
-    QMetaObject, QObject, QPoint, QRect,
-    QSize, QTime, QUrl, Qt)
-from PySide6.QtGui import (QBrush, QColor, QConicalGradient, QCursor,
-    QFont, QFontDatabase, QGradient, QIcon,
-    QImage, QKeySequence, QLinearGradient, QPainter,
-    QPalette, QPixmap, QRadialGradient, QTransform)
-from PySide6.QtWidgets import (QApplication, QCheckBox, QComboBox, QGroupBox,
+from PySide6.QtCore import (QCoreApplication, QMetaObject, QSize, Qt)
+from PySide6.QtGui import (QBrush, QColor, QFont, QIcon,
+    QPalette)
+from PySide6.QtWidgets import (QCheckBox, QComboBox, QGroupBox,
     QHBoxLayout, QLabel, QLayout, QLineEdit,
-    QListWidget, QListWidgetItem, QMainWindow, QProgressBar,
+    QListWidget, QProgressBar,
     QPushButton, QRadioButton, QSizePolicy, QSplitter,
     QTabWidget, QTextEdit, QVBoxLayout, QWidget)
-
-from xmluvation.resources.qrc import xmluvation_resources_rc
 
 class Ui_MainWindow(object):
     def setupUi(self, MainWindow):
@@ -516,6 +510,7 @@ class Ui_MainWindow(object):
         sizePolicy3.setVerticalStretch(0)
         sizePolicy3.setHeightForWidth(self.group_box_xml_output.sizePolicy().hasHeightForWidth())
         self.group_box_xml_output.setSizePolicy(sizePolicy3)
+        self.group_box_xml_output.setMinimumSize(QSize(500, 0))
         self.group_box_xml_output.setFont(font3)
         self.verticalLayout_6 = QVBoxLayout(self.group_box_xml_output)
         self.verticalLayout_6.setObjectName(u"verticalLayout_6")
@@ -523,6 +518,7 @@ class Ui_MainWindow(object):
         self.text_edit_xml_output.setObjectName(u"text_edit_xml_output")
         sizePolicy3.setHeightForWidth(self.text_edit_xml_output.sizePolicy().hasHeightForWidth())
         self.text_edit_xml_output.setSizePolicy(sizePolicy3)
+        self.text_edit_xml_output.setMinimumSize(QSize(0, 0))
         palette1 = QPalette()
         palette1.setBrush(QPalette.ColorGroup.Active, QPalette.ColorRole.WindowText, brush)
         palette1.setBrush(QPalette.ColorGroup.Active, QPalette.ColorRole.Button, brush1)
