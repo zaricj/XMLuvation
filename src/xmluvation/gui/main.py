@@ -206,26 +206,22 @@ class MainWindow(QMainWindow):
 
         # Open Menu
         open_menu = menu_bar.addMenu("&Open")
-        open_input_action = QAction("Open input XML folder", self)
-        open_input_action.setStatusTip("Open input XML folder")
+        open_input_action = QAction("Open input XML folder in file explorer", self)
         open_input_action.triggered.connect(
-            lambda: self.open_folder_in_file_explorer(os.path.dirname(self.ui.line_edit_xml_folder_path_input.text())))
+            lambda: self.open_folder_in_file_explorer(self.ui.line_edit_xml_folder_path_input.text()))
         open_menu.addAction(open_input_action)
-        open_output_action = QAction("Open output CSV file", self)
-        open_output_action.setStatusTip("Open the output CSV File")
+        open_output_action = QAction("Open output CSV folder in file explorer", self)
         open_output_action.triggered.connect(
-            lambda: self.open_folder_in_file_explorer(self.ui.line_edit_csv_output_path.text()))
+            lambda: self.open_folder_in_file_explorer(os.path.dirname(self.ui.line_edit_csv_output_path.text())))
         open_menu.addAction(open_output_action)
         open_menu.addSeparator()
-        open_csv_conversion_input_action = QAction("Open CSV conversion input folder", self)
-        open_csv_conversion_input_action.setStatusTip("Open CSV conversion input folder")
+        open_csv_conversion_input_action = QAction("Open CSV conversion input folder in file explorer", self)
         open_csv_conversion_input_action.triggered.connect(lambda: self.open_folder_in_file_explorer(
-            os.path.dirname(self.ui.line_edit_csv_conversion_path_input.text())))
+            self.ui.line_edit_csv_conversion_path_input.text()))
         open_menu.addAction(open_csv_conversion_input_action)
-        open_csv_conversion_output_action = QAction("Open CSV conversion output folder", self)
-        open_csv_conversion_output_action.setStatusTip("Open CSV conversion output folder")
+        open_csv_conversion_output_action = QAction("Open CSV conversion output folder in file explorer", self)
         open_csv_conversion_output_action.triggered.connect(lambda: self.open_folder_in_file_explorer(
-            os.path.dirname(self.ui.line_edit_csv_conversion_path_output.text())))
+            self.ui.line_edit_csv_conversion_path_output.text()))
         open_menu.addAction(open_csv_conversion_output_action)
 
         # Path Menu
@@ -317,6 +313,7 @@ class MainWindow(QMainWindow):
     def open_folder_in_file_explorer(self, folder_path):
         """Helper method to open the specified folder in the file explorer."""
         if os.path.exists(folder_path):
+            print("Opening folder:", folder_path)
             try:
                 os.startfile(folder_path)
             except Exception as ex:
