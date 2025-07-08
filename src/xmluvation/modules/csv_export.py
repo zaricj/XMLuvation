@@ -62,6 +62,24 @@ def format_match_value(match: Any) -> str:
     else:
         return str(match)
 
+def parse_xml_file(xml_file: str) -> ET._Element:
+    """
+    Parse an XML file and return its root element.
+
+    Args:
+        xml_file: Path to the XML file
+
+    Returns:
+        Root element of the parsed XML
+    """
+    try:
+        parser = ET.XMLParser()
+        tree = ET.parse(xml_file, parser)
+        return tree.getroot()
+    except (ET.XMLSyntaxError, Exception) as e:
+        print(f"Error parsing XML file {xml_file}: {e}")
+        return None
+
 def process_single_xml(
     xml_file: str,
     folder: str,
@@ -85,18 +103,16 @@ def process_single_xml(
     if terminate_event.is_set():
         return {}, 0, 0
 
-    file_path: str = os.path.join(folder, xml_file)
-    file_name = os.path.basename(file_path)
-    file_total_matches: int = 0
-    file_had_any_matches: int = 0
+    xml_file_path: str = os.path.join(folder, xml_file)
+    xml_file_name = os.path.basename(xml_file_path)
+    xml_file_total_matches: int = 0
+    xml_file_had_any_matches: int = 0
     
     # Initialize the result row with filename
-    result_row = {"Filename": file_name}
+    result_row: Dict[str, str] = {"Filename": xml_file_name}
 
     try:
-        parser = ET.XMLParser()
-        tree = ET.parse(file_path, parser)
-        root = tree.getroot()
+        parsed_xml = parse_xml_file(xml_file_path)
     except (ET.XMLSyntaxError, Exception) as e:
         print(f"Error parsing XML file {xml_file}: {e}")
         return {}, 0, 0
@@ -107,7 +123,7 @@ def process_single_xml(
             return {}, 0, 0
 
         try:
-            matches = execute_xpath(root, expression)
+            matches = execute_xpath(parsed_xml, expression)
             
             if not matches:
                 continue
@@ -125,24 +141,24 @@ def process_single_xml(
                     # Join all values with the semicolon delimiter
                     combined_value = ";".join(grouped_values)
                     result_row[header] = combined_value
-                    file_total_matches += len(grouped_values)
-                    file_had_any_matches = 1
+                    xml_file_total_matches += len(grouped_values)
+                    xml_file_had_any_matches = 1
             else:
                 # Individual matches - just count them
                 match_count = len(matches)
                 if match_count > 0:
                     count_header = f"{header} Match Count"
                     result_row[count_header] = str(match_count)
-                    file_total_matches += match_count
-                    file_had_any_matches = 1
+                    xml_file_total_matches += match_count
+                    xml_file_had_any_matches = 1
                     
         except Exception as e:
-            print(f"Error processing XPath '{expression}' in {file_path}: {str(e)}")
+            print(f"Error processing XPath '{expression}' in {xml_file_path}: {str(e)}")
             continue
     
     # Only return result if file had any matches
-    if file_had_any_matches:
-        return result_row, file_total_matches, file_had_any_matches
+    if xml_file_had_any_matches:
+        return result_row, xml_file_total_matches, xml_file_had_any_matches
     else:
         return {}, 0, 0
 
@@ -205,7 +221,7 @@ class CSVExportThread(QRunnable):
 
     def _generate_csv_headers(self) -> List[str]:
         """Generate the appropriate CSV headers based on XPath expressions."""
-        headers = ["Filename"]
+        headers: List[str] = ["Filename"]
 
         for expression, header in zip(self.xpath_expressions_list, self.csv_headers_list):
             if should_group_matches(expression):
