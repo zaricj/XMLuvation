@@ -279,21 +279,44 @@ class AddXPathExpressionToListHandler:
         try:
             # Check if the XPath input is not empty:
             if not self.xpath_expression:
-                QMessageBox.information(self.main_window, "Empty XPath", "Please enter a valid XPath expression before adding it to the list.")
+                QMessageBox.information(self.main_window, "Empty XPath", "Please enter a XPath expression.")
                 return False
-            elif self.xpath_expression and not self._is_duplicate(self.xpath_expression, self.xpath_filters):
-                validator = create_xpath_validator()
-                self.main_window._connect_xpath_builder_signals(validator)
-                # Validate the XPath expression
-                validator.xpath_expression = self.xpath_expression
-                is_valid = validator.validate_xpath_expression()
-                if is_valid:
-                    self.xpath_filters.append(self.xpath_expression)
-                    self.list_widget_xpath_expressions.addItem(self.xpath_expression)
-                    return True
+            
+            validator = create_xpath_validator()
+            
+            if "," in self.xpath_expression:
+                try:
+                    # Split by comma and validate each XPath expression
+                    xpath_expressions = [exp.strip() for exp in self.xpath_expression.split(",")]
+                    for exp in xpath_expressions:
+                        if exp and not self._is_duplicate(exp, self.xpath_filters):
+                            validator.xpath_expression = exp
+                            if not validator.validate_xpath_expression():
+                                raise ValueError(f"Invalid XPath expression: {exp}")
+                            else:
+                                self.xpath_filters.append(exp)
+                                self.list_widget_xpath_expressions.addItem(exp)
+                        else:
+                            QMessageBox.warning(self.main_window, "Duplicate XPath Expression", f"Cannot add duplicate XPath expression:\n{exp}")
+                            return False
+                except ValueError:
+                    QMessageBox.warning(self.main_window, "Invalid XPath Expression", f"Invalid XPath expression: {self.xpath_expression}")
+                    return False
             else:
-                QMessageBox.warning(self.main_window, "Duplicate XPath Expression", f"Cannot add duplicate XPath expression:\n{self.xpath_expression}")
-                return False
+                if self.xpath_expression and not self._is_duplicate(self.xpath_expression, self.xpath_filters):
+                    
+                    self.main_window._connect_xpath_builder_signals(validator)
+                    
+                    # Validate the XPath expression
+                    validator.xpath_expression = self.xpath_expression
+                    is_valid = validator.validate_xpath_expression()
+                    if is_valid:
+                        self.xpath_filters.append(self.xpath_expression)
+                        self.list_widget_xpath_expressions.addItem(self.xpath_expression)
+                        return True
+                else:
+                    QMessageBox.warning(self.main_window, "Duplicate XPath Expression", f"Cannot add duplicate XPath expression:\n{self.xpath_expression}")
+                    return False
         except Exception as ex:
             message = f"An exception of type {type(ex).__name__} occurred. Arguments: {ex.args!r}"
             QMessageBox.critical(self.main_window, "Exception adding XPath Expression to List Widget", message)
@@ -521,24 +544,25 @@ class GenerateCSVHeaderHandler:
         attr_value = self.attribute_value_combo.currentText()
         headers_list: list[str] = self.csv_headers_input.text().split(",")
         
-        match (tag_name, tag_value, attr_name, attr_value):
-            case (tag, "", "", ""):
-                header = tag
-            case (tag, value, "", ""):
-                header = f"{tag} {value}"
-            case (tag, "", attr, ""):
-                header = f"{tag} @{attr}"
-            case (tag, "", attr, val):
-                header = f"{tag} {attr} {val}"
-            case (tag, value, attr, ""):
-                header = f"{tag} {value} {attr}"
-            case (tag, value, attr, val):
-                header = f"{tag} {value} {attr} {val}"
-            case _:
-                header = "Header"
-                
-        if not self._is_duplicate(header, headers_list):
-            return header
+        if tag_name and tag_value and attr_name and attr_value:
+            match (tag_name, tag_value, attr_name, attr_value):
+                case (tag, "", "", ""):
+                    header = tag
+                case (tag, value, "", ""):
+                    header = f"{tag} {value}"
+                case (tag, "", attr, ""):
+                    header = f"{tag} @{attr}"
+                case (tag, "", attr, val):
+                    header = f"{tag} {attr} {val}"
+                case (tag, value, attr, ""):
+                    header = f"{tag} {value} {attr}"
+                case (tag, value, attr, val):
+                    header = f"{tag} {value} {attr} {val}"
+                case _:
+                    header = "Header"
+                    
+            if not self._is_duplicate(header, headers_list):
+                return header
     
     @staticmethod 
     def _is_duplicate(header :str, headers_list: str) -> bool:
