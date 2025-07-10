@@ -1,5 +1,6 @@
 <RCC>
   <qresource>
+    <file>../images/checkmark_8x8.png</file>
     <file>../icons/xml_256px.ico</file>
     <file>../images/dark.png</file>
     <file>../images/drpdwn_arrow.png</file>
