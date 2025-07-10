@@ -637,6 +637,7 @@ class MainWindow(QMainWindow):
             xml_path = self.ui.line_edit_xml_folder_path_input.text()
             csv_output = self.ui.line_edit_csv_output_path.text()
             headers = self.ui.line_edit_csv_headers_input.text()
+            group_matches_flag = self.ui.checkbox_group_matches.isChecked()
             max_threads = self.set_max_threads  # Already a property
             xpath_filters = self.xpath_filters  # Already a property
 
@@ -647,6 +648,7 @@ class MainWindow(QMainWindow):
                 xpath_filters=xpath_filters,
                 csv_folder_output_path=csv_output,
                 csv_headers_input=headers,
+                group_matches_flag = group_matches_flag,
                 set_max_threads=max_threads
             )
             self.csv_exporter_handler.start_csv_export()

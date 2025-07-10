@@ -317,12 +317,13 @@ class SearchAndExportToCSVHandler:
     """
     Handles methods and logic of a button event that starts the search with XPath Expression and export of a component.
     """
-    def __init__(self, main_window: QMainWindow, xml_folder_path: str, xpath_filters: list, csv_folder_output_path: str, csv_headers_input: str, set_max_threads: int):
+    def __init__(self, main_window: QMainWindow, xml_folder_path: str, xpath_filters: list, csv_folder_output_path: str, csv_headers_input: str, group_matches_flag: bool, set_max_threads: int):
         self.main_window = main_window
         self.xml_folder_path = xml_folder_path
         self.xpath_filters = xpath_filters
         self.csv_folder_output_path = csv_folder_output_path
         self.csv_headers_input = csv_headers_input
+        self.group_matches_flag = group_matches_flag
         self.set_max_threads = set_max_threads
         self.current_exporter = None
 
@@ -330,7 +331,7 @@ class SearchAndExportToCSVHandler:
     def start_csv_export(self) -> None:
         """Initializes and starts the CSV export in a new thread."""
         try:
-            exporter = create_csv_exporter(self.xml_folder_path, self.xpath_filters, self.csv_folder_output_path, self._parse_csv_headers(self.csv_headers_input), self.set_max_threads)
+            exporter = create_csv_exporter(self.xml_folder_path, self.xpath_filters, self.csv_folder_output_path, self._parse_csv_headers(self.csv_headers_input), self.group_matches_flag, self.set_max_threads)
             self.current_exporter = exporter
             self.main_window._connect_csv_export_signals(self.current_exporter)
             self.main_window.thread_pool.start(self.current_exporter)

@@ -9,7 +9,7 @@
    <rect>
     <x>0</x>
     <y>0</y>
-    <width>1151</width>
+    <width>1186</width>
     <height>961</height>
    </rect>
   </property>
@@ -477,6 +477,9 @@
                      <strikeout>false</strikeout>
                     </font>
                    </property>
+                   <property name="toolTip">
+                    <string>This opens a file dialogue box where you can browse for the folder containing the XML files.</string>
+                   </property>
                    <property name="text">
                     <string>Browse</string>
                    </property>
@@ -493,6 +496,9 @@
                      <underline>false</underline>
                      <strikeout>false</strikeout>
                     </font>
+                   </property>
+                   <property name="toolTip">
+                    <string>This opens a file dialog box where you can load a XML files data into the Combo Boxes.</string>
                    </property>
                    <property name="text">
                     <string>Read XML</string>
@@ -980,6 +986,9 @@
                      <strikeout>false</strikeout>
                     </font>
                    </property>
+                   <property name="toolTip">
+                    <string>This button generates a XPath expressions based on the values in the Combo Boxes.</string>
+                   </property>
                    <property name="text">
                     <string>Build XPath</string>
                    </property>
@@ -998,6 +1007,9 @@
                    <underline>false</underline>
                    <strikeout>false</strikeout>
                   </font>
+                 </property>
+                 <property name="toolTip">
+                  <string>Add the entered or built XPath expression from the input field to the list below.</string>
                  </property>
                  <property name="text">
                   <string>Add XPath Expression to list</string>
@@ -1126,6 +1138,29 @@
                <item>
                 <layout class="QHBoxLayout" name="hor_layout_csv_input_and_export">
                  <item>
+                  <widget class="QCheckBox" name="checkbox_group_matches">
+                   <property name="font">
+                    <font>
+                     <family>Microsoft YaHei UI</family>
+                     <pointsize>10</pointsize>
+                     <italic>false</italic>
+                     <bold>false</bold>
+                     <underline>false</underline>
+                     <strikeout>false</strikeout>
+                    </font>
+                   </property>
+                   <property name="toolTip">
+                    <string>This option groups matches together and writes them to the CSV file using a semicolon as the delimiter. If this option is disabled, each match is written to a new row in the CSV file.</string>
+                   </property>
+                   <property name="text">
+                    <string>Group matches</string>
+                   </property>
+                   <property name="checked">
+                    <bool>true</bool>
+                   </property>
+                  </widget>
+                 </item>
+                 <item>
                   <widget class="QLineEdit" name="line_edit_csv_output_path">
                    <property name="font">
                     <font>
@@ -1156,6 +1191,9 @@
                      <underline>false</underline>
                      <strikeout>false</strikeout>
                     </font>
+                   </property>
+                   <property name="toolTip">
+                    <string>This opens a file dialogue box where you can browse for the save path of the CSV file which will contains the results..</string>
                    </property>
                    <property name="text">
                     <string>Browse</string>
@@ -1208,7 +1246,7 @@
                     </font>
                    </property>
                    <property name="placeholderText">
-                    <string>CSV headers based on the number of XPath expressions (comma-separated)</string>
+                    <string>Enter CSV header names... (comma-separated)</string>
                    </property>
                    <property name="clearButtonEnabled">
                     <bool>true</bool>
@@ -1234,6 +1272,9 @@
                      <strikeout>false</strikeout>
                     </font>
                    </property>
+                   <property name="toolTip">
+                    <string>Abort task.</string>
+                   </property>
                    <property name="text">
                     <string>Abort</string>
                    </property>
@@ -1253,6 +1294,9 @@
                      <underline>false</underline>
                      <strikeout>false</strikeout>
                     </font>
+                   </property>
+                   <property name="toolTip">
+                    <string>Start searching the XML files and write the results found to the CSV file.</string>
                    </property>
                    <property name="text">
                     <string>Export</string>
@@ -1326,7 +1370,7 @@
               </property>
               <property name="minimumSize">
                <size>
-                <width>500</width>
+                <width>550</width>
                 <height>0</height>
                </size>
               </property>
@@ -1942,7 +1986,7 @@ Supported output file types: Excel, Markdown, HTML and JSON</string>
                   <string/>
                  </property>
                  <property name="placeholderText">
-                  <string>Select where to save the converted CSV file..</string>
+                  <string>Select where to save the converted CSV file...</string>
                  </property>
                  <property name="clearButtonEnabled">
                   <bool>true</bool>
@@ -1982,6 +2026,9 @@ Supported output file types: Excel, Markdown, HTML and JSON</string>
                    <strikeout>false</strikeout>
                   </font>
                  </property>
+                 <property name="toolTip">
+                  <string>Starts the conversion of the CSV file to the selected file type.</string>
+                 </property>
                  <property name="text">
                   <string>Convert CSV File</string>
                  </property>
@@ -1995,8 +2042,18 @@ Supported output file types: Excel, Markdown, HTML and JSON</string>
                    <verstretch>0</verstretch>
                   </sizepolicy>
                  </property>
+                 <property name="font">
+                  <font>
+                   <family>Microsoft YaHei UI</family>
+                   <pointsize>10</pointsize>
+                   <italic>false</italic>
+                   <bold>false</bold>
+                   <underline>false</underline>
+                   <strikeout>false</strikeout>
+                  </font>
+                 </property>
                  <property name="text">
-                  <string>Write Index Column?</string>
+                  <string>Write index column?</string>
                  </property>
                 </widget>
                </item>
@@ -2173,6 +2230,9 @@ Supported output file types: Excel, Markdown, HTML and JSON</string>
                    <strikeout>false</strikeout>
                   </font>
                  </property>
+                 <property name="toolTip">
+                  <string>Starts the clean up process of the XML files.</string>
+                 </property>
                  <property name="text">
                   <string>Clean up XML files</string>
                  </property>
@@ -2238,6 +2298,9 @@ Supported output file types: Excel, Markdown, HTML and JSON</string>
                    <underline>false</underline>
                    <strikeout>false</strikeout>
                   </font>
+                 </property>
+                 <property name="toolTip">
+                  <string>This deletes the currently selected header from the CSV file and saves it.</string>
                  </property>
                  <property name="text">
                   <string>Drop Header</string>
