@@ -106,15 +106,21 @@ def process_single_xml(
     xml_file_total_matches: int = 0
     xml_file_had_any_matches: int = 0
     
-    # Initialize the result row with filename
+    # Initialize the result rows
     result_rows: List[Dict[str, str]] = []
 
     try:
         parsed_xml = parse_xml_file(xml_file_path)
+        if parsed_xml is None:
+            return [], 0, 0
     except (ET.XMLSyntaxError, Exception) as e:
         print(f"Error parsing XML file {xml_file}: {e}")
         return [], 0, 0
 
+    # Collect all results from all XPath expressions
+    all_results = {}  # {header: [list of values]}
+    max_matches = 0
+    
     # Process each XPath expression for this file
     for expression, header in zip(xpath_expressions, headers):
         if terminate_event.is_set():
@@ -122,57 +128,69 @@ def process_single_xml(
 
         try:
             matches = execute_xpath(parsed_xml, expression)
-            print(f"XPath: {expression}, Matches: {matches}")
-            
             if not matches:
+                all_results[header] = []
                 continue
 
-            # Check if we should group matches for this XPath
+            # Check if we should write string values or counts
             if write_string_value(expression):
-                # Group all matches for this file and xpath
-                if group_matches_flag:
-                    grouped_values = []
-                    for match in matches:
-                        formatted_value = format_match_value(match)
-                        if formatted_value:  # Only add non-empty values
-                            grouped_values.append(formatted_value)
-
-                    if grouped_values:
-                        # Join all values with the semicolon delimiter
-                        combined_value = ";".join(grouped_values)
-                        row = {"Filename": xml_file_name, header: combined_value}
-                        result_rows.append(row)
-                        xml_file_total_matches += len(grouped_values)
-                        xml_file_had_any_matches = 1
-                else:
-                    for match in matches:
-                        formatted_value = format_match_value(match)
-                        if formatted_value:
-                            match_row = {"Filename": xml_file_name, header: formatted_value}
-                            result_rows.append(match_row)
-                            xml_file_total_matches += 1
-                            xml_file_had_any_matches = 1
-
-            else:       
-                # Individual matches - just count them
-                match_count = len(matches)
-                if match_count > 0:
-                    count_header = f"{header} Match Count"
-                    row = {"Filename": xml_file_name, count_header: str(match_count)}
-                    result_rows.append(row)
-                    xml_file_total_matches += match_count
+                # Extract string values
+                values = []
+                for match in matches:
+                    formatted_value = format_match_value(match)
+                    if formatted_value:  # Only add non-empty values
+                        values.append(formatted_value)
+                
+                all_results[header] = values
+                xml_file_total_matches += len(values)
+                if values:
                     xml_file_had_any_matches = 1
+                    max_matches = max(max_matches, len(values))
+            else:
+                # Count-based expressions
+                match_count = len(matches)
+                count_header = f"{header} Match Count"
+                all_results[count_header] = [str(match_count)] if match_count > 0 else []
+                xml_file_total_matches += match_count
+                if match_count > 0:
+                    xml_file_had_any_matches = 1
+                    max_matches = max(max_matches, 1)  # Count headers typically only have one value
                     
         except Exception as e:
             print(f"Error processing XPath '{expression}' in {xml_file_path}: {str(e)}")
+            all_results[header] = []
             continue
     
-    # Only return result if file had any matches
+    # Only create rows if file had any matches
     if xml_file_had_any_matches:
-        return result_rows, xml_file_total_matches, xml_file_had_any_matches
-    else:
-        return [], 0, 0
-
+        # Create rows by combining results from different XPath expressions
+        # The number of rows should be the maximum number of matches from any expression
+        for row_index in range(max_matches):
+            row = {"Filename": xml_file_name}
+            
+            # For each header, add the value at the current row index (or empty if no more values)
+            for expression, header in zip(xpath_expressions, headers):
+                if write_string_value(expression):
+                    values = all_results.get(header, [])
+                    if group_matches_flag and row_index == 0:
+                        # Group all values into first row with semicolon separator
+                        row[header] = ";".join(values) if values else ""
+                    else:
+                        # Individual values per row
+                        row[header] = values[row_index] if row_index < len(values) else ""
+                else:
+                    # Count headers
+                    count_header = f"{header} Match Count"
+                    values = all_results.get(count_header, [])
+                    row[count_header] = values[0] if values and row_index == 0 else ""
+            
+            result_rows.append(row)
+            
+            # If grouping matches, only create one row
+            if group_matches_flag:
+                break
+    
+    return result_rows, xml_file_total_matches, xml_file_had_any_matches
 
 class CSVExportSignals(QObject):
     """Signals class for CSVExportThread operations."""
