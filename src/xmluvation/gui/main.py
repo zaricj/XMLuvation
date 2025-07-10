@@ -1,4 +1,4 @@
-from PySide6.QtWidgets import (QApplication, QMainWindow, QMenu, QFileDialog, QMessageBox, QInputDialog, QStatusBar)
+from PySide6.QtWidgets import (QApplication, QMainWindow, QMenu, QFileDialog, QMessageBox, QInputDialog, QLineEdit)
 from PySide6.QtGui import QIcon, QAction, QCloseEvent, QShortcut, QKeySequence
 from PySide6.QtCore import Qt, Signal, Slot, QFile, QTextStream, QIODevice, QSettings, QThreadPool
 
@@ -469,7 +469,7 @@ class MainWindow(QMainWindow):
         
         # QCheckBox
         self.ui.checkbox_write_index_column.toggled.connect(self.on_write_index_toggled)
-        
+    
     
     def setup_widgets_and_visibility_states(self):
         """Setup widgets states"""
@@ -481,12 +481,12 @@ class MainWindow(QMainWindow):
         self.ui.line_edit_xml_output_find_text.setHidden(True)
 
     # === Helper Methods === #
-    def browse_folder_helper(self, dialog_message: str, line_widget: object) -> None:
+    def browse_folder_helper(self, dialog_message: str, line_widget: QLineEdit) -> None:
         """File dialog for folder browsing, sets the path of the selected folder in a specified QLineEdit Widget
 
         Args:
             dialog_message (str): Title message for the QFileDialog to display
-            line_widget (object): The QLineEdit Widget to write to the path value as string
+            line_widget (QLineEdit): The QLineEdit Widget to write to the path value as string
         """
         try:
             folder = QFileDialog.getExistingDirectory(self, dialog_message)
@@ -497,17 +497,16 @@ class MainWindow(QMainWindow):
             message = f"An exception of type {type(ex).__name__} occurred. Arguments: {ex.args!r}"
             QMessageBox.critical(self, "An exception occurred in browse folder method", message)
 
-    def browse_file_helper(self, dialog_message: str, line_widget: object, file_extension_filter: str) -> None:
+    def browse_file_helper(self, dialog_message: str, line_widget: QLineEdit, file_extension_filter: str) -> None:
         """File dialog for file browsing, sets the path of the selected file in a specified QLineEdit Widget
 
         Args:
             dialog_message (str): Title message for the QFileDialog to display
-            line_widget (object): The QLineEdit Widget to write to the path value as string
+            line_widget (QLineEdit): The QLineEdit Widget to write to the path value as string
             file_extension_filter (str): Filter files for selection based on set filter.
 
                 - Example for only XML files:
                     - 'XML File (*.xml)'
-
 
                 - Example for multiple filters:
                     - 'Images (*.png *.xpm *.jpg);;Text files (*.txt);;XML files (*.xml)'
@@ -520,12 +519,12 @@ class MainWindow(QMainWindow):
             message = f"An exception of type {type(ex).__name__} occurred. Arguments: {ex.args!r}"
             QMessageBox.critical(self, "An exception occurred in browse folder method", message)
 
-    def browse_save_file_as_helper(self, dialog_message: str, line_widget: object, file_extension_filter: str) -> None:
+    def browse_save_file_as_helper(self, dialog_message: str, line_widget: QLineEdit, file_extension_filter: str) -> None:
         """File dialog for file saving as, sets the path of the selected file in a specified QLineEdit Widget
 
         Args:
             dialog_message (str): Title message for the QFileDialog to display
-            line_widget (object): The QLineEdit Widget to write to the path value as string
+            line_widget (QLineEdit): The QLineEdit Widget to write to the path value as string
             file_extension_filter (str): Filter files for selection based on set filter.
 
                 - Example for only XML files:
@@ -542,11 +541,11 @@ class MainWindow(QMainWindow):
         except Exception as ex:
             message = f"An exception of type {type(ex).__name__} occurred. Arguments: {ex.args!r}"
             QMessageBox.critical(self, "An exception occurred in browse save file method",
-                                 f"Error exporting CSV: {message}")
+                                    f"Error exporting CSV: {message}")
 
     # ====================================================================================================================== #
 
-    def on_write_index_toggled(self, checked):
+    def on_write_index_toggled(self):
         message_with_index = """
         Data will look like this:
 
