@@ -692,6 +692,7 @@ class MainWindow(QMainWindow):
 
             # If the XPath Expression has been successfully added to the QListWidget, generate the CSV Header based on the combobox values
             if is_added:
+                self.ui.line_edit_xpath_builder.clear() # Clear field after adding xpath to list
                 current_text = csv_headers_input.text()
                 self.add_recent_xpath_expression(xpath_input)
                 self.update_statusbar_xpath_listbox_count()
