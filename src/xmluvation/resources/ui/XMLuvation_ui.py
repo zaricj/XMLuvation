@@ -16,6 +16,7 @@ from PySide6.QtWidgets import (QCheckBox, QComboBox, QGroupBox,
     QListWidget, QProgressBar,
     QPushButton, QRadioButton, QSizePolicy, QSplitter,
     QTabWidget, QTextEdit, QVBoxLayout, QWidget)
+from xmluvation.resources.qrc import xmluvation_resources_rc
 
 class Ui_MainWindow(object):
     def setupUi(self, MainWindow):
@@ -408,6 +409,28 @@ class Ui_MainWindow(object):
         self.group_box_export_to_csv.setFont(font3)
         self.verticalLayout_11 = QVBoxLayout(self.group_box_export_to_csv)
         self.verticalLayout_11.setObjectName(u"verticalLayout_11")
+        self.label_csv_headers_info = QLabel(self.group_box_export_to_csv)
+        self.label_csv_headers_info.setObjectName(u"label_csv_headers_info")
+        sizePolicy.setHeightForWidth(self.label_csv_headers_info.sizePolicy().hasHeightForWidth())
+        self.label_csv_headers_info.setSizePolicy(sizePolicy)
+        self.label_csv_headers_info.setFont(font2)
+
+        self.verticalLayout_11.addWidget(self.label_csv_headers_info)
+
+        self.hor_layout_csv_headers = QHBoxLayout()
+        self.hor_layout_csv_headers.setObjectName(u"hor_layout_csv_headers")
+        self.line_edit_csv_headers_input = QLineEdit(self.group_box_export_to_csv)
+        self.line_edit_csv_headers_input.setObjectName(u"line_edit_csv_headers_input")
+        sizePolicy1.setHeightForWidth(self.line_edit_csv_headers_input.sizePolicy().hasHeightForWidth())
+        self.line_edit_csv_headers_input.setSizePolicy(sizePolicy1)
+        self.line_edit_csv_headers_input.setFont(font2)
+        self.line_edit_csv_headers_input.setClearButtonEnabled(True)
+
+        self.hor_layout_csv_headers.addWidget(self.line_edit_csv_headers_input)
+
+
+        self.verticalLayout_11.addLayout(self.hor_layout_csv_headers)
+
         self.label_csv_export_input = QLabel(self.group_box_export_to_csv)
         self.label_csv_export_input.setObjectName(u"label_csv_export_input")
         sizePolicy.setHeightForWidth(self.label_csv_export_input.sizePolicy().hasHeightForWidth())
@@ -440,28 +463,6 @@ class Ui_MainWindow(object):
 
 
         self.verticalLayout_11.addLayout(self.hor_layout_csv_input_and_export)
-
-        self.label_csv_headers_info = QLabel(self.group_box_export_to_csv)
-        self.label_csv_headers_info.setObjectName(u"label_csv_headers_info")
-        sizePolicy.setHeightForWidth(self.label_csv_headers_info.sizePolicy().hasHeightForWidth())
-        self.label_csv_headers_info.setSizePolicy(sizePolicy)
-        self.label_csv_headers_info.setFont(font2)
-
-        self.verticalLayout_11.addWidget(self.label_csv_headers_info)
-
-        self.hor_layout_csv_headers = QHBoxLayout()
-        self.hor_layout_csv_headers.setObjectName(u"hor_layout_csv_headers")
-        self.line_edit_csv_headers_input = QLineEdit(self.group_box_export_to_csv)
-        self.line_edit_csv_headers_input.setObjectName(u"line_edit_csv_headers_input")
-        sizePolicy1.setHeightForWidth(self.line_edit_csv_headers_input.sizePolicy().hasHeightForWidth())
-        self.line_edit_csv_headers_input.setSizePolicy(sizePolicy1)
-        self.line_edit_csv_headers_input.setFont(font2)
-        self.line_edit_csv_headers_input.setClearButtonEnabled(True)
-
-        self.hor_layout_csv_headers.addWidget(self.line_edit_csv_headers_input)
-
-
-        self.verticalLayout_11.addLayout(self.hor_layout_csv_headers)
 
         self.hor_layout_button_export_and_abort = QHBoxLayout()
         self.hor_layout_button_export_and_abort.setObjectName(u"hor_layout_button_export_and_abort")
@@ -922,6 +923,8 @@ class Ui_MainWindow(object):
         self.group_box_xpath_expressions_list.setTitle(QCoreApplication.translate("MainWindow", u"LIST OF XPATH FILTERS TO SEARCH AND MATCH IN XML FILES", None))
         self.statusbar_xpath_expressions.setText("")
         self.group_box_export_to_csv.setTitle(QCoreApplication.translate("MainWindow", u"EXPORT SEARCH RESULT TO CSV FILE", None))
+        self.label_csv_headers_info.setText(QCoreApplication.translate("MainWindow", u"Enter CSV headers for each XPath expression (comma-separated):", None))
+        self.line_edit_csv_headers_input.setPlaceholderText(QCoreApplication.translate("MainWindow", u"Enter CSV header names... (comma-separated)", None))
         self.label_csv_export_input.setText(QCoreApplication.translate("MainWindow", u"Browse file path where to save the csv result:", None))
 #if QT_CONFIG(tooltip)
         self.checkbox_group_matches.setToolTip(QCoreApplication.translate("MainWindow", u"This option groups matches together and writes them to the CSV file using a semicolon as the delimiter. If this option is disabled, each match is written to a new row in the CSV file.", None))
@@ -932,8 +935,6 @@ class Ui_MainWindow(object):
         self.button_browse_csv.setToolTip(QCoreApplication.translate("MainWindow", u"This opens a file dialogue box where you can browse for the save path of the CSV file which will contains the results..", None))
 #endif // QT_CONFIG(tooltip)
         self.button_browse_csv.setText(QCoreApplication.translate("MainWindow", u"Browse", None))
-        self.label_csv_headers_info.setText(QCoreApplication.translate("MainWindow", u"Enter CSV headers for each XPath expression (comma-separated):", None))
-        self.line_edit_csv_headers_input.setPlaceholderText(QCoreApplication.translate("MainWindow", u"Enter CSV header names... (comma-separated)", None))
 #if QT_CONFIG(tooltip)
         self.button_abort_csv_export.setToolTip(QCoreApplication.translate("MainWindow", u"Abort task.", None))
 #endif // QT_CONFIG(tooltip)
