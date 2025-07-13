@@ -35,11 +35,11 @@
     }
 
     QPushButton:hover {
-        background-color: #bc9240;
+        background-color: #dbab4c;
     }
 
     QPushButton:pressed {
-        background-color: #e3a834;
+        background-color: #b08a40;
         padding-left: 9px; /* Creates a "pressed" effect */
         padding-top: 8px;
     }
@@ -139,14 +139,26 @@
         padding: 0 6px;
     }
 
+    QRadioButton {
+    spacing: 6px;
+}
+
     QRadioButton::indicator {
         width: 16px;
         height: 16px;
     }
 
-
+    /* Optional: disabled text color */
     QRadioButton:disabled {
         color: #808080;
+    }
+
+    QRadioButton::indicator:unchecked {
+    image: url(:/images/radiobutton_unchecked_white_64x64.png);  
+    }
+
+    QRadioButton::indicator:checked {
+        image: url(:/images/radiobutton_white_64x64.png);
     }
 
     QScrollBar:vertical {
@@ -194,11 +206,13 @@
     }
 
     QCheckBox::indicator:checked {
-        background-color: #ffc857;
-        border: 1px solid #ec971f;
+        background-color: #4e84f0;
+        border: 1px solid #4a4a4a;
+        image: url(:/images/checkmark_48x48.png);
     }
 
     QCheckBox::indicator:unchecked {
         background-color: #313338;
         border: 1px solid #4a4a4a;
+        image: none; 
     }

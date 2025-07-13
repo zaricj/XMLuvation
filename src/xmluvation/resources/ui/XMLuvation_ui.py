@@ -16,7 +16,6 @@ from PySide6.QtWidgets import (QCheckBox, QComboBox, QGroupBox,
     QListWidget, QProgressBar,
     QPushButton, QRadioButton, QSizePolicy, QSplitter,
     QTabWidget, QTextEdit, QVBoxLayout, QWidget)
-from xmluvation.resources.qrc import xmluvation_resources_rc
 
 class Ui_MainWindow(object):
     def setupUi(self, MainWindow):
