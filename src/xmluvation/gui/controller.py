@@ -525,6 +525,7 @@ class GenerateCSVHeaderHandler:
                     tag_value_combo: QComboBox,
                     attribute_name_combo: QComboBox,
                     attribute_value_combo: QComboBox,
+                    xpath_input: QLineEdit,
                     csv_headers_input: QLineEdit
                 ):
         
@@ -533,6 +534,7 @@ class GenerateCSVHeaderHandler:
         self.tag_value_combo = tag_value_combo
         self.attribute_name_combo = attribute_name_combo
         self.attribute_value_combo = attribute_value_combo
+        self.xpath_input = xpath_input
         self.csv_headers_input = csv_headers_input
 
     def generate_header(self) -> str:
@@ -544,7 +546,7 @@ class GenerateCSVHeaderHandler:
         attr_value = self.attribute_value_combo.currentText()
         headers_list: list[str] = self.csv_headers_input.text().split(",")
         
-        if tag_name and tag_value and attr_name and attr_value:
+        if tag_name != "" and tag_value != "" and attr_name != "" and attr_value != "":
             match (tag_name, tag_value, attr_name, attr_value):
                 case (tag, "", "", ""):
                     header = tag
@@ -560,7 +562,19 @@ class GenerateCSVHeaderHandler:
                     header = f"{tag} {value} {attr} {val}"
                 case _:
                     header = "Header"
-                    
+            
+            if not self._is_duplicate(header, headers_list):
+                return header
+        else:
+            # If no tag, value, attribute or attribute value is selected, use the XPath input as header
+            xpath_expressions: str = self.xpath_input.text().strip()
+            split_xpath: list[str] = xpath_expressions.split("/")
+            
+            part1 = split_xpath[-2]
+            part2 = split_xpath[-1]
+
+            header = f"{part1} {part2}"
+            
             if not self._is_duplicate(header, headers_list):
                 return header
     
