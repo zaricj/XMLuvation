@@ -559,14 +559,14 @@ font: bold;</string>
                    </property>
                    <property name="maximumSize">
                     <size>
-                     <width>68</width>
+                     <width>72</width>
                      <height>16777215</height>
                     </size>
                    </property>
                    <property name="font">
                     <font>
                      <family>Microsoft YaHei UI</family>
-                     <pointsize>8</pointsize>
+                     <pointsize>9</pointsize>
                      <italic>false</italic>
                      <bold>true</bold>
                      <underline>false</underline>
@@ -623,14 +623,14 @@ font: bold;</string>
                    </property>
                    <property name="maximumSize">
                     <size>
-                     <width>68</width>
+                     <width>72</width>
                      <height>16777215</height>
                     </size>
                    </property>
                    <property name="font">
                     <font>
                      <family>Microsoft YaHei UI</family>
-                     <pointsize>8</pointsize>
+                     <pointsize>9</pointsize>
                      <italic>false</italic>
                      <bold>true</bold>
                      <underline>false</underline>
@@ -700,14 +700,14 @@ font: bold;</string>
                    </property>
                    <property name="maximumSize">
                     <size>
-                     <width>68</width>
+                     <width>72</width>
                      <height>16777215</height>
                     </size>
                    </property>
                    <property name="font">
                     <font>
                      <family>Microsoft YaHei UI</family>
-                     <pointsize>8</pointsize>
+                     <pointsize>9</pointsize>
                      <italic>false</italic>
                      <bold>true</bold>
                      <underline>false</underline>
@@ -764,14 +764,14 @@ font: bold;</string>
                    </property>
                    <property name="maximumSize">
                     <size>
-                     <width>68</width>
+                     <width>72</width>
                      <height>16777215</height>
                     </size>
                    </property>
                    <property name="font">
                     <font>
                      <family>Microsoft YaHei UI</family>
-                     <pointsize>8</pointsize>
+                     <pointsize>9</pointsize>
                      <italic>false</italic>
                      <bold>true</bold>
                      <underline>false</underline>
