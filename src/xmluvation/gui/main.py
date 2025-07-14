@@ -692,7 +692,6 @@ class MainWindow(QMainWindow):
 
             # If the XPath Expression has been successfully added to the QListWidget, generate the CSV Header based on the combobox values
             if is_added:
-                self.ui.line_edit_xpath_builder.clear() # Clear field after adding xpath to list
                 current_text = csv_headers_input.text()
                 self.add_recent_xpath_expression(xpath_input)
                 self.update_statusbar_xpath_listbox_count()
@@ -702,6 +701,7 @@ class MainWindow(QMainWindow):
                                                     tag_value_combo=self.ui.combobox_tag_values,
                                                     attribute_name_combo=self.ui.combobox_attribute_names,
                                                     attribute_value_combo=self.ui.combobox_attribute_values,
+                                                    xpath_input=self.ui.line_edit_xpath_builder,
                                                     csv_headers_input=self.ui.line_edit_csv_headers_input)
                 
                 header = generator.generate_header()
@@ -712,6 +712,8 @@ class MainWindow(QMainWindow):
                 else:
                     updated_text = header
                 csv_headers_input.setText(updated_text)
+            
+            self.ui.line_edit_xpath_builder.clear() # Always clear the input field after adding xpath to list
 
         except Exception as ex:
             message = f"An exception of type {type(ex).__name__} occurred. Arguments: {ex.args!r}"
@@ -807,18 +809,16 @@ class MainWindow(QMainWindow):
             if os.path.isdir(folder):
                 xml_files_count: int = sum(1 for f in os.listdir(folder) if f.endswith(".xml"))
                 if xml_files_count >= 1:
-                    self.ui.statusbar_xml_files_count.setStyleSheet("color: #47de65")
                     self.ui.statusbar_xml_files_count.setText(f"Found {xml_files_count} XML Files")
         except Exception as ex:
             message = f"An exception of type {type(ex).__name__} occurred. Arguments: {ex.args!r}"
-            self.ui.statusbar_xml_files_count.setStyleSheet("color: #ed2828")
             self.ui.statusbar_xml_files_count.setText(f"Error counting XML files: {message}")
 
 
     def update_statusbar_xpath_listbox_count(self):
         self.counter = self.ui.list_widget_xpath_expressions.count()
         if self.counter != 0:
-            self.ui.statusbar_xpath_expressions.setText(f"Total number of items in List: {self.counter}")
+            self.ui.statusbar_xpath_expressions.setText(f"XPath expressions in list: {self.counter}")
 
 
     def remove_selected_items(self):

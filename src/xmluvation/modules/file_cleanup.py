@@ -114,8 +114,7 @@ class FileCleanupThread(QRunnable):
                         self.signals.program_output_progress_append.emit(f"Deleted file: '{file_path}'")
                     except Exception as e:
                         self.signals.program_output_progress_append.emit(f"Failed to delete '{file_path}': {e}")
-                else:
-                    self.signals.program_output_progress_append.emit(f"File not found, skipping: '{file_path}'")
+
 
 
 # Convenience function for creating threaded operations
