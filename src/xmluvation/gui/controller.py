@@ -325,9 +325,8 @@ class AddXPathExpressionToListHandler:
                         else:
                             QMessageBox.warning(self.main_window, "Duplicate XPath Expression", f"Cannot add duplicate XPath expression:\n{exp}")
                             return False
-                except ValueError:
-                    QMessageBox.warning(self.main_window, "Invalid XPath Expression", f"Invalid XPath expression: {self.xpath_expression}")
-                    return False
+                except ValueError as e:
+                    QMessageBox.warning(self.main_window, "XPathSyntaxError", f"Invalid XPath expression: {str(e)}")
             else:
                 if self.xpath_expression and not self._is_duplicate(self.xpath_expression, self.xpath_filters):
 

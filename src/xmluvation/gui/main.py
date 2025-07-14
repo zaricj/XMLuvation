@@ -713,7 +713,7 @@ class MainWindow(QMainWindow):
                     updated_text = header
                 csv_headers_input.setText(updated_text)
             
-            self.ui.line_edit_xpath_builder.clear() # Always clear the input field after adding xpath to list
+                self.ui.line_edit_xpath_builder.clear() # Always clear the input field after adding xpath to list
 
         except Exception as ex:
             message = f"An exception of type {type(ex).__name__} occurred. Arguments: {ex.args!r}"
@@ -1074,6 +1074,7 @@ class MainWindow(QMainWindow):
         """Connect signals for XPath building operations."""
         worker.signals.program_output_progress.connect(self.append_to_program_output)
         worker.signals.error_occurred.connect(self.on_error_message)
+        worker.signals.warning_occurred.connect(self.on_warning_message)
 
     def _connect_csv_export_signals(self, worker):
         """Connect signals for CSV export operations.   """
