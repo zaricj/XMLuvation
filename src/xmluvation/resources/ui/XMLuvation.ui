@@ -436,7 +436,8 @@
                   </sizepolicy>
                  </property>
                  <property name="styleSheet">
-                  <string notr="true"/>
+                  <string notr="true">color: rgb(78, 132, 240);
+font: bold;</string>
                  </property>
                  <property name="text">
                   <string/>
@@ -1080,7 +1081,8 @@
                   </font>
                  </property>
                  <property name="styleSheet">
-                  <string notr="true"/>
+                  <string notr="true">color: rgb(78, 132, 240);
+font: bold;</string>
                  </property>
                  <property name="text">
                   <string/>
@@ -1809,7 +1811,8 @@
                   </font>
                  </property>
                  <property name="styleSheet">
-                  <string notr="true"/>
+                  <string notr="true">color: rgb(78, 132, 240);
+font: bold;</string>
                  </property>
                  <property name="text">
                   <string/>

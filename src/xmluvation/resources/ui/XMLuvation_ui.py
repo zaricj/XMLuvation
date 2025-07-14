@@ -154,7 +154,8 @@ class Ui_MainWindow(object):
         self.statusbar_xml_files_count.setObjectName(u"statusbar_xml_files_count")
         sizePolicy.setHeightForWidth(self.statusbar_xml_files_count.sizePolicy().hasHeightForWidth())
         self.statusbar_xml_files_count.setSizePolicy(sizePolicy)
-        self.statusbar_xml_files_count.setStyleSheet(u"")
+        self.statusbar_xml_files_count.setStyleSheet(u"color: rgb(78, 132, 240);\n"
+"font: bold;")
 
         self.verticalLayout_7.addWidget(self.statusbar_xml_files_count)
 
@@ -394,7 +395,8 @@ class Ui_MainWindow(object):
         sizePolicy.setHeightForWidth(self.statusbar_xpath_expressions.sizePolicy().hasHeightForWidth())
         self.statusbar_xpath_expressions.setSizePolicy(sizePolicy)
         self.statusbar_xpath_expressions.setFont(font3)
-        self.statusbar_xpath_expressions.setStyleSheet(u"")
+        self.statusbar_xpath_expressions.setStyleSheet(u"color: rgb(78, 132, 240);\n"
+"font: bold;")
 
         self.verticalLayout_8.addWidget(self.statusbar_xpath_expressions)
 
@@ -606,7 +608,8 @@ class Ui_MainWindow(object):
         sizePolicy.setHeightForWidth(self.label_file_processing.sizePolicy().hasHeightForWidth())
         self.label_file_processing.setSizePolicy(sizePolicy)
         self.label_file_processing.setFont(font3)
-        self.label_file_processing.setStyleSheet(u"")
+        self.label_file_processing.setStyleSheet(u"color: rgb(78, 132, 240);\n"
+"font: bold;")
 
         self.verticalLayout_6.addWidget(self.label_file_processing)
 
