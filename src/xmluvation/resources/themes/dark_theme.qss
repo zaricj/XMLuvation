@@ -61,7 +61,6 @@ QTextEdit {
 QLabel#statusbar_xpath_expressions {
 	background-color: rgb(49, 51, 56);
 	border: 1px solid #4a4a4a;
-	color: #ffc857;
 }
 
 QLabel#statusbar_xml_files_count {
