@@ -235,12 +235,10 @@ class MainWindow(QMainWindow):
         open_menu.addAction(open_output_action)
         open_menu.addSeparator()
         open_csv_conversion_input_action = QAction("Open CSV conversion input folder in file explorer", self)
-        open_csv_conversion_input_action.triggered.connect(lambda: self.open_folder_in_file_explorer(
-            self.ui.line_edit_csv_conversion_path_input.text()))
+        open_csv_conversion_input_action.triggered.connect(lambda: self.open_folder_in_file_explorer(os.path.dirname(self.ui.line_edit_csv_conversion_path_input.text())))
         open_menu.addAction(open_csv_conversion_input_action)
         open_csv_conversion_output_action = QAction("Open CSV conversion output folder in file explorer", self)
-        open_csv_conversion_output_action.triggered.connect(lambda: self.open_folder_in_file_explorer(
-            self.ui.line_edit_csv_conversion_path_output.text()))
+        open_csv_conversion_output_action.triggered.connect(lambda: self.open_folder_in_file_explorer(os.path.dirname(self.ui.line_edit_csv_conversion_path_output.text())))
         open_menu.addAction(open_csv_conversion_output_action)
 
         # Path Menu
