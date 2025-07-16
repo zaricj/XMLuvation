@@ -8,6 +8,7 @@ from typing import Optional, Dict, List, Tuple
 class XPathBuilderSignals(QObject):
     """Signals class for XPathBuilder operations."""
     error_occurred = Signal(str, str)  # Emitted when an error occurs
+    warning_occurred = Signal(str, str)
     program_output_progress = Signal(str)  # Emitted for progress updates
 
 
@@ -33,7 +34,6 @@ class XPathValidator(QRunnable):
         """
         try:
             # First, validate syntax
-            self.signals.program_output_progress.emit("Validating XPath syntax...")
             ET.XPath(self.xpath_expression)
 
             # If an XML file provided, test the expression
@@ -47,14 +47,12 @@ class XPathValidator(QRunnable):
                 result_count = len(results) if isinstance(results, list) else 1
 
                 self.signals.program_output_progress.emit(f"XPath is valid and returned {result_count} result(s)")
-            else:
-                self.signals.program_output_progress.emit("XPath syntax is valid")
-
+                
             return True
 
         except ET.XPathSyntaxError as e:
             error_msg = f"XPath syntax error: {str(e)}"
-            self.signals.error_occurred.emit("XPathSyntaxError", error_msg)
+            self.signals.warning_occurred.emit("XPathSyntaxError", error_msg)
             self.signals.program_output_progress.emit("XPath syntax is invalid")
             return False
         except ET.XPathEvalError as e:

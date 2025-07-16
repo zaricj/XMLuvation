@@ -94,6 +94,7 @@ class FileCleanupThread(QRunnable):
                                                "Please select the folder that contains all exported Lobster profiles as XML files")
             return
 
+        valid_files = set()
         with open(self.csv_file_path, mode='r', newline='') as file:
             reader = csv.reader(file)
             for row in reader:
@@ -102,15 +103,18 @@ class FileCleanupThread(QRunnable):
                     # Add .xml extension if not present to file names
                     if not file_name.endswith('.xml'):
                         file_name += '.xml'
-                    to_delete = os.path.join(self.profiles_folder_path, file_name)
-                    if os.path.isfile(to_delete):
-                        try:
-                            os.unlink(to_delete)
-                            self.signals.program_output_progress_append.emit(f"Deleted file: '{to_delete}'")
-                        except Exception as e:
-                            self.signals.program_output_progress_append.emit(f"Failed to delete '{to_delete}': {e}")
-                    else:
-                        self.signals.program_output_progress_append.emit(f"File not found, skipping: '{to_delete}'")
+                    valid_files.add(file_name)
+        # Iterate over all files in the folder and delete those not in the CSV
+        for file_name in os.listdir(self.profiles_folder_path):
+            file_path = os.path.join(self.profiles_folder_path, file_name)
+            if os.path.isfile(file_path):
+                if file_name not in valid_files:
+                    try:
+                        os.unlink(file_path)
+                        self.signals.program_output_progress_append.emit(f"Deleted file: '{file_path}'")
+                    except Exception as e:
+                        self.signals.program_output_progress_append.emit(f"Failed to delete '{file_path}': {e}")
+
 
 
 # Convenience function for creating threaded operations

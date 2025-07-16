@@ -1,5 +1,6 @@
 import csv
 import os
+import re
 import pandas as pd
 from PySide6.QtWidgets import QMessageBox, QComboBox, QRadioButton, QListWidget, QPushButton, QLineEdit, QTextEdit, QMainWindow
 from PySide6.QtGui import QTextDocument
@@ -266,6 +267,31 @@ class AddXPathExpressionToListHandler:
         self.xpath_expression = xpath_expression
         self.xpath_filters = xpath_filters
         self.list_widget_xpath_expressions = list_widget_xpath_expressions
+        
+
+    def smart_split(self, s: str) -> list[str]:
+        result = []
+        current = []
+        inside_single_quote = False
+        inside_double_quote = False
+    
+        for char in s:
+            if char == "'" and not inside_double_quote:
+                inside_single_quote = not inside_single_quote
+            elif char == '"' and not inside_single_quote:
+                inside_double_quote = not inside_double_quote
+    
+            if char == ',' and not inside_single_quote and not inside_double_quote:
+                result.append(''.join(current).strip())
+                current = []
+            else:
+                current.append(char)
+    
+        # Add the last part
+        if current:
+            result.append(''.join(current).strip())
+    
+        return result
 
         # === QListWidget HANDLER ===
     def add_expression_to_list(self) -> bool | None:
@@ -279,21 +305,43 @@ class AddXPathExpressionToListHandler:
         try:
             # Check if the XPath input is not empty:
             if not self.xpath_expression:
-                QMessageBox.information(self.main_window, "Empty XPath", "Please enter a valid XPath expression before adding it to the list.")
+                QMessageBox.information(self.main_window, "Empty XPath", "Please enter a XPath expression.")
                 return False
-            elif self.xpath_expression and not self._is_duplicate(self.xpath_expression, self.xpath_filters):
-                validator = create_xpath_validator()
-                self.main_window._connect_xpath_builder_signals(validator)
-                # Validate the XPath expression
-                validator.xpath_expression = self.xpath_expression
-                is_valid = validator.validate_xpath_expression()
-                if is_valid:
-                    self.xpath_filters.append(self.xpath_expression)
-                    self.list_widget_xpath_expressions.addItem(self.xpath_expression)
-                    return True
+            
+            validator = create_xpath_validator()
+            
+            if "," in self.xpath_expression:
+                try:
+                    # Split by comma and validate each XPath expression
+                    xpath_expressions = self.smart_split(self.xpath_expression)
+                    for exp in xpath_expressions:
+                        if exp and not self._is_duplicate(exp, self.xpath_filters):
+                            validator.xpath_expression = exp
+                            if not validator.validate_xpath_expression():
+                                raise ValueError(f"Invalid XPath expression: {exp}")
+                            else:
+                                self.xpath_filters.append(exp)
+                                self.list_widget_xpath_expressions.addItem(exp)
+                        else:
+                            QMessageBox.warning(self.main_window, "Duplicate XPath Expression", f"Cannot add duplicate XPath expression:\n{exp}")
+                            return False
+                except ValueError as e:
+                    QMessageBox.warning(self.main_window, "XPathSyntaxError", f"Invalid XPath expression: {str(e)}")
             else:
-                QMessageBox.warning(self.main_window, "Duplicate XPath Expression", f"Cannot add duplicate XPath expression:\n{self.xpath_expression}")
-                return False
+                if self.xpath_expression and not self._is_duplicate(self.xpath_expression, self.xpath_filters):
+
+                    self.main_window._connect_xpath_builder_signals(validator)
+
+                    # Validate the XPath expression
+                    validator.xpath_expression = self.xpath_expression
+                    is_valid = validator.validate_xpath_expression()
+                    if is_valid:
+                        self.xpath_filters.append(self.xpath_expression)
+                        self.list_widget_xpath_expressions.addItem(self.xpath_expression)
+                        return True
+                else:
+                    QMessageBox.warning(self.main_window, "Duplicate XPath Expression", f"Cannot add duplicate XPath expression:\n{self.xpath_expression}")
+                    return False
         except Exception as ex:
             message = f"An exception of type {type(ex).__name__} occurred. Arguments: {ex.args!r}"
             QMessageBox.critical(self.main_window, "Exception adding XPath Expression to List Widget", message)
@@ -317,12 +365,13 @@ class SearchAndExportToCSVHandler:
     """
     Handles methods and logic of a button event that starts the search with XPath Expression and export of a component.
     """
-    def __init__(self, main_window: QMainWindow, xml_folder_path: str, xpath_filters: list, csv_folder_output_path: str, csv_headers_input: str, set_max_threads: int):
+    def __init__(self, main_window: QMainWindow, xml_folder_path: str, xpath_filters: list, csv_folder_output_path: str, csv_headers_input: str, group_matches_flag: bool, set_max_threads: int):
         self.main_window = main_window
         self.xml_folder_path = xml_folder_path
         self.xpath_filters = xpath_filters
         self.csv_folder_output_path = csv_folder_output_path
         self.csv_headers_input = csv_headers_input
+        self.group_matches_flag = group_matches_flag
         self.set_max_threads = set_max_threads
         self.current_exporter = None
 
@@ -330,7 +379,7 @@ class SearchAndExportToCSVHandler:
     def start_csv_export(self) -> None:
         """Initializes and starts the CSV export in a new thread."""
         try:
-            exporter = create_csv_exporter(self.xml_folder_path, self.xpath_filters, self.csv_folder_output_path, self._parse_csv_headers(self.csv_headers_input), self.set_max_threads)
+            exporter = create_csv_exporter(self.xml_folder_path, self.xpath_filters, self.csv_folder_output_path, self._parse_csv_headers(self.csv_headers_input), self.group_matches_flag, self.set_max_threads)
             self.current_exporter = exporter
             self.main_window._connect_csv_export_signals(self.current_exporter)
             self.main_window.thread_pool.start(self.current_exporter)
@@ -501,6 +550,7 @@ class GenerateCSVHeaderHandler:
                     tag_value_combo: QComboBox,
                     attribute_name_combo: QComboBox,
                     attribute_value_combo: QComboBox,
+                    xpath_input: QLineEdit,
                     csv_headers_input: QLineEdit
                 ):
         
@@ -509,6 +559,7 @@ class GenerateCSVHeaderHandler:
         self.tag_value_combo = tag_value_combo
         self.attribute_name_combo = attribute_name_combo
         self.attribute_value_combo = attribute_value_combo
+        self.xpath_input = xpath_input
         self.csv_headers_input = csv_headers_input
 
     def generate_header(self) -> str:
@@ -520,24 +571,37 @@ class GenerateCSVHeaderHandler:
         attr_value = self.attribute_value_combo.currentText()
         headers_list: list[str] = self.csv_headers_input.text().split(",")
         
-        match (tag_name, tag_value, attr_name, attr_value):
-            case (tag, "", "", ""):
-                header = tag
-            case (tag, value, "", ""):
-                header = f"{tag} {value}"
-            case (tag, "", attr, ""):
-                header = f"{tag} @{attr}"
-            case (tag, "", attr, val):
-                header = f"{tag} {attr} {val}"
-            case (tag, value, attr, ""):
-                header = f"{tag} {value} {attr}"
-            case (tag, value, attr, val):
-                header = f"{tag} {value} {attr} {val}"
-            case _:
-                header = "Header"
-                
-        if not self._is_duplicate(header, headers_list):
-            return header
+        if tag_name != "" and tag_value != "" and attr_name != "" and attr_value != "":
+            match (tag_name, tag_value, attr_name, attr_value):
+                case (tag, "", "", ""):
+                    header = tag
+                case (tag, value, "", ""):
+                    header = f"{tag} {value}"
+                case (tag, "", attr, ""):
+                    header = f"{tag} @{attr}"
+                case (tag, "", attr, val):
+                    header = f"{tag} {attr} {val}"
+                case (tag, value, attr, ""):
+                    header = f"{tag} {value} {attr}"
+                case (tag, value, attr, val):
+                    header = f"{tag} {value} {attr} {val}"
+                case _:
+                    header = "Header"
+            
+            if not self._is_duplicate(header, headers_list):
+                return header
+        else:
+            # If no tag, value, attribute or attribute value is selected, use the XPath input as header
+            xpath_expressions: str = self.xpath_input.text().strip()
+            split_xpath: list[str] = xpath_expressions.split("/")
+            
+            part1 = split_xpath[-2]
+            part2 = split_xpath[-1]
+
+            header = f"{part1} {part2}"
+            
+            if not self._is_duplicate(header, headers_list):
+                return header
     
     @staticmethod 
     def _is_duplicate(header :str, headers_list: str) -> bool:

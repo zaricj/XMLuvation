@@ -1,6 +1,12 @@
 <RCC>
   <qresource>
+    <file>../images/checkmark_32x32.png</file>
     <file>../icons/xml_256px.ico</file>
+    <file>../images/radiobutton_black_64x64.png.png</file>
+    <file>../images/radiobutton_unchecked_black_64x64.png</file>
+    <file>../images/radiobutton_unchecked_white_64x64.png</file>
+    <file>../images/radiobutton_white_64x64.png</file>
+    <file>../images/checkmark_48x48.png</file>
     <file>../images/dark.png</file>
     <file>../images/drpdwn_arrow.png</file>
     <file>../images/Geis_logo_with_text.png</file>
