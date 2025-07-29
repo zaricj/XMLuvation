@@ -212,7 +212,7 @@ class CSVConversionHandler:
                 with pd.ExcelWriter(path, engine="xlsxwriter") as writer:
                     df.to_excel(writer, sheet_name=sheet_name, index=self.write_index)
                     # Add Excel Table formatting
-                    workbook = writer.book
+                    # workbook = writer.book
                     worksheet = writer.sheets[sheet_name]
                     (max_row, max_col) = df.shape
                     
@@ -310,38 +310,36 @@ class AddXPathExpressionToListHandler:
             
             validator = create_xpath_validator()
             
-            if "," in self.xpath_expression:
-                try:
-                    # Split by comma and validate each XPath expression
-                    xpath_expressions = self.smart_split(self.xpath_expression)
-                    for exp in xpath_expressions:
-                        if exp and not self._is_duplicate(exp, self.xpath_filters):
-                            validator.xpath_expression = exp
-                            if not validator.validate_xpath_expression():
-                                raise ValueError(f"Invalid XPath expression: {exp}")
-                            else:
-                                self.xpath_filters.append(exp)
-                                self.list_widget_xpath_expressions.addItem(exp)
-                        else:
-                            QMessageBox.warning(self.main_window, "Duplicate XPath Expression", f"Cannot add duplicate XPath expression:\n{exp}")
-                            return False
-                except ValueError as e:
-                    QMessageBox.warning(self.main_window, "XPathSyntaxError", f"Invalid XPath expression: {str(e)}")
+            #if "," in self.xpath_expression:
+            #    try:
+            #        # Split by comma and validate each XPath expression
+            #        xpath_expressions = self.smart_split(self.xpath_expression)
+            #        for exp in xpath_expressions:
+            #            if exp and not self._is_duplicate(exp, self.xpath_filters):
+            #                validator.xpath_expression = exp
+            #                if not validator.validate_xpath_expression():
+            #                    raise ValueError(f"Invalid XPath expression: {exp}")
+            #                else:
+            #                    self.xpath_filters.append(exp)
+            #                    self.list_widget_xpath_expressions.addItem(exp)
+            #            else:
+            #                QMessageBox.warning(self.main_window, "Duplicate XPath Expression", f"Cannot add duplicate XPath expression:\n{exp}")
+            #                return False
+            #    except ValueError as e:
+            #        QMessageBox.warning(self.main_window, "XPathSyntaxError", f"Invalid XPath expression: {str(e)}")
+            #else:
+            if self.xpath_expression and not self._is_duplicate(self.xpath_expression, self.xpath_filters):
+                self.main_window._connect_xpath_builder_signals(validator)
+                # Validate the XPath expression
+                validator.xpath_expression = self.xpath_expression
+                is_valid = validator.validate_xpath_expression()
+                if is_valid:
+                    self.xpath_filters.append(self.xpath_expression)
+                    self.list_widget_xpath_expressions.addItem(self.xpath_expression)
+                    return True
             else:
-                if self.xpath_expression and not self._is_duplicate(self.xpath_expression, self.xpath_filters):
-
-                    self.main_window._connect_xpath_builder_signals(validator)
-
-                    # Validate the XPath expression
-                    validator.xpath_expression = self.xpath_expression
-                    is_valid = validator.validate_xpath_expression()
-                    if is_valid:
-                        self.xpath_filters.append(self.xpath_expression)
-                        self.list_widget_xpath_expressions.addItem(self.xpath_expression)
-                        return True
-                else:
-                    QMessageBox.warning(self.main_window, "Duplicate XPath Expression", f"Cannot add duplicate XPath expression:\n{self.xpath_expression}")
-                    return False
+                QMessageBox.warning(self.main_window, "Duplicate XPath Expression", f"Cannot add duplicate XPath expression:\n{self.xpath_expression}")
+                return False
         except Exception as ex:
             message = f"An exception of type {type(ex).__name__} occurred. Arguments: {ex.args!r}"
             QMessageBox.critical(self.main_window, "Exception adding XPath Expression to List Widget", message)
