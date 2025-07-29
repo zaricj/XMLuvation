@@ -221,3 +221,7 @@ QCheckBox::indicator:unchecked {
 	border: 1px solid #4a4a4a;
 	image: none;
 }
+
+QComboBox:hover,QAbstractSpinBox:hover,QLineEdit:hover,QTextEdit:hover,QPlainTextEdit:hover,QAbstractView:hover,QTreeView:hover {
+    border: 1px solid #000000;
+}

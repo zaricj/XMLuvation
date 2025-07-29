@@ -1,5 +1,6 @@
 QWidget {
 	background-color: #232428;
+	color: #ffffff;
 	border-radius: 6px;
 }
 
@@ -219,4 +220,8 @@ QCheckBox::indicator:unchecked {
 	background-color: #313338;
 	border: 1px solid #4a4a4a;
 	image: none;
+}
+
+QComboBox:hover,QAbstractSpinBox:hover,QLineEdit:hover,QTextEdit:hover,QPlainTextEdit:hover,QAbstractView:hover,QTreeView:hover {
+    border: 1px solid #ffc857;
 }
