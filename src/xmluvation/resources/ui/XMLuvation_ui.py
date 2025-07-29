@@ -8,12 +8,16 @@
 ## WARNING! All changes made in this file will be lost when recompiling UI file!
 ################################################################################
 
-from PySide6.QtCore import (QCoreApplication, QMetaObject, QSize, Qt)
-from PySide6.QtGui import (QBrush, QColor, QFont, QIcon,
-    QPalette)
-from PySide6.QtWidgets import (QCheckBox, QComboBox, QGroupBox,
+from PySide6.QtCore import (QCoreApplication, QDate, QDateTime, QLocale,
+    QMetaObject, QObject, QPoint, QRect,
+    QSize, QTime, QUrl, Qt)
+from PySide6.QtGui import (QBrush, QColor, QConicalGradient, QCursor,
+    QFont, QFontDatabase, QGradient, QIcon,
+    QImage, QKeySequence, QLinearGradient, QPainter,
+    QPalette, QPixmap, QRadialGradient, QTransform)
+from PySide6.QtWidgets import (QApplication, QCheckBox, QComboBox, QGroupBox,
     QHBoxLayout, QLabel, QLayout, QLineEdit,
-    QListWidget, QProgressBar,
+    QListWidget, QListWidgetItem, QMainWindow, QProgressBar,
     QPushButton, QRadioButton, QSizePolicy, QSplitter,
     QTabWidget, QTextEdit, QVBoxLayout, QWidget)
 
@@ -445,7 +449,7 @@ class Ui_MainWindow(object):
         self.checkbox_group_matches = QCheckBox(self.group_box_export_to_csv)
         self.checkbox_group_matches.setObjectName(u"checkbox_group_matches")
         self.checkbox_group_matches.setFont(font2)
-        self.checkbox_group_matches.setChecked(True)
+        self.checkbox_group_matches.setChecked(False)
 
         self.hor_layout_csv_input_and_export.addWidget(self.checkbox_group_matches)
 

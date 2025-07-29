@@ -139,6 +139,11 @@ class MainWindow(QMainWindow):
 
         # Load last used theme or default
         self.current_theme = self.settings.value("app_theme", "dark_theme.qss")
+        
+        # Setting for the group matches checkbox
+        self.group_matches_setting = self.settings.value("group_matches", self.ui.checkbox_group_matches.isChecked(), type=bool)
+        if self.group_matches_setting:
+            self.ui.checkbox_group_matches.setChecked(self.group_matches_setting)
 
         # Apply theme and correct icon
         if self.current_theme == "dark_theme.qss":
@@ -192,6 +197,7 @@ class MainWindow(QMainWindow):
         else:
             self.settings.setValue("app_theme", self.current_theme)
             self.settings.setValue("geometry", self.saveGeometry())
+            self.settings.setValue("group_matches", self.ui.checkbox_group_matches.isChecked())
             super().closeEvent(event)
 
     # === Menubar, Menubar Control and UI Events === #

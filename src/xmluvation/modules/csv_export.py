@@ -102,7 +102,7 @@ def process_single_xml(
         return [], 0, 0
 
     xml_file_path: str = os.path.join(folder, xml_file)
-    xml_file_name = os.path.basename(xml_file_path)
+    xml_file_name, extension = os.path.splitext(os.path.basename(xml_file_path))
     xml_file_total_matches: int = 0
     xml_file_had_any_matches: int = 0
     
