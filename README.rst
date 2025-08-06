@@ -3,35 +3,11 @@ XMLuvation
 ==========
 
 
-.. image:: https://img.shields.io/pypi/v/xmluvation.svg
-        :target: https://pypi.python.org/pypi/xmluvation
-
-.. image:: https://img.shields.io/travis/zaricj/xmluvation.svg
-        :target: https://travis-ci.com/zaricj/xmluvation
-
-.. image:: https://readthedocs.org/projects/xmluvation/badge/?version=latest
-        :target: https://xmluvation.readthedocs.io/en/latest/?version=latest
-        :alt: Documentation Status
-
-
-
-
-XML file searcher with xpath expressions and writing results to a csv file
-
-
-* Free software: MIT license
-* Documentation: https://xmluvation.readthedocs.io.
-
-
-Features
---------
-
-* TODO
-
-Credits
--------
-
-This package was created with Cookiecutter_ and the `audreyr/cookiecutter-pypackage`_ project template.
-
-.. _Cookiecutter: https://github.com/audreyr/cookiecutter
-.. _`audreyr/cookiecutter-pypackage`: https://github.com/audreyr/cookiecutter-pypackage
+  _   _           _             _____                 _                   _   _               
+ | | | |         | |           /  __ \               | |                 | | (_)              
+ | | | |_ __   __| | ___ _ __  | /  \/ ___  _ __  ___| |_ _ __ _   _  ___| |_ _  ___  _ __    
+ | | | | '_ \ / _` |/ _ \ '__| | |    / _ \| '_ \/ __| __| '__| | | |/ __| __| |/ _ \| '_ \   
+ | |_| | | | | (_| |  __/ |    | \__/\ (_) | | | \__ \ |_| |  | |_| | (__| |_| | (_) | | | |  
+  \___/|_| |_|\__,_|\___|_|     \____/\___/|_| |_|___/\__|_|   \__,_|\___|\__|_|\___/|_| |_|  
+                                                                                              
+                                                                                              
