@@ -15,7 +15,7 @@ def write_string_value(xpath: str) -> bool:
         xpath: XPath expression to check
 
     Returns:
-        True if matches actual value (string) from the tag or attribute should be written, otherwise False and the match count should be written.
+        True if matches actual value (string) from the specified tag or attribute, otherwise False.
     """
     # Check if xpath ends with /text() or /@some_attribute this determines if we should write the actual value (string) from the tag or attribute
     return (xpath.strip().endswith('/text()') or
@@ -140,6 +140,8 @@ def process_single_xml(
                     formatted_value = format_match_value(match)
                     if formatted_value:  # Only add non-empty values
                         values.append(formatted_value)
+                    #else:
+                    #    values.append("NULL")
                 
                 all_results[header] = values
                 xml_file_total_matches += len(values)
@@ -278,6 +280,10 @@ class CSVExportThread(QRunnable):
         xml_files_list = [f for f in os.listdir(self.folder_path_containing_xml_files) if f.lower().endswith('.xml')]
         total_xml_files_count = len(xml_files_list)
 
+        if total_xml_files_count == 0:
+            self.signals.warning_occurred.emit("No XML Files Found", "No XML files found in selected folder.")
+            self.signals.finished.emit()
+            return
         # Check if the csv output folder path has been set
         if not self.output_path_for_csv_export:
             self.signals.warning_occurred.emit("CSV Output Path is Empty", "Please set an output folder path for the csv file.")
@@ -296,16 +302,12 @@ class CSVExportThread(QRunnable):
             )
             self.signals.finished.emit()
             return
+        
 
         self.signals.program_output_progress_append.emit("Starting CSV export...")
 
         # Show the Abort button
         self.signals.visible_state_widget.emit(True) # self.ui.button_abort_csv_export in main.py
-
-        if total_xml_files_count == 0:
-            self.signals.info_occurred.emit("Export Finished", "No XML files found to export.")
-            self.signals.finished.emit()
-            return
 
         try:
             with open(self.output_path_for_csv_export, 'w', newline='', encoding='utf-8') as csvfile:

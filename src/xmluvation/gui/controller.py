@@ -5,7 +5,7 @@ import pandas as pd
 from PySide6.QtWidgets import QMessageBox, QComboBox, QRadioButton, QListWidget, QPushButton, QLineEdit, QTextEdit, QMainWindow
 from PySide6.QtGui import QTextDocument
 from xmluvation.modules.xpath_builder import create_xpath_validator, create_xpath_builder
-from xmluvation.modules.csv_export import create_csv_exporter
+from xmluvation.modules.csv_export_optimized import create_optimized_csv_exporter
 from xmluvation.modules.file_cleanup import create_lobster_profile_cleaner, create_csv_column_dropper
 from xmluvation.modules.xml_parser import create_xml_parser
 
@@ -174,18 +174,28 @@ class ComboboxStateHandler:
 class CSVConversionHandler:
     """Handles methods and logic for csv_conversion_groupbox
     """
-    def __init__(self, main_window: QMainWindow, csv_file_to_convert: str, output_path_of_new_file: str, write_index: bool):
+    def __init__(self, main_window: QMainWindow, csv_file_to_convert: str, extension_type: str, write_index: bool):
         self.main_window = main_window
         self.csv_file_to_convert = csv_file_to_convert
-        self.output_path_of_new_file = output_path_of_new_file
+        self.extension_type = extension_type # Value of the combobox self.ui.combobox_csv_conversion_output_type
         self.write_index = write_index
+        
+    def get_extension_type(self) -> str:
+        """Returns the extension type for the conversion. """
+        match self.extension_type:
+            case "EXCEL":
+                return "xlsx"
+            case "HTML":
+                return "html"
+            case "JSON":
+                return "json"
+            case "MARKDOWN":
+                return "md"
 
     def start_csv_conversion(self) -> None:
         try:
             # Check if QLineEdit widgets aren't empty
             if not self.csv_file_to_convert:
-                raise FileNotFoundError
-            elif not self.output_path_of_new_file:
                 raise FileNotFoundError
 
             # Detect delimiter
@@ -199,10 +209,17 @@ class CSVConversionHandler:
 
             # Get extensions
             _, input_ext = os.path.splitext(self.csv_file_to_convert)
-            _, output_ext = os.path.splitext(self.output_path_of_new_file)
+            output_ext = self.get_extension_type()
             input_ext = input_ext.lower().lstrip(".")
-            output_ext = output_ext.lower().lstrip(".")
-            sheet_name = "Result"
+            
+            # Sheet name for Excel output
+            if output_ext == "xlsx":
+                sheet_name = "Result"
+            
+            # Define output file path in the same folder
+            input_dir = os.path.dirname(self.csv_file_to_convert)
+            input_filename = os.path.splitext(os.path.basename(self.csv_file_to_convert))[0]
+            output_file_path = os.path.join(input_dir, input_filename + "." + output_ext)
             
             # Define conversion functions
             def to_html(df, path): df.to_html(path, index=self.write_index)
@@ -211,21 +228,15 @@ class CSVConversionHandler:
             def to_xlsx(df, path):
                 with pd.ExcelWriter(path, engine="xlsxwriter") as writer:
                     df.to_excel(writer, sheet_name=sheet_name, index=self.write_index)
-                    # Add Excel Table formatting
-                    # workbook = writer.book
                     worksheet = writer.sheets[sheet_name]
-                    (max_row, max_col) = df.shape
-                    
+                    max_row, max_col = df.shape
                     column_settings = [{"header": col} for col in df.columns]
-                    
                     worksheet.add_table(0, 0, max_row, max_col - 1, {
-                            "columns": column_settings,
-                            "style": "Table Style Medium 16",
-                            "name": f"{sheet_name[:30]}",  # Optional: Table name (must be <=31 chars)
-                            "autofilter": True  # Set True if you want Excel filter buttons
-                        })
-
-                    # Optional: Improve column width
+                        "columns": column_settings,
+                        "style": "Table Style Medium 16",
+                        "name": f"{sheet_name[:30]}",
+                        "autofilter": True
+                    })
                     worksheet.set_column(0, max_col - 1, 18)
 
             conversion_map = {
@@ -236,22 +247,22 @@ class CSVConversionHandler:
             }
 
             convert_func = conversion_map.get((input_ext, output_ext))
-
+            
             if not convert_func:
                 QMessageBox.warning(self.main_window, "Unsupported Conversion", f"Cannot convert from '{input_ext}' to '{output_ext}'.")
                 return
 
             # Execute conversion
-            convert_func(df, self.output_path_of_new_file)
+            convert_func(df, output_file_path)
 
             QMessageBox.information(
                 self.main_window,
                 "Conversion Successful",
-                f"Successfully converted:\n{os.path.basename(self.csv_file_to_convert)}\nto\n{os.path.basename(self.output_path_of_new_file)}"
+                f"Successfully converted:\n{os.path.basename(self.csv_file_to_convert)}\n→ {os.path.basename(output_file_path)}"
             )
 
         except FileNotFoundError:
-            QMessageBox.warning(self.main_window, "Path error", "Both the csv input and conversion output paths need to be declared!")
+            QMessageBox.warning(self.main_window, "Path error", "CSV input path must be provided!")
 
         except Exception as ex:
             msg = f"{type(ex).__name__}: {ex}"
@@ -377,7 +388,7 @@ class SearchAndExportToCSVHandler:
     def start_csv_export(self) -> None:
         """Initializes and starts the CSV export in a new thread."""
         try:
-            exporter = create_csv_exporter(self.xml_folder_path, self.xpath_filters, self.csv_folder_output_path, self._parse_csv_headers(self.csv_headers_input), self.group_matches_flag, self.set_max_threads)
+            exporter = create_optimized_csv_exporter(self.xml_folder_path, self.xpath_filters, self.csv_folder_output_path, self._parse_csv_headers(self.csv_headers_input), self.group_matches_flag, self.set_max_threads)
             self.current_exporter = exporter
             self.main_window._connect_csv_export_signals(self.current_exporter)
             self.main_window.thread_pool.start(self.current_exporter)
@@ -397,7 +408,6 @@ class SearchAndExportToCSVHandler:
             # For simplicity, we just call stop() and rely on the QRunnable's internal logic
             self.current_exporter.stop()
             self.current_exporter = None # Clear the reference once stopped
-
 
     @staticmethod
     def _parse_csv_headers(raw_headers: str) -> list:
@@ -588,18 +598,18 @@ class GenerateCSVHeaderHandler:
             
             if not self._is_duplicate(header, headers_list):
                 return header
-        else:
+        #else: # 05.08.2025 Commented out, don't like this, here's a dreaded TODO Change this shieeeeeet
             # If no tag, value, attribute or attribute value is selected, use the XPath input as header
-            xpath_expressions: str = self.xpath_input.text().strip()
-            split_xpath: list[str] = xpath_expressions.split("/")
+            # xpath_expression: str = self.xpath_input.text().strip()
+            # split_xpath: list[str] = xpath_expression.split("/")
+            # 
+            # part1 = split_xpath[-2]
+            # part2 = split_xpath[-1]
             
-            part1 = split_xpath[-2]
-            part2 = split_xpath[-1]
-
-            header = f"{part1} {part2}"
-            
-            if not self._is_duplicate(header, headers_list):
-                return header
+            # header = f"{part1} {part2}"
+            # 
+            # if not self._is_duplicate(header, headers_list):
+            #     return header
     
     @staticmethod 
     def _is_duplicate(header :str, headers_list: str) -> bool:
