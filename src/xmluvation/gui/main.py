@@ -243,9 +243,6 @@ class MainWindow(QMainWindow):
         open_csv_conversion_input_action = QAction("Open CSV conversion input folder in file explorer", self)
         open_csv_conversion_input_action.triggered.connect(lambda: self.open_folder_in_file_explorer(os.path.dirname(self.ui.line_edit_csv_conversion_path_input.text())))
         open_menu.addAction(open_csv_conversion_input_action)
-        open_csv_conversion_output_action = QAction("Open CSV conversion output folder in file explorer", self)
-        open_csv_conversion_output_action.triggered.connect(lambda: self.open_folder_in_file_explorer(os.path.dirname(self.ui.line_edit_csv_conversion_path_output.text())))
-        open_menu.addAction(open_csv_conversion_output_action)
 
         # Path Menu
         self.paths_menu = menu_bar.addMenu("&Path")
@@ -414,8 +411,7 @@ class MainWindow(QMainWindow):
         # QLineWidgets
         self.ui.line_edit_xml_folder_path_input.textChanged.connect(self.update_xml_file_count)
         self.ui.line_edit_profile_cleanup_csv_file_path.textChanged.connect(self.on_csv_profile_cleanup_input_changed)
-
-
+        
         # Combo boxes
         self.ui.combobox_tag_names.currentTextChanged.connect(self.cb_state_controller.on_tag_name_changed)
         self.ui.combobox_attribute_names.currentTextChanged.connect(self.cb_state_controller.on_attribute_name_changed)
@@ -446,10 +442,6 @@ class MainWindow(QMainWindow):
             lambda: self.browse_file_helper(dialog_message="Select csv file for conversion",
                                             line_widget=self.ui.line_edit_csv_conversion_path_input,
                                             file_extension_filter="CSV File (*.csv)"))
-        self.ui.button_browse_csv_conversion_path_output.clicked.connect(
-            lambda: self.browse_save_file_as_helper(dialog_message="Save as",
-                                                    line_widget=self.ui.line_edit_csv_conversion_path_output,
-                                                    file_extension_filter="Excel file (*.xlsx);;JSON file (*.json);;Markdown file (*.md);;HTML file (*.html)"))
         self.ui.button_csv_conversion_convert.clicked.connect(self.on_csv_convert_event)
         
         self.ui.button_profile_cleanup_browse_csv_file_path.clicked.connect(
@@ -724,18 +716,18 @@ class MainWindow(QMainWindow):
             QMessageBox.critical(self, "Exception on starting add xpath to list widget", message)
 
 
-    # On csv convert button has been clicked
+    # On csv convert button has been clicked in second tab
     def on_csv_convert_event(self):
         try:
             # Initialize the UI elements and pass them to the class
             csv_file_to_convert = self.ui.line_edit_csv_conversion_path_input.text()
-            output_path_of_new_file = self.ui.line_edit_csv_conversion_path_output.text()
+            extension_type = self.ui.combobox_csv_conversion_output_type.currentText()
             write_index = self.ui.checkbox_write_index_column.isChecked()
 
             self.csv_conversion_controller = CSVConversionHandler(
                 main_window=self,
                 csv_file_to_convert=csv_file_to_convert,
-                output_path_of_new_file=output_path_of_new_file,
+                extension_type=extension_type,
                 write_index=write_index)
 
             self.csv_conversion_controller.start_csv_conversion()
@@ -825,7 +817,7 @@ class MainWindow(QMainWindow):
             self.ui.statusbar_xpath_expressions.setText(f"XPath expressions in list: {self.counter}")
 
 
-    def remove_selected_items(self):
+    def remove_selected_item(self):
         """Removes the selected item that has been added to the QListWidget and the xpath_filters list
         """
         try:
@@ -854,8 +846,11 @@ class MainWindow(QMainWindow):
                 self.ui.list_widget_xpath_expressions.clear()
                 self.ui.text_edit_program_output.setText("Deleted all items from the list.")
                 self.update_statusbar_xpath_listbox_count()
+                # Clean CSV Header Input if it has any value in it
+                if len(self.ui.line_edit_csv_headers_input.text()) > 1:
+                    self.ui.line_edit_csv_headers_input.clear()
             else:
-                self.ui.text_edit_program_output.setText("No items to delete.")
+                self.ui.text_edit_program_output.setText("No items to delete in list.")
         except Exception as ex:
             message = f"An exception of type {type(ex).__name__} occurred. Arguments: {ex.args!r}"
             self.ui.text_edit_program_output.setText(f"Error removing selected all items from list: {message}")
@@ -869,7 +864,7 @@ class MainWindow(QMainWindow):
         context_menu.addAction(delete_action)
         context_menu.addAction(delete_all_action)
 
-        delete_action.triggered.connect(self.remove_selected_items)
+        delete_action.triggered.connect(self.remove_selected_item)
         delete_all_action.triggered.connect(self.remove_all_items)
 
         # Show the context menu at the cursor's current position
@@ -894,7 +889,6 @@ class MainWindow(QMainWindow):
         self.ui.button_add_xpath_to_list.setDisabled(state)
         self.ui.button_browse_csv.setDisabled(state)
         self.ui.button_browse_csv_conversion_path_input.setDisabled(state)
-        self.ui.button_browse_csv_conversion_path_output.setDisabled(state)
         self.ui.button_start_csv_export.setDisabled(state)
         self.ui.line_edit_xml_folder_path_input.setReadOnly(state)
         self.ui.line_edit_csv_output_path.setReadOnly(state)
