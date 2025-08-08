@@ -397,6 +397,24 @@
        <layout class="QVBoxLayout" name="verticalLayout_4">
         <item>
          <widget class="QSplitter" name="splitter">
+          <property name="sizePolicy">
+           <sizepolicy hsizetype="Preferred" vsizetype="Preferred">
+            <horstretch>0</horstretch>
+            <verstretch>0</verstretch>
+           </sizepolicy>
+          </property>
+          <property name="minimumSize">
+           <size>
+            <width>0</width>
+            <height>0</height>
+           </size>
+          </property>
+          <property name="maximumSize">
+           <size>
+            <width>16777215</width>
+            <height>16777215</height>
+           </size>
+          </property>
           <property name="orientation">
            <enum>Qt::Orientation::Horizontal</enum>
           </property>
@@ -408,7 +426,7 @@
             <item>
              <widget class="QGroupBox" name="group_box_xml_input_xpath_builder">
               <property name="sizePolicy">
-               <sizepolicy hsizetype="Minimum" vsizetype="Preferred">
+               <sizepolicy hsizetype="Preferred" vsizetype="Preferred">
                 <horstretch>0</horstretch>
                 <verstretch>0</verstretch>
                </sizepolicy>
@@ -1013,7 +1031,7 @@ font: bold;</string>
                   <string>Add the entered or built XPath expression from the input field to the list below.</string>
                  </property>
                  <property name="text">
-                  <string>Add XPath Expression to list</string>
+                  <string>Add XPath expression to list</string>
                  </property>
                 </widget>
                </item>
@@ -1023,7 +1041,7 @@ font: bold;</string>
             <item>
              <widget class="QGroupBox" name="group_box_xpath_expressions_list">
               <property name="sizePolicy">
-               <sizepolicy hsizetype="Minimum" vsizetype="Preferred">
+               <sizepolicy hsizetype="Preferred" vsizetype="Preferred">
                 <horstretch>0</horstretch>
                 <verstretch>0</verstretch>
                </sizepolicy>
@@ -1095,7 +1113,7 @@ font: bold;</string>
             <item>
              <widget class="QGroupBox" name="group_box_export_to_csv">
               <property name="sizePolicy">
-               <sizepolicy hsizetype="Minimum" vsizetype="Preferred">
+               <sizepolicy hsizetype="Preferred" vsizetype="Preferred">
                 <horstretch>0</horstretch>
                 <verstretch>0</verstretch>
                </sizepolicy>
@@ -1193,29 +1211,6 @@ font: bold;</string>
                <item>
                 <layout class="QHBoxLayout" name="hor_layout_csv_input_and_export">
                  <item>
-                  <widget class="QCheckBox" name="checkbox_group_matches">
-                   <property name="font">
-                    <font>
-                     <family>Microsoft YaHei UI</family>
-                     <pointsize>10</pointsize>
-                     <italic>false</italic>
-                     <bold>false</bold>
-                     <underline>false</underline>
-                     <strikeout>false</strikeout>
-                    </font>
-                   </property>
-                   <property name="toolTip">
-                    <string>This option groups matches together and writes them to the CSV file using a semicolon as the delimiter. If this option is disabled, each match is written to a new row in the CSV file.</string>
-                   </property>
-                   <property name="text">
-                    <string>Group matches</string>
-                   </property>
-                   <property name="checked">
-                    <bool>false</bool>
-                   </property>
-                  </widget>
-                 </item>
-                 <item>
                   <widget class="QLineEdit" name="line_edit_csv_output_path">
                    <property name="font">
                     <font>
@@ -1307,13 +1302,59 @@ font: bold;</string>
                  </item>
                 </layout>
                </item>
+               <item>
+                <layout class="QHBoxLayout" name="horizontalLayout_2">
+                 <item>
+                  <widget class="QLabel" name="label">
+                   <property name="sizePolicy">
+                    <sizepolicy hsizetype="Maximum" vsizetype="Preferred">
+                     <horstretch>0</horstretch>
+                     <verstretch>0</verstretch>
+                    </sizepolicy>
+                   </property>
+                   <property name="text">
+                    <string>Option:</string>
+                   </property>
+                  </widget>
+                 </item>
+                 <item>
+                  <widget class="QCheckBox" name="checkbox_group_matches">
+                   <property name="sizePolicy">
+                    <sizepolicy hsizetype="Preferred" vsizetype="Fixed">
+                     <horstretch>0</horstretch>
+                     <verstretch>0</verstretch>
+                    </sizepolicy>
+                   </property>
+                   <property name="font">
+                    <font>
+                     <family>Microsoft YaHei UI</family>
+                     <pointsize>10</pointsize>
+                     <italic>false</italic>
+                     <bold>false</bold>
+                     <underline>false</underline>
+                     <strikeout>false</strikeout>
+                    </font>
+                   </property>
+                   <property name="toolTip">
+                    <string>This option groups matches together and writes them to the CSV file using a semicolon as the delimiter. If this option is disabled, each match is written to a new row in the CSV file.</string>
+                   </property>
+                   <property name="text">
+                    <string>Group matches</string>
+                   </property>
+                   <property name="checked">
+                    <bool>false</bool>
+                   </property>
+                  </widget>
+                 </item>
+                </layout>
+               </item>
               </layout>
              </widget>
             </item>
             <item>
              <widget class="QGroupBox" name="group_box_program_output">
               <property name="sizePolicy">
-               <sizepolicy hsizetype="Minimum" vsizetype="Preferred">
+               <sizepolicy hsizetype="Preferred" vsizetype="Preferred">
                 <horstretch>0</horstretch>
                 <verstretch>0</verstretch>
                </sizepolicy>
@@ -1372,7 +1413,7 @@ font: bold;</string>
               </property>
               <property name="minimumSize">
                <size>
-                <width>550</width>
+                <width>450</width>
                 <height>0</height>
                </size>
               </property>
@@ -1393,7 +1434,7 @@ font: bold;</string>
                <item>
                 <widget class="QTextEdit" name="text_edit_xml_output">
                  <property name="sizePolicy">
-                  <sizepolicy hsizetype="Preferred" vsizetype="Expanding">
+                  <sizepolicy hsizetype="Expanding" vsizetype="Expanding">
                    <horstretch>0</horstretch>
                    <verstretch>0</verstretch>
                   </sizepolicy>
@@ -1945,7 +1986,7 @@ Supported output file types: Excel, Markdown, HTML and JSON</string>
                   </font>
                  </property>
                  <property name="placeholderText">
-                  <string>Select a CSV file for conversion...</string>
+                  <string>Select the CSV file which you want to connvert...</string>
                  </property>
                  <property name="clearButtonEnabled">
                   <bool>true</bool>
@@ -1974,67 +2015,46 @@ Supported output file types: Excel, Markdown, HTML and JSON</string>
              <item>
               <layout class="QHBoxLayout" name="hor_layout_csv_conversion_path_output">
                <item>
-                <widget class="QLineEdit" name="line_edit_csv_conversion_path_output">
-                 <property name="font">
-                  <font>
-                   <family>Microsoft YaHei UI</family>
-                   <pointsize>10</pointsize>
-                   <italic>false</italic>
-                   <bold>false</bold>
-                   <underline>false</underline>
-                   <strikeout>false</strikeout>
-                  </font>
+                <widget class="QLabel" name="label_csv_conversion_output_type">
+                 <property name="sizePolicy">
+                  <sizepolicy hsizetype="Maximum" vsizetype="Fixed">
+                   <horstretch>0</horstretch>
+                   <verstretch>0</verstretch>
+                  </sizepolicy>
                  </property>
                  <property name="text">
-                  <string/>
-                 </property>
-                 <property name="placeholderText">
-                  <string>Select where to save the converted CSV file...</string>
-                 </property>
-                 <property name="clearButtonEnabled">
-                  <bool>true</bool>
+                  <string>Select output file format:</string>
                  </property>
                 </widget>
                </item>
                <item>
-                <widget class="QPushButton" name="button_browse_csv_conversion_path_output">
-                 <property name="font">
-                  <font>
-                   <family>Microsoft YaHei UI</family>
-                   <pointsize>10</pointsize>
-                   <italic>false</italic>
-                   <bold>false</bold>
-                   <underline>false</underline>
-                   <strikeout>false</strikeout>
-                  </font>
+                <widget class="QComboBox" name="combobox_csv_conversion_output_type">
+                 <property name="sizePolicy">
+                  <sizepolicy hsizetype="Preferred" vsizetype="Fixed">
+                   <horstretch>0</horstretch>
+                   <verstretch>0</verstretch>
+                  </sizepolicy>
                  </property>
-                 <property name="text">
-                  <string>Browse</string>
-                 </property>
-                </widget>
-               </item>
-              </layout>
-             </item>
-             <item>
-              <layout class="QHBoxLayout" name="horizontalLayout_5">
-               <item>
-                <widget class="QPushButton" name="button_csv_conversion_convert">
-                 <property name="font">
-                  <font>
-                   <family>Microsoft YaHei UI</family>
-                   <pointsize>10</pointsize>
-                   <italic>false</italic>
-                   <bold>false</bold>
-                   <underline>false</underline>
-                   <strikeout>false</strikeout>
-                  </font>
-                 </property>
-                 <property name="toolTip">
-                  <string>Starts the conversion of the CSV file to the selected file type.</string>
-                 </property>
-                 <property name="text">
-                  <string>Convert CSV File</string>
-                 </property>
+                 <item>
+                  <property name="text">
+                   <string>EXCEL</string>
+                  </property>
+                 </item>
+                 <item>
+                  <property name="text">
+                   <string>HTML</string>
+                  </property>
+                 </item>
+                 <item>
+                  <property name="text">
+                   <string>JSON</string>
+                  </property>
+                 </item>
+                 <item>
+                  <property name="text">
+                   <string>MARKDOWN</string>
+                  </property>
+                 </item>
                 </widget>
                </item>
                <item>
@@ -2055,12 +2075,35 @@ Supported output file types: Excel, Markdown, HTML and JSON</string>
                    <strikeout>false</strikeout>
                   </font>
                  </property>
+                 <property name="toolTip">
+                  <string>ONLY FOR EXCEL: Write an index colum starting at 1.</string>
+                 </property>
                  <property name="text">
                   <string>Write index column?</string>
                  </property>
                 </widget>
                </item>
               </layout>
+             </item>
+             <item>
+              <widget class="QPushButton" name="button_csv_conversion_convert">
+               <property name="font">
+                <font>
+                 <family>Microsoft YaHei UI</family>
+                 <pointsize>10</pointsize>
+                 <italic>false</italic>
+                 <bold>false</bold>
+                 <underline>false</underline>
+                 <strikeout>false</strikeout>
+                </font>
+               </property>
+               <property name="toolTip">
+                <string>Starts the conversion of the CSV file to the selected file type.</string>
+               </property>
+               <property name="text">
+                <string>Convert CSV File</string>
+               </property>
+              </widget>
              </item>
             </layout>
            </widget>
@@ -2138,7 +2181,7 @@ Supported output file types: Excel, Markdown, HTML and JSON</string>
                     <string/>
                    </property>
                    <property name="placeholderText">
-                    <string>Select the csv file containing all lobster profiles...</string>
+                    <string>Select the exported CSV file containing all lobster profiles...</string>
                    </property>
                    <property name="clearButtonEnabled">
                     <bool>true</bool>
@@ -2193,7 +2236,7 @@ Supported output file types: Excel, Markdown, HTML and JSON</string>
                       </font>
                      </property>
                      <property name="placeholderText">
-                      <string>Select the folder path that contains all profiles...</string>
+                      <string>Select the folder path that contains all Lobster profiles as XML files...</string>
                      </property>
                      <property name="clearButtonEnabled">
                       <bool>true</bool>
