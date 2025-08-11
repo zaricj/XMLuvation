@@ -4,7 +4,7 @@ import csv
 import os
 import traceback
 import re
-from typing import List, Tuple, Dict, Any, Optional, Iterator
+from typing import List, Tuple, Dict, Any, Optional
 from concurrent.futures import ThreadPoolExecutor, as_completed
 import threading
 from functools import lru_cache
@@ -405,7 +405,7 @@ class OptimizedCSVExportThread(QRunnable):
     def _emit_completion_message(self):
         """Emit completion status message."""
         message_parts = [
-            f"CSV export completed successfully!",
+            "CSV export completed successfully!",
             f"Files processed: {self._stats.processed_files}/{self._stats.total_files}",
             f"Files with matches: {self._stats.files_with_matches}",
             f"Total matches found: {self._stats.total_matches}",
