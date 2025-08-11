@@ -50,23 +50,6 @@ QPushButton:disabled {
 	background-color: #808080;
 }
 
-QPushButton#button_csv_conversion_convert {
-	background-color: #4e84f0;
-	color: #000000;
-	border: none;
-	padding: 5px 7px;
-	border-radius: 6px;
-	border: 1px solid #4a4a4a;
-}
-
-QPushButton#button_csv_conversion_convert:hover {
-    background-color: #4172d6;
-}
-
-QPushButton#button_csv_conversion_convert:pressed {
-    background-color: #3662ba;
-}
-
 QLineEdit,
 QComboBox,
 QTextEdit {
