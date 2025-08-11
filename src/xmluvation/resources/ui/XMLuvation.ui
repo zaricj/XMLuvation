@@ -9,8 +9,8 @@
    <rect>
     <x>0</x>
     <y>0</y>
-    <width>1186</width>
-    <height>961</height>
+    <width>1187</width>
+    <height>954</height>
    </rect>
   </property>
   <property name="palette">
@@ -313,7 +313,7 @@
   </property>
   <property name="font">
    <font>
-    <family>Microsoft YaHei UI</family>
+    <family>Calibri</family>
     <pointsize>10</pointsize>
     <italic>false</italic>
     <bold>false</bold>
