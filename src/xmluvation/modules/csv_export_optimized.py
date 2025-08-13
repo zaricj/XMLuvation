@@ -195,7 +195,6 @@ class CSVExportSignals(QObject):
 
 class OptimizedCSVExportThread(QRunnable):
     """Highly optimized CSV export thread with better resource management."""
-    
     def __init__(self, operation: str, **kwargs):
         super().__init__()
         self.operation = operation
