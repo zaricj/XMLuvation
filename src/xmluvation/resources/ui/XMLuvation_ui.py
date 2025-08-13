@@ -1,9 +1,9 @@
 # -*- coding: utf-8 -*-
 
 ################################################################################
-## Form generated from reading UI file 'XMLuvationQCfjWf.ui'
+## Form generated from reading UI file 'XMLuvation.ui'
 ##
-## Created by: Qt User Interface Compiler version 6.9.0
+## Created by: Qt User Interface Compiler version 6.9.1
 ##
 ## WARNING! All changes made in this file will be lost when recompiling UI file!
 ################################################################################
@@ -16,7 +16,6 @@ from PySide6.QtWidgets import (QCheckBox, QComboBox, QGroupBox,
     QListWidget, QProgressBar,
     QPushButton, QRadioButton, QSizePolicy, QSplitter,
     QTabWidget, QTextEdit, QVBoxLayout, QWidget)
-
 
 class Ui_MainWindow(object):
     def setupUi(self, MainWindow):
