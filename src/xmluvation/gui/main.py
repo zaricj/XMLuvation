@@ -1092,6 +1092,12 @@ class MainWindow(QMainWindow):
         worker.signals.program_output_progress_append.connect(self.append_to_program_output_csv_tab)
         worker.signals.program_output_progress_set_text.connect(self.set_text_to_program_output_csv_tab)
         worker.signals.column_dropped_successfully.connect(self.on_column_dropped_successfully)
+        
+    def _connect_csv_conversion_signals(self, worker):
+        """Connect signals for CSV conversion operations."""
+        worker.signals.error_occurred.connect(self.on_error_message)
+        worker.signals.info_occurred.connect(self.on_info_message)
+        worker.signals.warning_occurred.connect(self.on_warning_message)
 
 if __name__ == "__main__":
     # Initialize the application
