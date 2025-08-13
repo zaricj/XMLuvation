@@ -1,17 +1,18 @@
 from PySide6.QtCore import QObject, QRunnable, Signal, Slot
 from lxml import etree as ET
+from typing import List, Tuple, Dict, Any, Optional
+from concurrent.futures import ThreadPoolExecutor, as_completed
+from functools import lru_cache
+from pathlib import Path
+from dataclasses import dataclass, field
+from contextlib import contextmanager
 import csv
 import os
 import traceback
 import re
-from typing import List, Tuple, Dict, Any, Optional
-from concurrent.futures import ThreadPoolExecutor, as_completed
 import threading
-from functools import lru_cache
-from pathlib import Path
 import logging
-from dataclasses import dataclass, field
-from contextlib import contextmanager
+import time
 
 
 @dataclass
@@ -22,6 +23,8 @@ class ProcessingStats:
     files_with_matches: int = 0
     total_matches: int = 0
     files_written: int = 0
+    start_time: float = 0.0
+    end_time: float = 0.0
     errors: List[str] = field(default_factory=list)
 
 
@@ -29,13 +32,13 @@ class OptimizedXMLProcessor:
     """Optimized XML processor with caching and better memory management."""
     
     def __init__(self):
-        self._parser = ET.XMLParser(recover=True, strip_cdata=False, huge_tree=True)
+        self._parser = ET.XMLParser()
         self._compiled_regexes = {
             'text_xpath': re.compile(r'/text\(\)\s*$'),
             'attr_xpath': re.compile(r'/@\w+\s*$')
         }
     
-    @lru_cache(maxsize=128)
+    @lru_cache(maxsize=256)
     def _is_string_value_xpath(self, xpath: str) -> bool:
         """Cached check if XPath targets string values."""
         xpath = xpath.strip()
@@ -262,8 +265,8 @@ class OptimizedCSVExportThread(QRunnable):
         
         if len(self.headers) != len(self.xpath_expressions):
             self.signals.warning_occurred.emit(
-                "Header/XPath Mismatch",
-                f"CSV headers ({len(self.headers)}) don't match XPath expressions ({len(self.xpath_expressions)})"
+                "Header/XPath Length Mismatch",
+                f"CSV headers length ({len(self.headers)}) doesn't match XPath expressions length ({len(self.xpath_expressions)})"
             )
             return False
         
@@ -315,6 +318,9 @@ class OptimizedCSVExportThread(QRunnable):
         # Validation
         if not self._validate_inputs():
             return
+        
+        # Start time tracking
+        self._stats.start_time = time.time()
         
         # Get XML files
         xml_files = self._get_xml_files()
@@ -390,6 +396,7 @@ class OptimizedCSVExportThread(QRunnable):
                 
                 # Final status
                 if not self._terminate_event.is_set():
+                    self._stats.end_time = time.time()
                     self._emit_completion_message()
                     
         except Exception as e:
@@ -410,7 +417,8 @@ class OptimizedCSVExportThread(QRunnable):
             f"Files with matches: {self._stats.files_with_matches}",
             f"Total matches found: {self._stats.total_matches}",
             f"Rows written to CSV: {self._stats.files_written}",
-            f"Output saved: {self.output_path}"
+            f"Output saved: {self.output_path}",
+            f"Elapsed time: {self._stats.end_time - self._stats.start_time:.2f} seconds"
         ]
         
         if self._stats.errors:

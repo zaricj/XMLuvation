@@ -6,6 +6,7 @@ from PySide6.QtWidgets import QMessageBox, QComboBox, QRadioButton, QListWidget,
 from PySide6.QtGui import QTextDocument
 from xmluvation.modules.xpath_builder import create_xpath_validator, create_xpath_builder
 from xmluvation.modules.csv_export_optimized import create_optimized_csv_exporter
+# from xmluvation.modules.csv_export import create_csv_exporter
 from xmluvation.modules.file_cleanup import create_lobster_profile_cleaner, create_csv_column_dropper
 from xmluvation.modules.xml_parser import create_xml_parser
 

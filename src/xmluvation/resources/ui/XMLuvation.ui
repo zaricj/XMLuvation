@@ -497,7 +497,7 @@ font: bold;</string>
                     </font>
                    </property>
                    <property name="toolTip">
-                    <string>This opens a file dialogue box where you can browse for the folder containing the XML files.</string>
+                    <string>Browse for the folder containing your XML files.</string>
                    </property>
                    <property name="text">
                     <string>Browse</string>
@@ -517,7 +517,7 @@ font: bold;</string>
                     </font>
                    </property>
                    <property name="toolTip">
-                    <string>This opens a file dialog box where you can load a XML files data into the Combo Boxes.</string>
+                    <string>Load data from an XML file into the Combo Boxes and display the XML content.</string>
                    </property>
                    <property name="text">
                     <string>Read XML</string>
@@ -884,6 +884,9 @@ font: bold;</string>
                      <strikeout>false</strikeout>
                     </font>
                    </property>
+                   <property name="toolTip">
+                    <string/>
+                   </property>
                    <property name="text">
                     <string>Equals</string>
                    </property>
@@ -1006,7 +1009,7 @@ font: bold;</string>
                     </font>
                    </property>
                    <property name="toolTip">
-                    <string>This button generates a XPath expressions based on the values in the Combo Boxes.</string>
+                    <string>Create an XPath expression based on the current Combo Box values.</string>
                    </property>
                    <property name="text">
                     <string>Build XPath</string>
@@ -1028,7 +1031,7 @@ font: bold;</string>
                   </font>
                  </property>
                  <property name="toolTip">
-                  <string>Add the entered or built XPath expression from the input field to the list below.</string>
+                  <string>Add the entered or generated XPath expression to the list below.</string>
                  </property>
                  <property name="text">
                   <string>Add XPath expression to list</string>
@@ -1243,7 +1246,7 @@ font: bold;</string>
                     </font>
                    </property>
                    <property name="toolTip">
-                    <string>This opens a file dialogue box where you can browse for the save path of the CSV file which will contains the results..</string>
+                    <string>Choose the folder and filename where the results CSV will be saved.</string>
                    </property>
                    <property name="text">
                     <string>Browse</string>
@@ -1270,7 +1273,7 @@ font: bold;</string>
                     </font>
                    </property>
                    <property name="toolTip">
-                    <string>Abort task.</string>
+                    <string>Stop the current operation.</string>
                    </property>
                    <property name="text">
                     <string>Abort</string>
@@ -1293,7 +1296,7 @@ font: bold;</string>
                     </font>
                    </property>
                    <property name="toolTip">
-                    <string>Start searching the XML files and write the results found to the CSV file.</string>
+                    <string>Search the XML files and export the results to the CSV file.</string>
                    </property>
                    <property name="text">
                     <string>Export</string>
@@ -1311,6 +1314,16 @@ font: bold;</string>
                      <horstretch>0</horstretch>
                      <verstretch>0</verstretch>
                     </sizepolicy>
+                   </property>
+                   <property name="font">
+                    <font>
+                     <family>Microsoft YaHei UI</family>
+                     <pointsize>10</pointsize>
+                     <italic>false</italic>
+                     <bold>true</bold>
+                     <underline>false</underline>
+                     <strikeout>false</strikeout>
+                    </font>
                    </property>
                    <property name="text">
                     <string>Option:</string>
@@ -1336,7 +1349,7 @@ font: bold;</string>
                     </font>
                    </property>
                    <property name="toolTip">
-                    <string>This option groups matches together and writes them to the CSV file using a semicolon as the delimiter. If this option is disabled, each match is written to a new row in the CSV file.</string>
+                    <string>Group matches in the CSV using semicolons; if unchecked, each match is written to a separate row.</string>
                    </property>
                    <property name="text">
                     <string>Group matches</string>
@@ -1789,6 +1802,9 @@ font: bold;</string>
                      <strikeout>false</strikeout>
                     </font>
                    </property>
+                   <property name="toolTip">
+                    <string>Search next term.</string>
+                   </property>
                    <property name="text">
                     <string>Next</string>
                    </property>
@@ -1805,6 +1821,9 @@ font: bold;</string>
                      <underline>false</underline>
                      <strikeout>false</strikeout>
                     </font>
+                   </property>
+                   <property name="toolTip">
+                    <string>Search previous term.</string>
                    </property>
                    <property name="text">
                     <string>Previous</string>
@@ -2005,6 +2024,9 @@ Supported output file types: Excel, Markdown, HTML and JSON</string>
                    <strikeout>false</strikeout>
                   </font>
                  </property>
+                 <property name="toolTip">
+                  <string>Browse for the CSV file which will be used for the conversion.</string>
+                 </property>
                  <property name="text">
                   <string>Browse</string>
                  </property>
@@ -2076,7 +2098,7 @@ Supported output file types: Excel, Markdown, HTML and JSON</string>
                   </font>
                  </property>
                  <property name="toolTip">
-                  <string>ONLY FOR EXCEL: Write an index colum starting at 1.</string>
+                  <string>Write an index colum starting at 1 for the supported output file formats.</string>
                  </property>
                  <property name="text">
                   <string>Write index column?</string>
@@ -2098,7 +2120,7 @@ Supported output file types: Excel, Markdown, HTML and JSON</string>
                 </font>
                </property>
                <property name="toolTip">
-                <string>Starts the conversion of the CSV file to the selected file type.</string>
+                <string>Convert the CSV file to the selected file type.</string>
                </property>
                <property name="text">
                 <string>Convert CSV File</string>
@@ -2212,6 +2234,9 @@ Supported output file types: Excel, Markdown, HTML and JSON</string>
                      <strikeout>false</strikeout>
                     </font>
                    </property>
+                   <property name="toolTip">
+                    <string>Browse for the CSV file.</string>
+                   </property>
                    <property name="text">
                     <string>Browse</string>
                    </property>
@@ -2255,6 +2280,9 @@ Supported output file types: Excel, Markdown, HTML and JSON</string>
                        <strikeout>false</strikeout>
                       </font>
                      </property>
+                     <property name="toolTip">
+                      <string>Browse for the folder path which contains XML files.</string>
+                     </property>
                      <property name="text">
                       <string>Browse</string>
                      </property>
@@ -2277,7 +2305,7 @@ Supported output file types: Excel, Markdown, HTML and JSON</string>
                   </font>
                  </property>
                  <property name="toolTip">
-                  <string>Starts the clean up process of the XML files.</string>
+                  <string>Perform cleanup operations on the XML files.</string>
                  </property>
                  <property name="text">
                   <string>Clean up XML files</string>
@@ -2346,7 +2374,7 @@ Supported output file types: Excel, Markdown, HTML and JSON</string>
                   </font>
                  </property>
                  <property name="toolTip">
-                  <string>This deletes the currently selected header from the CSV file and saves it.</string>
+                  <string>Delete the selected header from the CSV file and save changes.</string>
                  </property>
                  <property name="text">
                   <string>Drop Header</string>
