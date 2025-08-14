@@ -1,0 +1,16 @@
+[project]
+name = "xmluvation"
+version = "1.2.1"
+description = "Add your description here"
+readme = "README.md"
+requires-python = ">=3.12"
+dependencies = [
+    "lxml>=6.0.0",
+    "pandas>=2.3.1",
+    "pyarrow>=21.0.0",
+    "pyside6>=6.9.1",
+    "xlsxwriter>=3.2.5",
+]
+
+[tool.xmluvation.initialization]
+pythonpath = "src/xmluvation"
