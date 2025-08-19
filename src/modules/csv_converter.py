@@ -1,5 +1,4 @@
 from PySide6.QtCore import QObject, QRunnable, Signal, Slot
-from PySide6.QtWidgets import QMessageBox
 import pandas as pd
 import csv
 import os
