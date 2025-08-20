@@ -272,7 +272,7 @@ class OptimizedCSVExportThread(QRunnable):
         if not self.headers or not self.xpath_expressions:
             self.signals.warning_occurred.emit(
                 "Empty Configuration", 
-                "No headers or XPath expressions found. Please add some."
+                "No headers or XPath expressions found\nPlease add xpath expressions and headers in order to start an evaluation."
             )
             return False
         

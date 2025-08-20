@@ -119,7 +119,7 @@ class CSVConversionThread(QRunnable):
             )
 
         except FileNotFoundError:
-            self.signals.warning_occurred.emit("Path error", "CSV input path must be provided!")
+            self.signals.warning_occurred.emit("CSV Input File Error", "No CSV file has been selected for conversion.\nPlease select a CSV file.")
 
         except Exception as ex:
             msg = f"{type(ex).__name__}: {ex}"
