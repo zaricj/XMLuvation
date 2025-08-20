@@ -1,6 +1,4 @@
-import csv
 import os
-import re
 import pandas as pd
 from PySide6.QtWidgets import QMessageBox, QComboBox, QRadioButton, QListWidget, QPushButton, QLineEdit, QTextEdit, QMainWindow
 from PySide6.QtGui import QTextDocument
@@ -193,7 +191,7 @@ class CSVConversionHandler:
             # Optional: Keep track of the worker
             self.main_window.active_workers.append(converter)
         except FileNotFoundError as e:
-            QMessageBox.warning(self.main_window, "Path error", str(e))
+            QMessageBox.warning(self.main_window, "Input File Error", str(e))
 
 
 class AddXPathExpressionToListHandler:
@@ -206,7 +204,7 @@ class AddXPathExpressionToListHandler:
         self.xpath_filters = xpath_filters
         self.list_widget_xpath_expressions = list_widget_xpath_expressions
         
-
+    
     def smart_split(self, s: str) -> list[str]:
         result = []
         current = []
