@@ -536,7 +536,6 @@ class GenerateCSVHeaderHandler:
             # if not self._is_duplicate(header, headers_list):
             #     return header
     
-    @staticmethod 
     def _is_duplicate(header :str, headers_list: str) -> bool:
         """Checks if the header is a duplicate. Prevents from adding the same header to the QLineEdit input for headers.
 
