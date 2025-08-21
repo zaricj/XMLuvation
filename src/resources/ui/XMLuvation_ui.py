@@ -1,21 +1,26 @@
 # -*- coding: utf-8 -*-
 
 ################################################################################
-## Form generated from reading UI file 'XMLuvation.ui'
+## Form generated from reading UI file 'XMLuvationlstHlU.ui'
 ##
-## Created by: Qt User Interface Compiler version 6.9.1
+## Created by: Qt User Interface Compiler version 6.9.0
 ##
 ## WARNING! All changes made in this file will be lost when recompiling UI file!
 ################################################################################
 
-from PySide6.QtCore import (QCoreApplication, QMetaObject, QSize, Qt)
-from PySide6.QtGui import (QBrush, QColor, QFont, QIcon,
-    QPalette)
-from PySide6.QtWidgets import (QCheckBox, QComboBox, QGroupBox,
-    QHBoxLayout, QLabel, QLayout, QLineEdit,
-    QListWidget, QProgressBar,
-    QPushButton, QRadioButton, QSizePolicy, QSplitter,
-    QTabWidget, QTextEdit, QVBoxLayout, QWidget)
+from PySide6.QtCore import (QCoreApplication, QDate, QDateTime, QLocale,
+    QMetaObject, QObject, QPoint, QRect,
+    QSize, QTime, QUrl, Qt)
+from PySide6.QtGui import (QBrush, QColor, QConicalGradient, QCursor,
+    QFont, QFontDatabase, QGradient, QIcon,
+    QImage, QKeySequence, QLinearGradient, QPainter,
+    QPalette, QPixmap, QRadialGradient, QTransform)
+from PySide6.QtWidgets import (QApplication, QCheckBox, QComboBox, QFrame,
+    QGroupBox, QHBoxLayout, QLabel, QLayout,
+    QLineEdit, QListView, QListWidget, QListWidgetItem,
+    QMainWindow, QProgressBar, QPushButton, QRadioButton,
+    QSizePolicy, QSpacerItem, QSplitter, QTabWidget,
+    QTextEdit, QVBoxLayout, QWidget)
 
 from resources.ui import xmluvation_resources_rc
 
@@ -24,7 +29,7 @@ class Ui_MainWindow(object):
         if not MainWindow.objectName():
             MainWindow.setObjectName(u"MainWindow")
         MainWindow.setEnabled(True)
-        MainWindow.resize(1187, 954)
+        MainWindow.resize(1275, 949)
         palette = QPalette()
         brush = QBrush(QColor(255, 255, 255, 255))
         brush.setStyle(Qt.BrushStyle.SolidPattern)
@@ -103,8 +108,8 @@ class Ui_MainWindow(object):
         font1.setItalic(False)
         font1.setUnderline(False)
         self.centralwidget.setFont(font1)
-        self.verticalLayout = QVBoxLayout(self.centralwidget)
-        self.verticalLayout.setObjectName(u"verticalLayout")
+        self.horizontalLayout = QHBoxLayout(self.centralwidget)
+        self.horizontalLayout.setObjectName(u"horizontalLayout")
         self.tabWidget = QTabWidget(self.centralwidget)
         self.tabWidget.setObjectName(u"tabWidget")
         self.tabWidget.setEnabled(True)
@@ -402,6 +407,12 @@ class Ui_MainWindow(object):
         sizePolicy3.setHeightForWidth(self.list_widget_xpath_expressions.sizePolicy().hasHeightForWidth())
         self.list_widget_xpath_expressions.setSizePolicy(sizePolicy3)
         self.list_widget_xpath_expressions.setFont(font3)
+        self.list_widget_xpath_expressions.setTabKeyNavigation(False)
+        self.list_widget_xpath_expressions.setDragEnabled(True)
+        self.list_widget_xpath_expressions.setDefaultDropAction(Qt.DropAction.MoveAction)
+        self.list_widget_xpath_expressions.setAlternatingRowColors(True)
+        self.list_widget_xpath_expressions.setMovement(QListView.Movement.Snap)
+        self.list_widget_xpath_expressions.setSortingEnabled(False)
 
         self.verticalLayout_8.addWidget(self.list_widget_xpath_expressions)
 
@@ -494,16 +505,16 @@ class Ui_MainWindow(object):
 
         self.horizontalLayout_2 = QHBoxLayout()
         self.horizontalLayout_2.setObjectName(u"horizontalLayout_2")
-        self.label = QLabel(self.group_box_export_to_csv)
-        self.label.setObjectName(u"label")
+        self.label_options = QLabel(self.group_box_export_to_csv)
+        self.label_options.setObjectName(u"label_options")
         sizePolicy4 = QSizePolicy(QSizePolicy.Policy.Maximum, QSizePolicy.Policy.Preferred)
         sizePolicy4.setHorizontalStretch(0)
         sizePolicy4.setVerticalStretch(0)
-        sizePolicy4.setHeightForWidth(self.label.sizePolicy().hasHeightForWidth())
-        self.label.setSizePolicy(sizePolicy4)
-        self.label.setFont(font4)
+        sizePolicy4.setHeightForWidth(self.label_options.sizePolicy().hasHeightForWidth())
+        self.label_options.setSizePolicy(sizePolicy4)
+        self.label_options.setFont(font4)
 
-        self.horizontalLayout_2.addWidget(self.label)
+        self.horizontalLayout_2.addWidget(self.label_options)
 
         self.checkbox_group_matches = QCheckBox(self.group_box_export_to_csv)
         self.checkbox_group_matches.setObjectName(u"checkbox_group_matches")
@@ -516,6 +527,21 @@ class Ui_MainWindow(object):
         self.checkbox_group_matches.setChecked(False)
 
         self.horizontalLayout_2.addWidget(self.checkbox_group_matches)
+
+        self.button_pass_csv_to_converter = QLabel(self.group_box_export_to_csv)
+        self.button_pass_csv_to_converter.setObjectName(u"button_pass_csv_to_converter")
+        font6 = QFont()
+        font6.setFamilies([u"Microsoft YaHei UI"])
+        font6.setPointSize(10)
+        font6.setBold(False)
+        font6.setItalic(False)
+        font6.setUnderline(True)
+        font6.setStrikeOut(False)
+        self.button_pass_csv_to_converter.setFont(font6)
+        self.button_pass_csv_to_converter.setLayoutDirection(Qt.LayoutDirection.LeftToRight)
+        self.button_pass_csv_to_converter.setAlignment(Qt.AlignmentFlag.AlignRight|Qt.AlignmentFlag.AlignTrailing|Qt.AlignmentFlag.AlignVCenter)
+
+        self.horizontalLayout_2.addWidget(self.button_pass_csv_to_converter)
 
 
         self.verticalLayout_11.addLayout(self.horizontalLayout_2)
@@ -663,40 +689,42 @@ class Ui_MainWindow(object):
         self.tab_csv_conversion = QWidget()
         self.tab_csv_conversion.setObjectName(u"tab_csv_conversion")
         self.tab_csv_conversion.setFont(font3)
-        self.verticalLayout_13 = QVBoxLayout(self.tab_csv_conversion)
-        self.verticalLayout_13.setObjectName(u"verticalLayout_13")
-        self.hor_layout_tab2_main = QHBoxLayout()
-        self.hor_layout_tab2_main.setObjectName(u"hor_layout_tab2_main")
+        self.horizontalLayout_4 = QHBoxLayout(self.tab_csv_conversion)
+        self.horizontalLayout_4.setObjectName(u"horizontalLayout_4")
+        self.main_layout_csv_conversion_and_cleanup_tab = QHBoxLayout()
+        self.main_layout_csv_conversion_and_cleanup_tab.setObjectName(u"main_layout_csv_conversion_and_cleanup_tab")
+        self.verticalLayout = QVBoxLayout()
+        self.verticalLayout.setObjectName(u"verticalLayout")
         self.groupbox_csv_conversion = QGroupBox(self.tab_csv_conversion)
         self.groupbox_csv_conversion.setObjectName(u"groupbox_csv_conversion")
         self.groupbox_csv_conversion.setMaximumSize(QSize(16777215, 16777215))
         self.groupbox_csv_conversion.setFont(font4)
-        self.verticalLayout_2 = QVBoxLayout(self.groupbox_csv_conversion)
-        self.verticalLayout_2.setObjectName(u"verticalLayout_2")
+        self.verticalLayout_13 = QVBoxLayout(self.groupbox_csv_conversion)
+        self.verticalLayout_13.setObjectName(u"verticalLayout_13")
         self.label_csv_conversion_title = QLabel(self.groupbox_csv_conversion)
         self.label_csv_conversion_title.setObjectName(u"label_csv_conversion_title")
         sizePolicy1.setHeightForWidth(self.label_csv_conversion_title.sizePolicy().hasHeightForWidth())
         self.label_csv_conversion_title.setSizePolicy(sizePolicy1)
         self.label_csv_conversion_title.setMaximumSize(QSize(16777215, 60))
-        font6 = QFont()
-        font6.setFamilies([u"Microsoft YaHei UI"])
-        font6.setPointSize(32)
-        font6.setBold(True)
-        font6.setItalic(False)
-        font6.setUnderline(False)
-        font6.setStrikeOut(False)
-        font6.setKerning(True)
-        self.label_csv_conversion_title.setFont(font6)
+        font7 = QFont()
+        font7.setFamilies([u"Microsoft YaHei UI"])
+        font7.setPointSize(32)
+        font7.setBold(True)
+        font7.setItalic(False)
+        font7.setUnderline(False)
+        font7.setStrikeOut(False)
+        font7.setKerning(True)
+        self.label_csv_conversion_title.setFont(font7)
         self.label_csv_conversion_title.setStyleSheet(u"color: rgb(255, 200, 87);")
 
-        self.verticalLayout_2.addWidget(self.label_csv_conversion_title)
+        self.verticalLayout_13.addWidget(self.label_csv_conversion_title)
 
         self.label_csv_conversion_desc = QLabel(self.groupbox_csv_conversion)
         self.label_csv_conversion_desc.setObjectName(u"label_csv_conversion_desc")
         self.label_csv_conversion_desc.setMaximumSize(QSize(16777215, 60))
         self.label_csv_conversion_desc.setFont(font3)
 
-        self.verticalLayout_2.addWidget(self.label_csv_conversion_desc)
+        self.verticalLayout_13.addWidget(self.label_csv_conversion_desc)
 
         self.hor_layout_csv_path_input = QHBoxLayout()
         self.hor_layout_csv_path_input.setObjectName(u"hor_layout_csv_path_input")
@@ -715,7 +743,7 @@ class Ui_MainWindow(object):
         self.hor_layout_csv_path_input.addWidget(self.button_browse_csv_conversion_path_input)
 
 
-        self.verticalLayout_2.addLayout(self.hor_layout_csv_path_input)
+        self.verticalLayout_13.addLayout(self.hor_layout_csv_path_input)
 
         self.hor_layout_csv_conversion_path_output = QHBoxLayout()
         self.hor_layout_csv_conversion_path_output.setObjectName(u"hor_layout_csv_conversion_path_output")
@@ -749,16 +777,23 @@ class Ui_MainWindow(object):
         self.hor_layout_csv_conversion_path_output.addWidget(self.checkbox_write_index_column)
 
 
-        self.verticalLayout_2.addLayout(self.hor_layout_csv_conversion_path_output)
+        self.verticalLayout_13.addLayout(self.hor_layout_csv_conversion_path_output)
 
         self.button_csv_conversion_convert = QPushButton(self.groupbox_csv_conversion)
         self.button_csv_conversion_convert.setObjectName(u"button_csv_conversion_convert")
         self.button_csv_conversion_convert.setFont(font3)
 
-        self.verticalLayout_2.addWidget(self.button_csv_conversion_convert)
+        self.verticalLayout_13.addWidget(self.button_csv_conversion_convert)
 
 
-        self.hor_layout_tab2_main.addWidget(self.groupbox_csv_conversion)
+        self.verticalLayout.addWidget(self.groupbox_csv_conversion)
+
+        self.line = QFrame(self.tab_csv_conversion)
+        self.line.setObjectName(u"line")
+        self.line.setFrameShape(QFrame.Shape.HLine)
+        self.line.setFrameShadow(QFrame.Shadow.Sunken)
+
+        self.verticalLayout.addWidget(self.line)
 
         self.groupbox_lobster_profiles_cleanup = QGroupBox(self.tab_csv_conversion)
         self.groupbox_lobster_profiles_cleanup.setObjectName(u"groupbox_lobster_profiles_cleanup")
@@ -767,34 +802,41 @@ class Ui_MainWindow(object):
         self.verticalLayout_10.setObjectName(u"verticalLayout_10")
         self.label_title_profile_cleanup = QLabel(self.groupbox_lobster_profiles_cleanup)
         self.label_title_profile_cleanup.setObjectName(u"label_title_profile_cleanup")
-        font7 = QFont()
-        font7.setFamilies([u"Microsoft YaHei UI"])
-        font7.setPointSize(32)
-        font7.setBold(True)
-        font7.setItalic(False)
-        font7.setUnderline(False)
-        font7.setStrikeOut(False)
-        self.label_title_profile_cleanup.setFont(font7)
+        sizePolicy9 = QSizePolicy(QSizePolicy.Policy.Preferred, QSizePolicy.Policy.Maximum)
+        sizePolicy9.setHorizontalStretch(0)
+        sizePolicy9.setVerticalStretch(0)
+        sizePolicy9.setHeightForWidth(self.label_title_profile_cleanup.sizePolicy().hasHeightForWidth())
+        self.label_title_profile_cleanup.setSizePolicy(sizePolicy9)
+        font8 = QFont()
+        font8.setFamilies([u"Microsoft YaHei UI"])
+        font8.setPointSize(32)
+        font8.setBold(True)
+        font8.setItalic(False)
+        font8.setUnderline(False)
+        font8.setStrikeOut(False)
+        self.label_title_profile_cleanup.setFont(font8)
         self.label_title_profile_cleanup.setStyleSheet(u"color: rgb(255, 200, 87);")
 
         self.verticalLayout_10.addWidget(self.label_title_profile_cleanup)
 
         self.label_2 = QLabel(self.groupbox_lobster_profiles_cleanup)
         self.label_2.setObjectName(u"label_2")
+        sizePolicy9.setHeightForWidth(self.label_2.sizePolicy().hasHeightForWidth())
+        self.label_2.setSizePolicy(sizePolicy9)
         self.label_2.setFont(font3)
 
         self.verticalLayout_10.addWidget(self.label_2)
 
-        self.verticalLayout_3 = QVBoxLayout()
-        self.verticalLayout_3.setObjectName(u"verticalLayout_3")
-        self.horizontalLayout_4 = QHBoxLayout()
-        self.horizontalLayout_4.setObjectName(u"horizontalLayout_4")
+        self.verticalLayout_5 = QVBoxLayout()
+        self.verticalLayout_5.setObjectName(u"verticalLayout_5")
+        self.horizontalLayout_5 = QHBoxLayout()
+        self.horizontalLayout_5.setObjectName(u"horizontalLayout_5")
         self.line_edit_profile_cleanup_csv_file_path = QLineEdit(self.groupbox_lobster_profiles_cleanup)
         self.line_edit_profile_cleanup_csv_file_path.setObjectName(u"line_edit_profile_cleanup_csv_file_path")
         self.line_edit_profile_cleanup_csv_file_path.setFont(font3)
         self.line_edit_profile_cleanup_csv_file_path.setClearButtonEnabled(True)
 
-        self.horizontalLayout_4.addWidget(self.line_edit_profile_cleanup_csv_file_path)
+        self.horizontalLayout_5.addWidget(self.line_edit_profile_cleanup_csv_file_path)
 
         self.button_profile_cleanup_browse_csv_file_path = QPushButton(self.groupbox_lobster_profiles_cleanup)
         self.button_profile_cleanup_browse_csv_file_path.setObjectName(u"button_profile_cleanup_browse_csv_file_path")
@@ -802,100 +844,106 @@ class Ui_MainWindow(object):
         self.button_profile_cleanup_browse_csv_file_path.setMaximumSize(QSize(16777215, 16777215))
         self.button_profile_cleanup_browse_csv_file_path.setFont(font3)
 
-        self.horizontalLayout_4.addWidget(self.button_profile_cleanup_browse_csv_file_path)
+        self.horizontalLayout_5.addWidget(self.button_profile_cleanup_browse_csv_file_path)
 
 
-        self.verticalLayout_3.addLayout(self.horizontalLayout_4)
+        self.verticalLayout_5.addLayout(self.horizontalLayout_5)
 
         self.verticalLayout_9 = QVBoxLayout()
         self.verticalLayout_9.setObjectName(u"verticalLayout_9")
-        self.horizontalLayout_3 = QHBoxLayout()
-        self.horizontalLayout_3.setObjectName(u"horizontalLayout_3")
+        self.horizontalLayout_6 = QHBoxLayout()
+        self.horizontalLayout_6.setObjectName(u"horizontalLayout_6")
         self.line_edit_profile_cleanup_folder_path = QLineEdit(self.groupbox_lobster_profiles_cleanup)
         self.line_edit_profile_cleanup_folder_path.setObjectName(u"line_edit_profile_cleanup_folder_path")
         self.line_edit_profile_cleanup_folder_path.setFont(font3)
         self.line_edit_profile_cleanup_folder_path.setClearButtonEnabled(True)
 
-        self.horizontalLayout_3.addWidget(self.line_edit_profile_cleanup_folder_path)
+        self.horizontalLayout_6.addWidget(self.line_edit_profile_cleanup_folder_path)
 
         self.button_profile_cleanup_browse_folder_path = QPushButton(self.groupbox_lobster_profiles_cleanup)
         self.button_profile_cleanup_browse_folder_path.setObjectName(u"button_profile_cleanup_browse_folder_path")
         self.button_profile_cleanup_browse_folder_path.setFont(font3)
 
-        self.horizontalLayout_3.addWidget(self.button_profile_cleanup_browse_folder_path)
+        self.horizontalLayout_6.addWidget(self.button_profile_cleanup_browse_folder_path)
 
 
-        self.verticalLayout_9.addLayout(self.horizontalLayout_3)
+        self.verticalLayout_9.addLayout(self.horizontalLayout_6)
 
 
-        self.verticalLayout_3.addLayout(self.verticalLayout_9)
+        self.verticalLayout_5.addLayout(self.verticalLayout_9)
 
         self.button_profile_cleanup_cleanup_start = QPushButton(self.groupbox_lobster_profiles_cleanup)
         self.button_profile_cleanup_cleanup_start.setObjectName(u"button_profile_cleanup_cleanup_start")
         self.button_profile_cleanup_cleanup_start.setFont(font3)
 
-        self.verticalLayout_3.addWidget(self.button_profile_cleanup_cleanup_start)
+        self.verticalLayout_5.addWidget(self.button_profile_cleanup_cleanup_start)
 
 
-        self.verticalLayout_10.addLayout(self.verticalLayout_3)
+        self.verticalLayout_10.addLayout(self.verticalLayout_5)
 
-        self.horizontalLayout_6 = QHBoxLayout()
-        self.horizontalLayout_6.setObjectName(u"horizontalLayout_6")
+        self.horizontalLayout_7 = QHBoxLayout()
+        self.horizontalLayout_7.setObjectName(u"horizontalLayout_7")
         self.label_csv_headers_combobox = QLabel(self.groupbox_lobster_profiles_cleanup)
         self.label_csv_headers_combobox.setObjectName(u"label_csv_headers_combobox")
-        sizePolicy4.setHeightForWidth(self.label_csv_headers_combobox.sizePolicy().hasHeightForWidth())
-        self.label_csv_headers_combobox.setSizePolicy(sizePolicy4)
+        sizePolicy10 = QSizePolicy(QSizePolicy.Policy.Maximum, QSizePolicy.Policy.Maximum)
+        sizePolicy10.setHorizontalStretch(0)
+        sizePolicy10.setVerticalStretch(0)
+        sizePolicy10.setHeightForWidth(self.label_csv_headers_combobox.sizePolicy().hasHeightForWidth())
+        self.label_csv_headers_combobox.setSizePolicy(sizePolicy10)
         self.label_csv_headers_combobox.setFont(font3)
 
-        self.horizontalLayout_6.addWidget(self.label_csv_headers_combobox)
+        self.horizontalLayout_7.addWidget(self.label_csv_headers_combobox)
 
         self.combobox_csv_headers = QComboBox(self.groupbox_lobster_profiles_cleanup)
         self.combobox_csv_headers.setObjectName(u"combobox_csv_headers")
         self.combobox_csv_headers.setEnabled(False)
-        sizePolicy5.setHeightForWidth(self.combobox_csv_headers.sizePolicy().hasHeightForWidth())
-        self.combobox_csv_headers.setSizePolicy(sizePolicy5)
+        sizePolicy9.setHeightForWidth(self.combobox_csv_headers.sizePolicy().hasHeightForWidth())
+        self.combobox_csv_headers.setSizePolicy(sizePolicy9)
 
-        self.horizontalLayout_6.addWidget(self.combobox_csv_headers)
+        self.horizontalLayout_7.addWidget(self.combobox_csv_headers)
 
         self.button_drop_csv_header = QPushButton(self.groupbox_lobster_profiles_cleanup)
         self.button_drop_csv_header.setObjectName(u"button_drop_csv_header")
         self.button_drop_csv_header.setEnabled(False)
-        sizePolicy8.setHeightForWidth(self.button_drop_csv_header.sizePolicy().hasHeightForWidth())
-        self.button_drop_csv_header.setSizePolicy(sizePolicy8)
+        sizePolicy10.setHeightForWidth(self.button_drop_csv_header.sizePolicy().hasHeightForWidth())
+        self.button_drop_csv_header.setSizePolicy(sizePolicy10)
         self.button_drop_csv_header.setFont(font3)
 
-        self.horizontalLayout_6.addWidget(self.button_drop_csv_header)
+        self.horizontalLayout_7.addWidget(self.button_drop_csv_header)
 
 
-        self.verticalLayout_10.addLayout(self.horizontalLayout_6)
+        self.verticalLayout_10.addLayout(self.horizontalLayout_7)
+
+        self.verticalSpacer = QSpacerItem(20, 40, QSizePolicy.Policy.Minimum, QSizePolicy.Policy.Expanding)
+
+        self.verticalLayout_10.addItem(self.verticalSpacer)
 
 
-        self.hor_layout_tab2_main.addWidget(self.groupbox_lobster_profiles_cleanup)
+        self.verticalLayout.addWidget(self.groupbox_lobster_profiles_cleanup)
 
 
-        self.verticalLayout_13.addLayout(self.hor_layout_tab2_main)
+        self.main_layout_csv_conversion_and_cleanup_tab.addLayout(self.verticalLayout)
 
-        self.verticalLayout_14 = QVBoxLayout()
-        self.verticalLayout_14.setObjectName(u"verticalLayout_14")
         self.group_box_tab2_program_output = QGroupBox(self.tab_csv_conversion)
         self.group_box_tab2_program_output.setObjectName(u"group_box_tab2_program_output")
-        self.horizontalLayout = QHBoxLayout(self.group_box_tab2_program_output)
-        self.horizontalLayout.setObjectName(u"horizontalLayout")
+        self.group_box_tab2_program_output.setFont(font4)
+        self.horizontalLayout_8 = QHBoxLayout(self.group_box_tab2_program_output)
+        self.horizontalLayout_8.setObjectName(u"horizontalLayout_8")
         self.text_edit_csv_conversion_tab_program_output = QTextEdit(self.group_box_tab2_program_output)
         self.text_edit_csv_conversion_tab_program_output.setObjectName(u"text_edit_csv_conversion_tab_program_output")
         self.text_edit_csv_conversion_tab_program_output.setReadOnly(True)
 
-        self.horizontalLayout.addWidget(self.text_edit_csv_conversion_tab_program_output)
+        self.horizontalLayout_8.addWidget(self.text_edit_csv_conversion_tab_program_output)
 
 
-        self.verticalLayout_14.addWidget(self.group_box_tab2_program_output)
+        self.main_layout_csv_conversion_and_cleanup_tab.addWidget(self.group_box_tab2_program_output)
 
 
-        self.verticalLayout_13.addLayout(self.verticalLayout_14)
+        self.horizontalLayout_4.addLayout(self.main_layout_csv_conversion_and_cleanup_tab)
 
         self.tabWidget.addTab(self.tab_csv_conversion, "")
 
-        self.verticalLayout.addWidget(self.tabWidget)
+        self.horizontalLayout.addWidget(self.tabWidget)
 
         MainWindow.setCentralWidget(self.centralwidget)
 
@@ -974,11 +1022,12 @@ class Ui_MainWindow(object):
         self.button_start_csv_export.setToolTip(QCoreApplication.translate("MainWindow", u"Search the XML files and export the results to the CSV file.", None))
 #endif // QT_CONFIG(tooltip)
         self.button_start_csv_export.setText(QCoreApplication.translate("MainWindow", u"Export", None))
-        self.label.setText(QCoreApplication.translate("MainWindow", u"Option:", None))
+        self.label_options.setText(QCoreApplication.translate("MainWindow", u"Option:", None))
 #if QT_CONFIG(tooltip)
         self.checkbox_group_matches.setToolTip(QCoreApplication.translate("MainWindow", u"Group matches in the CSV using semicolons; if unchecked, each match is written to a separate row.", None))
 #endif // QT_CONFIG(tooltip)
         self.checkbox_group_matches.setText(QCoreApplication.translate("MainWindow", u"Group matches", None))
+        self.button_pass_csv_to_converter.setText(QCoreApplication.translate("MainWindow", u"<a href=\"#\">Pass CSV Path to Converter</a>", None))
         self.group_box_program_output.setTitle(QCoreApplication.translate("MainWindow", u"PROGRAM OUTPUT", None))
         self.group_box_xml_output.setTitle(QCoreApplication.translate("MainWindow", u"XML OUTPUT", None))
         self.line_edit_xml_output_find_text.setPlaceholderText(QCoreApplication.translate("MainWindow", u"Find text in summary...", None))
@@ -1039,7 +1088,7 @@ class Ui_MainWindow(object):
         self.button_drop_csv_header.setToolTip(QCoreApplication.translate("MainWindow", u"Delete the selected header from the CSV file and save changes.", None))
 #endif // QT_CONFIG(tooltip)
         self.button_drop_csv_header.setText(QCoreApplication.translate("MainWindow", u"Drop Header", None))
-        self.group_box_tab2_program_output.setTitle(QCoreApplication.translate("MainWindow", u"OUTPUT", None))
+        self.group_box_tab2_program_output.setTitle(QCoreApplication.translate("MainWindow", u"CSV OUTPUT", None))
         self.tabWidget.setTabText(self.tabWidget.indexOf(self.tab_csv_conversion), QCoreApplication.translate("MainWindow", u"CSV Conversion and Cleanup", None))
     # retranslateUi
 

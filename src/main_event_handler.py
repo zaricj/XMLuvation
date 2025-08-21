@@ -151,6 +151,9 @@ class UIEventHandler:
         )
 
         # ========= START QPushButtons START ========= #
+        
+        # Pass CSV Path to Converter QLabel "Link"
+        self.ui.button_pass_csv_to_converter.linkActivated.connect(self.pass_csv_path_to_converter_csv_input)
 
         # Folder browsing and XML reading
         self.ui.button_browse_xml_folder.clicked.connect(
@@ -283,7 +286,7 @@ class UIEventHandler:
                 QMessageBox.warning(
                     self.main_window,
                     "Duplicate Name",
-                    f"A path with the name '{name}' already exists.",
+                    f"A path with the name '{name}' already exists."
                 )
                 return
 
@@ -311,7 +314,7 @@ class UIEventHandler:
             QMessageBox.critical(
                 self.main_window,
                 "An exception occurred in browse folder method",
-                message,
+                message
             )
 
     def browse_file_helper(
@@ -343,7 +346,7 @@ class UIEventHandler:
             QMessageBox.critical(
                 self.main_window,
                 "An exception occurred in browse folder method",
-                message,
+                message
             )
 
     def browse_save_file_as_helper(
@@ -374,7 +377,7 @@ class UIEventHandler:
             QMessageBox.critical(
                 self.main_window,
                 "An exception occurred in browse save file method",
-                f"Error exporting CSV: {message}",
+                f"Error exporting CSV: {message}"
             )
 
     # === XML PARSING === #
@@ -470,7 +473,7 @@ class UIEventHandler:
             QMessageBox.critical(
                 self.main_window,
                 "Exception on starting to search and export to csv",
-                message,
+                message
             )
 
     def on_csv_export_stop_event(self):
@@ -484,7 +487,7 @@ class UIEventHandler:
                 QMessageBox.information(
                     self.main_window,
                     "No Active Export",
-                    "There is no CSV export currently running to abort.",
+                    "There is no CSV export currently running to abort."
                 )
 
         except Exception as ex:
@@ -546,9 +549,31 @@ class UIEventHandler:
             QMessageBox.critical(
                 self.main_window,
                 "Exception on starting add xpath to list widget",
-                message,
+                message
             )
 
+    # On QLabel "Pass CSV Path to Converter" has been clicked event
+    def pass_csv_path_to_converter_csv_input(self):
+        try:
+            if self.main_window.ui.line_edit_csv_output_path.text():
+                # Check if csv converter input is empty, if not clear it first
+                if len(self.main_window.ui.line_edit_csv_conversion_path_input.text()) > 0:
+                    self.main_window.ui.line_edit_csv_conversion_path_input.clear()
+                    self.main_window.ui.line_edit_csv_conversion_path_input.setText(self.main_window.ui.line_edit_csv_output_path.text())
+                else:
+                    self.main_window.ui.line_edit_csv_conversion_path_input.setText(self.main_window.ui.line_edit_csv_output_path.text())
+                
+                # Move to second tab
+                if self.main_window.ui.tabWidget.currentIndex() == 0:
+                    self.main_window.ui.tabWidget.setCurrentIndex(1) 
+            else:
+                QMessageBox.information(self.main_window, "CSV output file missing", "No CSV output for exporting has been set, cannot copy path to CSV converter input field.")
+                
+            
+        except Exception as ex:
+            message = f"An exception of type {type(ex).__name__} occurred. Arguments: {ex.args!r}"
+            QMessageBox.critical(self.main_window, "Exception on starting csv convert to other filetype", message)
+            
     # On csv convert button has been clicked in second tab
     def on_csv_convert_event(self):
         try:
@@ -571,7 +596,7 @@ class UIEventHandler:
             QMessageBox.critical(
                 self.main_window,
                 "Exception on starting csv convert to other filetype",
-                message,
+                message
             )
 
     # On cleanup lobster profiles button has been clicked
@@ -593,7 +618,7 @@ class UIEventHandler:
             QMessageBox.critical(
                 self.main_window,
                 "Exception on starting lobster profile xml files cleanup",
-                message,
+                message
             )
 
     # On CSV header drop button has been clicked
@@ -612,10 +637,10 @@ class UIEventHandler:
         drop_column.start_csv_column_drop()
 
     def on_xml_output_search_next(self):
-        self.xml_text_searcher.search_next()
+        self.main_window.xml_text_searcher.search_next()
 
     def on_xml_output_search_previous(self):
-        self.xml_text_searcher.search_previous()
+        self.main_window.xml_text_searcher.search_previous()
 
     def on_write_index_toggled(self):
         message_with_index = """
@@ -646,7 +671,7 @@ class UIEventHandler:
             QMessageBox.critical(
                 self.main_window,
                 "Exception in Program",
-                f"An error occurred: {message}",
+                f"An error occurred: {message}"
             )
 
     def update_statusbar_xpath_listbox_count(self):
@@ -838,7 +863,7 @@ class UIEventHandler:
             QMessageBox.warning(
                 self.main_window,
                 "Error",
-                f"Path does not exist or is not a valid path:\n{folder_path}",
+                f"Path does not exist or is not a valid path:\n{folder_path}"
             )
 
     def open_web_xpath_help(self):
@@ -862,7 +887,7 @@ class UIEventHandler:
             "Clear recent XPath expressions",
             "Are you sure you want to clear the list of recent XPath expressions?",
             QMessageBox.Yes | QMessageBox.No,
-            QMessageBox.No,
+            QMessageBox.No
         )
         if reply == QMessageBox.Yes:
             self.main_window.settings.remove("recent_xpath_expressions")
