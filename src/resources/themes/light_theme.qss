@@ -48,6 +48,19 @@ QPushButton:disabled {
 	background-color: #b3b3b3;
 }
 
+QLabel#button_pass_csv_to_converter {
+	background-color: #ececec;
+	color: #000000;
+}
+
+QLabel:hover#button_pass_csv_to_converter {
+	color: #2863B9;
+}
+
+QLabel:pressed#button_pass_csv_to_converter {
+	color: #000000;
+}
+
 QLineEdit,
 QComboBox,
 QTextEdit {
