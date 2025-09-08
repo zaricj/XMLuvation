@@ -305,70 +305,70 @@ class MainWindow(QMainWindow):
     # === SIGNAL CONNECTION HELPERS === #
     def _connect_xml_parsing_signals(self, worker):
         """Connect common signals for most operations."""
-        worker.signals.finished.connect(self.on_xml_parsing_finished)
-        worker.signals.error_occurred.connect(self.on_error_message)
-        worker.signals.program_output_progress.connect(self.append_to_program_output)
+        worker.signals.finished.connect(self.on_xmlParsingFinished)
+        worker.signals.error_occurred.connect(self.on_errorMessage)
+        worker.signals.program_output_progress.connect(self.append_toProgramOutput)
 
     def _connect_xpath_builder_signals(self, worker):
         """Connect signals for XPath building operations."""
-        worker.signals.program_output_progress.connect(self.append_to_program_output)
-        worker.signals.error_occurred.connect(self.on_error_message)
-        worker.signals.warning_occurred.connect(self.on_warning_message)
+        worker.signals.program_output_progress.connect(self.append_toProgramOutput)
+        worker.signals.error_occurred.connect(self.on_errorMessage)
+        worker.signals.warning_occurred.connect(self.on_warningMessage)
 
     def _connect_csv_export_signals(self, worker):
         """Connect signals for CSV export operations."""
-        worker.signals.finished.connect(self.on_csv_export_finished)
-        worker.signals.error_occurred.connect(self.on_error_message)
-        worker.signals.info_occurred.connect(self.on_info_message)
-        worker.signals.warning_occurred.connect(self.on_warning_message)
+        worker.signals.finished.connect(self.on_CSVExportFinished)
+        worker.signals.error_occurred.connect(self.on_errorMessage)
+        worker.signals.info_occurred.connect(self.on_infoMessage)
+        worker.signals.warning_occurred.connect(self.on_warningMessage)
         worker.signals.program_output_progress_append.connect(
-            self.append_to_program_output
+            self.append_toProgramOutput
         )
         worker.signals.program_output_progress_set_text.connect(
-            self.set_text_to_program_output
+            self.set_textToProgramOutput
         )
-        worker.signals.file_processing_progress.connect(self.on_file_processing)
-        worker.signals.progressbar_update.connect(self.update_progress_bar)
-        worker.signals.visible_state_widget.connect(self.on_csv_export_started)
+        worker.signals.file_processing_progress.connect(self.on_fileProcessing)
+        worker.signals.progressbar_update.connect(self.update_ProgressBar)
+        worker.signals.visible_state_widget.connect(self.on_CSVExportStarted)
 
     def _connect_file_cleanup_signals(self, worker):
-        worker.signals.error_occurred.connect(self.on_error_message)
-        worker.signals.warning_occurred.connect(self.on_warning_message)
+        worker.signals.error_occurred.connect(self.on_errorMessage)
+        worker.signals.warning_occurred.connect(self.on_warningMessage)
         worker.signals.program_output_progress_append.connect(
-            self.append_to_program_output_csv_tab
+            self.append_ToProgramOutputCSVTab
         )
         worker.signals.program_output_progress_set_text.connect(
-            self.set_text_to_program_output_csv_tab
+            self.set_TextToProgramOutputCSVTab
         )
         worker.signals.column_dropped_successfully.connect(
-            self.on_column_dropped_successfully
+            self.on_columnDroppedSuccessfully
         )
 
     def _connect_csv_conversion_signals(self, worker):
         """Connect signals for CSV conversion operations."""
-        worker.signals.error_occurred.connect(self.on_error_message)
-        worker.signals.info_occurred.connect(self.on_info_message)
-        worker.signals.warning_occurred.connect(self.on_warning_message)
+        worker.signals.error_occurred.connect(self.on_errorMessage)
+        worker.signals.info_occurred.connect(self.on_infoMessage)
+        worker.signals.warning_occurred.connect(self.on_warningMessage)
 
     # === EVENT HANDLERS FOR QMessageBoxes === #
     @Slot(str, str)  # QMessageBox.critical type shit
-    def on_error_message(self, title, message):
+    def on_errorMessage(self, title, message):
         """Show critical message dialog."""
         QMessageBox.critical(self, title, message)
 
     @Slot(str, str)  # QMessageBox.information type shit
-    def on_info_message(self, title, message):
+    def on_infoMessage(self, title, message):
         """Show information message dialog."""
         QMessageBox.information(self, title, message)
 
     @Slot(str, str)  # QMessageBox.warning type shit
-    def on_warning_message(self, title, message):
+    def on_warningMessage(self, title, message):
         """Show warning message dialog."""
         QMessageBox.warning(self, title, message)
 
     # === EVENT HANDLER FOR QTextEdit MAIN PROGRAM OUTPUT === #
     @Slot(str)
-    def append_to_program_output(self, message: str):
+    def append_toProgramOutput(self, message: str):
         """Handle QTextEdit progress updates with .append() in any class, does the QTextEdit.append("hello world").
 
         Args:
@@ -377,7 +377,7 @@ class MainWindow(QMainWindow):
         self.ui.text_edit_program_output.append(message)
 
     @Slot(str)
-    def set_text_to_program_output(self, message: str):
+    def set_textToProgramOutput(self, message: str):
         """Handle QTextEdit progress updates with .setText() in any class, does the QTextEdit.setText("hello world")
 
         Args:
@@ -386,7 +386,7 @@ class MainWindow(QMainWindow):
         self.ui.text_edit_program_output.setText(message)
 
     @Slot(str)
-    def append_to_program_output_csv_tab(self, message: str):
+    def append_ToProgramOutputCSVTab(self, message: str):
         """Handle QTextEdit progress updates with .append() in any class, does the QTextEdit.append("hello world").
 
         Args:
@@ -395,7 +395,7 @@ class MainWindow(QMainWindow):
         self.ui.text_edit_csv_conversion_tab_program_output.append(message)
 
     @Slot(str)
-    def set_text_to_program_output_csv_tab(self, message: str):
+    def set_TextToProgramOutputCSVTab(self, message: str):
         """Handle QTextEdit progress updates with .setText() in any class, does the QTextEdit.setText("hello world")
 
         Args:
@@ -404,7 +404,7 @@ class MainWindow(QMainWindow):
         self.ui.text_edit_csv_conversion_tab_program_output.setText(message)
 
     @Slot(str)
-    def on_column_dropped_successfully(self, index: int):
+    def on_columnDroppedSuccessfully(self, index: int):
         """Handle the QComboBox on CSV Header drop
 
         Args:
@@ -415,7 +415,7 @@ class MainWindow(QMainWindow):
 
     # === XML PARSING ON FINISHED SLOT === #
     @Slot(dict)
-    def on_xml_parsing_finished(self, result: dict):
+    def on_xmlParsingFinished(self, result: dict):
         """Handle XML parsing completion."""
         try:
             from modules.xml_parser import set_xml_content_to_widget
@@ -469,25 +469,25 @@ class MainWindow(QMainWindow):
             QMessageBox.critical(self, "Error processing parsing results", message)
 
     @Slot(bool)
-    def on_csv_export_started(self, state: bool):
+    def on_CSVExportStarted(self, state: bool):
         self.ui.button_abort_csv_export.setVisible(state)
         self.ui.label_file_processing.setVisible(state)
         self.event_handler.set_ui_widgets_disabled(state=True)
 
     @Slot()
-    def on_csv_export_finished(self):
+    def on_CSVExportFinished(self):
         self.ui.button_abort_csv_export.setVisible(False)
         self.ui.label_file_processing.setVisible(False)
         self.event_handler.set_ui_widgets_disabled(state=False)
         self.ui.progressbar_main.reset()
 
     @Slot(str)
-    def on_file_processing(self, message: str):
+    def on_fileProcessing(self, message: str):
         """Handle QLabel progress updates for file processing."""
         self.ui.label_file_processing.setText(message)
 
     @Slot(int)
-    def update_progress_bar(self, progress: int):
+    def update_ProgressBar(self, progress: int):
         self.ui.progressbar_main.setValue(progress)
 
     def get_thread_pool_status(self) -> str:
