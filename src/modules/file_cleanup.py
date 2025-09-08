@@ -9,9 +9,9 @@ class FileCleanupSignals(QObject):
 
     error_occurred = Signal(str, str)  # QMessageBox.critical
     warning_occurred = Signal(str, str)  # QMessageBox.warning
-    program_output_progress_append = Signal(str)  # Program Output aka self.ui.text_edit_program_output.append
-    program_output_progress_set_text = Signal(str)  # Program Output aka self.ui.text_edit_program_output.setText
+    tab2_program_output_append = Signal(str)  # Program Output aka self.ui.text_edit_program_output.append
     column_dropped_successfully = Signal(int) # Indicate column drop completion
+    tab2_program_output_append = Signal(str)
 
 
 class FileCleanupThread(QRunnable):
@@ -56,7 +56,6 @@ class FileCleanupThread(QRunnable):
             return
 
         try:
-            self.signals.program_output_progress_append.emit(f"Attempting to drop column '{selected_column}' from '{self.csv_file_path}'...")
             # Read the CSV file into a pandas data frame
             data = pd.read_csv(self.csv_file_path)
             
@@ -70,7 +69,7 @@ class FileCleanupThread(QRunnable):
             # Save the modified DataFrame back to the CSV
             data.to_csv(self.csv_file_path, index=False) 
 
-            self.signals.program_output_progress_append.emit(f"Successfully dropped column '{selected_column}' and saved the updated CSV.")
+            self.signals.tab2_program_output_append.emit(f"Successfully dropped column '{selected_column}' and saved the updated CSV.")
             self.signals.column_dropped_successfully.emit(column_index) # Emit the columns index to remove from the combo box
         except pd.errors.EmptyDataError:
             self.signals.error_occurred.emit("CSV Error", "The CSV file is empty or malformed.")
@@ -111,9 +110,9 @@ class FileCleanupThread(QRunnable):
                 if file_name not in valid_files:
                     try:
                         os.unlink(file_path)
-                        self.signals.program_output_progress_append.emit(f"Deleted file: '{file_path}'")
+                        self.signals.tab2_program_output_append.emit(f"Deleted file: '{file_path}'")
                     except Exception as e:
-                        self.signals.program_output_progress_append.emit(f"Failed to delete '{file_path}': {e}")
+                        self.signals.tab2_program_output_append.emit(f"Failed to delete '{file_path}': {e}")
 
 
 
