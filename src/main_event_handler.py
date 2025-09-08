@@ -1,3 +1,4 @@
+import datetime
 from PySide6.QtWidgets import (
     QMenu,
     QFileDialog,
@@ -170,6 +171,7 @@ class UIEventHandler:
                 dialog_message="Save as",
                 line_widget=self.ui.line_edit_csv_output_path,
                 file_extension_filter="CSV File (*.csv)",
+                filename_placeholder=f"Evaluation_{datetime.datetime.now().strftime('%Y.%m.%d_%H%M')}.csv"
             )
         )
         # XPath building
@@ -350,7 +352,7 @@ class UIEventHandler:
             )
 
     def browse_save_file_as_helper(
-        self, dialog_message: str, line_widget: QLineEdit, file_extension_filter: str
+        self, dialog_message: str, line_widget: QLineEdit, file_extension_filter: str, filename_placeholder: str = ""
     ) -> None:
         """File dialog for file saving as, sets the path of the selected file in a specified QLineEdit Widget
 
@@ -358,6 +360,7 @@ class UIEventHandler:
             dialog_message (str): Title message for the QFileDialog to display
             line_widget (QLineEdit): The QLineEdit Widget to write to the path value as string
             file_extension_filter (str): Filter files for selection based on set filter.
+            filename_placeholder (str, optional): Placeholder for the filename input field. Defaults to "".
 
                 - Example for only XML files:
                     - 'XML File (*.xml)'
@@ -368,7 +371,7 @@ class UIEventHandler:
         """
         try:
             file_name, _ = QFileDialog.getSaveFileName(
-                self.main_window, caption=dialog_message, filter=file_extension_filter
+                self.main_window, caption=dialog_message, dir=filename_placeholder,  filter=file_extension_filter
             )
             if file_name:
                 line_widget.setText(file_name)
@@ -567,7 +570,7 @@ class UIEventHandler:
                 if self.main_window.ui.tabWidget.currentIndex() == 0:
                     self.main_window.ui.tabWidget.setCurrentIndex(1) 
             else:
-                QMessageBox.information(self.main_window, "CSV output file missing", "No CSV output for exporting has been set, cannot copy path to CSV converter input field.")
+                QMessageBox.information(self.main_window, "CSV output not set", "No CSV output for exporting has been set.\nCannot copy path to CSV converter input field.")
                 
             
         except Exception as ex:
