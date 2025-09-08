@@ -53,7 +53,7 @@ LIGHT_THEME_QMENU_ICON: str = os.path.join(
 )
 
 # App related constants
-APP_VERSION: str = "v1.2.1"
+APP_VERSION: str = "v1.2.2"
 APP_NAME: str = "XMLuvation"
 AUTHOR: str = "Jovan"
 
@@ -321,12 +321,8 @@ class MainWindow(QMainWindow):
         worker.signals.error_occurred.connect(self.on_errorMessage)
         worker.signals.info_occurred.connect(self.on_infoMessage)
         worker.signals.warning_occurred.connect(self.on_warningMessage)
-        worker.signals.program_output_progress_append.connect(
-            self.append_toProgramOutput
-        )
-        worker.signals.program_output_progress_set_text.connect(
-            self.set_textToProgramOutput
-        )
+        worker.signals.program_output_progress_append.connect(self.append_toProgramOutput)
+        worker.signals.program_output_progress_set_text.connect(self.set_textToProgramOutput)
         worker.signals.file_processing_progress.connect(self.on_fileProcessing)
         worker.signals.progressbar_update.connect(self.update_ProgressBar)
         worker.signals.visible_state_widget.connect(self.on_CSVExportStarted)
@@ -334,21 +330,16 @@ class MainWindow(QMainWindow):
     def _connect_file_cleanup_signals(self, worker):
         worker.signals.error_occurred.connect(self.on_errorMessage)
         worker.signals.warning_occurred.connect(self.on_warningMessage)
-        worker.signals.program_output_progress_append.connect(
-            self.append_ToProgramOutputCSVTab
-        )
-        worker.signals.program_output_progress_set_text.connect(
-            self.set_TextToProgramOutputCSVTab
-        )
-        worker.signals.column_dropped_successfully.connect(
-            self.on_columnDroppedSuccessfully
-        )
+        worker.signals.tab2_program_output_append.connect(self.append_ToProgramOutputCSVTab)
+        worker.signals.column_dropped_successfully.connect(self.on_columnDroppedSuccessfully)
+        worker.signals.tab2_program_output_append.connect(self.append_toProgramOutputCSVTab)
 
     def _connect_csv_conversion_signals(self, worker):
         """Connect signals for CSV conversion operations."""
         worker.signals.error_occurred.connect(self.on_errorMessage)
         worker.signals.info_occurred.connect(self.on_infoMessage)
         worker.signals.warning_occurred.connect(self.on_warningMessage)
+        worker.signals.tab2_program_output_append.connect(self.append_toProgramOutputCSVTab)
 
     # === EVENT HANDLERS FOR QMessageBoxes === #
     @Slot(str, str)  # QMessageBox.critical type shit
@@ -375,6 +366,15 @@ class MainWindow(QMainWindow):
             message (str): Message to send to the QTextEdit Widget
         """
         self.ui.text_edit_program_output.append(message)
+        
+    @Slot(str)
+    def append_toProgramOutputCSVTab(self, message: str):
+        """Handle QTextEdit progress updates with .append() in any class, does the QTextEdit.append("hello world").
+
+        Args:
+            message (str): Message to send to the QTextEdit Widget
+        """
+        self.ui.text_edit_csv_conversion_tab_program_output.append(message)
 
     @Slot(str)
     def set_textToProgramOutput(self, message: str):
