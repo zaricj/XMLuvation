@@ -821,7 +821,6 @@ class UIEventHandler:
         self.ui.button_start_csv_export.setDisabled(state)
         self.ui.line_edit_xml_folder_path_input.setReadOnly(state)
         self.ui.line_edit_csv_output_path.setReadOnly(state)
-
     # ======= End FUNCTIONS FOR create_export_evaluation_group ======= #
 
     def set_xpath_expression_in_input(self, expression: str):

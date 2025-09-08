@@ -184,7 +184,6 @@ class CSVConversionHandler:
             # Create the conversion thread
             converter = create_csv_conversion_thread("convert_csv", self.csv_file_to_convert, self.extension_type, self.write_index)
             self.main_window._connect_csv_conversion_signals(converter)
-
             # Start the conversion thread
             self.main_window.thread_pool.start(converter)
 
