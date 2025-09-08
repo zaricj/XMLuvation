@@ -9,7 +9,7 @@ from PySide6.QtWidgets import (
 from PySide6.QtGui import QAction, QShortcut, QKeySequence
 from PySide6.QtCore import (
     Qt,
-    Slot,
+    Slot
 )
 
 from resources.ui.XMLuvation_ui import Ui_MainWindow
@@ -222,8 +222,10 @@ class UIEventHandler:
 
         # ========= END QPushButtons END ========= #
 
-        # QCheckBox
+        # QCheckBox for write index column in csv conversion tab
         self.ui.checkbox_write_index_column.toggled.connect(self.on_write_index_toggled)
+        # QCheckBox for group matches in main tab
+        self.ui.checkbox_group_matches.toggled.connect(self.on_group_matches_toggled)
 
     # GUI SLots n Shit start here
 
@@ -668,6 +670,37 @@ class UIEventHandler:
             else:
                 self.ui.text_edit_csv_conversion_tab_program_output.setText(
                     message_without_index
+                )
+        except Exception as ex:
+            message = f"An exception of type {type(ex).__name__} occurred. Arguments: {ex.args!r}"
+            QMessageBox.critical(
+                self.main_window,
+                "Exception in Program",
+                f"An error occurred: {message}"
+            )
+    
+    def on_group_matches_toggled(self):
+        
+        example_on = """
+        | Header 1 | Header 2      |
+        |------------------|-------------------|
+        | Data...       | Match 1; Match 2; Match 3 |"""
+        
+        example_off = """
+        | Header 1 | Header 2      |
+        |------------------|-------------------|
+        | Data...       | Match 1         |
+        | Data...       | Match 2         |
+        | Data...       | Match 3         |"""
+        
+        try:
+            if self.ui.checkbox_group_matches.isChecked():
+                self.ui.text_edit_program_output.setText(
+                    f"Group Matches is enabled. All matches for each XPath expression will be grouped together in the CSV output.\n{example_on}"
+                )
+            else:
+                self.ui.text_edit_program_output.setText(
+                    f"Group Matches is disabled. Each match will be listed separately in the CSV output.\n{example_off}"
                 )
         except Exception as ex:
             message = f"An exception of type {type(ex).__name__} occurred. Arguments: {ex.args!r}"
