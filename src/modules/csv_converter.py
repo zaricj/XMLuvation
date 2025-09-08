@@ -9,6 +9,7 @@ class CSVConversionSignals(QObject):
     error_occurred = Signal(str, str)  # QMessageBox.critical
     warning_occurred = Signal(str, str)  # QMessageBox.warning
     info_occurred = Signal(str, str)  # QMessageBox.information
+    tab2_program_output_append = Signal(str) # Append to CSV Output QTextEdit
 
 class CSVConversionThread(QRunnable):
     """Handles methods and logic for csv_conversion_groupbox"""
@@ -54,9 +55,10 @@ class CSVConversionThread(QRunnable):
             try:
                 # Detect delimiter
                 with open(self.csv_file_to_convert, encoding="utf-8") as file:
-                    sample = file.read(1024)
+                    sample = file.read(2048)
                     sniffer = csv.Sniffer()
                     delimiter = sniffer.sniff(sample).delimiter
+                    self.signals.tab2_program_output_append.emit(f"Detected delimiter: '{delimiter}'")
             except Exception as e:
                 message = f"An error exception occurred while detecting the delimiter: {e}. Please ensure the file is a valid CSV."
                 self.signals.warning_occurred.emit("Delimiter Detection Error", message)
@@ -111,6 +113,7 @@ class CSVConversionThread(QRunnable):
                 return
 
             # Execute conversion
+            self.signals.tab2_program_output_append.emit("Starting conversion, please wait...")
             convert_func(df, output_file_path)
 
             self.signals.info_occurred.emit(
