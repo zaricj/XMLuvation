@@ -5,8 +5,8 @@ description = "A XML searcher with XPath expressions, with the ability to export
 readme = "README.md"
 requires-python = ">=3.12"
 dependencies = [
-    "lxml>=6.0.0",
-    "nuitka>=2.7.12",
+    "auto-py-to-exe>=2.47.0",
+    "lxml>=6.0.1",
     "pandas>=2.3.1",
     "pip>=25.2",
     "pyarrow>=21.0.0",
