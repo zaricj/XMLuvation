@@ -1,0 +1,24 @@
+[project]
+name = "xmluvation"
+version = "1.2.1"
+description = "A XML searcher with XPath expressions, with the ability to export matches to a CSV file."
+readme = "README.md"
+requires-python = ">=3.12"
+dependencies = [
+    "auto-py-to-exe>=2.47.0",
+    "lxml>=6.0.1",
+    "pandas>=2.3.1",
+    "pip>=25.2",
+    "pyarrow>=21.0.0",
+    "pyside6>=6.9.1",
+    "xlsxwriter>=3.2.5",
+]
+
+[tool.pyside6-project]
+files = ["src/main.py"]
+include = [
+    "src/modules/",
+    "src/resources/",
+    "src/widget/",
+    "src/config/"
+]
