@@ -1,9 +1,9 @@
 # -*- coding: utf-8 -*-
 
 ################################################################################
-## Form generated from reading UI file 'XMLuvationlstHlU.ui'
+## Form generated from reading UI file 'XMLuvation.ui'
 ##
-## Created by: Qt User Interface Compiler version 6.9.0
+## Created by: Qt User Interface Compiler version 6.9.1
 ##
 ## WARNING! All changes made in this file will be lost when recompiling UI file!
 ################################################################################
@@ -21,7 +21,6 @@ from PySide6.QtWidgets import (QApplication, QCheckBox, QComboBox, QFrame,
     QMainWindow, QProgressBar, QPushButton, QRadioButton,
     QSizePolicy, QSpacerItem, QSplitter, QTabWidget,
     QTextEdit, QVBoxLayout, QWidget)
-
 from resources.ui import xmluvation_resources_rc
 
 class Ui_MainWindow(object):
@@ -530,15 +529,11 @@ class Ui_MainWindow(object):
 
         self.button_pass_csv_to_converter = QLabel(self.group_box_export_to_csv)
         self.button_pass_csv_to_converter.setObjectName(u"button_pass_csv_to_converter")
-        font6 = QFont()
-        font6.setFamilies([u"Microsoft YaHei UI"])
-        font6.setPointSize(10)
-        font6.setBold(False)
-        font6.setItalic(False)
-        font6.setUnderline(True)
-        font6.setStrikeOut(False)
-        self.button_pass_csv_to_converter.setFont(font6)
+        self.button_pass_csv_to_converter.setFont(font3)
         self.button_pass_csv_to_converter.setLayoutDirection(Qt.LayoutDirection.LeftToRight)
+        self.button_pass_csv_to_converter.setStyleSheet(u"")
+        self.button_pass_csv_to_converter.setFrameShape(QFrame.Shape.NoFrame)
+        self.button_pass_csv_to_converter.setFrameShadow(QFrame.Shadow.Plain)
         self.button_pass_csv_to_converter.setAlignment(Qt.AlignmentFlag.AlignRight|Qt.AlignmentFlag.AlignTrailing|Qt.AlignmentFlag.AlignVCenter)
 
         self.horizontalLayout_2.addWidget(self.button_pass_csv_to_converter)
@@ -706,15 +701,15 @@ class Ui_MainWindow(object):
         sizePolicy1.setHeightForWidth(self.label_csv_conversion_title.sizePolicy().hasHeightForWidth())
         self.label_csv_conversion_title.setSizePolicy(sizePolicy1)
         self.label_csv_conversion_title.setMaximumSize(QSize(16777215, 60))
-        font7 = QFont()
-        font7.setFamilies([u"Microsoft YaHei UI"])
-        font7.setPointSize(32)
-        font7.setBold(True)
-        font7.setItalic(False)
-        font7.setUnderline(False)
-        font7.setStrikeOut(False)
-        font7.setKerning(True)
-        self.label_csv_conversion_title.setFont(font7)
+        font6 = QFont()
+        font6.setFamilies([u"Microsoft YaHei UI"])
+        font6.setPointSize(32)
+        font6.setBold(True)
+        font6.setItalic(False)
+        font6.setUnderline(False)
+        font6.setStrikeOut(False)
+        font6.setKerning(True)
+        self.label_csv_conversion_title.setFont(font6)
         self.label_csv_conversion_title.setStyleSheet(u"color: rgb(255, 200, 87);")
 
         self.verticalLayout_13.addWidget(self.label_csv_conversion_title)
@@ -807,14 +802,14 @@ class Ui_MainWindow(object):
         sizePolicy9.setVerticalStretch(0)
         sizePolicy9.setHeightForWidth(self.label_title_profile_cleanup.sizePolicy().hasHeightForWidth())
         self.label_title_profile_cleanup.setSizePolicy(sizePolicy9)
-        font8 = QFont()
-        font8.setFamilies([u"Microsoft YaHei UI"])
-        font8.setPointSize(32)
-        font8.setBold(True)
-        font8.setItalic(False)
-        font8.setUnderline(False)
-        font8.setStrikeOut(False)
-        self.label_title_profile_cleanup.setFont(font8)
+        font7 = QFont()
+        font7.setFamilies([u"Microsoft YaHei UI"])
+        font7.setPointSize(32)
+        font7.setBold(True)
+        font7.setItalic(False)
+        font7.setUnderline(False)
+        font7.setStrikeOut(False)
+        self.label_title_profile_cleanup.setFont(font7)
         self.label_title_profile_cleanup.setStyleSheet(u"color: rgb(255, 200, 87);")
 
         self.verticalLayout_10.addWidget(self.label_title_profile_cleanup)
@@ -931,6 +926,7 @@ class Ui_MainWindow(object):
         self.horizontalLayout_8.setObjectName(u"horizontalLayout_8")
         self.text_edit_csv_conversion_tab_program_output = QTextEdit(self.group_box_tab2_program_output)
         self.text_edit_csv_conversion_tab_program_output.setObjectName(u"text_edit_csv_conversion_tab_program_output")
+        self.text_edit_csv_conversion_tab_program_output.setFont(font3)
         self.text_edit_csv_conversion_tab_program_output.setReadOnly(True)
 
         self.horizontalLayout_8.addWidget(self.text_edit_csv_conversion_tab_program_output)
@@ -1021,13 +1017,13 @@ class Ui_MainWindow(object):
 #if QT_CONFIG(tooltip)
         self.button_start_csv_export.setToolTip(QCoreApplication.translate("MainWindow", u"Search the XML files and export the results to the CSV file.", None))
 #endif // QT_CONFIG(tooltip)
-        self.button_start_csv_export.setText(QCoreApplication.translate("MainWindow", u"Export", None))
+        self.button_start_csv_export.setText(QCoreApplication.translate("MainWindow", u"Search", None))
         self.label_options.setText(QCoreApplication.translate("MainWindow", u"Option:", None))
 #if QT_CONFIG(tooltip)
         self.checkbox_group_matches.setToolTip(QCoreApplication.translate("MainWindow", u"Group matches in the CSV using semicolons; if unchecked, each match is written to a separate row.", None))
 #endif // QT_CONFIG(tooltip)
         self.checkbox_group_matches.setText(QCoreApplication.translate("MainWindow", u"Group matches", None))
-        self.button_pass_csv_to_converter.setText(QCoreApplication.translate("MainWindow", u"<a href=\"#\">Pass CSV Path to Converter</a>", None))
+        self.button_pass_csv_to_converter.setText(QCoreApplication.translate("MainWindow", u"<a href=\"#\" style=\"color: #ffc857\">Pass CSV Path to Converter</a>", None))
         self.group_box_program_output.setTitle(QCoreApplication.translate("MainWindow", u"PROGRAM OUTPUT", None))
         self.group_box_xml_output.setTitle(QCoreApplication.translate("MainWindow", u"XML OUTPUT", None))
         self.line_edit_xml_output_find_text.setPlaceholderText(QCoreApplication.translate("MainWindow", u"Find text in summary...", None))

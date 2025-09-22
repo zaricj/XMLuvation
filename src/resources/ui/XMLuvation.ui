@@ -1317,7 +1317,7 @@ font: bold;</string>
                     <string>Search the XML files and export the results to the CSV file.</string>
                    </property>
                    <property name="text">
-                    <string>Export</string>
+                    <string>Search</string>
                    </property>
                   </widget>
                  </item>
@@ -1385,15 +1385,24 @@ font: bold;</string>
                      <pointsize>10</pointsize>
                      <italic>false</italic>
                      <bold>false</bold>
-                     <underline>true</underline>
+                     <underline>false</underline>
                      <strikeout>false</strikeout>
                     </font>
                    </property>
                    <property name="layoutDirection">
                     <enum>Qt::LayoutDirection::LeftToRight</enum>
                    </property>
+                   <property name="styleSheet">
+                    <string notr="true"/>
+                   </property>
+                   <property name="frameShape">
+                    <enum>QFrame::Shape::NoFrame</enum>
+                   </property>
+                   <property name="frameShadow">
+                    <enum>QFrame::Shadow::Plain</enum>
+                   </property>
                    <property name="text">
-                    <string>&lt;a href=&quot;#&quot;&gt;Pass CSV Path to Converter&lt;/a&gt;</string>
+                    <string>&lt;a href=&quot;#&quot; style=&quot;color: #ffc857&quot;&gt;Pass CSV Path to Converter&lt;/a&gt;</string>
                    </property>
                    <property name="alignment">
                     <set>Qt::AlignmentFlag::AlignRight|Qt::AlignmentFlag::AlignTrailing|Qt::AlignmentFlag::AlignVCenter</set>
@@ -2481,6 +2490,16 @@ Supported output file types: Excel, Markdown, HTML and JSON</string>
             <layout class="QHBoxLayout" name="horizontalLayout_8">
              <item>
               <widget class="QTextEdit" name="text_edit_csv_conversion_tab_program_output">
+               <property name="font">
+                <font>
+                 <family>Microsoft YaHei UI</family>
+                 <pointsize>10</pointsize>
+                 <italic>false</italic>
+                 <bold>false</bold>
+                 <underline>false</underline>
+                 <strikeout>false</strikeout>
+                </font>
+               </property>
                <property name="readOnly">
                 <bool>true</bool>
                </property>
