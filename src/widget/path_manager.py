@@ -31,7 +31,7 @@ class CustomPathsManager(QWidget):
         self.main_window = main_window # Keep reference to the main window
 
         # Create and setup ui from .ui file
-        self.ui = Ui_Form() # Assuming Ui_Form is correctly imported and available
+        self.ui = Ui_Settings() # Assuming Ui_Form is correctly imported and available
         self.ui.setupUi(self)
 
         # Initialize ConfigHandler, passing self (CustomPathsManager) as the parent for QMessageBox
