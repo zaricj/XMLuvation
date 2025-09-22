@@ -2,7 +2,7 @@ from PySide6.QtWidgets import QWidget, QMessageBox, QMainWindow
 import os
 
 from modules.config_handler import ConfigHandler
-from resources.ui.CustomPathsManager_ui import Ui_Form
+from resources.ui.CustomPathsManager_ui import Ui_Settings
 
 CURRENT_DIR = os.path.dirname(os.path.abspath(__file__))
 
