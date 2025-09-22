@@ -785,14 +785,14 @@ class UIEventHandler:
 
     def show_context_menu(self, position):
         context_menu = QMenu(self.main_window)
-        delete_action = QAction("Delete Selected", self.main_window)
-        delete_all_action = QAction("Delete All", self.main_window)
+        remove_action = QAction("Remove Selected", self.main_window)
+        remove_all_action = QAction("Remove All", self.main_window)
 
-        context_menu.addAction(delete_action)
-        context_menu.addAction(delete_all_action)
+        context_menu.addAction(remove_action)
+        context_menu.addAction(remove_all_action)
 
-        delete_action.triggered.connect(self.remove_selected_item)
-        delete_all_action.triggered.connect(self.remove_all_items)
+        remove_action.triggered.connect(self.remove_selected_item)
+        remove_all_action.triggered.connect(self.remove_all_items)
 
         # Show the context menu at the cursor's current position
         context_menu.exec(self.ui.list_widget_xpath_expressions.mapToGlobal(position))
