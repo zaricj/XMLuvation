@@ -488,7 +488,7 @@ class MainWindow(QMainWindow):
 
     @Slot(int)
     def update_ProgressBar(self, progress: int):
-        self.ui.progressbar_main.setValue(progress)
+        self.ui.progressbar_main.setValue(progress) 
 
     def get_thread_pool_status(self) -> str:
         """Get current thread pool status (useful for debugging).
