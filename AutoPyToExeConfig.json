@@ -7,7 +7,7 @@
   },
   {
    "optionDest": "filenames",
-   "value": "C:/Users/ZaricJ/Documents/Main/02_Entwicklung_und_Tools/GitHub/XMLuvation/src/xmluvation/gui/main.py"
+   "value": "C:/Users/ZaricJ/Documents/Entwicklung_und_Tools/GitHub/XMLuvation/src/main.py"
   },
   {
    "optionDest": "onefile",
@@ -19,7 +19,7 @@
   },
   {
    "optionDest": "icon_file",
-   "value": "C:/Users/ZaricJ/Documents/Main/02_Entwicklung_und_Tools/GitHub/XMLuvation/src/xmluvation/resources/icons/xml_256px.ico"
+   "value": "C:/Users/ZaricJ/Documents/Entwicklung_und_Tools/GitHub/XMLuvation/src/resources/icons/xml_256px.ico"
   },
   {
    "optionDest": "name",
@@ -63,27 +63,27 @@
   },
   {
    "optionDest": "pathex",
-   "value": "C:/Users/ZaricJ/Documents/Main/02_Entwicklung_und_Tools/GitHub/XMLuvation/src"
+   "value": "C:/Users/ZaricJ/Documents/Entwicklung_und_Tools/GitHub/XMLuvation/src"
   },
   {
    "optionDest": "datas",
-   "value": "C:/Users/ZaricJ/Documents/Main/02_Entwicklung_und_Tools/GitHub/XMLuvation/src/xmluvation/config;config/"
+   "value": "C:/Users/ZaricJ/Documents/Entwicklung_und_Tools/GitHub/XMLuvation/src/config;config/"
   },
   {
    "optionDest": "datas",
-   "value": "C:/Users/ZaricJ/Documents/Main/02_Entwicklung_und_Tools/GitHub/XMLuvation/src/xmluvation/gui;gui/"
+   "value": "C:/Users/ZaricJ/Documents/Entwicklung_und_Tools/GitHub/XMLuvation/src/gui;gui/"
   },
   {
    "optionDest": "datas",
-   "value": "C:/Users/ZaricJ/Documents/Main/02_Entwicklung_und_Tools/GitHub/XMLuvation/src/xmluvation/modules;modules/"
+   "value": "C:/Users/ZaricJ/Documents/Entwicklung_und_Tools/GitHub/XMLuvation/src/modules;modules/"
   },
   {
    "optionDest": "datas",
-   "value": "C:/Users/ZaricJ/Documents/Main/02_Entwicklung_und_Tools/GitHub/XMLuvation/src/xmluvation/resources;resources/"
+   "value": "C:/Users/ZaricJ/Documents/Entwicklung_und_Tools/GitHub/XMLuvation/src/resources;resources/"
   },
   {
    "optionDest": "datas",
-   "value": "C:/Users/ZaricJ/Documents/Main/02_Entwicklung_und_Tools/GitHub/XMLuvation/src/xmluvation/resources/ui;ui/"
+   "value": "C:/Users/ZaricJ/Documents/Entwicklung_und_Tools/GitHub/XMLuvation/src/resources/ui;ui/"
   }
  ],
  "nonPyinstallerOptions": {
