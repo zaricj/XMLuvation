@@ -333,7 +333,7 @@ class OptimizedCSVExportThread(QRunnable):
             return
         
         self.signals.program_output_progress_append.emit(
-            f"Starting CSV export of {len(xml_files)} files with {self.max_threads} threads..."
+            f"Starting search and CSV export of {len(xml_files)} files with {self.max_threads} threads..."
         )
         self.signals.visible_state_widget.emit(True)
         
