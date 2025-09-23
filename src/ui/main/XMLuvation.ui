@@ -324,7 +324,7 @@
    <string>XMLuvation</string>
   </property>
   <property name="windowIcon">
-   <iconset resource="xmluvation_resources.qrc">
+   <iconset resource="../../resources/qrc/xmluvation_resources.qrc">
     <normaloff>:/icons/xml_256px.ico</normaloff>:/icons/xml_256px.ico</iconset>
   </property>
   <property name="autoFillBackground">
@@ -2518,7 +2518,7 @@ Supported output file types: Excel, Markdown, HTML and JSON</string>
   </widget>
  </widget>
  <resources>
-  <include location="xmluvation_resources.qrc"/>
+  <include location="../../resources/qrc/xmluvation_resources.qrc"/>
  </resources>
  <connections/>
 </ui>

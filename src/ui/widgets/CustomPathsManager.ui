@@ -14,7 +14,7 @@
    <string>Custom Paths Manager</string>
   </property>
   <property name="windowIcon">
-   <iconset resource="xmluvation_resources.qrc">
+   <iconset resource="../../resources/qrc/xmluvation_resources.qrc">
     <normaloff>:/icons/xml_256px.ico</normaloff>:/icons/xml_256px.ico</iconset>
   </property>
   <property name="styleSheet">
@@ -231,7 +231,7 @@
   </layout>
  </widget>
  <resources>
-  <include location="xmluvation_resources.qrc"/>
+  <include location="../../resources/qrc/xmluvation_resources.qrc"/>
  </resources>
  <connections/>
 </ui>
