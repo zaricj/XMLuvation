@@ -84,10 +84,9 @@ class UIEventHandler:
     def connect_menu_actions(self):
         """Connect all menu actions"""
         self.main_window._add_custom_path_action.triggered.connect(self.add_custom_path)
-        self.main_window.clear_recent_xpath_expressions_action.triggered.connect(
-            self.clear_recent_xpath_expressions
-        )
+        self.main_window.clear_recent_xpath_expressions_action.triggered.connect(self.clear_recent_xpath_expressions)
         self.main_window.clear_action.triggered.connect(self.clear_output)
+        
         self.main_window.open_input_action.triggered.connect(
             lambda: self.open_folder_in_file_explorer(
                 self.ui.line_edit_xml_folder_path_input.text()
@@ -103,27 +102,18 @@ class UIEventHandler:
                 os.path.dirname(self.ui.line_edit_csv_conversion_path_input.text())
             )
         )
-        self.main_window.open_paths_manager.triggered.connect(
-            self.open_paths_manager_window
-        )
+        self.main_window.open_paths_manager.triggered.connect(self.open_paths_manager_window)
         self.main_window.xpath_help_action.triggered.connect(self.open_web_xpath_help)
         self.main_window.toggle_theme_action.triggered.connect(self.change_theme)
 
         # Connect context menu signals
-        self.ui.list_widget_xpath_expressions.customContextMenuRequested.connect(
-            self.show_context_menu
-        )
-        self.ui.text_edit_xml_output.customContextMenuRequested.connect(
-            self.show_custom_context_menu
-        )
+        self.ui.list_widget_xpath_expressions.customContextMenuRequested.connect(self.show_context_menu)
+        self.ui.text_edit_xml_output.customContextMenuRequested.connect(self.show_custom_context_menu)
 
         # Connect recent xpath expressions menu
         for action in self.main_window.recent_xpath_expressions_menu.actions():
             action.triggered.connect(
-                lambda checked, exp=action.text(): self.set_xpath_expression_in_input(
-                    exp
-                )
-            )
+                lambda checked, exp=action.text(): self.set_xpath_expression_in_input(exp))
 
     def connect_events(self) -> None:
         """Connect all events to the UI elements and Setup all signal-slot connections"""
@@ -136,20 +126,12 @@ class UIEventHandler:
         self.shortcut_find.activated.connect(self.toggle_xml_output_search_widgets)
 
         # QLineWidgets
-        self.ui.line_edit_xml_folder_path_input.textChanged.connect(
-            self.update_xml_file_count
-        )
-        self.ui.line_edit_profile_cleanup_csv_file_path.textChanged.connect(
-            self.on_csv_profile_cleanup_input_changed
-        )
+        self.ui.line_edit_xml_folder_path_input.textChanged.connect(self.update_xml_file_count)
+        self.ui.line_edit_profile_cleanup_csv_file_path.textChanged.connect(self.on_csv_profile_cleanup_input_changed)
 
         # Combo boxes
-        self.ui.combobox_tag_names.currentTextChanged.connect(
-            self.main_window.cb_state_controller.on_tag_name_changed
-        )
-        self.ui.combobox_attribute_names.currentTextChanged.connect(
-            self.main_window.cb_state_controller.on_attribute_name_changed
-        )
+        self.ui.combobox_tag_names.currentTextChanged.connect(self.main_window.cb_state_controller.on_tag_name_changed)
+        self.ui.combobox_attribute_names.currentTextChanged.connect(self.main_window.cb_state_controller.on_attribute_name_changed)
 
         # ========= START QPushButtons START ========= #
         
@@ -160,9 +142,7 @@ class UIEventHandler:
         self.ui.button_browse_xml_folder.clicked.connect(
             lambda: self.browse_folder_helper(
                 dialog_message="Select directory that contains XML files",
-                line_widget=self.ui.line_edit_xml_folder_path_input,
-            )
-        )
+                line_widget=self.ui.line_edit_xml_folder_path_input))
         self.ui.button_read_xml.clicked.connect(self.on_read_xml_file_event)
 
         # File browsing for csv evaluation export
@@ -176,43 +156,31 @@ class UIEventHandler:
         )
         # XPath building
         self.ui.button_build_xpath.clicked.connect(self.on_build_xpath_expression_event)
-
-        self.ui.button_add_xpath_to_list.clicked.connect(
-            self.on_xpath_add_to_list_event
-        )
-
+        self.ui.button_add_xpath_to_list.clicked.connect( self.on_xpath_add_to_list_event)
+        
         # CSV export
         self.ui.button_start_csv_export.clicked.connect(self.on_csv_export_event)
-
         self.ui.button_abort_csv_export.clicked.connect(self.on_csv_export_stop_event)
-
         self.ui.button_browse_csv_conversion_path_input.clicked.connect(
             lambda: self.browse_file_helper(
                 dialog_message="Select csv file for conversion",
                 line_widget=self.ui.line_edit_csv_conversion_path_input,
-                file_extension_filter="CSV File (*.csv)",
-            )
-        )
+                file_extension_filter="CSV File (*.csv)"))
+        
         self.ui.button_csv_conversion_convert.clicked.connect(self.on_csv_convert_event)
 
         self.ui.button_profile_cleanup_browse_csv_file_path.clicked.connect(
             lambda: self.browse_file_helper(
                 dialog_message="Select csv file",
                 line_widget=self.ui.line_edit_profile_cleanup_csv_file_path,
-                file_extension_filter="CSV File (*.csv)",
-            )
-        )
+                file_extension_filter="CSV File (*.csv)"))
 
         self.ui.button_profile_cleanup_browse_folder_path.clicked.connect(
             lambda: self.browse_folder_helper(
                 dialog_message="Select directory that contains XML files",
-                line_widget=self.ui.line_edit_profile_cleanup_folder_path,
-            )
-        )
+                line_widget=self.ui.line_edit_profile_cleanup_folder_path))
 
-        self.ui.button_profile_cleanup_cleanup_start.clicked.connect(
-            self.on_lobster_profile_cleanup_event
-        )
+        self.ui.button_profile_cleanup_cleanup_start.clicked.connect(self.on_lobster_profile_cleanup_event)
 
         self.ui.button_drop_csv_header.clicked.connect(self.on_csv_header_drop_event)
 
@@ -245,7 +213,7 @@ class UIEventHandler:
             self.ui.button_find_next.setHidden(True)
             self.ui.button_find_previous.setHidden(True)
 
-    # Statusbar update method
+    @Slot() # Statusbar update method
     def update_xml_file_count(self):
         """Updated the current XML Files found in the selected folder from QLineEdit' line_edit_xml_folder_path_input'"""
         try:
@@ -264,6 +232,7 @@ class UIEventHandler:
                 f"Error counting XML files: {message}"
             )
 
+    @Slot()
     def on_csv_profile_cleanup_input_changed(self):
         csv_file_path = self.ui.line_edit_profile_cleanup_csv_file_path.text()
         column_to_drop = self.ui.combobox_csv_headers.currentText()
@@ -280,6 +249,7 @@ class UIEventHandler:
             drop_header_button=drop_header_button,
         ).on_csv_input_file_path_changed()
 
+    @Slot()
     def add_custom_path(self):
         name, ok = QInputDialog.getText(
             self, "Add Custom Path", "Enter a name for the path:"
@@ -301,6 +271,7 @@ class UIEventHandler:
                 self.update_paths_menu()  # Refresh the menu to show the new path
 
     # === Helper Methods === #
+    @Slot()
     def browse_folder_helper(self, dialog_message: str, line_widget: QLineEdit) -> None:
         """File dialog for folder browsing, sets the path of the selected folder in a specified QLineEdit Widget
 
@@ -352,7 +323,7 @@ class UIEventHandler:
                 "An exception occurred in browse folder method",
                 message
             )
-
+    @Slot()
     def browse_save_file_as_helper(
         self, dialog_message: str, line_widget: QLineEdit, file_extension_filter: str, filename_placeholder: str = ""
     ) -> None:
@@ -400,7 +371,7 @@ class UIEventHandler:
                 self.main_window, "Exception on starting to pare xml file", message
             )
 
-    # On read XML file button has been clicked
+    @Slot() # On read XML file button has been clicked
     def on_read_xml_file_event(self):
         """On read XML file button clicked, opens FileDialog and after choosing a XML file, it's content is then inserted into a QTextEdit widget"""
         try:
@@ -420,7 +391,7 @@ class UIEventHandler:
                 self.main_window, "Exception reading xml file", message
             )
 
-    # On build xpath button has been clicked
+    @Slot() # On build xpath button has been clicked
     def on_build_xpath_expression_event(self):
         """Build XPath expression based on selected combobox values."""
         try:
@@ -449,7 +420,7 @@ class UIEventHandler:
                 self.main_window, "Exception on building xpath expression", message
             )
 
-    # On csv export (main core logic of the app) button has been clicked
+    @Slot() # On csv export (main core logic of the app) button has been clicked
     def on_csv_export_event(self):
         """Initializes and starts the CSV export in a new thread."""
         try:
@@ -481,6 +452,7 @@ class UIEventHandler:
                 message
             )
 
+    @Slot()
     def on_csv_export_stop_event(self):
         """Signals the currently running CSV export to stop."""
         try:
@@ -501,7 +473,7 @@ class UIEventHandler:
                 self.main_window, "Exception on stopping CSV export", message
             )
 
-    # On added xpath to list button has been clicked
+    @Slot() # On added xpath to list button has been clicked
     def on_xpath_add_to_list_event(self):
         try:
             """Adds entered XPath Expression to the QListWidget"""
@@ -557,7 +529,7 @@ class UIEventHandler:
                 message
             )
 
-    # On QLabel "Pass CSV Path to Converter" has been clicked event
+    @Slot() # On QLabel "Pass CSV Path to Converter" has been clicked event
     def pass_csv_path_to_converter_csv_input(self):
         try:
             if self.main_window.ui.line_edit_csv_output_path.text():
@@ -579,7 +551,7 @@ class UIEventHandler:
             message = f"An exception of type {type(ex).__name__} occurred. Arguments: {ex.args!r}"
             QMessageBox.critical(self.main_window, "Exception on starting csv convert to other filetype", message)
             
-    # On csv convert button has been clicked in second tab
+    @Slot() # On csv convert button has been clicked in second tab
     def on_csv_convert_event(self):
         try:
             # Initialize the UI elements and pass them to the class
@@ -604,7 +576,7 @@ class UIEventHandler:
                 message
             )
 
-    # On cleanup lobster profiles button has been clicked
+    @Slot() # On cleanup lobster profiles button has been clicked
     def on_lobster_profile_cleanup_event(self):
         try:
             csv_file = self.ui.line_edit_profile_cleanup_csv_file_path.text()
@@ -626,7 +598,7 @@ class UIEventHandler:
                 message
             )
 
-    # On CSV header drop button has been clicked
+    @Slot() # On CSV header drop button has been clicked
     def on_csv_header_drop_event(self):
         csv_file_path = self.ui.line_edit_profile_cleanup_csv_file_path.text()
         column_to_drop = self.ui.combobox_csv_headers.currentText()
@@ -710,13 +682,14 @@ class UIEventHandler:
                 f"An error occurred: {message}"
             )
 
+    @Slot()
     def update_statusbar_xpath_listbox_count(self):
         self.counter = self.ui.list_widget_xpath_expressions.count()
         if self.counter != 0:
             self.ui.statusbar_xpath_expressions.setText(
                 f"XPath expressions in list: {self.counter}"
             )
-
+    @Slot()
     def add_recent_xpath_expression(self, expression: str):
         """Adds a new XPath expression to the recent expressions list and updates the menu."""
         MAX_RECENT = 10
@@ -729,7 +702,7 @@ class UIEventHandler:
                 "recent_xpath_expressions", self.main_window.recent_xpath_expressions
             )
             self.update_recent_xpath_expressions_menu()
-
+    @Slot()
     def setup_widgets_and_visibility_states(self):
         """Setup widgets states"""
         # Hide buttons/widgets
@@ -739,6 +712,7 @@ class UIEventHandler:
         self.ui.label_file_processing.setHidden(True)
         self.ui.line_edit_xml_output_find_text.setHidden(True)
 
+    @Slot()
     def remove_selected_item(self):
         """Removes the selected item that has been added to the QListWidget and the xpath_filters list"""
         try:
@@ -761,7 +735,7 @@ class UIEventHandler:
             self.ui.text_edit_program_output.setText(
                 f"Error removing selected item from list: {message}"
             )
-
+    @Slot()
     def remove_all_items(self):
         """Removes all items that have been added to the QListWidget and the xpath_filters list"""
         try:
@@ -821,6 +795,7 @@ class UIEventHandler:
         self.ui.button_start_csv_export.setDisabled(state)
         self.ui.line_edit_xml_folder_path_input.setReadOnly(state)
         self.ui.line_edit_csv_output_path.setReadOnly(state)
+        
     # ======= End FUNCTIONS FOR create_export_evaluation_group ======= #
 
     def set_xpath_expression_in_input(self, expression: str):
@@ -843,8 +818,8 @@ class UIEventHandler:
     def update_paths_menu(self):
         """
         Updates the 'Path' menu by clearing all dynamic custom path actions
-        and re-adding them based on the current configuration. Fixed actions
-        ('Add Custom Path', 'Remove Custom Path') are preserved.
+        and re-adding them based on the current configuration. Fixed action
+        'Add Custom Path' is preserved.
         """
         # 1. Clear ALL actions from the menu;
         # this is the most reliable way to ensure no stale actions remain.
