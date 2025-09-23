@@ -8,6 +8,11 @@ from modules.file_cleanup import create_lobster_profile_cleaner, create_csv_colu
 from modules.xml_parser import create_xml_parser
 from modules.csv_converter import create_csv_conversion_thread
 
+from typing import TYPE_CHECKING
+
+if TYPE_CHECKING:
+    from main import MainWindow  # import only for type hints, not at runtime
+
 
 class ComboboxStateHandler:
     """
@@ -25,7 +30,7 @@ class ComboboxStateHandler:
     - 'element_count' --> len(list(root.iter())),
     - 'encoding' --> XMLUtils.get_xml_encoding(self.get_xml_file_path)
     """
-    def __init__(self, main_window: QMainWindow, parsed_xml_data: dict, cb_tag_name: QComboBox, cb_tag_value: QComboBox, cb_attr_name: QComboBox, cb_attr_value: QComboBox):
+    def __init__(self, main_window: "MainWindow", parsed_xml_data: dict, cb_tag_name: QComboBox, cb_tag_value: QComboBox, cb_attr_name: QComboBox, cb_attr_value: QComboBox):
         """Constructor of ComboboxState class
 
         Args:
@@ -172,7 +177,7 @@ class ComboboxStateHandler:
 
 class CSVConversionHandler:
     """Handles methods and logic for csv_conversion_groupbox"""
-    def __init__(self, main_window: QMainWindow, csv_file_to_convert: str, extension_type: str, write_index: bool):
+    def __init__(self, main_window: "MainWindow", csv_file_to_convert: str, extension_type: str, write_index: bool):
         self.main_window = main_window
         self.csv_file_to_convert = csv_file_to_convert
         self.extension_type = extension_type # Value of the combobox self.ui.combobox_csv_conversion_output_type
@@ -197,7 +202,7 @@ class AddXPathExpressionToListHandler:
     """
     Handles methods and logic of the Button event for adding XPath Expression.
     """
-    def __init__(self, main_window: QMainWindow, xpath_expression: str, xpath_filters: list, list_widget_xpath_expressions: QListWidget):
+    def __init__(self, main_window: "MainWindow", xpath_expression: str, xpath_filters: list, list_widget_xpath_expressions: QListWidget):
         self.main_window = main_window
         self.xpath_expression = xpath_expression
         self.xpath_filters = xpath_filters
@@ -298,7 +303,7 @@ class SearchAndExportToCSVHandler:
     """
     Handles methods and logic of a button event that starts the search with XPath Expression and export of a component.
     """
-    def __init__(self, main_window: QMainWindow, xml_folder_path: str, xpath_filters: list, csv_folder_output_path: str, csv_headers_input: str, group_matches_flag: bool, set_max_threads: int):
+    def __init__(self, main_window: "MainWindow", xml_folder_path: str, xpath_filters: list, csv_folder_output_path: str, csv_headers_input: str, group_matches_flag: bool, set_max_threads: int):
         self.main_window = main_window
         self.xml_folder_path = xml_folder_path
         self.xpath_filters = xpath_filters
@@ -341,7 +346,7 @@ class SearchAndExportToCSVHandler:
 
 class LobsterProfileExportCleanupHandler:
     """Handles methods and logic of the lobster profile cleanup based on the selected csv file and the folder path that contains all lobster profile exports as XML files."""
-    def __init__(self, main_window: QMainWindow, csv_file_path: str, profiles_folder_path: str):
+    def __init__(self, main_window: "MainWindow", csv_file_path: str, profiles_folder_path: str):
         self.main_window = main_window
         self.csv_file_path = csv_file_path
         self.profiles_folder_path = profiles_folder_path
@@ -362,7 +367,7 @@ class LobsterProfileExportCleanupHandler:
 
 class CSVColumnDropHandler:
     """_summary_"""
-    def __init__(self, main_window: QMainWindow = None, csv_file_path: str = None, column_to_drop: str = None, column_to_drop_index: int = None, csv_header_combobox: QComboBox = None, drop_header_button: QPushButton = None):
+    def __init__(self, main_window: "MainWindow" = None, csv_file_path: str = None, column_to_drop: str = None, column_to_drop_index: int = None, csv_header_combobox: QComboBox = None, drop_header_button: QPushButton = None):
         self.main_window = main_window
         self.csv_file_path = csv_file_path
         self.column_to_drop = column_to_drop
@@ -401,7 +406,7 @@ class CSVColumnDropHandler:
 
 class ParseXMLFileHandler:
     """Handles methods and logic of the XML parsing."""
-    def __init__(self, main_window: QMainWindow, xml_file_path: str):
+    def __init__(self, main_window: "MainWindow", xml_file_path: str):
         self.main_window = main_window
         self.xml_file_path = xml_file_path
 
@@ -421,7 +426,7 @@ class ParseXMLFileHandler:
 
 class XPathBuildHandler:
     """Handles methods and logic of the XPath Build event based on the combobox values"""
-    def __init__(self, main_window: QMainWindow,
+    def __init__(self, main_window: "MainWindow",
                     line_edit_xpath_builder: QLineEdit,
                     tag_name_combo: QComboBox,
                     tag_value_combo: QComboBox,
@@ -477,7 +482,7 @@ class XPathBuildHandler:
 class GenerateCSVHeaderHandler:
     """Handles methods and logic of the csv generation based on the entered XPath Expression to the QListWidget."""
     
-    def __init__(self, main_window: QMainWindow,
+    def __init__(self, main_window: "MainWindow",
                     tag_name_combo: QComboBox,
                     tag_value_combo: QComboBox,
                     attribute_name_combo: QComboBox,
@@ -551,7 +556,7 @@ class GenerateCSVHeaderHandler:
 class SearchXMLOutputTextHandler:
     """Handles methods and logic of the search functionality of the XML Output Text in the QTextEdit"""
     def __init__(self,
-                main_window: QMainWindow,
+                main_window: "MainWindow",
                 line_edit_xml_output_find_text: QLineEdit,
                 text_edit_xml_output: QTextEdit
                 ):
