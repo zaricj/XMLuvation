@@ -188,7 +188,7 @@ class CSVConversionHandler:
             """Initializes and starts the CSV conversion in a new thread."""
             # Create the conversion thread
             converter = create_csv_conversion_thread("convert_csv", self.csv_file_to_convert, self.extension_type, self.write_index)
-            self.main_window._connect_csv_conversion_signals(converter)
+            self.main_window.connect_csv_conversion_signals(converter)
             # Start the conversion thread
             self.main_window.thread_pool.start(converter)
 
@@ -269,7 +269,7 @@ class AddXPathExpressionToListHandler:
             #        QMessageBox.warning(self.main_window, "XPathSyntaxError", f"Invalid XPath expression: {str(e)}")
             #else:
             if self.xpath_expression and not self._is_duplicate(self.xpath_expression, self.xpath_filters):
-                self.main_window._connect_xpath_builder_signals(validator)
+                self.main_window.connect_xpath_builder_signals(validator)
                 # Validate the XPath expression
                 validator.xpath_expression = self.xpath_expression
                 is_valid = validator.validate_xpath_expression()
@@ -319,7 +319,7 @@ class SearchAndExportToCSVHandler:
         try:
             exporter = create_optimized_csv_exporter(self.xml_folder_path, self.xpath_filters, self.csv_folder_output_path, self._parse_csv_headers(self.csv_headers_input), self.group_matches_flag, self.set_max_threads)
             self.current_exporter = exporter
-            self.main_window._connect_csv_export_signals(self.current_exporter)
+            self.main_window.connect_csv_export_signals(self.current_exporter)
             self.main_window.thread_pool.start(self.current_exporter)
 
             # Optional: Keep track of the worker
@@ -355,7 +355,7 @@ class LobsterProfileExportCleanupHandler:
         """Initializes and starts the lobster profile cleanup as a new thread."""
         try:
             cleaner = create_lobster_profile_cleaner(self.csv_file_path, self.profiles_folder_path)
-            self.main_window._connect_file_cleanup_signals(cleaner)
+            self.main_window.connect_file_cleanup_signals(cleaner)
             self.main_window.thread_pool.start(cleaner)
             # Optional: Keep track of the worker
             self.main_window.active_workers.append(cleaner)
@@ -378,7 +378,7 @@ class CSVColumnDropHandler:
     def start_csv_column_drop(self) -> None:
         try:
             dropper = create_csv_column_dropper(self.csv_file_path, self.column_to_drop, self.column_to_drop_index)
-            self.main_window._connect_file_cleanup_signals(dropper)
+            self.main_window.connect_file_cleanup_signals(dropper)
             self.main_window.thread_pool.start(dropper)
             # Optional: Keep track of the worker
             self.main_window.active_workers.append(dropper)
@@ -414,7 +414,7 @@ class ParseXMLFileHandler:
         """Parse XML file and display content."""
         try:
             xml_parser = create_xml_parser(self.xml_file_path)
-            self.main_window._connect_xml_parsing_signals(xml_parser)
+            self.main_window.connect_xml_parsing_signals(xml_parser)
             self.main_window.thread_pool.start(xml_parser)
             # Optional: Keep track of the worker
             self.main_window.active_workers.append(xml_parser)
@@ -467,7 +467,7 @@ class XPathBuildHandler:
             self.radio_smaller
         )
 
-            self.main_window._connect_xpath_builder_signals(builder)
+            self.main_window.connect_xpath_builder_signals(builder)
 
             xpath_expression = builder.build_xpath_expression()
 
