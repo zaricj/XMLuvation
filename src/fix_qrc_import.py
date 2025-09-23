@@ -9,8 +9,8 @@ def fix_qrc_import():
     cwd = Path(__file__).parent
     print(cwd)
     
-    main_ui_file_path = cwd / "ui" / "designer" / "XMLuvation_ui.py"
-    widgets_ui_file_path = cwd / "ui" / "designer" / "CustomPathsManager_ui.py"
+    main_ui_file_path = cwd / "ui" / "main" / "XMLuvation_ui.py"
+    widgets_ui_file_path = cwd / "ui" / "widgets" / "CustomPathsManager_ui.py"
     
     print(f"Main UI File Path: {main_ui_file_path}")
     print(f"Settings UI File Path: {widgets_ui_file_path}")

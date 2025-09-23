@@ -20,7 +20,7 @@ import sys
 import os
 from pathlib import Path
 
-from ui.designer.XMLuvation_ui import Ui_MainWindow
+from ui.main.XMLuvation_ui import Ui_MainWindow
 
 sys.path.append(os.path.abspath(os.path.join(os.path.dirname(__file__), "..", "..")))
 

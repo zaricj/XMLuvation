@@ -2,7 +2,7 @@ from PySide6.QtWidgets import QWidget, QMessageBox, QMainWindow
 from pathlib import Path
 
 from modules.config_handler import ConfigHandler
-from ui.designer.CustomPathsManager_ui import Ui_Settings
+from ui.widgets.CustomPathsManager_ui import Ui_Settings
 
 CURRENT_DIR = Path(__file__).parent # \XMLuvation\src\ui\widgets
 ROOT_DIR = CURRENT_DIR.parent.parent

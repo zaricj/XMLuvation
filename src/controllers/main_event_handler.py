@@ -12,7 +12,7 @@ from PySide6.QtCore import (
     Slot
 )
 
-from ui.designer.XMLuvation_ui import Ui_MainWindow
+from ui.main.XMLuvation_ui import Ui_MainWindow
 from main import MainWindow
 
 from controllers.main_state_controller import (
