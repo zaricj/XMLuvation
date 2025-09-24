@@ -348,7 +348,7 @@ class SignalHandlerMixin:
     @Slot() # Opens Pre-built XPaths Manager QWidget
     def on_openPrebuiltXPathsManager(self):
         from ui.widgets.pre_built_xpaths_manager import PreBuiltXPathsManager
-        self.w = PreBuiltXPathsManager()
+        self.w = PreBuiltXPathsManager(main_window=self)
         self.w.show()
 
     @Slot() # Opens Paths Manager QWidget
