@@ -2262,6 +2262,7 @@ Supported output file types: Excel, Markdown, HTML and JSON</string>
      <string>Manage</string>
     </property>
     <addaction name="open_paths_manager"/>
+    <addaction name="open_pre_built_xpaths_manager_action"/>
    </widget>
    <widget class="QMenu" name="help_menu">
     <property name="title">
@@ -2323,6 +2324,11 @@ Supported output file types: Excel, Markdown, HTML and JSON</string>
   <action name="actionx">
    <property name="text">
     <string>x</string>
+   </property>
+  </action>
+  <action name="open_pre_built_xpaths_manager_action">
+   <property name="text">
+    <string>Open pre-built XPaths manager</string>
    </property>
   </action>
  </widget>

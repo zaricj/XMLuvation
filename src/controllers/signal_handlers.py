@@ -229,6 +229,7 @@ class SignalHandlerMixin:
         self.ui.open_csv_conversion_input_action.triggered.connect(self.on_openCSVConversionInputDirectory)
         self.ui.add_custom_path_action.triggered.connect(self.on_addCustomPath)
         self.ui.open_paths_manager.triggered.connect(self.on_openPathsManager)
+        self.ui.open_pre_built_xpaths_manager_action.triggered.connect(self.on_openPrebuiltXPathsManager)
         self.ui.xpath_help_action.triggered.connect(self.on_xpathHelp)
         self.toggle_theme_action.triggered.connect(self.on_changeTheme)
 
@@ -343,8 +344,14 @@ class SignalHandlerMixin:
             if ok and path:
                 self.config_handler.set(f"custom_paths.{name}", path)
                 self._update_paths_menu()
+                
+    @Slot() # Opens Pre-built XPaths Manager QWidget
+    def on_openPrebuiltXPathsManager(self):
+        from ui.widgets.pre_built_xpaths_manager import PreBuiltXPathsManager
+        self.w = PreBuiltXPathsManager()
+        self.w.show()
 
-    @Slot()
+    @Slot() # Opens Paths Manager QWidget
     def on_openPathsManager(self):
         """Open paths manager window."""
         from ui.widgets.path_manager import CustomPathsManager

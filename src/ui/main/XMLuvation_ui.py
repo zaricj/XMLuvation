@@ -1,7 +1,7 @@
 # -*- coding: utf-8 -*-
 
 ################################################################################
-## Form generated from reading UI file 'XMLuvationijPNqE.ui'
+## Form generated from reading UI file 'XMLuvationKvCMJB.ui'
 ##
 ## Created by: Qt User Interface Compiler version 6.9.0
 ##
@@ -64,6 +64,8 @@ class Ui_MainWindow(object):
         self.xpath_help_action.setObjectName(u"xpath_help_action")
         self.actionx = QAction(MainWindow)
         self.actionx.setObjectName(u"actionx")
+        self.open_pre_built_xpaths_manager_action = QAction(MainWindow)
+        self.open_pre_built_xpaths_manager_action.setObjectName(u"open_pre_built_xpaths_manager_action")
         self.centralwidget = QWidget(MainWindow)
         self.centralwidget.setObjectName(u"centralwidget")
         font1 = QFont()
@@ -957,6 +959,7 @@ class Ui_MainWindow(object):
         self.open_menu.addAction(self.open_csv_conversion_input_action)
         self.paths_menu.addAction(self.add_custom_path_action)
         self.settings_menu.addAction(self.open_paths_manager)
+        self.settings_menu.addAction(self.open_pre_built_xpaths_manager_action)
         self.help_menu.addAction(self.xpath_help_action)
 
         self.retranslateUi(MainWindow)
@@ -983,6 +986,7 @@ class Ui_MainWindow(object):
         self.open_paths_manager.setText(QCoreApplication.translate("MainWindow", u"Open custom path manager", None))
         self.xpath_help_action.setText(QCoreApplication.translate("MainWindow", u"Regex Help", None))
         self.actionx.setText(QCoreApplication.translate("MainWindow", u"x", None))
+        self.open_pre_built_xpaths_manager_action.setText(QCoreApplication.translate("MainWindow", u"Open pre-built XPaths manager", None))
         self.group_box_xml_input_xpath_builder.setTitle(QCoreApplication.translate("MainWindow", u"XML FOLDER SELECTION AND XPATH BUILDER", None))
         self.statusbar_xml_files_count.setText("")
         self.line_edit_xml_folder_path_input.setPlaceholderText(QCoreApplication.translate("MainWindow", u"Choose a folder that contains XML files...", None))
