@@ -1,13 +1,13 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <ui version="4.0">
- <class>Settings</class>
- <widget class="QWidget" name="Settings">
+ <class>CustomPathsManagerWidget</class>
+ <widget class="QWidget" name="CustomPathsManagerWidget">
   <property name="geometry">
    <rect>
     <x>0</x>
     <y>0</y>
-    <width>513</width>
-    <height>203</height>
+    <width>515</width>
+    <height>518</height>
    </rect>
   </property>
   <property name="windowTitle">
@@ -18,213 +18,212 @@
     <normaloff>:/icons/xml_256px.ico</normaloff>:/icons/xml_256px.ico</iconset>
   </property>
   <property name="styleSheet">
-   <string notr="true">    QWidget {
-        background-color: #232428;
-        color: #ffffff;
-        font-family: Arial, sans-serif;
-        border-radius: 6px;
-    }
-	
-	QPushButton#button_delete_action {
-	     background-color: #ff5757;
-        color: #000000;
-        border: none;
-        padding: 8px 14px;
-        border-radius: 6px;
-        font: bold;
-	}
-	
-    QPushButton#button_delete_action:hover {
-        background-color: #a33c3c;
-    }
-
-    QPushButton#button_delete_action:pressed {
-        background-color: #313338;
-        color: #ffffff;
-        padding-left: 9px; /* Creates a &quot;pressed&quot; effect */
-        padding-top: 8px;
-    }
-	
-    QPushButton {
-        background-color: #ffc857;
-        color: #000000;
-        border: none;
-        padding: 8px 14px;
-        border-radius: 6px;
-        font: bold;
-    }
-
-    QPushButton:hover {
-        background-color: #a3803c;
-    }
-
-    QPushButton:pressed {
-        background-color: #313338;
-        color: #ffffff;
-        padding-left: 9px; /* Creates a &quot;pressed&quot; effect */
-        padding-top: 8px;
-    }
-	
-    QLineEdit, QComboBox {
-        background-color: #313338;
-        border: 1px solid #4a4a4a;
-        padding: 6px;
-        border-radius: 6px;
-    }
-	
-    QPushButton:disabled {
-        background-color: #808080;
-    }
-
-    QComboBox:disabled {
-        background-color: #808080;    
-    }
-	
-   QComboBox::drop-down {
-      border: none;
-      background-color: #ffc857;
-      width: 20px;
-      border-top-right-radius: 6px;
-      border-bottom-right-radius: 6px;
-  	  image: url(:/images/drpdwn_arrow.png)
-    }</string>
+   <string notr="true"/>
   </property>
   <layout class="QVBoxLayout" name="verticalLayout_2">
    <item>
-    <layout class="QVBoxLayout" name="verticalLayout_Main">
-     <item>
-      <layout class="QHBoxLayout" name="horizontalLayout_Buttons">
-       <item>
-        <widget class="QLabel" name="label_combobox_desc">
-         <property name="maximumSize">
-          <size>
-           <width>145</width>
-           <height>16777215</height>
-          </size>
-         </property>
-         <property name="text">
-          <string>Select a custom path here:</string>
-         </property>
-        </widget>
-       </item>
-       <item>
-        <widget class="QComboBox" name="combobox_path_names">
-         <property name="placeholderText">
-          <string notr="true">Custom paths...</string>
-         </property>
-        </widget>
-       </item>
-       <item>
-        <widget class="QPushButton" name="button_load_action">
-         <property name="maximumSize">
-          <size>
-           <width>100</width>
-           <height>16777215</height>
-          </size>
-         </property>
-         <property name="text">
-          <string>Load Path</string>
-         </property>
-        </widget>
-       </item>
-       <item>
-        <widget class="QPushButton" name="button_delete_action">
-         <property name="maximumSize">
-          <size>
-           <width>100</width>
-           <height>16777215</height>
-          </size>
-         </property>
-         <property name="styleSheet">
-          <string notr="true"/>
-         </property>
-         <property name="text">
-          <string>Delete Path</string>
-         </property>
-        </widget>
-       </item>
-      </layout>
-     </item>
-     <item>
-      <layout class="QFormLayout" name="form_layout_main">
-       <property name="horizontalSpacing">
-        <number>6</number>
-       </property>
-       <property name="topMargin">
-        <number>0</number>
-       </property>
-       <item row="2" column="0">
-        <widget class="QLabel" name="label_path_name">
-         <property name="text">
-          <string>Path Name:</string>
-         </property>
-        </widget>
-       </item>
-       <item row="2" column="1">
-        <widget class="QLineEdit" name="line_edit_path_name">
-         <property name="placeholderText">
-          <string>Path name as shown in the menubar...</string>
-         </property>
-        </widget>
-       </item>
-       <item row="3" column="0">
-        <widget class="QLabel" name="label_path_value">
-         <property name="text">
-          <string>Path Value:</string>
-         </property>
-        </widget>
-       </item>
-       <item row="3" column="1">
-        <widget class="QLineEdit" name="line_edit_path_value">
-         <property name="placeholderText">
-          <string>Path value of the path name...</string>
-         </property>
-        </widget>
-       </item>
-       <item row="1" column="0">
-        <widget class="QLabel" name="label_desc">
-         <property name="baseSize">
-          <size>
-           <width>0</width>
-           <height>0</height>
-          </size>
-         </property>
-         <property name="text">
-          <string>Description:</string>
-         </property>
-        </widget>
-       </item>
-       <item row="1" column="1">
-        <widget class="QLabel" name="label_text_desc">
-         <property name="text">
-          <string>User created paths manager, you can load a custom path any change it's values here or you can delete the path.</string>
-         </property>
-         <property name="wordWrap">
-          <bool>true</bool>
-         </property>
-         <property name="margin">
-          <number>0</number>
-         </property>
-         <property name="indent">
-          <number>-1</number>
-         </property>
-        </widget>
-       </item>
-      </layout>
-     </item>
-    </layout>
-   </item>
-   <item>
-    <widget class="QPushButton" name="button_save_changes">
-     <property name="text">
-      <string>Save Changes</string>
+    <widget class="QGroupBox" name="groupBox">
+     <property name="title">
+      <string>Create custom paths</string>
      </property>
+     <layout class="QVBoxLayout" name="verticalLayout">
+      <item>
+       <widget class="QLabel" name="label_description_create_custom_path">
+        <property name="text">
+         <string>Here you can add and create custom path configurations.
+Enter a path name which will be added to the menubar.
+Enter a folder path which is associated with the give path name.</string>
+        </property>
+       </widget>
+      </item>
+      <item>
+       <layout class="QHBoxLayout" name="horizontalLayout">
+        <item>
+         <widget class="QLabel" name="label_path_name_2">
+          <property name="text">
+           <string>Path name:</string>
+          </property>
+         </widget>
+        </item>
+        <item>
+         <widget class="QLineEdit" name="line_edit_path_name_2"/>
+        </item>
+       </layout>
+      </item>
+      <item>
+       <layout class="QHBoxLayout" name="horizontalLayout_2">
+        <item>
+         <widget class="QLabel" name="label_path_folder">
+          <property name="text">
+           <string>Path folder:</string>
+          </property>
+         </widget>
+        </item>
+        <item>
+         <widget class="QLineEdit" name="line_edit_path_folder"/>
+        </item>
+        <item>
+         <widget class="QPushButton" name="button_borwse_path_folder">
+          <property name="text">
+           <string>Browse</string>
+          </property>
+          <property name="icon">
+           <iconset theme="QIcon::ThemeIcon::FolderNew"/>
+          </property>
+         </widget>
+        </item>
+       </layout>
+      </item>
+      <item>
+       <widget class="QPushButton" name="button_create_custom_path">
+        <property name="text">
+         <string>Create custom path</string>
+        </property>
+       </widget>
+      </item>
+     </layout>
     </widget>
    </item>
    <item>
     <widget class="Line" name="line">
      <property name="orientation">
       <enum>Qt::Orientation::Horizontal</enum>
+     </property>
+    </widget>
+   </item>
+   <item>
+    <widget class="QGroupBox" name="groupBox_2">
+     <property name="title">
+      <string>Edit custom paths</string>
+     </property>
+     <layout class="QVBoxLayout" name="verticalLayout_3">
+      <item>
+       <layout class="QHBoxLayout" name="horizontalLayout_Buttons">
+        <item>
+         <widget class="QLabel" name="label_combobox_desc">
+          <property name="maximumSize">
+           <size>
+            <width>145</width>
+            <height>16777215</height>
+           </size>
+          </property>
+          <property name="text">
+           <string>Select a custom path here:</string>
+          </property>
+         </widget>
+        </item>
+        <item>
+         <widget class="QComboBox" name="combobox_path_names">
+          <property name="placeholderText">
+           <string notr="true">Custom paths...</string>
+          </property>
+         </widget>
+        </item>
+        <item>
+         <widget class="QPushButton" name="button_load_action">
+          <property name="maximumSize">
+           <size>
+            <width>100</width>
+            <height>16777215</height>
+           </size>
+          </property>
+          <property name="text">
+           <string>Load Path</string>
+          </property>
+         </widget>
+        </item>
+        <item>
+         <widget class="QPushButton" name="button_delete_action">
+          <property name="maximumSize">
+           <size>
+            <width>100</width>
+            <height>16777215</height>
+           </size>
+          </property>
+          <property name="styleSheet">
+           <string notr="true"/>
+          </property>
+          <property name="text">
+           <string>Delete Path</string>
+          </property>
+         </widget>
+        </item>
+       </layout>
+      </item>
+      <item>
+       <layout class="QFormLayout" name="form_layout_main">
+        <property name="horizontalSpacing">
+         <number>6</number>
+        </property>
+        <property name="topMargin">
+         <number>0</number>
+        </property>
+        <item row="2" column="0">
+         <widget class="QLabel" name="label_path_name">
+          <property name="text">
+           <string>Path name:</string>
+          </property>
+         </widget>
+        </item>
+        <item row="2" column="1">
+         <widget class="QLineEdit" name="line_edit_path_name">
+          <property name="placeholderText">
+           <string>Path name as shown in the menubar...</string>
+          </property>
+         </widget>
+        </item>
+        <item row="3" column="0">
+         <widget class="QLabel" name="label_path_value">
+          <property name="text">
+           <string>Path folder</string>
+          </property>
+         </widget>
+        </item>
+        <item row="3" column="1">
+         <widget class="QLineEdit" name="line_edit_path_value">
+          <property name="placeholderText">
+           <string>Path value of the path name...</string>
+          </property>
+         </widget>
+        </item>
+        <item row="1" column="0">
+         <widget class="QLabel" name="label_desc">
+          <property name="baseSize">
+           <size>
+            <width>0</width>
+            <height>0</height>
+           </size>
+          </property>
+          <property name="text">
+           <string>Description:</string>
+          </property>
+         </widget>
+        </item>
+        <item row="1" column="1">
+         <widget class="QLabel" name="label_text_desc">
+          <property name="text">
+           <string>User created paths manager, you can load a custom path and change it's values here or you can delete the path.</string>
+          </property>
+          <property name="wordWrap">
+           <bool>true</bool>
+          </property>
+          <property name="margin">
+           <number>0</number>
+          </property>
+          <property name="indent">
+           <number>-1</number>
+          </property>
+         </widget>
+        </item>
+       </layout>
+      </item>
+     </layout>
+    </widget>
+   </item>
+   <item>
+    <widget class="QPushButton" name="button_save_changes">
+     <property name="text">
+      <string>Save Changes</string>
      </property>
     </widget>
    </item>

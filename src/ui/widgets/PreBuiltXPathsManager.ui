@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <ui version="4.0">
- <class>Form</class>
- <widget class="QWidget" name="Form">
+ <class>PreBuiltXPathsManagerWidget</class>
+ <widget class="QWidget" name="PreBuiltXPathsManagerWidget">
   <property name="geometry">
    <rect>
     <x>0</x>
@@ -31,80 +31,76 @@
        </widget>
       </item>
       <item>
-       <layout class="QVBoxLayout" name="verticalLayout_6">
-        <item>
-         <widget class="QGroupBox" name="groupBox_2">
-          <property name="title">
-           <string>XPath Expressions</string>
-          </property>
-          <layout class="QVBoxLayout" name="verticalLayout_8">
+       <widget class="QGroupBox" name="groupBox_2">
+        <property name="title">
+         <string>XPath Expressions</string>
+        </property>
+        <layout class="QVBoxLayout" name="verticalLayout_8">
+         <item>
+          <layout class="QHBoxLayout" name="horizontalLayout_3">
            <item>
-            <layout class="QHBoxLayout" name="horizontalLayout_3">
-             <item>
-              <widget class="QLabel" name="label_2">
-               <property name="text">
-                <string>Enter a XPath Expression:</string>
-               </property>
-              </widget>
-             </item>
-             <item>
-              <widget class="QLineEdit" name="line_edit_create_xpath_expression"/>
-             </item>
-             <item>
-              <widget class="QPushButton" name="button_edit_add_xpath_to_list">
-               <property name="text">
-                <string/>
-               </property>
-               <property name="icon">
-                <iconset theme="QIcon::ThemeIcon::ListAdd"/>
-               </property>
-              </widget>
-             </item>
-            </layout>
+            <widget class="QLabel" name="label_2">
+             <property name="text">
+              <string>Enter a XPath Expression:</string>
+             </property>
+            </widget>
            </item>
            <item>
-            <widget class="QListWidget" name="list_widget_create_xpath_expressions"/>
+            <widget class="QLineEdit" name="line_edit_create_xpath_expression"/>
+           </item>
+           <item>
+            <widget class="QPushButton" name="button_edit_add_xpath_to_list">
+             <property name="text">
+              <string/>
+             </property>
+             <property name="icon">
+              <iconset theme="QIcon::ThemeIcon::ListAdd"/>
+             </property>
+            </widget>
            </item>
           </layout>
-         </widget>
-        </item>
-        <item>
-         <widget class="QGroupBox" name="groupBox_3">
-          <property name="title">
-           <string>CSV Headers</string>
-          </property>
-          <layout class="QVBoxLayout" name="verticalLayout_9">
+         </item>
+         <item>
+          <widget class="QListWidget" name="list_widget_create_xpath_expressions"/>
+         </item>
+        </layout>
+       </widget>
+      </item>
+      <item>
+       <widget class="QGroupBox" name="groupBox_3">
+        <property name="title">
+         <string>CSV Headers</string>
+        </property>
+        <layout class="QVBoxLayout" name="verticalLayout_9">
+         <item>
+          <layout class="QHBoxLayout" name="horizontalLayout_4">
            <item>
-            <layout class="QHBoxLayout" name="horizontalLayout_4">
-             <item>
-              <widget class="QLabel" name="label_3">
-               <property name="text">
-                <string>Enter a CSV Header:</string>
-               </property>
-              </widget>
-             </item>
-             <item>
-              <widget class="QLineEdit" name="line_edit_create_csv_header"/>
-             </item>
-             <item>
-              <widget class="QPushButton" name="button_edit_add_csv_header_to_list">
-               <property name="text">
-                <string/>
-               </property>
-               <property name="icon">
-                <iconset theme="QIcon::ThemeIcon::ListAdd"/>
-               </property>
-              </widget>
-             </item>
-            </layout>
+            <widget class="QLabel" name="label_3">
+             <property name="text">
+              <string>Enter a CSV Header:</string>
+             </property>
+            </widget>
            </item>
            <item>
-            <widget class="QListWidget" name="list_widget_create_csv_headers"/>
+            <widget class="QLineEdit" name="line_edit_create_csv_header"/>
+           </item>
+           <item>
+            <widget class="QPushButton" name="button_edit_add_csv_header_to_list">
+             <property name="text">
+              <string/>
+             </property>
+             <property name="icon">
+              <iconset theme="QIcon::ThemeIcon::ListAdd"/>
+             </property>
+            </widget>
            </item>
           </layout>
-         </widget>
-        </item>
-       </layout>
+         </item>
+         <item>
+          <widget class="QListWidget" name="list_widget_create_csv_headers"/>
+         </item>
+        </layout>
+       </widget>
       </item>
       <item>
        <layout class="QHBoxLayout" name="horizontalLayout_5">
@@ -176,32 +172,28 @@
        </layout>
       </item>
       <item>
-       <layout class="QVBoxLayout" name="verticalLayout_3">
-        <item>
-         <widget class="QGroupBox" name="groupBox_xpath_expressions">
-          <property name="title">
-           <string>XPath Expresions</string>
-          </property>
-          <layout class="QVBoxLayout" name="verticalLayout_4">
-           <item>
-            <widget class="QListWidget" name="list_widget_pre_built_xpath_expressions"/>
-           </item>
-          </layout>
-         </widget>
-        </item>
-        <item>
-         <widget class="QGroupBox" name="groupBox_csv_headers">
-          <property name="title">
-           <string>CSV Headers</string>
-          </property>
-          <layout class="QVBoxLayout" name="verticalLayout_5">
-           <item>
-            <widget class="QListWidget" name="list_widget_pre_built_csv_headers"/>
-           </item>
-          </layout>
-         </widget>
-        </item>
-       </layout>
+       <widget class="QGroupBox" name="groupBox_xpath_expressions">
+        <property name="title">
+         <string>XPath Expresions</string>
+        </property>
+        <layout class="QVBoxLayout" name="verticalLayout_4">
+         <item>
+          <widget class="QListWidget" name="list_widget_pre_built_xpath_expressions"/>
+         </item>
+        </layout>
+       </widget>
+      </item>
+      <item>
+       <widget class="QGroupBox" name="groupBox_csv_headers">
+        <property name="title">
+         <string>CSV Headers</string>
+        </property>
+        <layout class="QVBoxLayout" name="verticalLayout_5">
+         <item>
+          <widget class="QListWidget" name="list_widget_pre_built_csv_headers"/>
+         </item>
+        </layout>
+       </widget>
       </item>
       <item>
        <layout class="QHBoxLayout" name="horizontalLayout_2">

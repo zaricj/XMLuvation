@@ -3,7 +3,7 @@ from PySide6.QtCore import Slot
 from pathlib import Path
 
 from modules.config_handler import ConfigHandler
-from ui.widgets.PreBuiltXPathsManager_ui import Ui_Form
+from ui.widgets.PreBuiltXPathsManager_ui import Ui_PreBuiltXPathsManagerWidget
 
 from typing import TYPE_CHECKING
 if TYPE_CHECKING:
@@ -33,7 +33,7 @@ class PreBuiltXPathsManager(QWidget):
 
         self.main_window = main_window
         # Create and setup ui from .ui file
-        self.ui = Ui_Form() # Assuming Ui_Form is correctly imported and available
+        self.ui = Ui_PreBuiltXPathsManagerWidget() # Assuming Ui_Form is correctly imported and available
         self.ui.setupUi(self)
 
         # Initialize ConfigHandler, passing self (CustomPathsManager) as the parent for QMessageBox
