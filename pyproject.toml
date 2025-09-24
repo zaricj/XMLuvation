@@ -8,9 +8,8 @@ dependencies = [
     "auto-py-to-exe>=2.47.0",
     "lxml>=6.0.1",
     "pandas>=2.3.1",
-    "pip>=25.2",
     "pyarrow>=21.0.0",
-    "pyside6>=6.9.1",
+    "pyside6-essentials>=6.9.2",
     "xlsxwriter>=3.2.5",
 ]
 
