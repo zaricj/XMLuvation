@@ -2,7 +2,6 @@
 from PySide6.QtWidgets import (
     QApplication,
     QMainWindow,
-    QMenu,
     QMessageBox,
 )
 from PySide6.QtGui import QIcon, QAction, QCloseEvent
@@ -31,7 +30,7 @@ if TYPE_CHECKING:
         SearchAndExportToCSVHandler
     )
     from modules.config_handler import ConfigHandler
-
+    
 
 # Path Constants
 CURRENT_DIR = Path(__file__).parent
@@ -108,7 +107,6 @@ class MainWindow(QMainWindow, SignalHandlerMixin):
 
     def setup_application(self):
         """Initialize the application components"""
-        self.create_menu_bar()
         self.connect_ui_events()  # From mixin
         self.connect_menu_bar_actions()  # From mixin
         self._update_paths_menu() # From mixing
@@ -119,7 +117,7 @@ class MainWindow(QMainWindow, SignalHandlerMixin):
         from controllers.state_controller import ComboboxStateHandler
         from controllers.state_controller import SearchXMLOutputTextHandler
         from modules.config_handler import ConfigHandler
-
+        
         # XML Data
         self.parsed_xml_data = {}
         self.current_read_xml_file = None
@@ -225,66 +223,6 @@ class MainWindow(QMainWindow, SignalHandlerMixin):
             QMessageBox.critical(
                 self, "Theme load error", f"Failed to load theme: {str(ex)}"
             )
-
-    def create_menu_bar(self):
-        """Create the application menu bar"""
-        menu_bar = self.menuBar()
-
-        # File Menu
-        file_menu = menu_bar.addMenu("&File")
-        self.recent_xpath_expressions_menu = QMenu("Recent XPath expressions", self)
-        self.recent_xpath_expressions_menu.clear()
-
-        for expression in self.recent_xpath_expressions:
-            action = QAction(expression, self)
-            self.recent_xpath_expressions_menu.addAction(action)
-
-        file_menu.addMenu(self.recent_xpath_expressions_menu)
-
-        self.clear_recent_xpath_expressions_action = QAction(
-            "Clear recent XPath expressions", self
-        )
-        file_menu.addAction(self.clear_recent_xpath_expressions_action)
-        file_menu.addSeparator()
-
-        self.clear_action = QAction("Clear Output", self)
-        file_menu.addAction(self.clear_action)
-        
-        exit_action = QAction("E&xit", self)
-        exit_action.triggered.connect(self.close)
-        file_menu.addAction(exit_action)
-
-        # Open Menu
-        open_menu = menu_bar.addMenu("&Open")
-        self.open_input_action = QAction("Open input XML folder in file explorer", self)
-        open_menu.addAction(self.open_input_action)
-        
-        self.open_output_action = QAction("Open output CSV folder in file explorer", self)
-        open_menu.addAction(self.open_output_action)
-        open_menu.addSeparator()
-        
-        self.open_csv_conversion_input_action = QAction(
-            "Open CSV conversion input folder in file explorer", self
-        )
-        open_menu.addAction(self.open_csv_conversion_input_action)
-
-        # Path Menu
-        self.paths_menu = menu_bar.addMenu("&Path")
-        self.paths_menu.addAction(self._add_custom_path_action)
-
-        # Settings Menu
-        settings_menu = menu_bar.addMenu("&Settings")
-        self.open_paths_manager = QAction("Manage Custom Paths", self)
-        settings_menu.addAction(self.open_paths_manager)
-
-        # Help Menu
-        help_menu = menu_bar.addMenu("&Help")
-        self.xpath_help_action = QAction("XPath Help", self)
-        self.xpath_help_action.setStatusTip("Open XPath Syntax Help")
-        help_menu.addAction(self.xpath_help_action)
-
-        # Theme Menu
-        self.toggle_theme_action = menu_bar.addAction(self.theme_icon, "Toggle Theme")
 
     def setup_widgets_and_visibility_states(self):
         """Setup widgets states"""

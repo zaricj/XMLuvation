@@ -220,14 +220,16 @@ class SignalHandlerMixin:
 
     def connect_menu_bar_actions(self):
         """Connect all menu bar actions to their handlers."""
-        self.clear_recent_xpath_expressions_action.triggered.connect(self.on_clearRecentXpathExpressions)
-        self.clear_action.triggered.connect(self.on_clearOutput)
-        self.open_input_action.triggered.connect(self.on_openInputDirectory)
-        self.open_output_action.triggered.connect(self.on_openOutputDirectory)
-        self.open_csv_conversion_input_action.triggered.connect(self.on_openCSVConversionInputDirectory)
-        self._add_custom_path_action.triggered.connect(self.on_addCustomPath)
-        self.open_paths_manager.triggered.connect(self.on_openPathsManager)
-        self.xpath_help_action.triggered.connect(self.on_xpathHelp)
+                # Add theme action to Menu Bar at the far right
+        self.toggle_theme_action = self.ui.menu_bar.addAction(self.theme_icon, "Toggle Theme")
+        self.ui.clear_recent_xpath_expressions_action.triggered.connect(self.on_clearRecentXpathExpressions)
+        self.ui.clear_action.triggered.connect(self.on_clearOutput)
+        self.ui.open_input_action.triggered.connect(self.on_openInputDirectory)
+        self.ui.open_output_action.triggered.connect(self.on_openOutputDirectory)
+        self.ui.open_csv_conversion_input_action.triggered.connect(self.on_openCSVConversionInputDirectory)
+        self.ui.add_custom_path_action.triggered.connect(self.on_addCustomPath)
+        self.ui.open_paths_manager.triggered.connect(self.on_openPathsManager)
+        self.ui.xpath_help_action.triggered.connect(self.on_xpathHelp)
         self.toggle_theme_action.triggered.connect(self.on_changeTheme)
 
         # Connect context menu signals
@@ -235,7 +237,7 @@ class SignalHandlerMixin:
         self.ui.text_edit_xml_output.customContextMenuRequested.connect(self.on_showXMLOutputContextMenu)
 
         # Connect recent xpath expressions menu
-        for action in self.recent_xpath_expressions_menu.actions():
+        for action in self.ui.recent_xpath_expressions_menu.actions():
             action.triggered.connect(
                 lambda checked, exp=action.text(): self.on_setXPathExpressionInInput(exp)
             )
@@ -526,7 +528,7 @@ class SignalHandlerMixin:
                 self.ui.line_edit_xpath_builder.clear()
         except Exception as ex:
             message = f"An exception of type {type(ex).__name__} occurred. Arguments: {ex.args!r}"
-            QMessageBox.critical(self, "Exception adding XPath Expression to List Widget", message)
+            QMessageBox.critical(self, "Exception adding XPath Expression to list widget", message)
 
     @Slot()
     def on_startCSVSearch(self):
@@ -867,13 +869,13 @@ class SignalHandlerMixin:
 
     def _update_recent_xpath_expressions_menu(self):
         """Update recent XPath expressions menu."""
-        self.recent_xpath_expressions_menu.clear()
+        self.ui.recent_xpath_expressions_menu.clear()
         for expression in self.recent_xpath_expressions:
             action = QAction(expression, self)
             action.triggered.connect(
                 lambda checked, exp=expression: self.on_setXPathExpressionInInput(exp)
             )
-            self.recent_xpath_expressions_menu.addAction(action)
+            self.ui.recent_xpath_expressions_menu.addAction(action)
 
     def _update_statusbar_xpath_listbox_count(self):
         """Update statusbar with XPath expression count."""
@@ -885,19 +887,19 @@ class SignalHandlerMixin:
 
     def _update_paths_menu(self):
         """Update the paths menu with custom paths."""
-        self.paths_menu.clear()
+        self.ui.paths_menu.clear()
         
         custom_paths = self.config_handler.get("custom_paths", {})
         for name, path in custom_paths.items():
             action = QAction(name, self)
             action.setStatusTip(f"Open {name}")
             action.triggered.connect(lambda checked, p=path: self._set_path_in_input(p))
-            self.paths_menu.addAction(action)
+            self.ui.paths_menu.addAction(action)
 
         if custom_paths:
-            self.paths_menu.addSeparator()
+            self.ui.paths_menu.addSeparator()
 
-        self.paths_menu.addAction(self._add_custom_path_action)
+        self.ui.paths_menu.addAction(self.ui.add_custom_path_action)
 
     def _set_path_in_input(self, path: str):
         """Set path in input field."""
