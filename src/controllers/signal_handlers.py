@@ -1,6 +1,7 @@
-    # ===# File: modules/signal_handlers.py
+# File: modules/signal_handlers.py
 import webbrowser
 import datetime
+import os
 from PySide6.QtWidgets import (
     QMenu,
     QFileDialog,
@@ -20,14 +21,27 @@ from PySide6.QtCore import (
 
 )
 
+from typing import List, Optional, Dict, Any, TYPE_CHECKING
 from ui.main.XMLuvation_ui import Ui_MainWindow
-from typing import List
-import os
+
+if TYPE_CHECKING:
+    from PySide6.QtCore import QSettings, QThreadPool
+    from controllers.state_controller import ComboboxStateHandler
+    from modules.config_handler import ConfigHandler
+
 
 
 class SignalHandlerMixin:
     """Mixin class to handle all signal connections and slot methods"""
+    # Type hints for attributes accessed in this mixin
     ui: Ui_MainWindow
+    xpath_filters: List[str]
+    recent_xpath_expressions: List[str]
+    settings: 'QSettings'
+    cb_state_controller: 'ComboboxStateHandler'
+    set_max_threads: int
+    current_theme: str
+    config_handler: "ConfigHandler"  # Replace with actual type
     
     def __init__(self):
         super().__init__()

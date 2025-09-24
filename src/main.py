@@ -8,7 +8,6 @@ from PySide6.QtWidgets import (
 from PySide6.QtGui import QIcon, QAction, QCloseEvent
 from PySide6.QtCore import (
     Qt,
-    Signal,
     QFile,
     QTextStream,
     QIODevice,
@@ -23,15 +22,19 @@ from pathlib import Path
 from ui.main.XMLuvation_ui import Ui_MainWindow
 from controllers.signal_handlers import SignalHandlerMixin
 
-CURRENT_DIR = Path(__file__).parent
+from typing import List, Optional, Dict, Any, TYPE_CHECKING
 
-# Check if the application is running in a PyInstaller bundle
-if getattr(sys, "frozen", False) and hasattr(sys, "_MEIPASS"):
-    ROOT_DIR: str = sys._MEIPASS
-else:
-    ROOT_DIR: str = os.path.dirname(CURRENT_DIR)
+if TYPE_CHECKING:
+    from controllers.state_controller import (
+        ComboboxStateHandler, 
+        SearchXMLOutputTextHandler,
+        SearchAndExportToCSVHandler
+    )
+    from modules.config_handler import ConfigHandler
+
 
 # Path Constants
+CURRENT_DIR = Path(__file__).parent
 GUI_CONFIG_DIRECTORY: Path = CURRENT_DIR / "config"
 GUI_CONFIG_FILE_PATH: Path = CURRENT_DIR / "config" / "config.json"
 
@@ -50,11 +53,36 @@ APP_VERSION: str = "v1.2.2"
 APP_NAME: str = "XMLuvation"
 AUTHOR: str = "Jovan"
 
+# Check if the application is running in a PyInstaller bundle
+if getattr(sys, "frozen", False) and hasattr(sys, "_MEIPASS"):
+    ROOT_DIR: str = sys._MEIPASS
+else:
+    ROOT_DIR: str = os.path.dirname(CURRENT_DIR)
+
 
 class MainWindow(QMainWindow, SignalHandlerMixin):
-    progress_updated = Signal(int)
-    update_input_file_signal = Signal(str)
-    update_output_file_signal = Signal(str)
+    # Type hints for all attributes
+    parsed_xml_data: Dict[str, Any]
+    current_read_xml_file: Optional[str]
+    csv_exporter_handler: Optional['SearchAndExportToCSVHandler']
+    xpath_filters: List[str]
+    active_workers: List[Any]
+    recent_xpath_expressions: List[str]
+    
+    # Settings and threading
+    settings: QSettings
+    thread_pool: QThreadPool
+    set_max_threads: int
+    
+    # Controllers
+    cb_state_controller: 'ComboboxStateHandler'
+    xml_text_searcher: 'SearchXMLOutputTextHandler'
+    config_handler: 'ConfigHandler'
+    
+    # Theme attributes
+    current_theme: str
+    dark_theme_file: str
+    light_theme_file: str
 
     def __init__(self):
         super().__init__()
