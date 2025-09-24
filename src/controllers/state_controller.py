@@ -1,7 +1,7 @@
 # File: modules/state_controller.py
 import os
 import pandas as pd
-from PySide6.QtWidgets import QMessageBox, QComboBox, QRadioButton, QListWidget, QPushButton, QLineEdit, QTextEdit, QMainWindow
+from PySide6.QtWidgets import QMessageBox, QComboBox, QRadioButton, QListWidget, QPushButton, QLineEdit, QTextEdit
 from PySide6.QtGui import QTextDocument
 from modules.xpath_builder import create_xpath_validator, create_xpath_builder
 from modules.csv_export_optimized import create_optimized_csv_exporter

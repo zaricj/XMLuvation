@@ -21,11 +21,11 @@ from PySide6.QtCore import (
 
 )
 
-from typing import List, Optional, Dict, Any, TYPE_CHECKING
+from typing import List, TYPE_CHECKING
 from ui.main.XMLuvation_ui import Ui_MainWindow
 
 if TYPE_CHECKING:
-    from PySide6.QtCore import QSettings, QThreadPool
+    from PySide6.QtCore import QSettings
     from controllers.state_controller import ComboboxStateHandler
     from modules.config_handler import ConfigHandler
 
