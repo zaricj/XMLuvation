@@ -1,8 +1,14 @@
 from PySide6.QtWidgets import QWidget, QMessageBox, QMainWindow
+from PySide6.QtCore import Slot
 from pathlib import Path
 
 from modules.config_handler import ConfigHandler
 from ui.widgets.CustomPathsManager_ui import Ui_Settings
+
+from typing import TYPE_CHECKING
+if TYPE_CHECKING:
+    from src.main import MainWindow
+
 
 CURRENT_DIR = Path(__file__).parent # \XMLuvation\src\ui\widgets
 ROOT_DIR = CURRENT_DIR.parent.parent
@@ -26,10 +32,9 @@ LIGHT_THEME_QMENU_ICON: Path = ROOT_DIR / "resources" / "images" / "light.png"
 APP_NAME: str = "Custom Paths Manager"
 
 class CustomPathsManager(QWidget):
-    def __init__(self, main_window: QMainWindow):
+    def __init__(self, main_window: "MainWindow"):
         super().__init__()
-        self.main_window = main_window # Keep reference to the main window
-
+        self.main_window = main_window
         # Create and setup ui from .ui file
         self.ui = Ui_Settings() # Assuming Ui_Form is correctly imported and available
         self.ui.setupUi(self)
@@ -50,6 +55,7 @@ class CustomPathsManager(QWidget):
         # Initial population of the combobox
         self.update_combobox()
 
+    @Slot()
     def save_changes_event(self):
         try:
             path_name = self.ui.line_edit_path_name.text().strip()
@@ -67,13 +73,14 @@ class CustomPathsManager(QWidget):
             self.config_handler.set(f"custom_paths.{path_name}", path_value)
 
             self.update_combobox()
-            self.main_window.update_paths_menu() # Notify the main window to refresh its menu
+            self.main_window._update_paths_menu() # Notify the main window to refresh its menu
 
             QMessageBox.information(self, "Action saved", f"Custom path '{path_name}' has been saved successfully.")
             self.clear_all_inputs()
         except Exception as ex:
             QMessageBox.critical(self, "Error", f"An error occurred while saving the custom path: {str(ex)}")
-
+            
+    @Slot()
     def load_custom_path_event(self):
         try:
             combobox_path_name = self.ui.combobox_path_names.currentText()
@@ -94,6 +101,7 @@ class CustomPathsManager(QWidget):
         except Exception as ex:
             QMessageBox.critical(self, "Load custom path error", f"An error occurred: {str(ex)}")
 
+    @Slot()
     def delete_custom_path_event(self):
         try:
             custom_path_name = self.ui.combobox_path_names.currentText()
@@ -109,22 +117,23 @@ class CustomPathsManager(QWidget):
             if reply == QMessageBox.Yes:
                 # *** Dynamic usage: Direct delete for a nested path ***
                 self.config_handler.delete(f"custom_paths.{custom_path_name}")
-
                 self.ui.combobox_path_names.removeItem(custom_path_name_index)
                 self.clear_all_inputs()
-                self.main_window.update_paths_menu()
+                self.main_window._update_paths_menu()
 
         except Exception as ex:
             QMessageBox.critical(self, "Error while trying to delete action",
                 f"An error has occurred while trying to delete the custom path. {str(ex)}")
 
+    @Slot()
     def update_combobox(self):
         self.ui.combobox_path_names.clear()
         # *** Dynamic usage: Get keys of the nested section ***
         config_file_values = self.config_handler.get_all_keys("custom_paths")
         if config_file_values:
             self.ui.combobox_path_names.addItems(config_file_values)
-
+            
+    @Slot()
     def clear_all_inputs(self):
         inputs = [self.ui.line_edit_path_name, self.ui.line_edit_path_value]
         for input in inputs:
