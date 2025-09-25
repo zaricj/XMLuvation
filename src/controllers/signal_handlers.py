@@ -54,6 +54,7 @@ class SignalHandlerMixin:
         """Connect all menu bar actions to their handlers."""
         # Add theme action to Menu Bar at the far right
         self.toggle_theme_action = self.ui.menu_bar.addAction(self.theme_icon, "Toggle Theme")
+        self.ui.exit_action.triggered.connect(self.close)
         self.ui.clear_recent_xpath_expressions_action.triggered.connect(self.on_clearRecentXpathExpressions)
         self.ui.open_input_action.triggered.connect(self.on_openInputDirectory)
         self.ui.open_output_action.triggered.connect(self.on_openOutputDirectory)
@@ -331,14 +332,14 @@ class SignalHandlerMixin:
 
     @Slot() # Opens Pre-built XPaths Manager QWidget
     def on_openPrebuiltXPathsManager(self):
-        from src.ui.widgets.modules.pre_built_xpaths_manager import PreBuiltXPathsManager
+        from ui.widgets.modules.pre_built_xpaths_manager import PreBuiltXPathsManager
         self.w = PreBuiltXPathsManager(main_window=self)
         self.w.show()
 
     @Slot() # Opens Paths Manager QWidget
     def on_openPathsManager(self):
         """Open paths manager window."""
-        from src.ui.widgets.modules.path_manager import CustomPathsManager
+        from ui.widgets.modules.path_manager import CustomPathsManager
         self.w = CustomPathsManager(main_window=self)
         self.w.show()
 
