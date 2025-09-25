@@ -3,7 +3,7 @@ name = "xmluvation"
 version = "1.2.1"
 description = "A XML searcher with XPath expressions, with the ability to export matches to a CSV file."
 readme = "README.md"
-requires-python = ">=3.13"
+requires-python = ">=3.12"
 dependencies = [
     "auto-py-to-exe>=2.47.0",
     "lxml>=6.0.1",
