@@ -46,7 +46,31 @@ class ConfigHandler:
         return current_data, keys[-1] # Return parent dict and the actual key
 
     def set(self, key_path: str, value: any):
-        """Sets a configuration value, handling nested keys (e.g., 'section.subsection.key')."""
+        """
+        Sets a configuration value, handling nested keys using dot notation. (e.g., 'section.subsection.key').
+
+        The method updates the in-memory 'self.data' and automatically
+        saves the entire configuration to the disk afterward. Non-existent
+        intermediate keys will be created as new dictionaries.
+
+        Args:
+            key_path (str): The configuration key path (e.g., 'key' or 'section.subkey').
+            value (any): The value to assign to the key.
+
+        Example:
+            If the current config is {}.
+            >>> config_handler.set('app_version', '1.0.0')
+            # Resulting config: {"app_version": "1.0.0"}
+
+            If the current config is {"app_version": "1.0.0"}.
+            >>> config_handler.set('custom_paths.docs', '/home/user/documents')
+            # Resulting config: {
+            #     "app_version": "1.0.0",
+            #     "custom_paths": {
+            #         "docs": "/home/user/documents"
+            #     }
+            # }
+        """
         keys = key_path.split('.')
         parent_data = self.data
         for i, key in enumerate(keys):
