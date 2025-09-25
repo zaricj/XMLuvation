@@ -7,15 +7,17 @@ from PySide6.QtWidgets import (
     QFileDialog,
     QMessageBox,
     QInputDialog,
-    QLineEdit
+    QLineEdit,
+    QTextEdit
     
 )
-from PySide6.QtGui import QAction, QShortcut, QKeySequence, QDesktopServices
+from PySide6.QtGui import QAction, QShortcut, QKeySequence, QDesktopServices, QIcon
 from PySide6.QtCore import (
     Qt,
     Slot,
     QUrl,
     QFile,
+    QPoint,
     QIODevice,
     QTextStream
 
@@ -29,8 +31,6 @@ if TYPE_CHECKING:
     from controllers.state_controller import ComboboxStateHandler
     from modules.config_handler import ConfigHandler
 
-
-
 class SignalHandlerMixin:
     """Mixin class to handle all signal connections and slot methods"""
     # Type hints for attributes accessed in this mixin
@@ -41,13 +41,83 @@ class SignalHandlerMixin:
     cb_state_controller: 'ComboboxStateHandler'
     set_max_threads: int
     current_theme: str
-    config_handler: "ConfigHandler"  # Replace with actual type
+    config_handler: "ConfigHandler"
+    theme_icon: QIcon
     
     def __init__(self):
         super().__init__()
         self._current_xml_parser = None
         self._current_csv_exporter = None
         self._current_xpath_builder = None
+        
+    def connect_menu_bar_actions(self):
+        """Connect all menu bar actions to their handlers."""
+        # Add theme action to Menu Bar at the far right
+        self.toggle_theme_action = self.ui.menu_bar.addAction(self.theme_icon, "Toggle Theme")
+        self.ui.clear_recent_xpath_expressions_action.triggered.connect(self.on_clearRecentXpathExpressions)
+        self.ui.open_input_action.triggered.connect(self.on_openInputDirectory)
+        self.ui.open_output_action.triggered.connect(self.on_openOutputDirectory)
+        self.ui.open_csv_conversion_input_action.triggered.connect(self.on_openCSVConversionInputDirectory)
+        self.ui.open_paths_manager.triggered.connect(self.on_openPathsManager)
+        self.ui.open_pre_built_xpaths_manager_action.triggered.connect(self.on_openPrebuiltXPathsManager)
+        self.ui.xpath_help_action.triggered.connect(self.on_xpathHelp)
+        self.toggle_theme_action.triggered.connect(self.on_changeTheme)
+
+        # Connect recent xpath expressions menu
+        for action in self.ui.recent_xpath_expressions_menu.actions():
+            action.triggered.connect(
+                lambda checked, exp=action.text(): self.on_setXPathExpressionInInput(exp)
+            )
+
+    def connect_ui_events(self):
+        """Connect all UI element events to their handlers."""
+        
+        # ===== Handle custom context menus ===== #
+        # Connect context menu signals
+        self.ui.list_widget_xpath_expressions.customContextMenuRequested.connect(self.on_showXPathContextMenu)
+        self.ui.text_edit_xml_output.customContextMenuRequested.connect(self.on_showXMLOutputContextMenu)
+        
+        # Context menu signals for program output and csv output
+        self.ui.text_edit_program_output.customContextMenuRequested.connect(self.on_contextMenuEventProgramOutput)
+        self.ui.text_edit_csv_output.customContextMenuRequested.connect(self.on_contextMenuEventCSVOutput)
+        
+        # ======================================= #
+        
+        # Keyboard shortcuts
+        self.shortcut_find = QShortcut(
+            QKeySequence(Qt.Modifier.CTRL | Qt.Key.Key_F), self
+        )
+        self.shortcut_find.activated.connect(self.on_toggleXMLOutputSearchWidgets)
+
+        # Line Edit events
+        self.ui.line_edit_xml_folder_path_input.textChanged.connect(self.on_XMLFolderPathChanged)
+        self.ui.line_edit_profile_cleanup_csv_file_path.textChanged.connect(self.on_CSVProfileCleanupInputChanged)
+
+        # ComboBox events
+        self.ui.combobox_tag_names.currentTextChanged.connect(self.cb_state_controller.on_tag_name_changed)
+        self.ui.combobox_attribute_names.currentTextChanged.connect(self.cb_state_controller.on_attribute_name_changed)
+
+        # Button events
+        self.ui.button_pass_csv_to_converter.linkActivated.connect(self.on_passCSVFilePathToConverter)
+        self.ui.button_browse_xml_folder.clicked.connect(self.on_browseXMLFolder)
+        self.ui.button_read_xml.clicked.connect(self.on_readXMLFile)
+        self.ui.button_browse_csv.clicked.connect(self.on_browseCSVOutput)
+        self.ui.button_build_xpath.clicked.connect(self.on_buildXPathExpression)
+        self.ui.button_add_xpath_to_list.clicked.connect(self.on_addXPathToList)
+        self.ui.button_start_csv_export.clicked.connect(self.on_startCSVSearch)
+        self.ui.button_abort_csv_export.clicked.connect(self.on_stopCSVSearch)
+        self.ui.button_browse_csv_conversion_path_input.clicked.connect(self.on_browseCSVConversionInput)
+        self.ui.button_csv_conversion_convert.clicked.connect(self.on_convertCSVFile)
+        self.ui.button_profile_cleanup_browse_csv_file_path.clicked.connect(self.on_browseProfileCleanupCSV)
+        self.ui.button_profile_cleanup_browse_folder_path.clicked.connect(self.on_browseProfileCleanupFolder)
+        self.ui.button_profile_cleanup_cleanup_start.clicked.connect(self.on_startProfileCleanup)
+        self.ui.button_drop_csv_header.clicked.connect(self.on_dropCurrentCSVHeader)
+        self.ui.button_find_next.clicked.connect(self.on_XMLOutputSearchNext)
+        self.ui.button_find_previous.clicked.connect(self.on_XMLOutputSearchPrevious)
+
+        # CheckBox events
+        self.ui.checkbox_write_index_column.toggled.connect(self.on_writeIndexCheckBoxToggled)
+        self.ui.checkbox_group_matches.toggled.connect(self.on_groupMatchesCheckBoxToggled)
 
     # ============= SLOT METHODS =============
     
@@ -86,12 +156,12 @@ class SignalHandlerMixin:
     @Slot(str)
     def handle_csv_tab_output_append(self, message: str):
         """Handle CSV tab QTextEdit progress updates with append."""
-        self.ui.text_edit_csv_conversion_tab_program_output.append(message)
+        self.ui.text_edit_csv_output.append(message)
 
     @Slot(str)
     def handle_csv_tab_output_set_text(self, message: str):
         """Handle CSV tab QTextEdit progress updates with setText."""
-        self.ui.text_edit_csv_conversion_tab_program_output.setText(message)
+        self.ui.text_edit_csv_output.setText(message)
 
     @Slot(str)
     def handle_file_processing_label(self, message: str):
@@ -218,70 +288,6 @@ class SignalHandlerMixin:
         worker.signals.warning_occurred.connect(self.handle_warning_message)
         worker.signals.tab2_program_output_append.connect(self.handle_csv_tab_output_append)
 
-    def connect_menu_bar_actions(self):
-        """Connect all menu bar actions to their handlers."""
-                # Add theme action to Menu Bar at the far right
-        self.toggle_theme_action = self.ui.menu_bar.addAction(self.theme_icon, "Toggle Theme")
-        self.ui.clear_recent_xpath_expressions_action.triggered.connect(self.on_clearRecentXpathExpressions)
-        self.ui.clear_action.triggered.connect(self.on_clearOutput)
-        self.ui.open_input_action.triggered.connect(self.on_openInputDirectory)
-        self.ui.open_output_action.triggered.connect(self.on_openOutputDirectory)
-        self.ui.open_csv_conversion_input_action.triggered.connect(self.on_openCSVConversionInputDirectory)
-        self.ui.add_custom_path_action.triggered.connect(self.on_addCustomPath)
-        self.ui.open_paths_manager.triggered.connect(self.on_openPathsManager)
-        self.ui.open_pre_built_xpaths_manager_action.triggered.connect(self.on_openPrebuiltXPathsManager)
-        self.ui.xpath_help_action.triggered.connect(self.on_xpathHelp)
-        self.toggle_theme_action.triggered.connect(self.on_changeTheme)
-
-        # Connect context menu signals
-        self.ui.list_widget_xpath_expressions.customContextMenuRequested.connect(self.on_showXPathContextMenu)
-        self.ui.text_edit_xml_output.customContextMenuRequested.connect(self.on_showXMLOutputContextMenu)
-
-        # Connect recent xpath expressions menu
-        for action in self.ui.recent_xpath_expressions_menu.actions():
-            action.triggered.connect(
-                lambda checked, exp=action.text(): self.on_setXPathExpressionInInput(exp)
-            )
-
-    def connect_ui_events(self):
-        """Connect all UI element events to their handlers."""
-        
-        # Keyboard shortcuts
-        self.shortcut_find = QShortcut(
-            QKeySequence(Qt.Modifier.CTRL | Qt.Key.Key_F), self
-        )
-        self.shortcut_find.activated.connect(self.on_toggleXMLOutputSearchWidgets)
-
-        # Line Edit events
-        self.ui.line_edit_xml_folder_path_input.textChanged.connect(self.on_XMLFolderPathChanged)
-        self.ui.line_edit_profile_cleanup_csv_file_path.textChanged.connect(self.on_CSVProfileCleanupInputChanged)
-
-        # ComboBox events
-        self.ui.combobox_tag_names.currentTextChanged.connect(self.cb_state_controller.on_tag_name_changed)
-        self.ui.combobox_attribute_names.currentTextChanged.connect(self.cb_state_controller.on_attribute_name_changed)
-
-        # Button events
-        self.ui.button_pass_csv_to_converter.linkActivated.connect(self.on_passCSVFilePathToConverter)
-        self.ui.button_browse_xml_folder.clicked.connect(self.on_browseXMLFolder)
-        self.ui.button_read_xml.clicked.connect(self.on_readXMLFile)
-        self.ui.button_browse_csv.clicked.connect(self.on_browseCSVOutput)
-        self.ui.button_build_xpath.clicked.connect(self.on_buildXPathExpression)
-        self.ui.button_add_xpath_to_list.clicked.connect(self.on_addXPathToList)
-        self.ui.button_start_csv_export.clicked.connect(self.on_startCSVSearch)
-        self.ui.button_abort_csv_export.clicked.connect(self.on_stopCSVSearch)
-        self.ui.button_browse_csv_conversion_path_input.clicked.connect(self.on_browseCSVConversionInput)
-        self.ui.button_csv_conversion_convert.clicked.connect(self.on_convertCSVFile)
-        self.ui.button_profile_cleanup_browse_csv_file_path.clicked.connect(self.on_browseProfileCleanupCSV)
-        self.ui.button_profile_cleanup_browse_folder_path.clicked.connect(self.on_browseProfileCleanupFolder)
-        self.ui.button_profile_cleanup_cleanup_start.clicked.connect(self.on_startProfileCleanup)
-        self.ui.button_drop_csv_header.clicked.connect(self.on_dropCurrentCSVHeader)
-        self.ui.button_find_next.clicked.connect(self.on_XMLOutputSearchNext)
-        self.ui.button_find_previous.clicked.connect(self.on_XMLOutputSearchPrevious)
-
-        # CheckBox events
-        self.ui.checkbox_write_index_column.toggled.connect(self.on_writeIndexCheckBoxToggled)
-        self.ui.checkbox_group_matches.toggled.connect(self.on_groupMatchesCheckBoxToggled)
-
     # ============= EVENT HANDLER METHODS =============
 
     # === Menu Bar Event Handlers ===
@@ -301,10 +307,9 @@ class SignalHandlerMixin:
             self._update_recent_xpath_expressions_menu()
 
     @Slot()
-    def on_clearOutput(self):
-        """Clear output text areas."""
-        self.ui.text_edit_program_output.clear()
-        self.ui.text_edit_csv_conversion_tab_program_output.clear()
+    def on_clearOutput(self, text_edit: QTextEdit):
+        """Clear selected output text edit."""
+        text_edit.clear()
 
     @Slot()
     def on_openInputDirectory(self):
@@ -324,37 +329,16 @@ class SignalHandlerMixin:
         directory = os.path.dirname(self.ui.line_edit_csv_conversion_path_input.text()) if self.ui.line_edit_csv_conversion_path_input.text() else ""
         self._open_folder_in_file_explorer(directory)
 
-    @Slot()
-    def on_addCustomPath(self):
-        """Add custom path dialog."""
-        name, ok = QInputDialog.getText(
-            self, "Add Custom Path", "Enter a name for the path:"
-        )
-        if ok and name:
-            existing_paths = self.config_handler.get("custom_paths", {})
-            if name in existing_paths:
-                QMessageBox.warning(
-                    self,
-                    "Duplicate Name",
-                    f"A path with the name '{name}' already exists."
-                )
-                return
-
-            path, ok = QInputDialog.getText(self, "Add Custom Path", "Enter path:")
-            if ok and path:
-                self.config_handler.set(f"custom_paths.{name}", path)
-                self._update_paths_menu()
-                
     @Slot() # Opens Pre-built XPaths Manager QWidget
     def on_openPrebuiltXPathsManager(self):
-        from ui.widgets.pre_built_xpaths_manager import PreBuiltXPathsManager
+        from src.ui.widgets.modules.pre_built_xpaths_manager import PreBuiltXPathsManager
         self.w = PreBuiltXPathsManager(main_window=self)
         self.w.show()
 
     @Slot() # Opens Paths Manager QWidget
     def on_openPathsManager(self):
         """Open paths manager window."""
-        from ui.widgets.path_manager import CustomPathsManager
+        from src.ui.widgets.modules.path_manager import CustomPathsManager
         self.w = CustomPathsManager(main_window=self)
         self.w.show()
 
@@ -719,9 +703,9 @@ class SignalHandlerMixin:
         """
         try:
             if self.ui.checkbox_write_index_column.isChecked():
-                self.ui.text_edit_csv_conversion_tab_program_output.setText(message_with_index)
+                self.ui.text_edit_csv_output.setText(message_with_index)
             else:
-                self.ui.text_edit_csv_conversion_tab_program_output.setText(message_without_index)
+                self.ui.text_edit_csv_output.setText(message_without_index)
         except Exception as ex:
             message = f"An exception of type {type(ex).__name__} occurred. Arguments: {ex.args!r}"
             QMessageBox.critical(self, "Exception in Program", f"An error occurred: {message}")
@@ -755,8 +739,8 @@ class SignalHandlerMixin:
             QMessageBox.critical(self, "Exception in Program", f"An error occurred: {message}")
 
     # === Context Menu Event Handlers ===
-    @Slot()
-    def on_showXPathContextMenu(self, position):
+    @Slot(QPoint)
+    def on_showXPathContextMenu(self, position: QPoint):
         """Show context menu for XPath expressions list."""
         context_menu = QMenu(self)
         remove_action = QAction("Remove Selected", self)
@@ -770,10 +754,11 @@ class SignalHandlerMixin:
 
         context_menu.exec(self.ui.list_widget_xpath_expressions.mapToGlobal(position))
 
-    @Slot()
-    def on_showXMLOutputContextMenu(self, position):
+    @Slot(QPoint)
+    def on_showXMLOutputContextMenu(self, position: QPoint):
         """Show context menu for XML output."""
         menu = self.ui.text_edit_xml_output.createStandardContextMenu()
+        # Find action
         find_action = QAction(
             "Find",
             self,
@@ -783,6 +768,34 @@ class SignalHandlerMixin:
         menu.addAction(find_action)
 
         menu.exec(self.ui.text_edit_xml_output.mapToGlobal(position))
+        
+    @Slot(QPoint) # For the main Program Output Text Edit
+    def on_contextMenuEventProgramOutput(self, position: QPoint):
+        # Create standard context menu for Text Edit
+        menu = self.ui.text_edit_program_output.createStandardContextMenu()
+        
+        # Clear output action
+        clear_output_action = QAction("Clear output", self)
+        clear_output_action.triggered.connect(lambda: self.on_clearOutput(self.ui.text_edit_program_output))
+        
+        # Add clear output action to standard QMenu (context menu)
+        menu.addAction(clear_output_action)
+        # Map the position of the context menu to the mouse position
+        menu.exec(self.ui.text_edit_program_output.mapToGlobal(position))
+        
+    @Slot(QPoint) # For the CSV Output Text Edit
+    def on_contextMenuEventCSVOutput(self, position: QPoint):
+        # Create standard context menu for Text Edit
+        menu = self.ui.text_edit_csv_output.createStandardContextMenu()
+        
+        # Clear output action
+        clear_output_action = QAction("Clear output", self)
+        clear_output_action.triggered.connect(lambda: self.on_clearOutput(self.ui.text_edit_csv_output))
+        
+        # Add clear output action to standard QMenu (context menu)
+        menu.addAction(clear_output_action)
+        # Map the position of the context menu to the mouse position
+        menu.exec(self.ui.text_edit_csv_output.mapToGlobal(position))
 
     @Slot(str)
     def on_setXPathExpressionInInput(self, expression: str):
@@ -902,11 +915,6 @@ class SignalHandlerMixin:
             action.setStatusTip(f"Open {name}")
             action.triggered.connect(lambda checked, p=path: self._set_path_in_input(p))
             self.ui.paths_menu.addAction(action)
-
-        if custom_paths:
-            self.ui.paths_menu.addSeparator()
-
-        self.ui.paths_menu.addAction(self.ui.add_custom_path_action)
 
     def _set_path_in_input(self, path: str):
         """Set path in input field."""

@@ -71,7 +71,7 @@
        <enum>QTabWidget::TabPosition::North</enum>
       </property>
       <property name="currentIndex">
-       <number>0</number>
+       <number>1</number>
       </property>
       <property name="usesScrollButtons">
        <bool>false</bool>
@@ -1156,6 +1156,9 @@ font: bold;</string>
                    <strikeout>false</strikeout>
                   </font>
                  </property>
+                 <property name="contextMenuPolicy">
+                  <enum>Qt::ContextMenuPolicy::DefaultContextMenu</enum>
+                 </property>
                  <property name="readOnly">
                   <bool>true</bool>
                  </property>
@@ -2191,7 +2194,7 @@ Supported output file types: Excel, Markdown, HTML and JSON</string>
             </property>
             <layout class="QHBoxLayout" name="horizontalLayout_8">
              <item>
-              <widget class="QTextEdit" name="text_edit_csv_conversion_tab_program_output">
+              <widget class="QTextEdit" name="text_edit_csv_output">
                <property name="font">
                 <font>
                  <family>Microsoft YaHei UI</family>
@@ -2239,7 +2242,6 @@ Supported output file types: Excel, Markdown, HTML and JSON</string>
     <addaction name="recent_xpath_expressions_menu"/>
     <addaction name="clear_recent_xpath_expressions_action"/>
     <addaction name="separator"/>
-    <addaction name="clear_action"/>
     <addaction name="exit_action"/>
    </widget>
    <widget class="QMenu" name="open_menu">

@@ -123,9 +123,6 @@ class MainWindow(QMainWindow, SignalHandlerMixin):
         self.current_read_xml_file = None
         self.csv_exporter_handler = None
 
-        # Create fixed actions ONCE and store them as instance variables
-        self._add_custom_path_action = QAction("Add Custom Path", self)
-
         # Instantiate the controller with a reference to the MainWindow
         self.cb_state_controller = ComboboxStateHandler(
             main_window=self,
@@ -176,6 +173,10 @@ class MainWindow(QMainWindow, SignalHandlerMixin):
         # Connect the custom context menu for Listbox
         self.ui.list_widget_xpath_expressions.setContextMenuPolicy(Qt.CustomContextMenu)
         self.ui.text_edit_xml_output.setContextMenuPolicy(Qt.CustomContextMenu)
+
+        # Connect the custom context menu for TextEdit
+        self.ui.text_edit_program_output.setContextMenuPolicy(Qt.CustomContextMenu)
+        self.ui.text_edit_csv_output.setContextMenuPolicy(Qt.CustomContextMenu)
 
         # Theme Icons in QMenu
         self.light_mode_icon = QIcon(LIGHT_THEME_QMENU_ICON.__str__())

@@ -524,6 +524,7 @@ class Ui_MainWindow(object):
         sizePolicy3.setHeightForWidth(self.text_edit_program_output.sizePolicy().hasHeightForWidth())
         self.text_edit_program_output.setSizePolicy(sizePolicy3)
         self.text_edit_program_output.setFont(font3)
+        self.text_edit_program_output.setContextMenuPolicy(Qt.ContextMenuPolicy.DefaultContextMenu)
         self.text_edit_program_output.setReadOnly(True)
 
         self.verticalLayout_12.addWidget(self.text_edit_program_output)
@@ -908,12 +909,12 @@ class Ui_MainWindow(object):
         self.group_box_tab2_program_output.setFont(font4)
         self.horizontalLayout_8 = QHBoxLayout(self.group_box_tab2_program_output)
         self.horizontalLayout_8.setObjectName(u"horizontalLayout_8")
-        self.text_edit_csv_conversion_tab_program_output = QTextEdit(self.group_box_tab2_program_output)
-        self.text_edit_csv_conversion_tab_program_output.setObjectName(u"text_edit_csv_conversion_tab_program_output")
-        self.text_edit_csv_conversion_tab_program_output.setFont(font3)
-        self.text_edit_csv_conversion_tab_program_output.setReadOnly(True)
+        self.text_edit_csv_output = QTextEdit(self.group_box_tab2_program_output)
+        self.text_edit_csv_output.setObjectName(u"text_edit_csv_output")
+        self.text_edit_csv_output.setFont(font3)
+        self.text_edit_csv_output.setReadOnly(True)
 
-        self.horizontalLayout_8.addWidget(self.text_edit_csv_conversion_tab_program_output)
+        self.horizontalLayout_8.addWidget(self.text_edit_csv_output)
 
 
         self.main_layout_csv_conversion_and_cleanup_tab.addWidget(self.group_box_tab2_program_output)
@@ -951,7 +952,6 @@ class Ui_MainWindow(object):
         self.file_menu.addAction(self.recent_xpath_expressions_menu.menuAction())
         self.file_menu.addAction(self.clear_recent_xpath_expressions_action)
         self.file_menu.addSeparator()
-        self.file_menu.addAction(self.clear_action)
         self.file_menu.addAction(self.exit_action)
         self.open_menu.addAction(self.open_input_action)
         self.open_menu.addAction(self.open_output_action)
@@ -964,7 +964,7 @@ class Ui_MainWindow(object):
 
         self.retranslateUi(MainWindow)
 
-        self.tabWidget.setCurrentIndex(0)
+        self.tabWidget.setCurrentIndex(1)
         self.combobox_tag_names.setCurrentIndex(-1)
         self.combobox_tag_values.setCurrentIndex(-1)
         self.combobox_attribute_names.setCurrentIndex(-1)
