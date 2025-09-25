@@ -1,31 +1,36 @@
-from PySide6.QtWidgets import QWidget, QMessageBox, QMainWindow
+from PySide6.QtWidgets import QWidget, QMessageBox, QLineEdit, QFileDialog
 from PySide6.QtCore import Slot
+from PySide6.QtGui import QCloseEvent
 from pathlib import Path
 
 from modules.config_handler import ConfigHandler
 from ui.widgets.CustomPathsManager_ui import Ui_CustomPathsManagerWidget
 
-from typing import TYPE_CHECKING
+from typing import TYPE_CHECKING, Any, List
 if TYPE_CHECKING:
     from src.main import MainWindow
 
 
-CURRENT_DIR = Path(__file__).parent # \XMLuvation\src\ui\widgets
-ROOT_DIR = CURRENT_DIR.parent.parent
+# Determine the path of the current file and resolve it to handle symlinks/etc.
+FILE_PATH = Path(__file__).resolve()
+
+# Get the project src directory
+SRC_ROOT_DIR = FILE_PATH.parents[3]
+print(SRC_ROOT_DIR)
 
 # Path Constants
-GUI_CONFIG_DIRECTORY: Path = ROOT_DIR / "config"
-GUI_CONFIG_FILE_PATH: Path = ROOT_DIR / "config" / "config.json"
+GUI_CONFIG_DIRECTORY: Path = SRC_ROOT_DIR / "config"
+GUI_CONFIG_FILE_PATH: Path = SRC_ROOT_DIR / "config" / "config.json"
 
 # Theme files
-DARK_THEME_PATH: Path = ROOT_DIR / "resources" / "styles" / "dark_theme.qss"
-LIGHT_THEME_PATH: Path = ROOT_DIR / "resources" / "styles" / "light_theme.qss"
+DARK_THEME_PATH: Path = SRC_ROOT_DIR / "resources" / "styles" / "dark_theme.qss"
+LIGHT_THEME_PATH: Path = SRC_ROOT_DIR / "resources" / "styles" / "light_theme.qss"
 
-ICON_PATH: Path = ROOT_DIR / "resources" / "icons" / "xml_256px.ico"
+ICON_PATH: Path = SRC_ROOT_DIR / "resources" / "icons" / "xml_256px.ico"
 
 # Theme file icons
-DARK_THEME_QMENU_ICON: Path = ROOT_DIR / "resources" / "images" / "dark.png"
-LIGHT_THEME_QMENU_ICON: Path = ROOT_DIR / "resources" / "images" / "light.png"
+DARK_THEME_QMENU_ICON: Path = SRC_ROOT_DIR / "resources" / "images" / "dark.png"
+LIGHT_THEME_QMENU_ICON: Path = SRC_ROOT_DIR / "resources" / "images" / "light.png"
 
 
 # App related constants
@@ -51,9 +56,50 @@ class CustomPathsManager(QWidget):
         self.ui.button_save_changes.clicked.connect(self.save_changes_event)
         self.ui.button_load_action.clicked.connect(self.load_custom_path_event)
         self.ui.button_delete_action.clicked.connect(self.delete_custom_path_event)
+        self.ui.button_create_custom_path.clicked.connect(self.create_custom_path_event)
+        self.ui.button_browse_path_folder.clicked.connect(lambda: self.browse_folder("Select a folder for the custom path value", self.ui.line_edit_custom_path_value))
 
         # Initial population of the combobox
         self.update_combobox()
+        
+    # An input validator
+    def _validate_inputs(self, inputs_to_validate: List[Any]) -> bool:
+        try:
+            for input in inputs_to_validate:
+                # Check if not empty:
+                if len(input) > 0:
+                    return True
+                else:
+                    raise ValueError
+                
+        except Exception as ex:
+            QMessageBox.warning(self, "Input validation failed", f"Something went wrong: {str(ex)}")
+            return False
+        
+    # Create Path section
+    @Slot()
+    def create_custom_path_event(self) -> None:
+        sub_key = self.ui.line_edit_custom_path_name.text()
+        value = self.ui.line_edit_custom_path_value.text()
+        
+        valid = self._validate_inputs([sub_key, value])
+        
+        if valid:
+            # Construct the full key path for "custom_paths"
+            full_key_path = f"custom_paths.{sub_key}"
+            self.config_handler.set(full_key_path, value)
+            self.update_combobox()
+            QMessageBox.information(self, "Success", f"Successfully created a new custom path:\nKey:{sub_key}\nValue:{value}")
+            
+    def browse_folder(self, dialog_message: str, line_widget: QLineEdit):
+        """Helper for folder browsing dialogs."""
+        try:
+            folder = QFileDialog.getExistingDirectory(self, dialog_message)
+            if folder:
+                line_widget.setText(folder)
+        except Exception as ex:
+            message = f"An exception of type {type(ex).__name__} occurred. Arguments: {ex.args!r}"
+            QMessageBox.critical(self, "An exception occurred in browse folder method", message)
 
     @Slot()
     def save_changes_event(self):
@@ -127,6 +173,8 @@ class CustomPathsManager(QWidget):
 
     @Slot()
     def update_combobox(self):
+        """Updated the combobox in the custom paths manager combobox by re-loading the config file again.
+        """
         self.ui.combobox_path_names.clear()
         # *** Dynamic usage: Get keys of the nested section ***
         config_file_values = self.config_handler.get_all_keys("custom_paths")
@@ -138,3 +186,9 @@ class CustomPathsManager(QWidget):
         inputs = [self.ui.line_edit_path_name, self.ui.line_edit_path_value]
         for input in inputs:
             input.clear()
+            
+    # Close event
+    def closeEvent(self, event: QCloseEvent):
+        # Always update paths_menu
+        self.main_window._update_paths_menu()
+        print("Debug: closeEvent fired in custom widget! DELETE ME")
