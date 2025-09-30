@@ -24,7 +24,7 @@ class Ui_CustomPathsManagerWidget(object):
     def setupUi(self, CustomPathsManagerWidget):
         if not CustomPathsManagerWidget.objectName():
             CustomPathsManagerWidget.setObjectName(u"CustomPathsManagerWidget")
-        CustomPathsManagerWidget.resize(515, 518)
+        CustomPathsManagerWidget.resize(540, 357)
         icon = QIcon()
         icon.addFile(u":/icons/xml_256px.ico", QSize(), QIcon.Mode.Normal, QIcon.State.Off)
         CustomPathsManagerWidget.setWindowIcon(icon)
@@ -42,10 +42,32 @@ class Ui_CustomPathsManagerWidget(object):
         self.groupBox.setSizePolicy(sizePolicy)
         self.verticalLayout = QVBoxLayout(self.groupBox)
         self.verticalLayout.setObjectName(u"verticalLayout")
+        self.horizontalLayout_7 = QHBoxLayout()
+        self.horizontalLayout_7.setObjectName(u"horizontalLayout_7")
+        self.label = QLabel(self.groupBox)
+        self.label.setObjectName(u"label")
+        sizePolicy1 = QSizePolicy(QSizePolicy.Policy.Maximum, QSizePolicy.Policy.Maximum)
+        sizePolicy1.setHorizontalStretch(0)
+        sizePolicy1.setVerticalStretch(0)
+        sizePolicy1.setHeightForWidth(self.label.sizePolicy().hasHeightForWidth())
+        self.label.setSizePolicy(sizePolicy1)
+
+        self.horizontalLayout_7.addWidget(self.label)
+
         self.label_description_create_custom_path = QLabel(self.groupBox)
         self.label_description_create_custom_path.setObjectName(u"label_description_create_custom_path")
+        sizePolicy2 = QSizePolicy(QSizePolicy.Policy.Minimum, QSizePolicy.Policy.Maximum)
+        sizePolicy2.setHorizontalStretch(0)
+        sizePolicy2.setVerticalStretch(0)
+        sizePolicy2.setHeightForWidth(self.label_description_create_custom_path.sizePolicy().hasHeightForWidth())
+        self.label_description_create_custom_path.setSizePolicy(sizePolicy2)
+        self.label_description_create_custom_path.setLayoutDirection(Qt.LayoutDirection.LeftToRight)
+        self.label_description_create_custom_path.setAlignment(Qt.AlignmentFlag.AlignLeading|Qt.AlignmentFlag.AlignLeft|Qt.AlignmentFlag.AlignVCenter)
 
-        self.verticalLayout.addWidget(self.label_description_create_custom_path)
+        self.horizontalLayout_7.addWidget(self.label_description_create_custom_path)
+
+
+        self.verticalLayout.addLayout(self.horizontalLayout_7)
 
         self.horizontalLayout = QHBoxLayout()
         self.horizontalLayout.setObjectName(u"horizontalLayout")
@@ -92,12 +114,45 @@ class Ui_CustomPathsManagerWidget(object):
 
         self.verticalLayout_4.addWidget(self.groupBox)
 
+        self.line = QFrame(CustomPathsManagerWidget)
+        self.line.setObjectName(u"line")
+        self.line.setFrameShape(QFrame.Shape.HLine)
+        self.line.setFrameShadow(QFrame.Shadow.Sunken)
+
+        self.verticalLayout_4.addWidget(self.line)
+
         self.groupBox_2 = QGroupBox(CustomPathsManagerWidget)
         self.groupBox_2.setObjectName(u"groupBox_2")
         sizePolicy.setHeightForWidth(self.groupBox_2.sizePolicy().hasHeightForWidth())
         self.groupBox_2.setSizePolicy(sizePolicy)
         self.verticalLayout_3 = QVBoxLayout(self.groupBox_2)
         self.verticalLayout_3.setObjectName(u"verticalLayout_3")
+        self.horizontalLayout_3 = QHBoxLayout()
+        self.horizontalLayout_3.setObjectName(u"horizontalLayout_3")
+        self.label_desc = QLabel(self.groupBox_2)
+        self.label_desc.setObjectName(u"label_desc")
+        sizePolicy1.setHeightForWidth(self.label_desc.sizePolicy().hasHeightForWidth())
+        self.label_desc.setSizePolicy(sizePolicy1)
+        self.label_desc.setBaseSize(QSize(0, 0))
+
+        self.horizontalLayout_3.addWidget(self.label_desc)
+
+        self.label_text_desc = QLabel(self.groupBox_2)
+        self.label_text_desc.setObjectName(u"label_text_desc")
+        sizePolicy3 = QSizePolicy(QSizePolicy.Policy.Expanding, QSizePolicy.Policy.Maximum)
+        sizePolicy3.setHorizontalStretch(0)
+        sizePolicy3.setVerticalStretch(0)
+        sizePolicy3.setHeightForWidth(self.label_text_desc.sizePolicy().hasHeightForWidth())
+        self.label_text_desc.setSizePolicy(sizePolicy3)
+        self.label_text_desc.setWordWrap(True)
+        self.label_text_desc.setMargin(0)
+        self.label_text_desc.setIndent(-1)
+
+        self.horizontalLayout_3.addWidget(self.label_text_desc)
+
+
+        self.verticalLayout_3.addLayout(self.horizontalLayout_3)
+
         self.horizontalLayout_Buttons = QHBoxLayout()
         self.horizontalLayout_Buttons.setObjectName(u"horizontalLayout_Buttons")
         self.label_combobox_desc = QLabel(self.groupBox_2)
@@ -127,30 +182,6 @@ class Ui_CustomPathsManagerWidget(object):
 
 
         self.verticalLayout_3.addLayout(self.horizontalLayout_Buttons)
-
-        self.horizontalLayout_3 = QHBoxLayout()
-        self.horizontalLayout_3.setObjectName(u"horizontalLayout_3")
-        self.label_desc = QLabel(self.groupBox_2)
-        self.label_desc.setObjectName(u"label_desc")
-        self.label_desc.setBaseSize(QSize(0, 0))
-
-        self.horizontalLayout_3.addWidget(self.label_desc)
-
-        self.label_text_desc = QLabel(self.groupBox_2)
-        self.label_text_desc.setObjectName(u"label_text_desc")
-        sizePolicy1 = QSizePolicy(QSizePolicy.Policy.Expanding, QSizePolicy.Policy.Preferred)
-        sizePolicy1.setHorizontalStretch(0)
-        sizePolicy1.setVerticalStretch(0)
-        sizePolicy1.setHeightForWidth(self.label_text_desc.sizePolicy().hasHeightForWidth())
-        self.label_text_desc.setSizePolicy(sizePolicy1)
-        self.label_text_desc.setWordWrap(True)
-        self.label_text_desc.setMargin(0)
-        self.label_text_desc.setIndent(-1)
-
-        self.horizontalLayout_3.addWidget(self.label_text_desc)
-
-
-        self.verticalLayout_3.addLayout(self.horizontalLayout_3)
 
         self.horizontalLayout_4 = QHBoxLayout()
         self.horizontalLayout_4.setObjectName(u"horizontalLayout_4")
@@ -190,13 +221,6 @@ class Ui_CustomPathsManagerWidget(object):
 
         self.verticalLayout_4.addWidget(self.groupBox_2)
 
-        self.line = QFrame(CustomPathsManagerWidget)
-        self.line.setObjectName(u"line")
-        self.line.setFrameShape(QFrame.Shape.HLine)
-        self.line.setFrameShadow(QFrame.Shadow.Sunken)
-
-        self.verticalLayout_4.addWidget(self.line)
-
 
         self.verticalLayout_2.addLayout(self.verticalLayout_4)
 
@@ -209,19 +233,18 @@ class Ui_CustomPathsManagerWidget(object):
     def retranslateUi(self, CustomPathsManagerWidget):
         CustomPathsManagerWidget.setWindowTitle(QCoreApplication.translate("CustomPathsManagerWidget", u"Custom Paths Manager", None))
         self.groupBox.setTitle(QCoreApplication.translate("CustomPathsManagerWidget", u"Create custom paths", None))
-        self.label_description_create_custom_path.setText(QCoreApplication.translate("CustomPathsManagerWidget", u"Here you can add and create custom path configurations.\n"
-"Enter a path name which will be added to the menubar.\n"
-"Enter a folder path which is associated with the give path name.", None))
+        self.label.setText(QCoreApplication.translate("CustomPathsManagerWidget", u"Description:", None))
+        self.label_description_create_custom_path.setText(QCoreApplication.translate("CustomPathsManagerWidget", u"Here you can add and create custom path configurations.", None))
         self.label_path_name_2.setText(QCoreApplication.translate("CustomPathsManagerWidget", u"Path name:", None))
         self.label_path_folder.setText(QCoreApplication.translate("CustomPathsManagerWidget", u"Path folder:", None))
         self.button_browse_path_folder.setText(QCoreApplication.translate("CustomPathsManagerWidget", u"Browse", None))
         self.button_create_custom_path.setText(QCoreApplication.translate("CustomPathsManagerWidget", u"Create custom path", None))
         self.groupBox_2.setTitle(QCoreApplication.translate("CustomPathsManagerWidget", u"Edit custom paths", None))
+        self.label_desc.setText(QCoreApplication.translate("CustomPathsManagerWidget", u"Description:", None))
+        self.label_text_desc.setText(QCoreApplication.translate("CustomPathsManagerWidget", u"Here you can load a custom path and change it's values or you can delete it.", None))
         self.label_combobox_desc.setText(QCoreApplication.translate("CustomPathsManagerWidget", u"Select a custom path here:", None))
         self.button_load_action.setText(QCoreApplication.translate("CustomPathsManagerWidget", u"Load Path", None))
         self.button_delete_action.setText(QCoreApplication.translate("CustomPathsManagerWidget", u"Delete Path", None))
-        self.label_desc.setText(QCoreApplication.translate("CustomPathsManagerWidget", u"Description:", None))
-        self.label_text_desc.setText(QCoreApplication.translate("CustomPathsManagerWidget", u"User created paths manager, you can load a custom path and change it's values here or you can delete the custom path.", None))
         self.label_path_name.setText(QCoreApplication.translate("CustomPathsManagerWidget", u"Path name:", None))
         self.line_edit_path_name.setPlaceholderText(QCoreApplication.translate("CustomPathsManagerWidget", u"Path name as shown in the menubar...", None))
         self.label_path_value.setText(QCoreApplication.translate("CustomPathsManagerWidget", u"Path folder", None))

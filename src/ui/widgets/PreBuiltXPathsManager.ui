@@ -7,7 +7,7 @@
     <x>0</x>
     <y>0</y>
     <width>737</width>
-    <height>730</height>
+    <height>724</height>
    </rect>
   </property>
   <property name="windowTitle">
@@ -46,10 +46,10 @@
             </widget>
            </item>
            <item>
-            <widget class="QLineEdit" name="line_edit_create_xpath_expression"/>
+            <widget class="QLineEdit" name="line_edit_xpath_expression"/>
            </item>
            <item>
-            <widget class="QPushButton" name="button_edit_add_xpath_to_list">
+            <widget class="QPushButton" name="button_add_xpath_to_list">
              <property name="text">
               <string/>
              </property>
@@ -61,7 +61,7 @@
           </layout>
          </item>
          <item>
-          <widget class="QListWidget" name="list_widget_create_xpath_expressions"/>
+          <widget class="QListWidget" name="list_widget_xpath_expressions"/>
          </item>
         </layout>
        </widget>
@@ -82,10 +82,10 @@
             </widget>
            </item>
            <item>
-            <widget class="QLineEdit" name="line_edit_create_csv_header"/>
+            <widget class="QLineEdit" name="line_edit_csv_header"/>
            </item>
            <item>
-            <widget class="QPushButton" name="button_edit_add_csv_header_to_list">
+            <widget class="QPushButton" name="button_add_csv_header_to_list">
              <property name="text">
               <string/>
              </property>
@@ -97,7 +97,7 @@
           </layout>
          </item>
          <item>
-          <widget class="QListWidget" name="list_widget_create_csv_headers"/>
+          <widget class="QListWidget" name="list_widget_csv_headers"/>
          </item>
         </layout>
        </widget>
@@ -112,10 +112,10 @@
          </widget>
         </item>
         <item>
-         <widget class="QLineEdit" name="line_edit_create_config_name"/>
+         <widget class="QLineEdit" name="line_edit_config_name"/>
         </item>
         <item>
-         <widget class="QPushButton" name="button_create_save_config">
+         <widget class="QPushButton" name="button_save_config">
           <property name="text">
            <string>Save Autofill</string>
           </property>
@@ -149,21 +149,21 @@
          </widget>
         </item>
         <item>
-         <widget class="QComboBox" name="combobox_pre_built_xpaths_configs">
+         <widget class="QComboBox" name="combobox_xpath_configs">
           <property name="editable">
            <bool>true</bool>
           </property>
          </widget>
         </item>
         <item>
-         <widget class="QPushButton" name="button_pre_built_xpaths_load_config">
+         <widget class="QPushButton" name="button_load_config">
           <property name="text">
            <string>Load</string>
           </property>
          </widget>
         </item>
         <item>
-         <widget class="QPushButton" name="button_pre_built_xpaths_delete_config">
+         <widget class="QPushButton" name="button_delete_config">
           <property name="text">
            <string>Delete</string>
           </property>
@@ -178,7 +178,7 @@
         </property>
         <layout class="QVBoxLayout" name="verticalLayout_4">
          <item>
-          <widget class="QListWidget" name="list_widget_pre_built_xpath_expressions"/>
+          <widget class="QListWidget" name="list_widget_edit_xpath_expressions"/>
          </item>
         </layout>
        </widget>
@@ -190,7 +190,7 @@
         </property>
         <layout class="QVBoxLayout" name="verticalLayout_5">
          <item>
-          <widget class="QListWidget" name="list_widget_pre_built_csv_headers"/>
+          <widget class="QListWidget" name="list_widget_edit_csv_headers"/>
          </item>
         </layout>
        </widget>
@@ -198,14 +198,14 @@
       <item>
        <layout class="QHBoxLayout" name="horizontalLayout_2">
         <item>
-         <widget class="QPushButton" name="button_pre_built_remove_selected">
+         <widget class="QPushButton" name="button_remove_selected">
           <property name="text">
            <string>Remove Selected</string>
           </property>
          </widget>
         </item>
         <item>
-         <widget class="QPushButton" name="button_pre_built_remove_all">
+         <widget class="QPushButton" name="button_remove_all">
           <property name="text">
            <string>Remove All</string>
           </property>
