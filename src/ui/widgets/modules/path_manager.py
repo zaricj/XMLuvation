@@ -1,5 +1,5 @@
 from PySide6.QtWidgets import QWidget, QMessageBox, QLineEdit, QFileDialog
-from PySide6.QtCore import Slot
+from PySide6.QtCore import Slot,QFile, QIODevice, QTextStream
 from PySide6.QtGui import QCloseEvent
 from pathlib import Path
 
@@ -37,6 +37,7 @@ LIGHT_THEME_QMENU_ICON: Path = SRC_ROOT_DIR / "resources" / "images" / "light.pn
 APP_NAME: str = "Custom Paths Manager"
 
 class CustomPathsManager(QWidget):
+    current_theme: str
     def __init__(self, main_window: "MainWindow"):
         super().__init__()
         self.main_window = main_window
@@ -59,8 +60,31 @@ class CustomPathsManager(QWidget):
         self.ui.button_create_custom_path.clicked.connect(self.create_custom_path_event)
         self.ui.button_browse_path_folder.clicked.connect(lambda: self.browse_folder("Select a folder for the custom path value", self.ui.line_edit_custom_path_value))
 
+        # Initialize theme for app
+        self._initialize_theme()
+        
         # Initial population of the combobox
         self.update_combobox()
+
+    def _initialize_theme(self):
+        """Initialize UI theme files (.qss)"""
+        try:
+            if self.main_window.current_theme == "dark_theme.qss":
+                theme_file = self.main_window.dark_theme_file
+            else:
+                theme_file = self.main_window.light_theme_file
+
+            file = QFile(theme_file)
+            if not file.open(QIODevice.ReadOnly | QIODevice.Text):
+                return
+            stylesheet = QTextStream(file).readAll()
+            self.setStyleSheet(stylesheet)
+            file.close()
+        except Exception as ex:
+            QMessageBox.critical(
+                self, "Theme load error", f"Failed to load theme: {str(ex)}"
+            )
+
         
     # An input validator
     def _validate_inputs(self, inputs_to_validate: List[Any]) -> bool:
