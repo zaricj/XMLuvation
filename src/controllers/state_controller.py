@@ -203,7 +203,7 @@ class AddXPathExpressionToListHandler:
     """
     Handles methods and logic of the Button event for adding XPath Expression.
     """
-    def __init__(self, main_window: "MainWindow", xpath_expression: str, xpath_filters: list, list_widget_xpath_expressions: QListWidget):
+    def __init__(self, main_window: "MainWindow", xpath_expression: str, xpath_filters: list | None, list_widget_xpath_expressions: QListWidget):
         self.main_window = main_window
         self.xpath_expression = xpath_expression
         self.xpath_filters = xpath_filters

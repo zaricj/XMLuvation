@@ -1,3 +1,11 @@
 {
-    "custom_paths": {}
+    "custom_paths": {
+        "A": "Test"
+    },
+    "custom_xpaths_autofill": {
+        "NewTest": {
+            "xpath_expression": "Test X",
+            "csv_header": "Test A"
+        }
+    }
 }
