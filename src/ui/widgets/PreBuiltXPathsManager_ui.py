@@ -1,9 +1,9 @@
 # -*- coding: utf-8 -*-
 
 ################################################################################
-## Form generated from reading UI file 'PreBuiltXPathsManager.ui'
+## Form generated from reading UI file 'PreBuiltXPathsManagerjPpWdA.ui'
 ##
-## Created by: Qt User Interface Compiler version 6.9.2
+## Created by: Qt User Interface Compiler version 6.9.0
 ##
 ## WARNING! All changes made in this file will be lost when recompiling UI file!
 ################################################################################
@@ -19,12 +19,16 @@ from PySide6.QtWidgets import (QApplication, QComboBox, QFrame, QGroupBox,
     QHBoxLayout, QLabel, QLineEdit, QListWidget,
     QListWidgetItem, QPushButton, QSizePolicy, QVBoxLayout,
     QWidget)
+import resources.qrc.xmluvation_resources_rc
 
 class Ui_PreBuiltXPathsManagerWidget(object):
     def setupUi(self, PreBuiltXPathsManagerWidget):
         if not PreBuiltXPathsManagerWidget.objectName():
             PreBuiltXPathsManagerWidget.setObjectName(u"PreBuiltXPathsManagerWidget")
-        PreBuiltXPathsManagerWidget.resize(737, 724)
+        PreBuiltXPathsManagerWidget.resize(550, 675)
+        icon = QIcon()
+        icon.addFile(u":/icons/xml_256px.ico", QSize(), QIcon.Mode.Normal, QIcon.State.Off)
+        PreBuiltXPathsManagerWidget.setWindowIcon(icon)
         self.verticalLayout = QVBoxLayout(PreBuiltXPathsManagerWidget)
         self.verticalLayout.setObjectName(u"verticalLayout")
         self.groupBox = QGroupBox(PreBuiltXPathsManagerWidget)
@@ -55,8 +59,8 @@ class Ui_PreBuiltXPathsManagerWidget(object):
 
         self.button_add_xpath_to_list = QPushButton(self.groupBox_2)
         self.button_add_xpath_to_list.setObjectName(u"button_add_xpath_to_list")
-        icon = QIcon(QIcon.fromTheme(QIcon.ThemeIcon.ListAdd))
-        self.button_add_xpath_to_list.setIcon(icon)
+        icon1 = QIcon(QIcon.fromTheme(QIcon.ThemeIcon.ListAdd))
+        self.button_add_xpath_to_list.setIcon(icon1)
 
         self.horizontalLayout_3.addWidget(self.button_add_xpath_to_list)
 
@@ -89,7 +93,7 @@ class Ui_PreBuiltXPathsManagerWidget(object):
 
         self.button_add_csv_header_to_list = QPushButton(self.groupBox_3)
         self.button_add_csv_header_to_list.setObjectName(u"button_add_csv_header_to_list")
-        self.button_add_csv_header_to_list.setIcon(icon)
+        self.button_add_csv_header_to_list.setIcon(icon1)
 
         self.horizontalLayout_4.addWidget(self.button_add_csv_header_to_list)
 

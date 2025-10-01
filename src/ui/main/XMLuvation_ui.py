@@ -1,7 +1,7 @@
 # -*- coding: utf-8 -*-
 
 ################################################################################
-## Form generated from reading UI file 'XMLuvationDXsnMu.ui'
+## Form generated from reading UI file 'XMLuvationXUAHFv.ui'
 ##
 ## Created by: Qt User Interface Compiler version 6.9.0
 ##
@@ -942,11 +942,14 @@ class Ui_MainWindow(object):
         self.settings_menu.setObjectName(u"settings_menu")
         self.help_menu = QMenu(self.menu_bar)
         self.help_menu.setObjectName(u"help_menu")
+        self.menu_autofill = QMenu(self.menu_bar)
+        self.menu_autofill.setObjectName(u"menu_autofill")
         MainWindow.setMenuBar(self.menu_bar)
 
         self.menu_bar.addAction(self.file_menu.menuAction())
         self.menu_bar.addAction(self.open_menu.menuAction())
         self.menu_bar.addAction(self.paths_menu.menuAction())
+        self.menu_bar.addAction(self.menu_autofill.menuAction())
         self.menu_bar.addAction(self.settings_menu.menuAction())
         self.menu_bar.addAction(self.help_menu.menuAction())
         self.file_menu.addAction(self.recent_xpath_expressions_menu.menuAction())
@@ -983,10 +986,10 @@ class Ui_MainWindow(object):
         self.open_output_action.setText(QCoreApplication.translate("MainWindow", u"Open output CSV folder", None))
         self.open_csv_conversion_input_action.setText(QCoreApplication.translate("MainWindow", u"Open output CSV converted folder", None))
         self.add_custom_path_action.setText(QCoreApplication.translate("MainWindow", u"Add custom path", None))
-        self.open_paths_manager.setText(QCoreApplication.translate("MainWindow", u"Open custom path manager", None))
+        self.open_paths_manager.setText(QCoreApplication.translate("MainWindow", u"Open Custom Path Manager", None))
         self.xpath_help_action.setText(QCoreApplication.translate("MainWindow", u"Regex Help", None))
         self.actionx.setText(QCoreApplication.translate("MainWindow", u"x", None))
-        self.open_pre_built_xpaths_manager_action.setText(QCoreApplication.translate("MainWindow", u"Open pre-built XPaths manager", None))
+        self.open_pre_built_xpaths_manager_action.setText(QCoreApplication.translate("MainWindow", u"Open pre-built XPaths Manager", None))
         self.group_box_xml_input_xpath_builder.setTitle(QCoreApplication.translate("MainWindow", u"XML FOLDER SELECTION AND XPATH BUILDER", None))
         self.statusbar_xml_files_count.setText("")
         self.line_edit_xml_folder_path_input.setPlaceholderText(QCoreApplication.translate("MainWindow", u"Choose a folder that contains XML files...", None))
@@ -1119,8 +1122,9 @@ class Ui_MainWindow(object):
         self.file_menu.setTitle(QCoreApplication.translate("MainWindow", u"File", None))
         self.recent_xpath_expressions_menu.setTitle(QCoreApplication.translate("MainWindow", u"Recent XPath expressions", None))
         self.open_menu.setTitle(QCoreApplication.translate("MainWindow", u"Open", None))
-        self.paths_menu.setTitle(QCoreApplication.translate("MainWindow", u"Path", None))
+        self.paths_menu.setTitle(QCoreApplication.translate("MainWindow", u"Paths", None))
         self.settings_menu.setTitle(QCoreApplication.translate("MainWindow", u"Manage", None))
         self.help_menu.setTitle(QCoreApplication.translate("MainWindow", u"Help", None))
+        self.menu_autofill.setTitle(QCoreApplication.translate("MainWindow", u"Autofill", None))
     # retranslateUi
 

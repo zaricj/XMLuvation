@@ -2255,7 +2255,7 @@ Supported output file types: Excel, Markdown, HTML and JSON</string>
    </widget>
    <widget class="QMenu" name="paths_menu">
     <property name="title">
-     <string>Path</string>
+     <string>Paths</string>
     </property>
     <addaction name="add_custom_path_action"/>
    </widget>
@@ -2272,9 +2272,15 @@ Supported output file types: Excel, Markdown, HTML and JSON</string>
     </property>
     <addaction name="xpath_help_action"/>
    </widget>
+   <widget class="QMenu" name="menu_autofill">
+    <property name="title">
+     <string>Autofill</string>
+    </property>
+   </widget>
    <addaction name="file_menu"/>
    <addaction name="open_menu"/>
    <addaction name="paths_menu"/>
+   <addaction name="menu_autofill"/>
    <addaction name="settings_menu"/>
    <addaction name="help_menu"/>
   </widget>
@@ -2315,7 +2321,7 @@ Supported output file types: Excel, Markdown, HTML and JSON</string>
   </action>
   <action name="open_paths_manager">
    <property name="text">
-    <string>Open custom path manager</string>
+    <string>Open Custom Path Manager</string>
    </property>
   </action>
   <action name="xpath_help_action">
@@ -2330,7 +2336,7 @@ Supported output file types: Excel, Markdown, HTML and JSON</string>
   </action>
   <action name="open_pre_built_xpaths_manager_action">
    <property name="text">
-    <string>Open pre-built XPaths manager</string>
+    <string>Open pre-built XPaths Manager</string>
    </property>
   </action>
  </widget>

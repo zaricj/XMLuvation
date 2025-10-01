@@ -1,9 +1,9 @@
 # -*- coding: utf-8 -*-
 
 ################################################################################
-## Form generated from reading UI file 'CustomPathsManager.ui'
+## Form generated from reading UI file 'CustomPathsManagerCELFwQ.ui'
 ##
-## Created by: Qt User Interface Compiler version 6.9.2
+## Created by: Qt User Interface Compiler version 6.9.0
 ##
 ## WARNING! All changes made in this file will be lost when recompiling UI file!
 ################################################################################
@@ -24,7 +24,7 @@ class Ui_CustomPathsManagerWidget(object):
     def setupUi(self, CustomPathsManagerWidget):
         if not CustomPathsManagerWidget.objectName():
             CustomPathsManagerWidget.setObjectName(u"CustomPathsManagerWidget")
-        CustomPathsManagerWidget.resize(540, 357)
+        CustomPathsManagerWidget.resize(553, 357)
         icon = QIcon()
         icon.addFile(u":/icons/xml_256px.ico", QSize(), QIcon.Mode.Normal, QIcon.State.Off)
         CustomPathsManagerWidget.setWindowIcon(icon)
