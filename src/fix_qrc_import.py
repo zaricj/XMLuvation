@@ -11,14 +11,16 @@ def fix_qrc_import():
     
     main_ui_file_path = cwd / "ui" / "main" / "XMLuvation_ui.py"
     widgets_ui_file_path = cwd / "ui" / "widgets" / "CustomPathsManager_ui.py"
+    widgets_ui_file_path_2 = cwd / "ui" / "widgets" / "PreBuiltXPathsManager_ui.py"
     
     print(f"Main UI File Path: {main_ui_file_path}")
     print(f"Settings UI File Path: {widgets_ui_file_path}")
     
     main_path = main_ui_file_path
     widgets_path = widgets_ui_file_path
+    widgets_path_2 = widgets_ui_file_path_2
     
-    path_list = [main_path, widgets_path]
+    path_list = [main_path, widgets_path, widgets_path_2]
     
     for path  in path_list:
         with open(path, "r") as file:
