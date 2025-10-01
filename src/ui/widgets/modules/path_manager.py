@@ -215,4 +215,3 @@ class CustomPathsManager(QWidget):
     def closeEvent(self, event: QCloseEvent):
         # Always update paths_menu
         self.main_window._update_paths_menu()
-        print("Debug: closeEvent fired in custom widget! DELETE ME")
