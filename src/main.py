@@ -214,6 +214,7 @@ class MainWindow(QMainWindow, SignalHandlerMixin):
         self.connect_ui_events()
         self.connect_menu_bar_actions()
         self._update_paths_menu()
+        self._update_autofill_menu()
 
     def setup_widgets_and_visibility_states(self):
         self.ui.button_find_next.hide()
@@ -247,7 +248,7 @@ class MainWindow(QMainWindow, SignalHandlerMixin):
 if __name__ == "__main__":
 
     app = QApplication(sys.argv)
-    app.setHighDpiScaleFactorRoundingPolicy(Qt.HighDpiScaleFactorRoundingPolicy.PassThrough)
+    #app.setHighDpiScaleFactorRoundingPolicy(Qt.HighDpiScaleFactorRoundingPolicy.PassThrough)
     window = MainWindow()
     window.show()
     sys.exit(app.exec())
