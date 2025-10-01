@@ -1,8 +1,8 @@
-from PySide6.QtWidgets import QWidget, QMessageBox, QListWidget, QLineEdit, QListWidgetItem
+from PySide6.QtWidgets import QWidget, QMessageBox, QListWidget, QLineEdit, QListWidgetItem, QApplication
 from PySide6.QtCore import Slot, QFile, QIODevice, QTextStream
+from PySide6.QtGui import QCloseEvent
 from pathlib import Path
 
-from numpy import isin
 from controllers.state_controller import AddXPathExpressionToListHandler
 
 from modules.config_handler import ConfigHandler
@@ -18,7 +18,7 @@ FILE_PATH = Path(__file__).resolve()
 
 # Get the project src directory
 SRC_ROOT_DIR = FILE_PATH.parents[3]
-print(SRC_ROOT_DIR)
+#print(SRC_ROOT_DIR)
 
 # Path Constants
 GUI_CONFIG_DIRECTORY: Path = SRC_ROOT_DIR / "config"
@@ -57,6 +57,8 @@ class PreBuiltXPathsManager(QWidget):
         self.ui.button_add_xpath_to_list.clicked.connect(self.onAddXpathToList)
         self.ui.button_add_csv_header_to_list.clicked.connect(self.onAddCSVHeaderToList)
         self.ui.button_save_config.clicked.connect(self.onSaveConfig)
+        self.ui.button_remove_selected.clicked.connect(self.onRemoveSelected)
+        self.ui.button_remove_all.clicked.connect(self.onRemoveAll)
         
         # Initialize current app theme
         self._initialize_theme()
@@ -92,7 +94,8 @@ class PreBuiltXPathsManager(QWidget):
         
         # Add entered XPath expression to list widget
         self._add_items_to_list_widget(xpath_expression, list_widget_xpath_expressions)
-    
+        self.ui.line_edit_xpath_expression.clear()
+        
     @Slot() # On button click event add csv header to list
     def onAddCSVHeaderToList(self):
         csv_header_to_add = self.ui.line_edit_csv_header.text()
@@ -100,6 +103,7 @@ class PreBuiltXPathsManager(QWidget):
         
         # Add entered CSV Header to list widget
         self._add_items_to_list_widget(csv_header_to_add, list_widget_csv_headers)
+        self.ui.line_edit_csv_header.clear()
         
     @Slot(str) # On button click event save config
     def onSaveConfig(self):
@@ -112,22 +116,52 @@ class PreBuiltXPathsManager(QWidget):
         # Check list widgets and inputs
         list_widgets_to_validate = [self.ui.list_widget_xpath_expressions, self.ui.list_widget_csv_headers, self.ui.line_edit_config_name]
         valid_widgets = self._validate_inputs(list_widgets_to_validate)
-    
+
         if valid_widgets:
             xpath_expressions = self._listwidget_to_list(self.ui.list_widget_xpath_expressions)
             csv_headers = self._listwidget_to_list(self.ui.list_widget_csv_headers)
             config_name = self.ui.line_edit_config_name.text()
-            
-            for xpath_expression, csv_header in zip(xpath_expressions, csv_headers):
-                self.config_handler.set(f"custom_xpaths_autofill.{config_name}.xpath_expression", xpath_expression)
-                self.config_handler.set(f"custom_xpaths_autofill.{config_name}.csv_header", csv_header)
-                
+
+            self.config_handler.set(f"custom_xpaths_autofill.{config_name}.xpath_expression", xpath_expressions)
+            self.config_handler.set(f"custom_xpaths_autofill.{config_name}.csv_header", csv_headers)
+
             self.update_combobox("custom_xpaths_autofill")
-            QMessageBox.information(self, "Configuration saved", f"Your configuration {config_name} has been successfully saved!")
+            QMessageBox.information(
+                self,
+                "Configuration saved",
+                f"Your configuration '{config_name}' has been successfully saved!"
+            )
             
-            #TODO Add clear of inputs when config has been successfully saved
+            # Clear all list widgets after successful creation of the config
+            self.clear_list_widgets()
+            
+    # ===== Remove buttons events =====
+    @Slot()
+    def onRemoveSelected(self):
+        # Check both list widgets for a selected item
+        for lw in [self.ui.list_widget_xpath_expressions, self.ui.list_widget_csv_headers]:
+            current_row = lw.currentRow()
+            if current_row != -1:
+                lw.takeItem(current_row)
+                return  # remove only one item per click
+
+        # If no item is selected
+        QMessageBox.information(self, "No selection", "Please select an item to remove.")
+
+    @Slot()
+    def onRemoveAll(self):
+        for lw in [self.ui.list_widget_xpath_expressions, self.ui.list_widget_csv_headers]:
+            if lw.count() > 0:
+                lw.clear()
+                return  # clear only one list at a time, you can remove return if you want to clear both
             
     # ===== Helper Methods =====
+    
+    @Slot()
+    def clear_list_widgets(self):
+        widgets = [self.ui.list_widget_xpath_expressions, self.ui.list_widget_csv_headers]
+        for widget in widgets:
+            widget.clear()
     
     @Slot()
     def update_combobox(self, config_name: str):
@@ -139,34 +173,26 @@ class PreBuiltXPathsManager(QWidget):
         if config_file_values:
             self.ui.combobox_xpath_configs.addItems(config_file_values)
     
-    # An widget input validator
+    # A widget input validator
     def _validate_inputs(self, widgets_to_validate: list) -> bool:
-        """Inputs to validate, specifically QLineEdits
+        """Validate that QLineEdit and QListWidget inputs are not empty."""
+        for widget in widgets_to_validate:
+            if isinstance(widget, QLineEdit):
+                if not widget.text().strip():
+                    QMessageBox.warning(self, "Input validation failed!","Please set a name for the configuration.")
+                    return False
+            elif isinstance(widget, QListWidget):
+                if widget.count() == 0:
+                    QMessageBox.warning(self, "Input validation failed!", "Please add at least one item each to the lists.")
+                    return False
+            else:
+                # Unexpected widget type
+                QMessageBox.warning(self, "Input validation failed!", f"Unsupported widget type: {type(widget).__name__}")
+                return False    
 
-        Args:
-            inputs_to_validate (list): QLineEdits to validate if not empty.
+        # All widgets passed
+        return True
 
-        Raises:
-            ValueError: On empty input.
-
-        Returns:
-            bool: True if input is not empty, otherwise False.
-        """
-        try:
-            for widget in widgets_to_validate:
-                if isinstance(widget, QLineEdit):
-                    # Check if not empty:
-                    if len(widget.text()) > 0:
-                        return True
-                elif isinstance(widget, QListWidget):
-                    if widget.count() > 0:
-                        return True
-                else:
-                    raise ValueError
-                
-        except ValueError as ve:
-            QMessageBox.warning(self, "Input validation failed!", f"Something went wrong: {str(ve)}")
-            return False
     
     def _listwidget_to_list(self, widget: QListWidget) -> list[str]:
         """Helper method to add items to a specified QListWidget
@@ -205,3 +231,8 @@ class PreBuiltXPathsManager(QWidget):
             list_widget.addItem(QListWidgetItem(item))
         else:
             QMessageBox.warning(self, "Duplicate string in list", f"Cannot add duplicate string '{item}' into list:")
+            
+    # Close event
+    def closeEvent(self, event: QCloseEvent):
+        # Always update autofill menu
+        self.main_window._update_autofill_menu()

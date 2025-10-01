@@ -1,4 +1,5 @@
 # File: modules/signal_handlers.py
+from shlex import join
 import webbrowser
 import datetime
 import os
@@ -916,7 +917,38 @@ class SignalHandlerMixin:
             action.setStatusTip(f"Open {name}")
             action.triggered.connect(lambda checked, p=path: self._set_path_in_input(p))
             self.ui.paths_menu.addAction(action)
+    
+    def _update_autofill_menu(self):
+        """Update the autofill menu with custom pre-built xpaths and csv headers"""
+        self.ui.menu_autofill.clear()
 
+        custom_autofill = self.config_handler.get("custom_xpaths_autofill", {})
+        for key, value in custom_autofill.items():
+            action = QAction(key, self)
+            action.triggered.connect(
+                lambda checked, v=value: self._set_autofill_xpaths_and_csv_headers(
+                    v.get("xpath_expression", []),
+                    v.get("csv_header", [])
+                )
+            )
+            self.ui.menu_autofill.addAction(action)
+
+    def _set_autofill_xpaths_and_csv_headers(self, xpaths: list[str], csv_headers: list[str]):
+        """Adds the values for xpaths expressions and csv headers to the main list widget and line edit widget.
+
+        Args:
+            xpaths (list[str]): List of xpaths expressions in the config
+            csv_headers (list[str]): List of csv headers in the config
+        """
+        for xpath in xpaths:
+            if xpath not in self.xpath_filters:
+                self.ui.list_widget_xpath_expressions.addItem(xpath)
+                self.xpath_filters.append(xpath)
+                
+        if csv_headers:
+            self.ui.line_edit_csv_headers_input.setText(', '.join(csv_headers))
+
+    
     def _set_path_in_input(self, path: str):
         """Set path in input field."""
         self.ui.line_edit_xml_folder_path_input.setText(path)
