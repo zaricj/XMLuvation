@@ -1,4 +1,9 @@
-# File: main.py
+# main.py
+import sys
+import os
+from pathlib import Path
+from typing import List, Optional, Dict, Any, TYPE_CHECKING
+
 from PySide6.QtWidgets import (
     QApplication,
     QMainWindow,
@@ -13,15 +18,10 @@ from PySide6.QtCore import (
     QSettings,
     QThreadPool,
 )
-
-import sys
-import os
-from pathlib import Path
+from PySide6.QtGui import QGuiApplication
 
 from ui.main.XMLuvation_ui import Ui_MainWindow
 from controllers.signal_handlers import SignalHandlerMixin
-
-from typing import List, Optional, Dict, Any, TYPE_CHECKING
 
 if TYPE_CHECKING:
     from controllers.state_controller import (
@@ -32,98 +32,107 @@ if TYPE_CHECKING:
     from modules.config_handler import ConfigHandler
     
 
-# Path Constants
+# ----------------------------
+# Constants
+# ----------------------------
 CURRENT_DIR = Path(__file__).parent
 GUI_CONFIG_DIRECTORY: Path = CURRENT_DIR / "config"
-GUI_CONFIG_FILE_PATH: Path = CURRENT_DIR / "config" / "config.json"
+GUI_CONFIG_FILE_PATH: Path = GUI_CONFIG_DIRECTORY / "config.json"
 
-# Theme files
 DARK_THEME_PATH: Path = CURRENT_DIR / "resources" / "styles" / "dark_theme.qss"
 LIGHT_THEME_PATH: Path = CURRENT_DIR / "resources" / "styles" / "light_theme.qss"
 
 ICON_PATH: Path = CURRENT_DIR / "resources" / "icons" / "xml_256px.ico"
 
-# Theme file icons
 DARK_THEME_QMENU_ICON: Path = CURRENT_DIR / "resources" / "images" / "dark.png"
 LIGHT_THEME_QMENU_ICON: Path = CURRENT_DIR / "resources" / "images" / "light.png"
 
-# App related constants
 APP_VERSION: str = "v1.2.2"
 APP_NAME: str = "XMLuvation"
 AUTHOR: str = "Jovan"
 
-# Check if the application is running in a PyInstaller bundle
 if getattr(sys, "frozen", False) and hasattr(sys, "_MEIPASS"):
     ROOT_DIR: str = sys._MEIPASS
 else:
     ROOT_DIR: str = os.path.dirname(CURRENT_DIR)
 
 
+# ----------------------------
+# Helpers for window state
+# ----------------------------
+def save_window_state(window: QMainWindow, settings: QSettings):
+    settings.setValue("geometry", window.saveGeometry())
+    settings.setValue("windowState", window.saveState())
+
+
+def restore_window_state(window: QMainWindow, settings: QSettings):
+    geometry = settings.value("geometry")
+    if geometry:
+        window.restoreGeometry(geometry)
+    state = settings.value("windowState")
+    if state:
+        window.restoreState(state)
+
+    # Clamp window into current screen space
+    screen = QGuiApplication.primaryScreen()
+    available = screen.availableGeometry()
+    win_geom = window.frameGeometry()
+
+    if not available.contains(win_geom, proper=False):
+        window.resize(
+            min(win_geom.width(), available.width()),
+            min(win_geom.height(), available.height())
+        )
+        window.move(
+            max(available.left(), min(win_geom.left(), available.right() - window.width())),
+            max(available.top(), min(win_geom.top(), available.bottom() - window.height()))
+        )
+
+
+# ----------------------------
+# MainWindow class
+# ----------------------------
 class MainWindow(QMainWindow, SignalHandlerMixin):
-    # Type hints for all attributes
+    # type hints...
     parsed_xml_data: Dict[str, Any]
     current_read_xml_file: Optional[str]
     csv_exporter_handler: Optional['SearchAndExportToCSVHandler']
     xpath_filters: List[str]
     active_workers: List[Any]
     recent_xpath_expressions: List[str]
-    
-    # Settings and threading
+
     settings: QSettings
     thread_pool: QThreadPool
     set_max_threads: int
-    
-    # Controllers
+
     cb_state_controller: 'ComboboxStateHandler'
     xml_text_searcher: 'SearchXMLOutputTextHandler'
     config_handler: 'ConfigHandler'
-    
-    # Theme attributes
+
     current_theme: str
     dark_theme_file: str
     light_theme_file: str
 
     def __init__(self):
         super().__init__()
-
-        # Create and set up the UI
         self.ui = Ui_MainWindow()
         self.ui.setupUi(self)
-
-        # Set window title with a version
         self.setWindowTitle(f"{APP_NAME} {APP_VERSION}")
 
-        # Initialize all attributes
         self.initialize_attributes()
-
-        # Setup application
         self.setup_application()
-
-        # Initialize theme
         self._initialize_theme()
-
-        # Setup widgets and visibility states
         self.setup_widgets_and_visibility_states()
 
-    def setup_application(self):
-        """Initialize the application components"""
-        self.connect_ui_events()  # From mixin
-        self.connect_menu_bar_actions()  # From mixin
-        self._update_paths_menu() # From mixing
-
     def initialize_attributes(self):
-        """Initialize all application attributes"""
-        # Import required classes
         from controllers.state_controller import ComboboxStateHandler
         from controllers.state_controller import SearchXMLOutputTextHandler
         from modules.config_handler import ConfigHandler
-        
-        # XML Data
+
         self.parsed_xml_data = {}
         self.current_read_xml_file = None
         self.csv_exporter_handler = None
 
-        # Instantiate the controller with a reference to the MainWindow
         self.cb_state_controller = ComboboxStateHandler(
             main_window=self,
             parsed_xml_data=self.parsed_xml_data,
@@ -133,35 +142,26 @@ class MainWindow(QMainWindow, SignalHandlerMixin):
             cb_attr_value=self.ui.combobox_attribute_values,
         )
 
-        # Instantiate the XML Output search handler
         self.xml_text_searcher = SearchXMLOutputTextHandler(
             main_window=self,
             line_edit_xml_output_find_text=self.ui.line_edit_xml_output_find_text,
             text_edit_xml_output=self.ui.text_edit_xml_output,
         )
 
-        # Settings file for storing application settings
         self.settings = QSettings("Jovan", "XMLuvation")
 
-        # Window geometry restoration
-        geometry = self.settings.value("geometry", bytes())
-        if geometry:
-            self.restoreGeometry(geometry)
+        # Restore geometry safely
+        restore_window_state(self, self.settings)
 
-        # Recent Xpath expressions settings
         self.recent_xpath_expressions = self.settings.value(
             "recent_xpath_expressions", type=list
-        )
-        if self.recent_xpath_expressions is None:
-            self.recent_xpath_expressions = []
+        ) or []
 
-        # Initialize the QThreadPool for running threads
         self.thread_pool = QThreadPool()
         max_threads = self.thread_pool.maxThreadCount()
         self.set_max_threads = max_threads
         self.thread_pool.setMaxThreadCount(max_threads)
 
-        # Keep track of active workers
         self.active_workers = []
         self.xpath_filters = []
         self.config_handler = ConfigHandler(
@@ -170,75 +170,57 @@ class MainWindow(QMainWindow, SignalHandlerMixin):
             config_file_name=GUI_CONFIG_FILE_PATH,
         )
 
-        # Connect the custom context menu for Listbox
         self.ui.list_widget_xpath_expressions.setContextMenuPolicy(Qt.CustomContextMenu)
         self.ui.text_edit_xml_output.setContextMenuPolicy(Qt.CustomContextMenu)
-
-        # Connect the custom context menu for TextEdit
         self.ui.text_edit_program_output.setContextMenuPolicy(Qt.CustomContextMenu)
         self.ui.text_edit_csv_output.setContextMenuPolicy(Qt.CustomContextMenu)
 
-        # Theme Icons in QMenu
-        self.light_mode_icon = QIcon(LIGHT_THEME_QMENU_ICON.__str__())
-        self.dark_mode_icon = QIcon(DARK_THEME_QMENU_ICON.__str__())
+        self.light_mode_icon = QIcon(str(LIGHT_THEME_QMENU_ICON))
+        self.dark_mode_icon = QIcon(str(DARK_THEME_QMENU_ICON))
 
-        # Theme files qss
-        self.dark_theme_file = DARK_THEME_PATH.__str__()
-        self.light_theme_file = LIGHT_THEME_PATH.__str__()
+        self.dark_theme_file = str(DARK_THEME_PATH)
+        self.light_theme_file = str(LIGHT_THEME_PATH)
 
-        # Load last used theme or default
         self.current_theme = self.settings.value("app_theme", "dark_theme.qss")
 
-        # Setting for the group matches checkbox
         self.group_matches_setting = self.settings.value(
             "group_matches", self.ui.checkbox_group_matches.isChecked(), type=bool
         )
         if self.group_matches_setting:
             self.ui.checkbox_group_matches.setChecked(self.group_matches_setting)
 
-        # Set theme icon based on current theme
         if self.current_theme == "dark_theme.qss":
             self.theme_icon = self.light_mode_icon
         else:
             self.theme_icon = self.dark_mode_icon
 
     def _initialize_theme(self):
-        """Initialize UI theme files (.qss)"""
         try:
-            if self.current_theme == "dark_theme.qss":
-                theme_file = self.dark_theme_file
-            else:
-                theme_file = self.light_theme_file
-
+            theme_file = (
+                self.dark_theme_file
+                if self.current_theme == "dark_theme.qss"
+                else self.light_theme_file
+            )
             file = QFile(theme_file)
-            if not file.open(
-                QIODevice.OpenModeFlag.ReadOnly | QIODevice.OpenModeFlag.Text
-            ):
-                return
-            else:
+            if file.open(QIODevice.ReadOnly | QIODevice.Text):
                 stream = QTextStream(file)
                 stylesheet = stream.readAll()
                 self.setStyleSheet(stylesheet)
-            file.close()
+                file.close()
         except Exception as ex:
-            QMessageBox.critical(
-                self, "Theme load error", f"Failed to load theme: {str(ex)}"
-            )
+            QMessageBox.critical(self, "Theme load error", f"Failed to load theme: {ex}")
+
+    def setup_application(self):
+        self.connect_ui_events()
+        self.connect_menu_bar_actions()
+        self._update_paths_menu()
 
     def setup_widgets_and_visibility_states(self):
-        """Setup widgets states"""
-        # Hide buttons/widgets
-        self.ui.button_find_next.setHidden(True)
-        self.ui.button_find_previous.setHidden(True)
-        self.ui.button_abort_csv_export.setHidden(True)
-        self.ui.label_file_processing.setHidden(True)
-        self.ui.line_edit_xml_output_find_text.setHidden(True)
-
-    def get_thread_pool_status(self) -> str:
-        """Get current thread pool status (useful for debugging)."""
-        active_count = self.thread_pool.activeThreadCount()
-        max_count = self.thread_pool.maxThreadCount()
-        return f"Active threads: {active_count}/{max_count}"
+        self.ui.button_find_next.hide()
+        self.ui.button_find_previous.hide()
+        self.ui.button_abort_csv_export.hide()
+        self.ui.label_file_processing.hide()
+        self.ui.line_edit_xml_output_find_text.hide()
 
     def closeEvent(self, event: QCloseEvent):
         reply = QMessageBox.question(
@@ -248,24 +230,24 @@ class MainWindow(QMainWindow, SignalHandlerMixin):
             QMessageBox.Yes | QMessageBox.No,
             QMessageBox.Yes,
         )
-
         if reply == QMessageBox.No:
             event.ignore()
             return
-        else:
-            self.settings.setValue("app_theme", self.current_theme)
-            self.settings.setValue("geometry", self.saveGeometry())
-            self.settings.setValue(
-                "group_matches", self.ui.checkbox_group_matches.isChecked()
-            )
-            super().closeEvent(event)
+        self.settings.setValue("app_theme", self.current_theme)
+        save_window_state(self, self.settings)
+        self.settings.setValue(
+            "group_matches", self.ui.checkbox_group_matches.isChecked()
+        )
+        super().closeEvent(event)
 
 
+# ----------------------------
+# Entrypoint
+# ----------------------------
 if __name__ == "__main__":
-    # Initialize the application
-    app = QApplication(sys.argv)
 
+    app = QApplication(sys.argv)
+    app.setHighDpiScaleFactorRoundingPolicy(Qt.HighDpiScaleFactorRoundingPolicy.PassThrough)
     window = MainWindow()
     window.show()
-
     sys.exit(app.exec())
