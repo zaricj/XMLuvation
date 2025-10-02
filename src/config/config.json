@@ -3,9 +3,25 @@
         "A": "Test"
     },
     "custom_xpaths_autofill": {
-        "NewTest": {
-            "xpath_expression": "Test X",
-            "csv_header": "Test A"
+        "TestAaaaaaaaaa": {
+            "xpath_expression": [
+                "N",
+                "N"
+            ],
+            "csv_header": [
+                "A",
+                "A"
+            ]
+        },
+        "Tester": {
+            "xpath_expression": [
+                "Ass",
+                "te"
+            ],
+            "csv_header": [
+                "Crac",
+                "As"
+            ]
         }
     }
 }
