@@ -178,7 +178,7 @@ class CustomPathsManager(QWidget):
             custom_path_name_index = self.ui.combobox_path_names.currentIndex()
 
             if not custom_path_name:
-                QMessageBox.information(self, "No action to delete", "Please select an action from the combobox first.")
+                QMessageBox.information(self, "No configuration to delete", "Please select a configuration that you want to delete first from the combobox.")
                 return
 
             reply = QMessageBox.question(self, "Confirm Delete",
