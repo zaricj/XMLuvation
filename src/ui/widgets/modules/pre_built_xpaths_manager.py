@@ -45,6 +45,8 @@ class PreBuiltXPathsManager(QWidget):
         # Create and setup ui from .ui file
         self.ui = Ui_PreBuiltXPathsManagerWidget() # Assuming Ui_Form is correctly imported and available
         self.ui.setupUi(self)
+        
+        self.active_list_widget = None # Active widget tracking variable
 
         # Initialize ConfigHandler, passing self (CustomPathsManager) as the parent for QMessageBox
         # and also the main_window as the optional parent for the QMessageBox within ConfigHandler
@@ -65,10 +67,29 @@ class PreBuiltXPathsManager(QWidget):
         self.ui.button_remove_selected.clicked.connect(self.onRemoveSelected)
         self.ui.button_remove_all.clicked.connect(self.onRemoveAll)
         
+        # 2. Connect list widget signals to update the active_list_widget
+        self.ui.list_widget_xpath_expressions.itemClicked.connect(
+            lambda: self._set_active_list(self.ui.list_widget_xpath_expressions)
+        )
+        self.ui.list_widget_csv_headers.itemClicked.connect(
+            lambda: self._set_active_list(self.ui.list_widget_csv_headers)
+        )
+        self.ui.list_widget_edit_xpath_expressions.itemClicked.connect(
+            lambda: self._set_active_list(self.ui.list_widget_edit_xpath_expressions)
+        )
+        self.ui.list_widget_edit_csv_headers.itemClicked.connect(
+            lambda: self._set_active_list(self.ui.list_widget_edit_csv_headers)
+        )
+        
         # Initialize current app theme
         self._initialize_theme()
         # Update combobox with configuration values
         self.update_combobox("custom_xpaths_autofill")
+        
+    # You might need to set the initial focus to the first list widget if one starts populated by default.
+    def _set_active_list(self, list_widget: QListWidget):
+        """Sets the list widget that was just clicked/selected."""
+        self.active_list_widget = list_widget
         
     def _initialize_theme(self):
         """Initialize UI theme files (.qss)"""
@@ -247,29 +268,28 @@ class PreBuiltXPathsManager(QWidget):
 
     @Slot()
     def onRemoveAll(self):
-        list_of_widgets = [
-            self.ui.list_widget_xpath_expressions, 
-            self.ui.list_widget_csv_headers, 
-            self.ui.list_widget_edit_xpath_expressions, 
-            self.ui.list_widget_edit_csv_headers
-        ]
-        
-        focused_widget = self.focusWidget()  # Which widget currently has focus
-        
-        if focused_widget in list_of_widgets:
-            if focused_widget.count() > 0:
-                focused_widget.clear()
-            else:
-                QMessageBox.information(
-                    self, "List is empty", "The selected list is already empty."
-                )
-        else:
+        # 3. Use the stored active_list_widget
+        list_to_clear = self.active_list_widget
+
+        if list_to_clear and list_to_clear.count() > 0:
+            reply = QMessageBox.question(self, "Confirm Remove All",
+                                         f"Are you sure you want to remove all {list_to_clear.count()} items from this list?",
+                                         QMessageBox.Yes | QMessageBox.No, QMessageBox.No)
+
+            if reply == QMessageBox.Yes:
+                list_to_clear.clear()
+
+        elif list_to_clear and list_to_clear.count() == 0:
             QMessageBox.information(
-                self, "No list widget focus", 
-                "Please click on a list widget to focus it, then remove all items."
+                self, "List is empty", "The selected list is already empty."
             )
 
-            
+        else:
+            QMessageBox.information(
+                self, "No List Selected", 
+                "Please click on an item in the list you wish to clear before clicking 'Remove All'."
+            )
+
     # ===== Helper Methods =====
     
     @Slot(list)
