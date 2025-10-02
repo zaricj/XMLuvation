@@ -76,7 +76,7 @@ class SignalHandlerMixin:
         
         # ===== Handle custom context menus ===== #
         # Connect context menu signals
-        self.ui.list_widget_xpath_expressions.customContextMenuRequested.connect(self.on_showXPathContextMenu)
+        self.ui.list_widget_main_xpath_expressions.customContextMenuRequested.connect(self.on_showXPathContextMenu)
         self.ui.text_edit_xml_output.customContextMenuRequested.connect(self.on_showXMLOutputContextMenu)
         
         # Context menu signals for program output and csv output
@@ -484,7 +484,7 @@ class SignalHandlerMixin:
             xpath_input = self.ui.line_edit_xpath_builder.text()
             xpath_filters = self.xpath_filters
             csv_headers_input = self.ui.line_edit_csv_headers_input
-            list_widget_xpath_expressions = self.ui.list_widget_xpath_expressions
+            list_widget_xpath_expressions = self.ui.list_widget_main_xpath_expressions
 
             adder = AddXPathExpressionToListHandler(
                 main_window=self,
@@ -754,7 +754,7 @@ class SignalHandlerMixin:
         remove_action.triggered.connect(self._remove_selected_xpath_item)
         remove_all_action.triggered.connect(self._remove_all_xpath_items)
 
-        context_menu.exec(self.ui.list_widget_xpath_expressions.mapToGlobal(position))
+        context_menu.exec(self.ui.list_widget_main_xpath_expressions.mapToGlobal(position))
 
     @Slot(QPoint)
     def on_showXMLOutputContextMenu(self, position: QPoint):
@@ -901,7 +901,7 @@ class SignalHandlerMixin:
 
     def _update_statusbar_xpath_listbox_count(self):
         """Update statusbar with XPath expression count."""
-        counter = self.ui.list_widget_xpath_expressions.count()
+        counter = self.ui.list_widget_main_xpath_expressions.count()
         if counter != 0:
             self.ui.statusbar_xpath_expressions.setText(
                 f"XPath expressions in list: {counter}"
@@ -942,7 +942,7 @@ class SignalHandlerMixin:
         """
         for xpath in xpaths:
             if xpath not in self.xpath_filters:
-                self.ui.list_widget_xpath_expressions.addItem(xpath)
+                self.ui.list_widget_main_xpath_expressions.addItem(xpath)
                 self.xpath_filters.append(xpath)
                 
         if csv_headers:
@@ -970,9 +970,9 @@ class SignalHandlerMixin:
     def _remove_selected_xpath_item(self):
         """Remove selected XPath item from list."""
         try:
-            current_selected_item = self.ui.list_widget_xpath_expressions.currentRow()
+            current_selected_item = self.ui.list_widget_main_xpath_expressions.currentRow()
             if current_selected_item != -1:
-                item_to_remove = self.ui.list_widget_xpath_expressions.takeItem(current_selected_item)
+                item_to_remove = self.ui.list_widget_main_xpath_expressions.takeItem(current_selected_item)
                 self.xpath_filters.pop(current_selected_item)
                 self.ui.text_edit_program_output.append(
                     f"Removed item: {item_to_remove.text()} at row {current_selected_item}"
@@ -989,9 +989,9 @@ class SignalHandlerMixin:
     def _remove_all_xpath_items(self):
         """Remove all XPath items from list."""
         try:
-            if self.ui.list_widget_xpath_expressions.count() > 0:
+            if self.ui.list_widget_main_xpath_expressions.count() > 0:
                 self.xpath_filters.clear()
-                self.ui.list_widget_xpath_expressions.clear()
+                self.ui.list_widget_main_xpath_expressions.clear()
                 self.ui.text_edit_program_output.setText("Deleted all items from the list.")
                 self._update_statusbar_xpath_listbox_count()
                 # Clean CSV Header Input if it has any value in it

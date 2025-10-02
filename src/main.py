@@ -170,7 +170,7 @@ class MainWindow(QMainWindow, SignalHandlerMixin):
             config_file_name=GUI_CONFIG_FILE_PATH,
         )
 
-        self.ui.list_widget_xpath_expressions.setContextMenuPolicy(Qt.CustomContextMenu)
+        self.ui.list_widget_main_xpath_expressions.setContextMenuPolicy(Qt.CustomContextMenu)
         self.ui.text_edit_xml_output.setContextMenuPolicy(Qt.CustomContextMenu)
         self.ui.text_edit_program_output.setContextMenuPolicy(Qt.CustomContextMenu)
         self.ui.text_edit_csv_output.setContextMenuPolicy(Qt.CustomContextMenu)
