@@ -766,7 +766,7 @@ font: bold;</string>
               </property>
               <layout class="QVBoxLayout" name="verticalLayout_8">
                <item>
-                <widget class="QListWidget" name="list_widget_xpath_expressions">
+                <widget class="QListWidget" name="list_widget_main_xpath_expressions">
                  <property name="sizePolicy">
                   <sizepolicy hsizetype="Expanding" vsizetype="Expanding">
                    <horstretch>0</horstretch>

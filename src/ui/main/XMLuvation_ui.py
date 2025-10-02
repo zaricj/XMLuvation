@@ -1,7 +1,7 @@
 # -*- coding: utf-8 -*-
 
 ################################################################################
-## Form generated from reading UI file 'XMLuvationXUAHFv.ui'
+## Form generated from reading UI file 'XMLuvationoaJult.ui'
 ##
 ## Created by: Qt User Interface Compiler version 6.9.0
 ##
@@ -369,22 +369,22 @@ class Ui_MainWindow(object):
         self.group_box_xpath_expressions_list.setFont(font4)
         self.verticalLayout_8 = QVBoxLayout(self.group_box_xpath_expressions_list)
         self.verticalLayout_8.setObjectName(u"verticalLayout_8")
-        self.list_widget_xpath_expressions = QListWidget(self.group_box_xpath_expressions_list)
-        self.list_widget_xpath_expressions.setObjectName(u"list_widget_xpath_expressions")
+        self.list_widget_main_xpath_expressions = QListWidget(self.group_box_xpath_expressions_list)
+        self.list_widget_main_xpath_expressions.setObjectName(u"list_widget_main_xpath_expressions")
         sizePolicy4 = QSizePolicy(QSizePolicy.Policy.Expanding, QSizePolicy.Policy.Expanding)
         sizePolicy4.setHorizontalStretch(0)
         sizePolicy4.setVerticalStretch(0)
-        sizePolicy4.setHeightForWidth(self.list_widget_xpath_expressions.sizePolicy().hasHeightForWidth())
-        self.list_widget_xpath_expressions.setSizePolicy(sizePolicy4)
-        self.list_widget_xpath_expressions.setFont(font3)
-        self.list_widget_xpath_expressions.setTabKeyNavigation(False)
-        self.list_widget_xpath_expressions.setDragEnabled(True)
-        self.list_widget_xpath_expressions.setDefaultDropAction(Qt.DropAction.MoveAction)
-        self.list_widget_xpath_expressions.setAlternatingRowColors(True)
-        self.list_widget_xpath_expressions.setMovement(QListView.Movement.Snap)
-        self.list_widget_xpath_expressions.setSortingEnabled(False)
+        sizePolicy4.setHeightForWidth(self.list_widget_main_xpath_expressions.sizePolicy().hasHeightForWidth())
+        self.list_widget_main_xpath_expressions.setSizePolicy(sizePolicy4)
+        self.list_widget_main_xpath_expressions.setFont(font3)
+        self.list_widget_main_xpath_expressions.setTabKeyNavigation(False)
+        self.list_widget_main_xpath_expressions.setDragEnabled(True)
+        self.list_widget_main_xpath_expressions.setDefaultDropAction(Qt.DropAction.MoveAction)
+        self.list_widget_main_xpath_expressions.setAlternatingRowColors(True)
+        self.list_widget_main_xpath_expressions.setMovement(QListView.Movement.Snap)
+        self.list_widget_main_xpath_expressions.setSortingEnabled(False)
 
-        self.verticalLayout_8.addWidget(self.list_widget_xpath_expressions)
+        self.verticalLayout_8.addWidget(self.list_widget_main_xpath_expressions)
 
         self.statusbar_xpath_expressions = QLabel(self.group_box_xpath_expressions_list)
         self.statusbar_xpath_expressions.setObjectName(u"statusbar_xpath_expressions")
