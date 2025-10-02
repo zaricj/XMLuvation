@@ -1,1 +1,0 @@
-from resources.ui import xmluvation_resources_rc

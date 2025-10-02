@@ -1,22 +1,22 @@
 from PySide6.QtWidgets import QMessageBox, QMainWindow
-import os
+from pathlib import Path
 import json
 
 class ConfigHandler:
-    def __init__(self, config_directory: str, config_file_name: str, main_window: QMainWindow = None):
+    def __init__(self, config_directory: Path, config_file_name: Path, main_window: QMainWindow = None):
         """Initializes the ConfigHandler with a specific JSON configuration file."""
-        self.config_directory = config_directory
-        self.config_file_name = config_file_name
+        self.config_directory: Path = config_directory
+        self.config_file_name: Path = config_file_name
         self.main_window = main_window
 
-        os.makedirs(self.config_directory, exist_ok=True)
+        Path.mkdir(self.config_directory, exist_ok=True)
         self.data = self._load_config()
 
     def _load_config(self) -> dict:
         """Loads configuration from the JSON file. If the file is missing or
         invalid, it resets the configuration and returns an empty dictionary.
         """
-        if os.path.exists(self.config_file_name):
+        if self.config_file_name.exists():
             try:
                 with open(self.config_file_name, "r", encoding="utf-8") as f:
                     return json.load(f)
@@ -46,7 +46,31 @@ class ConfigHandler:
         return current_data, keys[-1] # Return parent dict and the actual key
 
     def set(self, key_path: str, value: any):
-        """Sets a configuration value, handling nested keys (e.g., 'section.subsection.key')."""
+        """
+        Sets a configuration value, handling nested keys using dot notation. (e.g., 'section.subsection.key').
+
+        The method updates the in-memory 'self.data' and automatically
+        saves the entire configuration to the disk afterward. Non-existent
+        intermediate keys will be created as new dictionaries.
+
+        Args:
+            key_path (str): The configuration key path (e.g., 'key' or 'section.subkey').
+            value (any): The value to assign to the key.
+
+        Example:
+            If the current config is {}.
+            >>> config_handler.set('app_version', '1.0.0')
+            # Resulting config: {"app_version": "1.0.0"}
+
+            If the current config is {"app_version": "1.0.0"}.
+            >>> config_handler.set('custom_paths.docs', '/home/user/documents')
+            # Resulting config: {
+            #     "app_version": "1.0.0",
+            #     "custom_paths": {
+            #         "docs": "/home/user/documents"
+            #     }
+            # }
+        """
         keys = key_path.split('.')
         parent_data = self.data
         for i, key in enumerate(keys):
@@ -95,7 +119,7 @@ class ConfigHandler:
     def switch_config_file(self, new_config_file_name: str):
         """Switches to a different JSON configuration file and loads its data."""
         self.config_file_name = new_config_file_name
-        self.config_file_name = os.path.join(self.config_directory, self.config_file_name)
+        self.config_file_name = self.config_directory / self.config_file_name
         self.data = self._load_config()
 
     # get_all_keys needs to decide if it returns all top-level keys
