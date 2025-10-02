@@ -41,9 +41,6 @@ QPushButton:hover {
 
 QPushButton:pressed {
 	background-color: #b08a40;
-	padding-left: 9px;
-	/* Creates a "pressed" effect */
-	padding-top: 8px;
 }
 
 QPushButton:disabled {
