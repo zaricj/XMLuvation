@@ -2,6 +2,7 @@
   <qresource>
     <file>../images/checkmark_32x32.png</file>
     <file>../icons/xml_256px.ico</file>
+    <file>../images/checkmark_white_48x48.png</file>
     <file>../images/radiobutton_black_64x64.png.png</file>
     <file>../images/radiobutton_unchecked_black_64x64.png</file>
     <file>../images/radiobutton_unchecked_white_64x64.png</file>
