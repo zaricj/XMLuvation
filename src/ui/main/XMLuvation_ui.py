@@ -1,9 +1,9 @@
 # -*- coding: utf-8 -*-
 
 ################################################################################
-## Form generated from reading UI file 'XMLuvationoaJult.ui'
+## Form generated from reading UI file 'XMLuvation.ui'
 ##
-## Created by: Qt User Interface Compiler version 6.9.0
+## Created by: Qt User Interface Compiler version 6.9.2
 ##
 ## WARNING! All changes made in this file will be lost when recompiling UI file!
 ################################################################################
@@ -695,7 +695,7 @@ class Ui_MainWindow(object):
         font6.setStrikeOut(False)
         font6.setKerning(True)
         self.label_csv_conversion_title.setFont(font6)
-        self.label_csv_conversion_title.setStyleSheet(u"color: rgb(255, 200, 87);")
+        self.label_csv_conversion_title.setStyleSheet(u"")
 
         self.verticalLayout_13.addWidget(self.label_csv_conversion_title)
 
@@ -795,7 +795,7 @@ class Ui_MainWindow(object):
         font7.setUnderline(False)
         font7.setStrikeOut(False)
         self.label_title_profile_cleanup.setFont(font7)
-        self.label_title_profile_cleanup.setStyleSheet(u"color: rgb(255, 200, 87);")
+        self.label_title_profile_cleanup.setStyleSheet(u"")
 
         self.verticalLayout_10.addWidget(self.label_title_profile_cleanup)
 
@@ -1056,7 +1056,7 @@ class Ui_MainWindow(object):
         self.checkbox_group_matches.setToolTip(QCoreApplication.translate("MainWindow", u"Group matches in the CSV using semicolons; if unchecked, each match is written to a separate row.", None))
 #endif // QT_CONFIG(tooltip)
         self.checkbox_group_matches.setText(QCoreApplication.translate("MainWindow", u"Group matches", None))
-        self.button_pass_csv_to_converter.setText(QCoreApplication.translate("MainWindow", u"<a href=\"#\" style=\"color: #ffc857\">Pass CSV Path to Converter</a>", None))
+        self.button_pass_csv_to_converter.setText(QCoreApplication.translate("MainWindow", u"<a href=\"#\" style=\"color:#1763d3;\">Pass CSV Path to Converter</a>", None))
         self.group_box_program_output.setTitle(QCoreApplication.translate("MainWindow", u"PROGRAM OUTPUT", None))
         self.group_box_xml_output.setTitle(QCoreApplication.translate("MainWindow", u"XML OUTPUT", None))
         self.line_edit_xml_output_find_text.setPlaceholderText(QCoreApplication.translate("MainWindow", u"Find text in summary...", None))

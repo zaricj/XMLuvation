@@ -1104,7 +1104,7 @@ font: bold;</string>
                     <enum>QFrame::Shadow::Plain</enum>
                    </property>
                    <property name="text">
-                    <string>&lt;a href=&quot;#&quot; style=&quot;color: #ffc857&quot;&gt;Pass CSV Path to Converter&lt;/a&gt;</string>
+                    <string>&lt;a href=&quot;#&quot; style=&quot;color:#1763d3;&quot;&gt;Pass CSV Path to Converter&lt;/a&gt;</string>
                    </property>
                    <property name="alignment">
                     <set>Qt::AlignmentFlag::AlignRight|Qt::AlignmentFlag::AlignTrailing|Qt::AlignmentFlag::AlignVCenter</set>
@@ -1710,7 +1710,7 @@ font: bold;</string>
                   </font>
                  </property>
                  <property name="styleSheet">
-                  <string notr="true">color: rgb(255, 200, 87);</string>
+                  <string notr="true"/>
                  </property>
                  <property name="text">
                   <string>CSV Conversion</string>
@@ -1929,7 +1929,7 @@ Supported output file types: Excel, Markdown, HTML and JSON</string>
                   </font>
                  </property>
                  <property name="styleSheet">
-                  <string notr="true">color: rgb(255, 200, 87);</string>
+                  <string notr="true"/>
                  </property>
                  <property name="text">
                   <string>CSV File Clean Up</string>
