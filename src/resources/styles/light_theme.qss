@@ -111,7 +111,7 @@ QComboBox::drop-down {
 	width: 20px;
 	border-top-right-radius: 6px;
 	border-bottom-right-radius: 6px;
-	image: url(:/images/drpdwn_arrow.png);
+	image: url(:/images/dropdown_arrow_dark_14x14.png);
 }
 
 QComboBox:disabled {
