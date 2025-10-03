@@ -9,7 +9,7 @@ from PySide6.QtWidgets import (
     QMainWindow,
     QMessageBox,
 )
-from PySide6.QtGui import QIcon, QAction, QCloseEvent
+from PySide6.QtGui import QIcon, QCloseEvent
 from PySide6.QtCore import (
     Qt,
     QFile,
@@ -20,9 +20,6 @@ from PySide6.QtCore import (
 )
 from PySide6.QtGui import QGuiApplication
 
-from ui.main.XMLuvation_ui import Ui_MainWindow
-from controllers.signal_handlers import SignalHandlerMixin
-
 if TYPE_CHECKING:
     from controllers.state_controller import (
         ComboboxStateHandler, 
@@ -31,6 +28,11 @@ if TYPE_CHECKING:
     )
     from modules.config_handler import ConfigHandler
     
+from controllers.signal_handlers import SignalHandlerMixin
+    
+# REMOVE WHEN PROD READY:
+from fix_qrc_import import fix_qrc_import
+fix_qrc_import()
 
 # ----------------------------
 # Constants
@@ -246,9 +248,10 @@ class MainWindow(QMainWindow, SignalHandlerMixin):
 # Entrypoint
 # ----------------------------
 if __name__ == "__main__":
+    
+    from ui.main.XMLuvation_ui import Ui_MainWindow
 
     app = QApplication(sys.argv)
-    #app.setHighDpiScaleFactorRoundingPolicy(Qt.HighDpiScaleFactorRoundingPolicy.PassThrough)
     window = MainWindow()
     window.show()
     sys.exit(app.exec())
