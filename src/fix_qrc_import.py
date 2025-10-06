@@ -12,6 +12,7 @@ def fix_qrc_import():
     main_ui_file_path = cwd / "ui" / "main" / "XMLuvation_ui.py"
     widgets_ui_file_path = cwd / "ui" / "widgets" / "CustomPathsManager_ui.py"
     widgets_ui_file_path_2 = cwd / "ui" / "widgets" / "PreBuiltXPathsManager_ui.py"
+    widgets_ui_file_path_3 = cwd / "ui" / "widgets" / "XMLuvationAlternate_ui.py"
     
     #rint(f"Main UI File Path: {main_ui_file_path}")
     #rint(f"Settings UI File Path: {widgets_ui_file_path}")
@@ -19,6 +20,7 @@ def fix_qrc_import():
     main_path = main_ui_file_path
     widgets_path = widgets_ui_file_path
     widgets_path_2 = widgets_ui_file_path_2
+    widgets_path_3 = widgets_ui_file_path_3
     
     path_list = [main_path, widgets_path, widgets_path_2]
     
