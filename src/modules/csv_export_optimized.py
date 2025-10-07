@@ -13,7 +13,8 @@ import re
 import threading
 import logging
 import time
-
+from queue import Queue
+from threading import Thread
 
 @dataclass
 class ProcessingStats:
@@ -32,38 +33,49 @@ class OptimizedXMLProcessor:
     """Optimized XML processor with caching and better memory management."""
     
     def __init__(self):
-        self._parser = ET.XMLParser()
+        # Remove the shared parser — not thread-safe
         self._compiled_regexes = {
             'text_xpath': re.compile(r'/text\(\)\s*$'),
             'attr_xpath': re.compile(r'/@\w+\s*$')
         }
-    
+
+        # Cache for compiled XPath expressions
+        self._compiled_xpaths: Dict[str, ET.XPath] = {}
+
     @lru_cache(maxsize=256)
     def _is_string_value_xpath(self, xpath: str) -> bool:
         """Cached check if XPath targets string values."""
         xpath = xpath.strip()
-        return (self._compiled_regexes['text_xpath'].search(xpath) is not None or 
-                self._compiled_regexes['attr_xpath'].search(xpath) is not None)
-    
+        return (
+            self._compiled_regexes['text_xpath'].search(xpath) is not None or 
+            self._compiled_regexes['attr_xpath'].search(xpath) is not None
+        )
+
     def parse_xml_file(self, xml_file_path: str) -> Optional[ET._Element]:
-        """Parse XML file with optimized settings."""
+        """Thread-safe XML parsing with per-thread parser."""
         try:
-            tree = ET.parse(xml_file_path, self._parser)
+            # Create a new parser for each thread (safe for multithreading)
+            parser = ET.XMLParser(recover=True, huge_tree=True)
+            tree = ET.parse(xml_file_path, parser)
             return tree.getroot()
         except (ET.XMLSyntaxError, FileNotFoundError, PermissionError) as e:
             logging.warning(f"Error parsing {xml_file_path}: {e}")
             return None
-    
+
     def execute_xpath_batch(self, root: ET._Element, xpaths: List[str]) -> Dict[str, List[Any]]:
-        """Execute multiple XPath expressions efficiently."""
+        """Execute multiple XPath expressions efficiently using compiled XPaths."""
         results = {}
         for xpath in xpaths:
             try:
-                results[xpath] = root.xpath(xpath)
+                if xpath not in self._compiled_xpaths:
+                    # compile once and reuse
+                    self._compiled_xpaths[xpath] = ET.XPath(xpath)
+                results[xpath] = self._compiled_xpaths[xpath](root)
             except ET.XPathEvalError as e:
                 logging.warning(f"XPath '{xpath}' failed: {e}")
                 results[xpath] = []
         return results
+
     
     def format_match_value(self, match: Any) -> str:
         """Optimized value formatting."""
@@ -337,67 +349,100 @@ class OptimizedCSVExportThread(QRunnable):
         )
         self.signals.visible_state_widget.emit(True)
         
+        from queue import Queue
+        from threading import Thread
+        result_queue = Queue(maxsize=5000)
+        writer_thread_stop = threading.Event()
+        def writer_worker():
+            """Runs in background thread; consumes rows from queue and writes to CSV."""
+            try:
+                # Large buffer = fewer disk flushes, faster sequential writes
+                with open(self.output_path, 'w', newline='', encoding='utf-8', buffering=1_048_576) as csvfile:
+                    headers = self._generate_csv_headers()
+                    writer = csv.DictWriter(csvfile, fieldnames=headers, extrasaction='ignore')
+                    writer.writeheader()
+                    while not (writer_thread_stop.is_set() and result_queue.empty()):
+                        try:
+                            row = result_queue.get(timeout=0.2)
+                            if row is None:
+                                continue
+                            writer.writerow(row)
+                            result_queue.task_done()
+                        except Exception:
+                            # small timeout or queue empty; loop continues
+                            continue
+            except Exception as e:
+                self.signals.error_occurred.emit("CSV Write Error", str(e))
+                    
+        writer_thread = Thread(target=writer_worker, daemon=True, name="CSVWriterThread")
+        writer_thread.start()
+        
         try:
-            with self._csv_writer_context() as writer:
-                # Create thread pool
-                self._executor = ThreadPoolExecutor(
-                    max_workers=self.max_threads,
-                    thread_name_prefix="XMLProcessor"
+            # Create thread pool for XML processing
+            self._executor = ThreadPoolExecutor(
+                max_workers=self.max_threads,
+                thread_name_prefix="XMLProcessor"
+            )
+
+            # Submit all tasks
+            futures = []
+            for xml_file in xml_files:
+                future = self._executor.submit(
+                    process_single_xml_optimized,
+                    xml_file,
+                    self.folder_path,
+                    self.xpath_expressions,
+                    self.headers,
+                    self.group_matches_flag,
+                    self._terminate_event,
+                    self._processor
                 )
-                
-                # Submit all tasks
-                futures = []
-                for xml_file in xml_files:
-                    future = self._executor.submit(
-                        process_single_xml_optimized,
-                        xml_file,
-                        self.folder_path,
-                        self.xpath_expressions,
-                        self.headers,
-                        self.group_matches_flag,
-                        self._terminate_event,
-                        self._processor
+                futures.append(future)
+
+            # Process completed futures as they finish
+            for future in as_completed(futures):
+                if self._terminate_event.is_set():
+                    self.signals.program_output_progress_append.emit("Export aborted by user.")
+                    break
+
+                try:
+                    result_rows, file_matches, has_matches = future.result(timeout=30)
+
+                    # Enqueue rows instead of writing directly
+                    if result_rows and has_matches:
+                        for row in result_rows:
+                            result_queue.put(row)
+                        self._stats.files_written += 1
+
+                    # Update statistics
+                    self._stats.total_matches += file_matches
+                    self._stats.files_with_matches += has_matches
+                    self._stats.processed_files += 1
+
+                    # Update UI
+                    progress = int((self._stats.processed_files / self._stats.total_files) * 100)
+                    self.signals.progressbar_update.emit(progress)
+                    self.signals.file_processing_progress.emit(
+                        f"Processed {self._stats.processed_files}/{self._stats.total_files}"
                     )
-                    futures.append(future)
-                
-                # Process completed futures as they finish
-                for future in as_completed(futures):
-                    if self._terminate_event.is_set():
-                        self.signals.program_output_progress_append.emit("Export aborted by user.")
-                        break
-                    
-                    try:
-                        result_rows, file_matches, has_matches = future.result(timeout=30)
-                        
-                        # Write results if any
-                        if result_rows and has_matches:
-                            for row in result_rows:
-                                writer.writerow(row)
-                            self._stats.files_written += 1
-                        
-                        # Update statistics
-                        self._stats.total_matches += file_matches
-                        self._stats.files_with_matches += has_matches
-                        self._stats.processed_files += 1
-                        
-                        # Update UI
-                        progress = int((self._stats.processed_files / self._stats.total_files) * 100)
-                        self.signals.progressbar_update.emit(progress)
-                        self.signals.file_processing_progress.emit(
-                            f"Processed {self._stats.processed_files}/{self._stats.total_files}"
-                        )
-                        
-                    except Exception as e:
-                        error_msg = f"Error processing file: {str(e)}"
-                        self._stats.errors.append(error_msg)
-                        self._stats.processed_files += 1
-                        logging.error(error_msg)
-                
-                # Final status
-                if not self._terminate_event.is_set():
-                    self._stats.end_time = time.time()
-                    self._emit_completion_message()
-                    
+
+                except Exception as e:
+                    error_msg = f"Error processing file: {str(e)}"
+                    self._stats.errors.append(error_msg)
+                    self._stats.processed_files += 1
+                    logging.error(error_msg)
+
+
+            # Ensure all queued rows are written before finishing
+            result_queue.join()
+            writer_thread_stop.set()
+            writer_thread.join(timeout=5)
+
+            # Final status
+            if not self._terminate_event.is_set():
+                self._stats.end_time = time.time()
+                self._emit_completion_message()
+
         except Exception as e:
             error_details = traceback.format_exc()
             self.signals.error_occurred.emit(
