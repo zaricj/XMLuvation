@@ -75,16 +75,22 @@ QTextEdit {
 QLabel#statusbar_xpath_expressions {
 	background-color: rgb(49, 51, 56);
 	border: 1px solid #5C5C60;
+	color: #45A540;
+	font: bold;
 }
 
 QLabel#statusbar_xml_files_count {
 	background-color: rgb(49, 51, 56);
 	border: 1px solid #5C5C60;
+	color: #45A540;
+	font: bold;
 }
 
 QLabel#label_file_processing {
 	background-color: rgb(49, 51, 56);
 	border: 1px solid #5C5C60;
+	color: #45A540;
+	font: bold;
 }
 
 QListWidget {
@@ -209,7 +215,7 @@ QProgressBar {
 }
 
 QProgressBar::chunk {
-	background-color: #393d81;
+	background-color: #45A540;
 }
 
 /* CheckBox */
