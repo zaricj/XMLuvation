@@ -64,6 +64,7 @@ class SignalHandlerMixin:
         self.ui.open_pre_built_xpaths_manager_action.triggered.connect(self.on_openPrebuiltXPathsManager)
         self.ui.xpath_help_action.triggered.connect(self.on_xpathHelp)
         self.toggle_theme_action.triggered.connect(self.on_changeTheme)
+        self.ui.prompt_on_exit_action.checkableChanged.connect(self.on_PromptOnExitChecked)
 
         # Connect recent xpath expressions menu
         for action in self.ui.recent_xpath_expressions_menu.actions():
@@ -360,6 +361,12 @@ class SignalHandlerMixin:
             self.toggle_theme_action.setIcon(self.light_mode_icon)
             self._initialize_theme_file(self.dark_theme_file)
             self.current_theme = "dark_theme.qss"
+            
+    @Slot()
+    def on_PromptOnExitChecked(self):
+        """Handle prompt on exit checkbox toggle."""
+        is_checked = self.ui.prompt_on_exit_action.isChecked()
+        self.settings.setValue("prompt_on_exit", is_checked)
 
     # === UI Event Handlers ===
     @Slot()
