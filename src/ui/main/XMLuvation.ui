@@ -156,8 +156,7 @@
                   </sizepolicy>
                  </property>
                  <property name="styleSheet">
-                  <string notr="true">color: rgb(78, 132, 240);
-font: bold;</string>
+                  <string notr="true"/>
                  </property>
                  <property name="text">
                   <string/>
@@ -309,6 +308,18 @@ font: bold;</string>
                      <verstretch>0</verstretch>
                     </sizepolicy>
                    </property>
+                   <property name="minimumSize">
+                    <size>
+                     <width>150</width>
+                     <height>0</height>
+                    </size>
+                   </property>
+                   <property name="maximumSize">
+                    <size>
+                     <width>300</width>
+                     <height>16777215</height>
+                    </size>
+                   </property>
                    <property name="font">
                     <font>
                      <family>Microsoft YaHei UI</family>
@@ -372,6 +383,18 @@ font: bold;</string>
                      <horstretch>0</horstretch>
                      <verstretch>0</verstretch>
                     </sizepolicy>
+                   </property>
+                   <property name="minimumSize">
+                    <size>
+                     <width>150</width>
+                     <height>0</height>
+                    </size>
+                   </property>
+                   <property name="maximumSize">
+                    <size>
+                     <width>300</width>
+                     <height>16777215</height>
+                    </size>
                    </property>
                    <property name="font">
                     <font>
@@ -450,6 +473,18 @@ font: bold;</string>
                      <verstretch>0</verstretch>
                     </sizepolicy>
                    </property>
+                   <property name="minimumSize">
+                    <size>
+                     <width>150</width>
+                     <height>0</height>
+                    </size>
+                   </property>
+                   <property name="maximumSize">
+                    <size>
+                     <width>300</width>
+                     <height>16777215</height>
+                    </size>
+                   </property>
                    <property name="font">
                     <font>
                      <family>Microsoft YaHei UI</family>
@@ -513,6 +548,18 @@ font: bold;</string>
                      <horstretch>0</horstretch>
                      <verstretch>0</verstretch>
                     </sizepolicy>
+                   </property>
+                   <property name="minimumSize">
+                    <size>
+                     <width>150</width>
+                     <height>0</height>
+                    </size>
+                   </property>
+                   <property name="maximumSize">
+                    <size>
+                     <width>300</width>
+                     <height>16777215</height>
+                    </size>
                    </property>
                    <property name="font">
                     <font>
@@ -822,8 +869,7 @@ font: bold;</string>
                   </font>
                  </property>
                  <property name="styleSheet">
-                  <string notr="true">color: rgb(78, 132, 240);
-font: bold;</string>
+                  <string notr="true"/>
                  </property>
                  <property name="text">
                   <string/>
@@ -1626,8 +1672,7 @@ font: bold;</string>
                   </font>
                  </property>
                  <property name="styleSheet">
-                  <string notr="true">color: rgb(78, 132, 240);
-font: bold;</string>
+                  <string notr="true"/>
                  </property>
                  <property name="text">
                   <string/>

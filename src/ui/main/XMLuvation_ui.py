@@ -141,8 +141,7 @@ class Ui_MainWindow(object):
         self.statusbar_xml_files_count.setObjectName(u"statusbar_xml_files_count")
         sizePolicy.setHeightForWidth(self.statusbar_xml_files_count.sizePolicy().hasHeightForWidth())
         self.statusbar_xml_files_count.setSizePolicy(sizePolicy)
-        self.statusbar_xml_files_count.setStyleSheet(u"color: rgb(78, 132, 240);\n"
-"font: bold;")
+        self.statusbar_xml_files_count.setStyleSheet(u"")
 
         self.verticalLayout_7.addWidget(self.statusbar_xml_files_count)
 
@@ -211,6 +210,8 @@ class Ui_MainWindow(object):
         sizePolicy2.setVerticalStretch(0)
         sizePolicy2.setHeightForWidth(self.combobox_tag_names.sizePolicy().hasHeightForWidth())
         self.combobox_tag_names.setSizePolicy(sizePolicy2)
+        self.combobox_tag_names.setMinimumSize(QSize(150, 0))
+        self.combobox_tag_names.setMaximumSize(QSize(300, 16777215))
         self.combobox_tag_names.setFont(font4)
         self.combobox_tag_names.setEditable(True)
 
@@ -230,6 +231,8 @@ class Ui_MainWindow(object):
         self.combobox_tag_values.setEnabled(False)
         sizePolicy2.setHeightForWidth(self.combobox_tag_values.sizePolicy().hasHeightForWidth())
         self.combobox_tag_values.setSizePolicy(sizePolicy2)
+        self.combobox_tag_values.setMinimumSize(QSize(150, 0))
+        self.combobox_tag_values.setMaximumSize(QSize(300, 16777215))
         self.combobox_tag_values.setFont(font4)
         self.combobox_tag_values.setEditable(True)
 
@@ -256,6 +259,8 @@ class Ui_MainWindow(object):
         self.combobox_attribute_names.setEnabled(False)
         sizePolicy2.setHeightForWidth(self.combobox_attribute_names.sizePolicy().hasHeightForWidth())
         self.combobox_attribute_names.setSizePolicy(sizePolicy2)
+        self.combobox_attribute_names.setMinimumSize(QSize(150, 0))
+        self.combobox_attribute_names.setMaximumSize(QSize(300, 16777215))
         self.combobox_attribute_names.setFont(font4)
         self.combobox_attribute_names.setEditable(True)
 
@@ -275,6 +280,8 @@ class Ui_MainWindow(object):
         self.combobox_attribute_values.setEnabled(False)
         sizePolicy2.setHeightForWidth(self.combobox_attribute_values.sizePolicy().hasHeightForWidth())
         self.combobox_attribute_values.setSizePolicy(sizePolicy2)
+        self.combobox_attribute_values.setMinimumSize(QSize(150, 0))
+        self.combobox_attribute_values.setMaximumSize(QSize(300, 16777215))
         self.combobox_attribute_values.setFont(font4)
         self.combobox_attribute_values.setEditable(True)
 
@@ -391,8 +398,7 @@ class Ui_MainWindow(object):
         sizePolicy.setHeightForWidth(self.statusbar_xpath_expressions.sizePolicy().hasHeightForWidth())
         self.statusbar_xpath_expressions.setSizePolicy(sizePolicy)
         self.statusbar_xpath_expressions.setFont(font4)
-        self.statusbar_xpath_expressions.setStyleSheet(u"color: rgb(78, 132, 240);\n"
-"font: bold;")
+        self.statusbar_xpath_expressions.setStyleSheet(u"")
 
         self.verticalLayout_8.addWidget(self.statusbar_xpath_expressions)
 
@@ -653,8 +659,7 @@ class Ui_MainWindow(object):
         sizePolicy1.setHeightForWidth(self.label_file_processing.sizePolicy().hasHeightForWidth())
         self.label_file_processing.setSizePolicy(sizePolicy1)
         self.label_file_processing.setFont(font4)
-        self.label_file_processing.setStyleSheet(u"color: rgb(78, 132, 240);\n"
-"font: bold;")
+        self.label_file_processing.setStyleSheet(u"")
 
         self.verticalLayout_6.addWidget(self.label_file_processing)
 
