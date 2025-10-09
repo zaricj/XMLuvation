@@ -78,21 +78,21 @@ QTextEdit {
 QLabel#statusbar_xpath_expressions {
 	background-color: #F5F5F5;
 	border: 1px solid #C0C0C0;
-	color: #2e9f28;
+	color: #1763d3;
 	font: bold;
 }
 
 QLabel#statusbar_xml_files_count {
 	background-color: #F5F5F5;
 	border: 1px solid #C0C0C0;
-	color: #2e9f28;
+	color: #1763d3;
 	font: bold;
 }
 
 QLabel#label_file_processing {
 	background-color: #F5F5F5;
 	border: 1px solid #C0C0C0;
-	color: #2e9f28;
+	color: #1763d3;
 	font: bold;
 }
 
@@ -217,7 +217,7 @@ QProgressBar {
 }
 
 QProgressBar::chunk {
-	background-color: #2e9f28;
+	background-color: #3063CF;
 }
 
 /* CheckBox */
