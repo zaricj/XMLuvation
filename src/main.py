@@ -1,4 +1,7 @@
 # main.py
+# REMOVE WHEN PROD READY:
+from fix_qrc_import import fix_qrc_import
+fix_qrc_import()
 import sys
 import os
 from pathlib import Path
@@ -8,8 +11,9 @@ from PySide6.QtWidgets import (
     QApplication,
     QMainWindow,
     QMessageBox,
+    QDialog
 )
-from PySide6.QtGui import QIcon, QAction, QCloseEvent
+from PySide6.QtGui import QIcon, QCloseEvent
 from PySide6.QtCore import (
     Qt,
     QFile,
@@ -20,9 +24,6 @@ from PySide6.QtCore import (
 )
 from PySide6.QtGui import QGuiApplication
 
-from ui.main.XMLuvation_ui import Ui_MainWindow
-from controllers.signal_handlers import SignalHandlerMixin
-
 if TYPE_CHECKING:
     from controllers.state_controller import (
         ComboboxStateHandler, 
@@ -30,6 +31,10 @@ if TYPE_CHECKING:
         SearchAndExportToCSVHandler
     )
     from modules.config_handler import ConfigHandler
+
+from gui.main.XMLuvation_ui import Ui_MainWindow
+from controllers.signal_handlers import SignalHandlerMixin
+from dialogs.exit_dialog import ExitDialog
     
 
 # ----------------------------
@@ -39,7 +44,7 @@ CURRENT_DIR = Path(__file__).parent
 GUI_CONFIG_DIRECTORY: Path = CURRENT_DIR / "config"
 GUI_CONFIG_FILE_PATH: Path = GUI_CONFIG_DIRECTORY / "config.json"
 
-DARK_THEME_PATH: Path = CURRENT_DIR / "resources" / "styles" / "dark_theme.qss"
+DARK_THEME_PATH: Path = CURRENT_DIR / "resources" / "styles" / "dark_theme_redesign.qss"
 LIGHT_THEME_PATH: Path = CURRENT_DIR / "resources" / "styles" / "light_theme.qss"
 
 ICON_PATH: Path = CURRENT_DIR / "resources" / "icons" / "xml_256px.ico"
@@ -47,7 +52,7 @@ ICON_PATH: Path = CURRENT_DIR / "resources" / "icons" / "xml_256px.ico"
 DARK_THEME_QMENU_ICON: Path = CURRENT_DIR / "resources" / "images" / "dark.png"
 LIGHT_THEME_QMENU_ICON: Path = CURRENT_DIR / "resources" / "images" / "light.png"
 
-APP_VERSION: str = "v1.3.0"
+APP_VERSION: str = "v1.3.2"
 APP_NAME: str = "XMLuvation"
 AUTHOR: str = "Jovan"
 
@@ -184,15 +189,25 @@ class MainWindow(QMainWindow, SignalHandlerMixin):
         self.current_theme = self.settings.value("app_theme", "dark_theme.qss")
 
         self.group_matches_setting = self.settings.value(
-            "group_matches", self.ui.checkbox_group_matches.isChecked(), type=bool
+            "group_matches",
+            self.ui.checkbox_group_matches.isChecked(),
+            type=bool
         )
-        if self.group_matches_setting:
-            self.ui.checkbox_group_matches.setChecked(self.group_matches_setting)
+        # Apply the setting unconditionally to the checkbox
+        self.ui.checkbox_group_matches.setChecked(self.group_matches_setting)
 
+        # Current theme setting load
         if self.current_theme == "dark_theme.qss":
             self.theme_icon = self.light_mode_icon
         else:
             self.theme_icon = self.dark_mode_icon
+        
+        # Prompt on exit setting load
+        prompt_value = self.settings.value("prompt_on_exit",
+                                        self.ui.prompt_on_exit_action.isChecked(),
+                                        type=bool)
+        # Apply the setting unconditionally to the QAction
+        self.ui.prompt_on_exit_action.setChecked(bool(prompt_value))
 
     def _initialize_theme(self):
         try:
@@ -222,33 +237,39 @@ class MainWindow(QMainWindow, SignalHandlerMixin):
         self.ui.button_abort_csv_export.hide()
         self.ui.label_file_processing.hide()
         self.ui.line_edit_xml_output_find_text.hide()
+        
+    # Helper method to save apps settings in a more DRY way
+    def _save_app_settings(self):
+        self.settings.setValue("app_theme", self.current_theme)
+        self.settings.setValue("group_matches", self.ui.checkbox_group_matches.isChecked())
+        self.settings.setValue("prompt_on_exit", self.ui.prompt_on_exit_action.isChecked())
+        save_window_state(self, self.settings) # Save windows location and state
+        # optional: force write to disk
+        self.settings.sync()
+
 
     def closeEvent(self, event: QCloseEvent):
-        reply = QMessageBox.question(
-            self,
-            "Exit Program",
-            "Are you sure you want to exit the program?",
-            QMessageBox.Yes | QMessageBox.No,
-            QMessageBox.Yes,
-        )
-        if reply == QMessageBox.No:
-            event.ignore()
-            return
-        self.settings.setValue("app_theme", self.current_theme)
-        save_window_state(self, self.settings)
-        self.settings.setValue(
-            "group_matches", self.ui.checkbox_group_matches.isChecked()
-        )
-        super().closeEvent(event)
+        if self.ui.prompt_on_exit_action.isChecked():
+            exit_dialog = ExitDialog(self)
+            if exit_dialog.exec() == QDialog.Rejected:
+                event.ignore()
+                return
 
+            # if user checked "Don't ask again", update the QAction (and settings)
+            if exit_dialog.ui.check_box_dont_ask_again.isChecked():
+                self.ui.prompt_on_exit_action.setChecked(False)
+                self.settings.setValue("prompt_on_exit", False)
+                self.settings.sync()
+
+        # always save other app settings once here
+        self._save_app_settings()
+        super().closeEvent(event)
 
 # ----------------------------
 # Entrypoint
 # ----------------------------
 if __name__ == "__main__":
-
     app = QApplication(sys.argv)
-    #app.setHighDpiScaleFactorRoundingPolicy(Qt.HighDpiScaleFactorRoundingPolicy.PassThrough)
     window = MainWindow()
     window.show()
     sys.exit(app.exec())

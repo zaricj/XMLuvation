@@ -1,10 +1,10 @@
 from PySide6.QtWidgets import QWidget, QMessageBox, QLineEdit, QFileDialog
-from PySide6.QtCore import Slot,QFile, QIODevice, QTextStream
+from PySide6.QtCore import Slot, QFile, QIODevice, QTextStream
 from PySide6.QtGui import QCloseEvent
 from pathlib import Path
 
 from modules.config_handler import ConfigHandler
-from ui.widgets.CustomPathsManager_ui import Ui_CustomPathsManagerWidget
+from gui.widgets.CustomPathsManager_ui import Ui_CustomPathsManagerWidget
 
 from typing import TYPE_CHECKING, Any, List
 if TYPE_CHECKING:
@@ -16,7 +16,7 @@ FILE_PATH = Path(__file__).resolve()
 
 # Get the project src directory
 SRC_ROOT_DIR = FILE_PATH.parents[3]
-print(SRC_ROOT_DIR)
+#print(SRC_ROOT_DIR)
 
 # Path Constants
 GUI_CONFIG_DIRECTORY: Path = SRC_ROOT_DIR / "config"
@@ -37,7 +37,6 @@ LIGHT_THEME_QMENU_ICON: Path = SRC_ROOT_DIR / "resources" / "images" / "light.pn
 APP_NAME: str = "Custom Paths Manager"
 
 class CustomPathsManager(QWidget):
-    current_theme: str
     def __init__(self, main_window: "MainWindow"):
         super().__init__()
         self.main_window = main_window

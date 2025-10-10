@@ -1,5 +1,4 @@
 # File: modules/signal_handlers.py
-from shlex import join
 import webbrowser
 import datetime
 import os
@@ -7,7 +6,6 @@ from PySide6.QtWidgets import (
     QMenu,
     QFileDialog,
     QMessageBox,
-    QInputDialog,
     QLineEdit,
     QTextEdit
     
@@ -25,7 +23,7 @@ from PySide6.QtCore import (
 )
 
 from typing import List, TYPE_CHECKING
-from ui.main.XMLuvation_ui import Ui_MainWindow
+from gui.main.XMLuvation_ui import Ui_MainWindow
 
 if TYPE_CHECKING:
     from PySide6.QtCore import QSettings
@@ -64,6 +62,7 @@ class SignalHandlerMixin:
         self.ui.open_pre_built_xpaths_manager_action.triggered.connect(self.on_openPrebuiltXPathsManager)
         self.ui.xpath_help_action.triggered.connect(self.on_xpathHelp)
         self.toggle_theme_action.triggered.connect(self.on_changeTheme)
+        self.ui.prompt_on_exit_action.checkableChanged.connect(self.on_PromptOnExitChecked)
 
         # Connect recent xpath expressions menu
         for action in self.ui.recent_xpath_expressions_menu.actions():
@@ -116,6 +115,7 @@ class SignalHandlerMixin:
         self.ui.button_drop_csv_header.clicked.connect(self.on_dropCurrentCSVHeader)
         self.ui.button_find_next.clicked.connect(self.on_XMLOutputSearchNext)
         self.ui.button_find_previous.clicked.connect(self.on_XMLOutputSearchPrevious)
+        self.ui.button_csv_conversion_open_file.clicked.connect(self.on_OpenConvertedFile)
 
         # CheckBox events
         self.ui.checkbox_write_index_column.toggled.connect(self.on_writeIndexCheckBoxToggled)
@@ -164,6 +164,11 @@ class SignalHandlerMixin:
     def handle_csv_tab_output_set_text(self, message: str):
         """Handle CSV tab QTextEdit progress updates with setText."""
         self.ui.text_edit_csv_output.setText(message)
+        
+    @Slot(str)
+    def handler_set_converted_file_path(self, file_path: str):
+        """Set the file path of the converted file in the "Open File" QLineEdit."""
+        self.ui.line_edit_csv_conversion_open_file_path.setText(file_path)
 
     @Slot(str)
     def handle_file_processing_label(self, message: str):
@@ -289,6 +294,7 @@ class SignalHandlerMixin:
         worker.signals.info_occurred.connect(self.handle_info_message)
         worker.signals.warning_occurred.connect(self.handle_warning_message)
         worker.signals.tab2_program_output_append.connect(self.handle_csv_tab_output_append)
+        worker.signals.set_file_open_path.connect(self.handler_set_converted_file_path)
 
     # ============= EVENT HANDLER METHODS =============
 
@@ -333,14 +339,14 @@ class SignalHandlerMixin:
 
     @Slot() # Opens Pre-built XPaths Manager QWidget
     def on_openPrebuiltXPathsManager(self):
-        from ui.widgets.modules.pre_built_xpaths_manager import PreBuiltXPathsManager
+        from gui.widgets.modules.pre_built_xpaths_manager import PreBuiltXPathsManager
         self.w = PreBuiltXPathsManager(main_window=self)
         self.w.show()
 
     @Slot() # Opens Paths Manager QWidget
     def on_openPathsManager(self):
         """Open paths manager window."""
-        from ui.widgets.modules.path_manager import CustomPathsManager
+        from gui.widgets.modules.path_manager import CustomPathsManager
         self.w = CustomPathsManager(main_window=self)
         self.w.show()
 
@@ -360,6 +366,12 @@ class SignalHandlerMixin:
             self.toggle_theme_action.setIcon(self.light_mode_icon)
             self._initialize_theme_file(self.dark_theme_file)
             self.current_theme = "dark_theme.qss"
+            
+    @Slot()
+    def on_PromptOnExitChecked(self):
+        """Handle prompt on exit checkbox toggle."""
+        is_checked = self.ui.prompt_on_exit_action.isChecked()
+        self.settings.setValue("prompt_on_exit", is_checked)
 
     # === UI Event Handlers ===
     @Slot()
@@ -804,6 +816,12 @@ class SignalHandlerMixin:
         """Set XPath expression in input field."""
         self.ui.line_edit_xpath_builder.clear()
         self.ui.line_edit_xpath_builder.setText(expression)
+        
+    @Slot()
+    def on_OpenConvertedFile(self):
+        """Open the converted file in the default application."""
+        file_path = self.ui.line_edit_csv_conversion_open_file_path.text()
+        self._open_file_directly(file_path)
 
     # ============= HELPER METHODS =============
 
@@ -866,6 +884,20 @@ class SignalHandlerMixin:
                 self,
                 "Error",
                 f"Path does not exist or is not a valid path:\n{folder_path}"
+            )
+    def _open_file_directly(self, file_path: str):
+        """Helper method to open file in default application."""
+        if file_path and os.path.exists(file_path):
+            try:
+                QDesktopServices.openUrl(QUrl.fromLocalFile(file_path))
+            except Exception as ex:
+                message = f"An exception of type {type(ex).__name__} occurred. Arguments: {ex.args!r}"
+                QMessageBox.critical(self, "An exception occurred", message)
+        else:
+            QMessageBox.warning(
+                self,
+                "Error",
+                f"Path does not exist or is not a valid path:\n{file_path}"
             )
 
     def _set_ui_widgets_disabled(self, state: bool):

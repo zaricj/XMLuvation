@@ -8,7 +8,7 @@ from gevent import config
 from controllers.state_controller import AddXPathExpressionToListHandler
 
 from modules.config_handler import ConfigHandler
-from ui.widgets.PreBuiltXPathsManager_ui import Ui_PreBuiltXPathsManagerWidget
+from gui.widgets.PreBuiltXPathsManager_ui import Ui_PreBuiltXPathsManagerWidget
 
 from typing import TYPE_CHECKING
 if TYPE_CHECKING:
