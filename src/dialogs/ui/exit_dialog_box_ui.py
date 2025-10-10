@@ -24,7 +24,7 @@ class Ui_ExitAppDialog(object):
     def setupUi(self, ExitAppDialog):
         if not ExitAppDialog.objectName():
             ExitAppDialog.setObjectName(u"ExitAppDialog")
-        ExitAppDialog.setWindowModality(Qt.WindowModality.WindowModal)
+        ExitAppDialog.setWindowModality(Qt.WindowModality.NonModal)
         ExitAppDialog.setEnabled(True)
         ExitAppDialog.resize(330, 120)
         ExitAppDialog.setMinimumSize(QSize(330, 120))
@@ -32,6 +32,7 @@ class Ui_ExitAppDialog(object):
         icon = QIcon()
         icon.addFile(u":/icons/xml_256px.ico", QSize(), QIcon.Mode.Normal, QIcon.State.Off)
         ExitAppDialog.setWindowIcon(icon)
+        ExitAppDialog.setModal(True)
         self.verticalLayout = QVBoxLayout(ExitAppDialog)
         self.verticalLayout.setSpacing(3)
         self.verticalLayout.setObjectName(u"verticalLayout")

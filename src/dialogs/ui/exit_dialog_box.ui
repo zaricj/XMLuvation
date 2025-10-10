@@ -3,7 +3,7 @@
  <class>ExitAppDialog</class>
  <widget class="QDialog" name="ExitAppDialog">
   <property name="windowModality">
-   <enum>Qt::WindowModality::WindowModal</enum>
+   <enum>Qt::WindowModality::NonModal</enum>
   </property>
   <property name="enabled">
    <bool>true</bool>
@@ -34,6 +34,9 @@
   <property name="windowIcon">
    <iconset resource="../../resources/qrc/xmluvation_resources.qrc">
     <normaloff>:/icons/xml_256px.ico</normaloff>:/icons/xml_256px.ico</iconset>
+  </property>
+  <property name="modal">
+   <bool>true</bool>
   </property>
   <layout class="QVBoxLayout" name="verticalLayout">
    <property name="spacing">
