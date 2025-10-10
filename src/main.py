@@ -1,7 +1,4 @@
 # main.py
-# REMOVE WHEN PROD READY:
-from fix_qrc_import import fix_qrc_import
-fix_qrc_import()
 import sys
 import os
 from pathlib import Path

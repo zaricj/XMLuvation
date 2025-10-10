@@ -44,3 +44,5 @@ def fix_qrc_import():
         if modified:
             with open(path, "w") as file:
                 file.writelines(lines)
+                
+fix_qrc_import()
