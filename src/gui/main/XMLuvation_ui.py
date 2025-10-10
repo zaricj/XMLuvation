@@ -23,7 +23,7 @@ from PySide6.QtWidgets import (QApplication, QCheckBox, QComboBox, QFrame,
     QPushButton, QRadioButton, QSizePolicy, QSpacerItem,
     QSplitter, QTabWidget, QTextEdit, QVBoxLayout,
     QWidget)
-import xmluvation_resources_rc
+import resources.qrc.xmluvation_resources_rc
 
 class Ui_MainWindow(object):
     def setupUi(self, MainWindow):
@@ -77,6 +77,7 @@ class Ui_MainWindow(object):
         self.prompt_on_exit_action = QAction(MainWindow)
         self.prompt_on_exit_action.setObjectName(u"prompt_on_exit_action")
         self.prompt_on_exit_action.setCheckable(True)
+        self.prompt_on_exit_action.setChecked(True)
         self.centralwidget = QWidget(MainWindow)
         self.centralwidget.setObjectName(u"centralwidget")
         font1 = QFont()
@@ -727,30 +728,19 @@ class Ui_MainWindow(object):
         self.verticalLayout_13 = QVBoxLayout(self.groupbox_csv_conversion)
         self.verticalLayout_13.setObjectName(u"verticalLayout_13")
         self.verticalLayout_13.setContentsMargins(3, 3, 3, 6)
-        self.label_csv_conversion_title = QLabel(self.groupbox_csv_conversion)
-        self.label_csv_conversion_title.setObjectName(u"label_csv_conversion_title")
-        sizePolicy1.setHeightForWidth(self.label_csv_conversion_title.sizePolicy().hasHeightForWidth())
-        self.label_csv_conversion_title.setSizePolicy(sizePolicy1)
-        self.label_csv_conversion_title.setMaximumSize(QSize(16777215, 60))
-        font6 = QFont()
-        font6.setFamilies([u"Microsoft YaHei UI"])
-        font6.setPointSize(32)
-        font6.setBold(True)
-        font6.setItalic(False)
-        font6.setUnderline(False)
-        font6.setStrikeOut(False)
-        font6.setKerning(True)
-        self.label_csv_conversion_title.setFont(font6)
-        self.label_csv_conversion_title.setStyleSheet(u"")
-
-        self.verticalLayout_13.addWidget(self.label_csv_conversion_title)
-
         self.label_csv_conversion_desc = QLabel(self.groupbox_csv_conversion)
         self.label_csv_conversion_desc.setObjectName(u"label_csv_conversion_desc")
         self.label_csv_conversion_desc.setMaximumSize(QSize(16777215, 60))
         self.label_csv_conversion_desc.setFont(font3)
 
         self.verticalLayout_13.addWidget(self.label_csv_conversion_desc)
+
+        self.line_2 = QFrame(self.groupbox_csv_conversion)
+        self.line_2.setObjectName(u"line_2")
+        self.line_2.setFrameShape(QFrame.Shape.HLine)
+        self.line_2.setFrameShadow(QFrame.Shadow.Sunken)
+
+        self.verticalLayout_13.addWidget(self.line_2)
 
         self.hor_layout_csv_path_input = QHBoxLayout()
         self.hor_layout_csv_path_input.setObjectName(u"hor_layout_csv_path_input")
@@ -803,14 +793,36 @@ class Ui_MainWindow(object):
 
         self.hor_layout_csv_conversion_path_output.addWidget(self.checkbox_write_index_column)
 
-
-        self.verticalLayout_13.addLayout(self.hor_layout_csv_conversion_path_output)
-
         self.button_csv_conversion_convert = QPushButton(self.groupbox_csv_conversion)
         self.button_csv_conversion_convert.setObjectName(u"button_csv_conversion_convert")
         self.button_csv_conversion_convert.setFont(font3)
 
-        self.verticalLayout_13.addWidget(self.button_csv_conversion_convert)
+        self.hor_layout_csv_conversion_path_output.addWidget(self.button_csv_conversion_convert)
+
+
+        self.verticalLayout_13.addLayout(self.hor_layout_csv_conversion_path_output)
+
+        self.horizontalLayout_9 = QHBoxLayout()
+        self.horizontalLayout_9.setObjectName(u"horizontalLayout_9")
+        self.label = QLabel(self.groupbox_csv_conversion)
+        self.label.setObjectName(u"label")
+
+        self.horizontalLayout_9.addWidget(self.label)
+
+        self.line_edit_csv_conversion_open_file_path = QLineEdit(self.groupbox_csv_conversion)
+        self.line_edit_csv_conversion_open_file_path.setObjectName(u"line_edit_csv_conversion_open_file_path")
+        self.line_edit_csv_conversion_open_file_path.setEnabled(True)
+        self.line_edit_csv_conversion_open_file_path.setReadOnly(True)
+
+        self.horizontalLayout_9.addWidget(self.line_edit_csv_conversion_open_file_path)
+
+        self.button_csv_conversion_open_file = QPushButton(self.groupbox_csv_conversion)
+        self.button_csv_conversion_open_file.setObjectName(u"button_csv_conversion_open_file")
+
+        self.horizontalLayout_9.addWidget(self.button_csv_conversion_open_file)
+
+
+        self.verticalLayout_13.addLayout(self.horizontalLayout_9)
 
 
         self.verticalLayout.addWidget(self.groupbox_csv_conversion)
@@ -834,14 +846,7 @@ class Ui_MainWindow(object):
         sizePolicy8.setVerticalStretch(0)
         sizePolicy8.setHeightForWidth(self.label_title_profile_cleanup.sizePolicy().hasHeightForWidth())
         self.label_title_profile_cleanup.setSizePolicy(sizePolicy8)
-        font7 = QFont()
-        font7.setFamilies([u"Microsoft YaHei UI"])
-        font7.setPointSize(32)
-        font7.setBold(True)
-        font7.setItalic(False)
-        font7.setUnderline(False)
-        font7.setStrikeOut(False)
-        self.label_title_profile_cleanup.setFont(font7)
+        self.label_title_profile_cleanup.setFont(font4)
         self.label_title_profile_cleanup.setStyleSheet(u"")
 
         self.verticalLayout_10.addWidget(self.label_title_profile_cleanup)
@@ -1031,18 +1036,18 @@ class Ui_MainWindow(object):
 
     def retranslateUi(self, MainWindow):
         MainWindow.setWindowTitle(QCoreApplication.translate("MainWindow", u"XMLuvation", None))
-        self.clear_recent_xpath_expressions_action.setText(QCoreApplication.translate("MainWindow", u"Clear recent XPath expressions", None))
+        self.clear_recent_xpath_expressions_action.setText(QCoreApplication.translate("MainWindow", u"Clear Recent XPath expressions", None))
         self.clear_action.setText(QCoreApplication.translate("MainWindow", u"Clear all outputs", None))
         self.exit_action.setText(QCoreApplication.translate("MainWindow", u"Exit", None))
-        self.open_input_action.setText(QCoreApplication.translate("MainWindow", u"Open input XML folder", None))
-        self.open_output_action.setText(QCoreApplication.translate("MainWindow", u"Open output CSV folder", None))
-        self.open_csv_conversion_input_action.setText(QCoreApplication.translate("MainWindow", u"Open output CSV converted folder", None))
+        self.open_input_action.setText(QCoreApplication.translate("MainWindow", u"Open Input XML Folder", None))
+        self.open_output_action.setText(QCoreApplication.translate("MainWindow", u"Open Output CSV Folder", None))
+        self.open_csv_conversion_input_action.setText(QCoreApplication.translate("MainWindow", u"Open Output CSV Converted Folder", None))
         self.add_custom_path_action.setText(QCoreApplication.translate("MainWindow", u"Add custom path", None))
         self.open_paths_manager.setText(QCoreApplication.translate("MainWindow", u"Open Custom Path Manager", None))
-        self.xpath_help_action.setText(QCoreApplication.translate("MainWindow", u"Regex Help", None))
+        self.xpath_help_action.setText(QCoreApplication.translate("MainWindow", u"XPath Expression Help", None))
         self.actionx.setText(QCoreApplication.translate("MainWindow", u"x", None))
         self.open_pre_built_xpaths_manager_action.setText(QCoreApplication.translate("MainWindow", u"Open pre-built XPaths Manager", None))
-        self.prompt_on_exit_action.setText(QCoreApplication.translate("MainWindow", u"Prompt on exit", None))
+        self.prompt_on_exit_action.setText(QCoreApplication.translate("MainWindow", u"Prompt On Exit", None))
         self.group_box_xml_input_xpath_builder.setTitle(QCoreApplication.translate("MainWindow", u"XML FOLDER SELECTION AND XPATH BUILDER", None))
         self.statusbar_xml_files_count.setText("")
         self.line_edit_xml_folder_path_input.setPlaceholderText(QCoreApplication.translate("MainWindow", u"Choose a folder that contains XML files...", None))
@@ -1125,7 +1130,6 @@ class Ui_MainWindow(object):
         self.label_file_processing.setText("")
         self.tabWidget.setTabText(self.tabWidget.indexOf(self.tab_xml_evaluation), QCoreApplication.translate("MainWindow", u"XML Evaluation", None))
         self.groupbox_csv_conversion.setTitle(QCoreApplication.translate("MainWindow", u"CSV CONVERSION", None))
-        self.label_csv_conversion_title.setText(QCoreApplication.translate("MainWindow", u"CSV Conversion", None))
         self.label_csv_conversion_desc.setText(QCoreApplication.translate("MainWindow", u"Convert CSV File to a different file type with the Pandas module\n"
 "Supported output file types: Excel, Markdown, HTML and JSON", None))
         self.line_edit_csv_conversion_path_input.setPlaceholderText(QCoreApplication.translate("MainWindow", u"Select the CSV file which you want to connvert...", None))
@@ -1146,7 +1150,12 @@ class Ui_MainWindow(object):
 #if QT_CONFIG(tooltip)
         self.button_csv_conversion_convert.setToolTip(QCoreApplication.translate("MainWindow", u"Convert the CSV file to the selected file type.", None))
 #endif // QT_CONFIG(tooltip)
-        self.button_csv_conversion_convert.setText(QCoreApplication.translate("MainWindow", u"Convert CSV File", None))
+        self.button_csv_conversion_convert.setText(QCoreApplication.translate("MainWindow", u"Convert File", None))
+        self.label.setText(QCoreApplication.translate("MainWindow", u"File path:", None))
+#if QT_CONFIG(tooltip)
+        self.button_csv_conversion_open_file.setToolTip(QCoreApplication.translate("MainWindow", u"Open the converted file directly", None))
+#endif // QT_CONFIG(tooltip)
+        self.button_csv_conversion_open_file.setText(QCoreApplication.translate("MainWindow", u"Open File", None))
         self.groupbox_lobster_profiles_cleanup.setTitle(QCoreApplication.translate("MainWindow", u"PROFILE EXPORT CLEAN UP", None))
         self.label_title_profile_cleanup.setText(QCoreApplication.translate("MainWindow", u"CSV File Clean Up", None))
         self.label_2.setText(QCoreApplication.translate("MainWindow", u"Mainly used for Lobster profiles that have been exported as a CSV file.", None))
@@ -1170,10 +1179,10 @@ class Ui_MainWindow(object):
         self.button_drop_csv_header.setToolTip(QCoreApplication.translate("MainWindow", u"Delete the selected header from the CSV file and save changes.", None))
 #endif // QT_CONFIG(tooltip)
         self.button_drop_csv_header.setText(QCoreApplication.translate("MainWindow", u"Drop Header", None))
-        self.group_box_tab2_program_output.setTitle(QCoreApplication.translate("MainWindow", u"CSV OUTPUT", None))
+        self.group_box_tab2_program_output.setTitle(QCoreApplication.translate("MainWindow", u"PROGRAM OUTPUT", None))
         self.tabWidget.setTabText(self.tabWidget.indexOf(self.tab_csv_conversion), QCoreApplication.translate("MainWindow", u"CSV Conversion and Cleanup", None))
         self.file_menu.setTitle(QCoreApplication.translate("MainWindow", u"Menu", None))
-        self.recent_xpath_expressions_menu.setTitle(QCoreApplication.translate("MainWindow", u"Recent XPath expressions", None))
+        self.recent_xpath_expressions_menu.setTitle(QCoreApplication.translate("MainWindow", u"Recent XPath Expressions", None))
         self.open_menu.setTitle(QCoreApplication.translate("MainWindow", u"Open", None))
         self.paths_menu.setTitle(QCoreApplication.translate("MainWindow", u"Paths", None))
         self.settings_menu.setTitle(QCoreApplication.translate("MainWindow", u"Manage", None))

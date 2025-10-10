@@ -110,3 +110,6 @@ XMLTest
 # Auto-py-to-exe .exe Output
 src/output
 src/config
+
+# My stuff
+tests

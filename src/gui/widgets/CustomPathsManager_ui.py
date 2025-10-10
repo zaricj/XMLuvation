@@ -18,7 +18,7 @@ from PySide6.QtGui import (QBrush, QColor, QConicalGradient, QCursor,
 from PySide6.QtWidgets import (QApplication, QComboBox, QFrame, QGroupBox,
     QHBoxLayout, QLabel, QLineEdit, QPushButton,
     QSizePolicy, QVBoxLayout, QWidget)
-import xmluvation_resources_rc
+import resources.qrc.xmluvation_resources_rc
 
 class Ui_CustomPathsManagerWidget(object):
     def setupUi(self, CustomPathsManagerWidget):

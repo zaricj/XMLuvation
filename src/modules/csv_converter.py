@@ -10,6 +10,7 @@ class CSVConversionSignals(QObject):
     warning_occurred = Signal(str, str)  # QMessageBox.warning
     info_occurred = Signal(str, str)  # QMessageBox.information
     tab2_program_output_append = Signal(str) # Append to CSV Output QTextEdit
+    set_file_open_path = Signal(str)  # Set the file path of the converted file in the "Open File" QLineEdit
 
 class CSVConversionThread(QRunnable):
     """Handles methods and logic for csv_conversion_groupbox"""
@@ -116,10 +117,10 @@ class CSVConversionThread(QRunnable):
             self.signals.tab2_program_output_append.emit("Starting conversion, please wait...")
             convert_func(df, output_file_path)
 
-            self.signals.info_occurred.emit(
-                "Conversion Successful",
-                f"Successfully converted:\n{os.path.basename(self.csv_file_to_convert)}\n→ {os.path.basename(output_file_path)}"
-            )
+            self.signals.tab2_program_output_append.emit(f"Successfully converted:\n{os.path.basename(self.csv_file_to_convert)} → {os.path.basename(output_file_path)}")
+            
+            # Set the file path of the converted file in the "Open File" QLineEdit
+            self.signals.set_file_open_path.emit(output_file_path)
 
         except FileNotFoundError:
             self.signals.warning_occurred.emit("CSV Input File Error", "No CSV file has been selected for conversion.\nPlease select a CSV file.")

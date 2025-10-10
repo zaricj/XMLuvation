@@ -19,7 +19,7 @@ from PySide6.QtWidgets import (QApplication, QComboBox, QFrame, QGroupBox,
     QHBoxLayout, QLabel, QLineEdit, QListWidget,
     QListWidgetItem, QPushButton, QSizePolicy, QVBoxLayout,
     QWidget)
-import xmluvation_resources_rc
+import resources.qrc.xmluvation_resources_rc
 
 class Ui_PreBuiltXPathsManagerWidget(object):
     def setupUi(self, PreBuiltXPathsManagerWidget):

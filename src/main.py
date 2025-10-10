@@ -2,7 +2,6 @@
 # REMOVE WHEN PROD READY:
 from fix_qrc_import import fix_qrc_import
 fix_qrc_import()
-
 import sys
 import os
 from pathlib import Path
@@ -12,6 +11,7 @@ from PySide6.QtWidgets import (
     QApplication,
     QMainWindow,
     QMessageBox,
+    QDialog
 )
 from PySide6.QtGui import QIcon, QCloseEvent
 from PySide6.QtCore import (
@@ -31,8 +31,10 @@ if TYPE_CHECKING:
         SearchAndExportToCSVHandler
     )
     from modules.config_handler import ConfigHandler
-    
+
+from gui.main.XMLuvation_ui import Ui_MainWindow
 from controllers.signal_handlers import SignalHandlerMixin
+from dialogs.exit_dialog import ExitDialog
     
 
 # ----------------------------
@@ -50,7 +52,7 @@ ICON_PATH: Path = CURRENT_DIR / "resources" / "icons" / "xml_256px.ico"
 DARK_THEME_QMENU_ICON: Path = CURRENT_DIR / "resources" / "images" / "dark.png"
 LIGHT_THEME_QMENU_ICON: Path = CURRENT_DIR / "resources" / "images" / "light.png"
 
-APP_VERSION: str = "v1.3.0"
+APP_VERSION: str = "v1.3.2"
 APP_NAME: str = "XMLuvation"
 AUTHOR: str = "Jovan"
 
@@ -232,33 +234,33 @@ class MainWindow(QMainWindow, SignalHandlerMixin):
         self.ui.button_abort_csv_export.hide()
         self.ui.label_file_processing.hide()
         self.ui.line_edit_xml_output_find_text.hide()
+        
+    # Helper method to save apps settings in a more DRY way
+    def _save_app_settings(self):
+        self.settings.setValue("app_theme", self.current_theme)
+        self.settings.setValue("group_matches", self.ui.checkbox_group_matches.isChecked())
+        self.settings.setValue("prompt_on_exit", self.ui.prompt_on_exit_action.isChecked())
+        save_window_state(self, self.settings) # Save windows location and state
+
 
     def closeEvent(self, event: QCloseEvent):
-        if not self.ui.prompt_on_exit_action.isChecked():
-            reply = QMessageBox.question(
-                self,
-                "Exit Program",
-                "Are you sure you want to exit the program?",
-                QMessageBox.Yes | QMessageBox.No,
-                QMessageBox.Yes,
-            )
-            if reply == QMessageBox.No:
+        if self.ui.prompt_on_exit_action.isChecked():
+            exit_dialog = ExitDialog(self)
+            exit_dialog.exec()
+            exit_dialog_result = exit_dialog.result()
+            exit_dialog_dont_ask_again = exit_dialog.ui.check_box_dont_ask_again.isChecked()
+            
+            if exit_dialog_result == QDialog.Rejected: # User pressed no button
                 event.ignore()
                 return
-            self.settings.setValue("app_theme", self.current_theme)
-            save_window_state(self, self.settings)
-            self.settings.setValue(
-                "group_matches", self.ui.checkbox_group_matches.isChecked()
-            )
-            self.settings.setValue("prompt_on_exit", self.ui.prompt_on_exit_action.isChecked())
+            elif exit_dialog_result == QDialog.Accepted: # User pressed yes button
+                self._save_app_settings()
+                # If user checked "Don't ask again", save that setting
+                if exit_dialog_dont_ask_again: # User checked "Don't ask again"
+                    self.ui.prompt_on_exit_action.setChecked(False) # Save setting to not prompt again
+                    self.settings.setValue("prompt_on_exit", False) # Value gets saved to the apps QSetting
         else:
-            self.settings.setValue("app_theme", self.current_theme)
-            save_window_state(self, self.settings)
-            self.settings.setValue(
-                "group_matches", self.ui.checkbox_group_matches.isChecked()
-            )
-            self.settings.setValue("prompt_on_exit", self.ui.prompt_on_exit_action.isChecked())
-            self.settings.setValue("group_matches", self.ui.checkbox_group_matches.isChecked())
+            self._save_app_settings()
         super().closeEvent(event)
 
 
@@ -266,9 +268,6 @@ class MainWindow(QMainWindow, SignalHandlerMixin):
 # Entrypoint
 # ----------------------------
 if __name__ == "__main__":
-    
-    from ui.main.XMLuvation_ui import Ui_MainWindow
-
     app = QApplication(sys.argv)
     window = MainWindow()
     window.show()

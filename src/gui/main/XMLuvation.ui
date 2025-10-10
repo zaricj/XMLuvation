@@ -1880,39 +1880,6 @@
                 <number>6</number>
                </property>
                <item>
-                <widget class="QLabel" name="label_csv_conversion_title">
-                 <property name="sizePolicy">
-                  <sizepolicy hsizetype="Preferred" vsizetype="Preferred">
-                   <horstretch>0</horstretch>
-                   <verstretch>0</verstretch>
-                  </sizepolicy>
-                 </property>
-                 <property name="maximumSize">
-                  <size>
-                   <width>16777215</width>
-                   <height>60</height>
-                  </size>
-                 </property>
-                 <property name="font">
-                  <font>
-                   <family>Microsoft YaHei UI</family>
-                   <pointsize>32</pointsize>
-                   <italic>false</italic>
-                   <bold>true</bold>
-                   <underline>false</underline>
-                   <strikeout>false</strikeout>
-                   <kerning>true</kerning>
-                  </font>
-                 </property>
-                 <property name="styleSheet">
-                  <string notr="true"/>
-                 </property>
-                 <property name="text">
-                  <string>CSV Conversion</string>
-                 </property>
-                </widget>
-               </item>
-               <item>
                 <widget class="QLabel" name="label_csv_conversion_desc">
                  <property name="maximumSize">
                   <size>
@@ -1933,6 +1900,13 @@
                  <property name="text">
                   <string>Convert CSV File to a different file type with the Pandas module
 Supported output file types: Excel, Markdown, HTML and JSON</string>
+                 </property>
+                </widget>
+               </item>
+               <item>
+                <widget class="Line" name="line_2">
+                 <property name="orientation">
+                  <enum>Qt::Orientation::Horizontal</enum>
                  </property>
                 </widget>
                </item>
@@ -2060,27 +2034,58 @@ Supported output file types: Excel, Markdown, HTML and JSON</string>
                    </property>
                   </widget>
                  </item>
+                 <item>
+                  <widget class="QPushButton" name="button_csv_conversion_convert">
+                   <property name="font">
+                    <font>
+                     <family>Microsoft YaHei UI</family>
+                     <pointsize>10</pointsize>
+                     <italic>false</italic>
+                     <bold>false</bold>
+                     <underline>false</underline>
+                     <strikeout>false</strikeout>
+                    </font>
+                   </property>
+                   <property name="toolTip">
+                    <string>Convert the CSV file to the selected file type.</string>
+                   </property>
+                   <property name="text">
+                    <string>Convert File</string>
+                   </property>
+                  </widget>
+                 </item>
                 </layout>
                </item>
                <item>
-                <widget class="QPushButton" name="button_csv_conversion_convert">
-                 <property name="font">
-                  <font>
-                   <family>Microsoft YaHei UI</family>
-                   <pointsize>10</pointsize>
-                   <italic>false</italic>
-                   <bold>false</bold>
-                   <underline>false</underline>
-                   <strikeout>false</strikeout>
-                  </font>
-                 </property>
-                 <property name="toolTip">
-                  <string>Convert the CSV file to the selected file type.</string>
-                 </property>
-                 <property name="text">
-                  <string>Convert CSV File</string>
-                 </property>
-                </widget>
+                <layout class="QHBoxLayout" name="horizontalLayout_9">
+                 <item>
+                  <widget class="QLabel" name="label">
+                   <property name="text">
+                    <string>File path:</string>
+                   </property>
+                  </widget>
+                 </item>
+                 <item>
+                  <widget class="QLineEdit" name="line_edit_csv_conversion_open_file_path">
+                   <property name="enabled">
+                    <bool>true</bool>
+                   </property>
+                   <property name="readOnly">
+                    <bool>true</bool>
+                   </property>
+                  </widget>
+                 </item>
+                 <item>
+                  <widget class="QPushButton" name="button_csv_conversion_open_file">
+                   <property name="toolTip">
+                    <string>Open the converted file directly</string>
+                   </property>
+                   <property name="text">
+                    <string>Open File</string>
+                   </property>
+                  </widget>
+                 </item>
+                </layout>
                </item>
               </layout>
              </widget>
@@ -2119,7 +2124,7 @@ Supported output file types: Excel, Markdown, HTML and JSON</string>
                  <property name="font">
                   <font>
                    <family>Microsoft YaHei UI</family>
-                   <pointsize>32</pointsize>
+                   <pointsize>10</pointsize>
                    <italic>false</italic>
                    <bold>true</bold>
                    <underline>false</underline>
@@ -2394,7 +2399,7 @@ Supported output file types: Excel, Markdown, HTML and JSON</string>
              </font>
             </property>
             <property name="title">
-             <string>CSV OUTPUT</string>
+             <string>PROGRAM OUTPUT</string>
             </property>
             <layout class="QHBoxLayout" name="horizontalLayout_8">
              <property name="leftMargin">
@@ -2452,7 +2457,7 @@ Supported output file types: Excel, Markdown, HTML and JSON</string>
     </property>
     <widget class="QMenu" name="recent_xpath_expressions_menu">
      <property name="title">
-      <string>Recent XPath expressions</string>
+      <string>Recent XPath Expressions</string>
      </property>
     </widget>
     <addaction name="recent_xpath_expressions_menu"/>
@@ -2507,7 +2512,7 @@ Supported output file types: Excel, Markdown, HTML and JSON</string>
     <iconset theme="QIcon::ThemeIcon::EditDelete"/>
    </property>
    <property name="text">
-    <string>Clear recent XPath expressions</string>
+    <string>Clear Recent XPath expressions</string>
    </property>
   </action>
   <action name="clear_action">
@@ -2528,7 +2533,7 @@ Supported output file types: Excel, Markdown, HTML and JSON</string>
     <iconset theme="QIcon::ThemeIcon::DocumentOpen"/>
    </property>
    <property name="text">
-    <string>Open input XML folder</string>
+    <string>Open Input XML Folder</string>
    </property>
   </action>
   <action name="open_output_action">
@@ -2536,7 +2541,7 @@ Supported output file types: Excel, Markdown, HTML and JSON</string>
     <iconset theme="QIcon::ThemeIcon::DocumentOpen"/>
    </property>
    <property name="text">
-    <string>Open output CSV folder</string>
+    <string>Open Output CSV Folder</string>
    </property>
   </action>
   <action name="open_csv_conversion_input_action">
@@ -2544,7 +2549,7 @@ Supported output file types: Excel, Markdown, HTML and JSON</string>
     <iconset theme="QIcon::ThemeIcon::DocumentOpen"/>
    </property>
    <property name="text">
-    <string>Open output CSV converted folder</string>
+    <string>Open Output CSV Converted Folder</string>
    </property>
   </action>
   <action name="add_custom_path_action">
@@ -2559,7 +2564,7 @@ Supported output file types: Excel, Markdown, HTML and JSON</string>
   </action>
   <action name="xpath_help_action">
    <property name="text">
-    <string>Regex Help</string>
+    <string>XPath Expression Help</string>
    </property>
   </action>
   <action name="actionx">
@@ -2576,8 +2581,11 @@ Supported output file types: Excel, Markdown, HTML and JSON</string>
    <property name="checkable">
     <bool>true</bool>
    </property>
+   <property name="checked">
+    <bool>true</bool>
+   </property>
    <property name="text">
-    <string>Prompt on exit</string>
+    <string>Prompt On Exit</string>
    </property>
   </action>
  </widget>
