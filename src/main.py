@@ -1,7 +1,4 @@
 # main.py
-# REMOVE WHEN PROD READY:
-from fix_qrc_import import fix_qrc_import
-fix_qrc_import()
 import sys
 import os
 from pathlib import Path
@@ -35,7 +32,7 @@ if TYPE_CHECKING:
 from gui.main.XMLuvation_ui import Ui_MainWindow
 from controllers.signal_handlers import SignalHandlerMixin
 from dialogs.exit_dialog import ExitDialog
-    
+
 
 # ----------------------------
 # Constants
