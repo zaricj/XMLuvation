@@ -6,7 +6,7 @@ QWidget {
 }
 
 QMenuBar {
-	background-color: #232428;
+	background-color: #212225;
 	padding: 4px;
 }
 

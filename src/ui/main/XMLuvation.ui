@@ -10,7 +10,7 @@
     <x>0</x>
     <y>0</y>
     <width>1086</width>
-    <height>813</height>
+    <height>840</height>
    </rect>
   </property>
   <property name="font">
@@ -147,10 +147,22 @@
                <string>XML FOLDER SELECTION AND XPATH BUILDER</string>
               </property>
               <layout class="QVBoxLayout" name="verticalLayout_7">
+               <property name="leftMargin">
+                <number>3</number>
+               </property>
+               <property name="topMargin">
+                <number>3</number>
+               </property>
+               <property name="rightMargin">
+                <number>3</number>
+               </property>
+               <property name="bottomMargin">
+                <number>3</number>
+               </property>
                <item>
                 <widget class="QLabel" name="statusbar_xml_files_count">
                  <property name="sizePolicy">
-                  <sizepolicy hsizetype="Minimum" vsizetype="Preferred">
+                  <sizepolicy hsizetype="Preferred" vsizetype="Preferred">
                    <horstretch>0</horstretch>
                    <verstretch>0</verstretch>
                   </sizepolicy>
@@ -187,6 +199,12 @@
                  </item>
                  <item>
                   <widget class="QPushButton" name="button_browse_xml_folder">
+                   <property name="sizePolicy">
+                    <sizepolicy hsizetype="Preferred" vsizetype="Fixed">
+                     <horstretch>0</horstretch>
+                     <verstretch>0</verstretch>
+                    </sizepolicy>
+                   </property>
                    <property name="font">
                     <font>
                      <family>Microsoft YaHei UI</family>
@@ -203,10 +221,19 @@
                    <property name="text">
                     <string>Browse</string>
                    </property>
+                   <property name="icon">
+                    <iconset theme="QIcon::ThemeIcon::FolderOpen"/>
+                   </property>
                   </widget>
                  </item>
                  <item>
                   <widget class="QPushButton" name="button_read_xml">
+                   <property name="sizePolicy">
+                    <sizepolicy hsizetype="Preferred" vsizetype="Fixed">
+                     <horstretch>0</horstretch>
+                     <verstretch>0</verstretch>
+                    </sizepolicy>
+                   </property>
                    <property name="font">
                     <font>
                      <family>Microsoft YaHei UI</family>
@@ -238,7 +265,7 @@
                  <item>
                   <widget class="QLabel" name="label_xpath_builder">
                    <property name="sizePolicy">
-                    <sizepolicy hsizetype="Minimum" vsizetype="Preferred">
+                    <sizepolicy hsizetype="Preferred" vsizetype="Preferred">
                      <horstretch>0</horstretch>
                      <verstretch>0</verstretch>
                     </sizepolicy>
@@ -271,7 +298,7 @@
                  <item>
                   <widget class="QLabel" name="label_tag_names">
                    <property name="sizePolicy">
-                    <sizepolicy hsizetype="Minimum" vsizetype="Preferred">
+                    <sizepolicy hsizetype="Preferred" vsizetype="Preferred">
                      <horstretch>0</horstretch>
                      <verstretch>0</verstretch>
                     </sizepolicy>
@@ -303,20 +330,20 @@
                     <bool>false</bool>
                    </property>
                    <property name="sizePolicy">
-                    <sizepolicy hsizetype="Preferred" vsizetype="Fixed">
+                    <sizepolicy hsizetype="Expanding" vsizetype="Fixed">
                      <horstretch>0</horstretch>
                      <verstretch>0</verstretch>
                     </sizepolicy>
                    </property>
                    <property name="minimumSize">
                     <size>
-                     <width>150</width>
+                     <width>0</width>
                      <height>0</height>
                     </size>
                    </property>
                    <property name="maximumSize">
                     <size>
-                     <width>300</width>
+                     <width>200</width>
                      <height>16777215</height>
                     </size>
                    </property>
@@ -347,7 +374,7 @@
                  <item>
                   <widget class="QLabel" name="label_tag_values">
                    <property name="sizePolicy">
-                    <sizepolicy hsizetype="Minimum" vsizetype="Preferred">
+                    <sizepolicy hsizetype="Preferred" vsizetype="Preferred">
                      <horstretch>0</horstretch>
                      <verstretch>0</verstretch>
                     </sizepolicy>
@@ -379,20 +406,20 @@
                     <bool>false</bool>
                    </property>
                    <property name="sizePolicy">
-                    <sizepolicy hsizetype="Preferred" vsizetype="Fixed">
+                    <sizepolicy hsizetype="Expanding" vsizetype="Fixed">
                      <horstretch>0</horstretch>
                      <verstretch>0</verstretch>
                     </sizepolicy>
                    </property>
                    <property name="minimumSize">
                     <size>
-                     <width>150</width>
+                     <width>0</width>
                      <height>0</height>
                     </size>
                    </property>
                    <property name="maximumSize">
                     <size>
-                     <width>300</width>
+                     <width>200</width>
                      <height>16777215</height>
                     </size>
                    </property>
@@ -436,7 +463,7 @@
                  <item>
                   <widget class="QLabel" name="label_attribute_names">
                    <property name="sizePolicy">
-                    <sizepolicy hsizetype="Minimum" vsizetype="Preferred">
+                    <sizepolicy hsizetype="Preferred" vsizetype="Preferred">
                      <horstretch>0</horstretch>
                      <verstretch>0</verstretch>
                     </sizepolicy>
@@ -468,20 +495,20 @@
                     <bool>false</bool>
                    </property>
                    <property name="sizePolicy">
-                    <sizepolicy hsizetype="Preferred" vsizetype="Fixed">
+                    <sizepolicy hsizetype="Expanding" vsizetype="Fixed">
                      <horstretch>0</horstretch>
                      <verstretch>0</verstretch>
                     </sizepolicy>
                    </property>
                    <property name="minimumSize">
                     <size>
-                     <width>150</width>
+                     <width>0</width>
                      <height>0</height>
                     </size>
                    </property>
                    <property name="maximumSize">
                     <size>
-                     <width>300</width>
+                     <width>200</width>
                      <height>16777215</height>
                     </size>
                    </property>
@@ -512,7 +539,7 @@
                  <item>
                   <widget class="QLabel" name="label_attribute_values">
                    <property name="sizePolicy">
-                    <sizepolicy hsizetype="Minimum" vsizetype="Preferred">
+                    <sizepolicy hsizetype="Preferred" vsizetype="Preferred">
                      <horstretch>0</horstretch>
                      <verstretch>0</verstretch>
                     </sizepolicy>
@@ -544,20 +571,20 @@
                     <bool>false</bool>
                    </property>
                    <property name="sizePolicy">
-                    <sizepolicy hsizetype="Preferred" vsizetype="Fixed">
+                    <sizepolicy hsizetype="Expanding" vsizetype="Fixed">
                      <horstretch>0</horstretch>
                      <verstretch>0</verstretch>
                     </sizepolicy>
                    </property>
                    <property name="minimumSize">
                     <size>
-                     <width>150</width>
+                     <width>0</width>
                      <height>0</height>
                     </size>
                    </property>
                    <property name="maximumSize">
                     <size>
-                     <width>300</width>
+                     <width>200</width>
                      <height>16777215</height>
                     </size>
                    </property>
@@ -601,7 +628,7 @@
                  <item>
                   <widget class="QLabel" name="label_function">
                    <property name="sizePolicy">
-                    <sizepolicy hsizetype="Minimum" vsizetype="Preferred">
+                    <sizepolicy hsizetype="Preferred" vsizetype="Preferred">
                      <horstretch>0</horstretch>
                      <verstretch>0</verstretch>
                     </sizepolicy>
@@ -623,6 +650,12 @@
                  </item>
                  <item>
                   <widget class="QRadioButton" name="radio_button_equals">
+                   <property name="sizePolicy">
+                    <sizepolicy hsizetype="Preferred" vsizetype="Fixed">
+                     <horstretch>0</horstretch>
+                     <verstretch>0</verstretch>
+                    </sizepolicy>
+                   </property>
                    <property name="font">
                     <font>
                      <family>Microsoft YaHei UI</family>
@@ -646,6 +679,12 @@
                  </item>
                  <item>
                   <widget class="QRadioButton" name="radio_button_contains">
+                   <property name="sizePolicy">
+                    <sizepolicy hsizetype="Preferred" vsizetype="Fixed">
+                     <horstretch>0</horstretch>
+                     <verstretch>0</verstretch>
+                    </sizepolicy>
+                   </property>
                    <property name="font">
                     <font>
                      <family>Microsoft YaHei UI</family>
@@ -667,7 +706,7 @@
                  <item>
                   <widget class="QRadioButton" name="radio_button_starts_with">
                    <property name="sizePolicy">
-                    <sizepolicy hsizetype="Minimum" vsizetype="Fixed">
+                    <sizepolicy hsizetype="Preferred" vsizetype="Fixed">
                      <horstretch>0</horstretch>
                      <verstretch>0</verstretch>
                     </sizepolicy>
@@ -689,6 +728,12 @@
                  </item>
                  <item>
                   <widget class="QRadioButton" name="radio_button_greater">
+                   <property name="sizePolicy">
+                    <sizepolicy hsizetype="Preferred" vsizetype="Fixed">
+                     <horstretch>0</horstretch>
+                     <verstretch>0</verstretch>
+                    </sizepolicy>
+                   </property>
                    <property name="font">
                     <font>
                      <family>Microsoft YaHei UI</family>
@@ -706,6 +751,12 @@
                  </item>
                  <item>
                   <widget class="QRadioButton" name="radio_button_smaller">
+                   <property name="sizePolicy">
+                    <sizepolicy hsizetype="Preferred" vsizetype="Fixed">
+                     <horstretch>0</horstretch>
+                     <verstretch>0</verstretch>
+                    </sizepolicy>
+                   </property>
                    <property name="font">
                     <font>
                      <family>Microsoft YaHei UI</family>
@@ -747,6 +798,12 @@
                  </item>
                  <item>
                   <widget class="QPushButton" name="button_build_xpath">
+                   <property name="sizePolicy">
+                    <sizepolicy hsizetype="Preferred" vsizetype="Fixed">
+                     <horstretch>0</horstretch>
+                     <verstretch>0</verstretch>
+                    </sizepolicy>
+                   </property>
                    <property name="font">
                     <font>
                      <family>Microsoft YaHei UI</family>
@@ -769,6 +826,12 @@
                </item>
                <item>
                 <widget class="QPushButton" name="button_add_xpath_to_list">
+                 <property name="sizePolicy">
+                  <sizepolicy hsizetype="Preferred" vsizetype="Fixed">
+                   <horstretch>0</horstretch>
+                   <verstretch>0</verstretch>
+                  </sizepolicy>
+                 </property>
                  <property name="font">
                   <font>
                    <family>Microsoft YaHei UI</family>
@@ -812,6 +875,18 @@
                <string>LIST OF XPATH FILTERS TO SEARCH AND MATCH IN XML FILES</string>
               </property>
               <layout class="QVBoxLayout" name="verticalLayout_8">
+               <property name="leftMargin">
+                <number>3</number>
+               </property>
+               <property name="topMargin">
+                <number>3</number>
+               </property>
+               <property name="rightMargin">
+                <number>3</number>
+               </property>
+               <property name="bottomMargin">
+                <number>6</number>
+               </property>
                <item>
                 <widget class="QListWidget" name="list_widget_main_xpath_expressions">
                  <property name="sizePolicy">
@@ -853,7 +928,7 @@
                <item>
                 <widget class="QLabel" name="statusbar_xpath_expressions">
                  <property name="sizePolicy">
-                  <sizepolicy hsizetype="Minimum" vsizetype="Preferred">
+                  <sizepolicy hsizetype="Preferred" vsizetype="Preferred">
                    <horstretch>0</horstretch>
                    <verstretch>0</verstretch>
                   </sizepolicy>
@@ -901,10 +976,22 @@
                <string>EXPORT SEARCH RESULT TO CSV FILE</string>
               </property>
               <layout class="QVBoxLayout" name="verticalLayout_11">
+               <property name="leftMargin">
+                <number>3</number>
+               </property>
+               <property name="topMargin">
+                <number>3</number>
+               </property>
+               <property name="rightMargin">
+                <number>3</number>
+               </property>
+               <property name="bottomMargin">
+                <number>3</number>
+               </property>
                <item>
                 <widget class="QLabel" name="label_csv_headers_info">
                  <property name="sizePolicy">
-                  <sizepolicy hsizetype="Minimum" vsizetype="Preferred">
+                  <sizepolicy hsizetype="Preferred" vsizetype="Preferred">
                    <horstretch>0</horstretch>
                    <verstretch>0</verstretch>
                   </sizepolicy>
@@ -957,7 +1044,7 @@
                <item>
                 <widget class="QLabel" name="label_csv_export_input">
                  <property name="sizePolicy">
-                  <sizepolicy hsizetype="Minimum" vsizetype="Preferred">
+                  <sizepolicy hsizetype="Preferred" vsizetype="Preferred">
                    <horstretch>0</horstretch>
                    <verstretch>0</verstretch>
                   </sizepolicy>
@@ -1001,6 +1088,12 @@
                  </item>
                  <item>
                   <widget class="QPushButton" name="button_browse_csv">
+                   <property name="sizePolicy">
+                    <sizepolicy hsizetype="Preferred" vsizetype="Fixed">
+                     <horstretch>0</horstretch>
+                     <verstretch>0</verstretch>
+                    </sizepolicy>
+                   </property>
                    <property name="font">
                     <font>
                      <family>Microsoft YaHei UI</family>
@@ -1014,8 +1107,14 @@
                    <property name="toolTip">
                     <string>Choose the folder and filename where the results CSV will be saved.</string>
                    </property>
+                   <property name="layoutDirection">
+                    <enum>Qt::LayoutDirection::LeftToRight</enum>
+                   </property>
                    <property name="text">
                     <string>Browse</string>
+                   </property>
+                   <property name="icon">
+                    <iconset theme="QIcon::ThemeIcon::FolderOpen"/>
                    </property>
                   </widget>
                  </item>
@@ -1027,6 +1126,12 @@
                   <widget class="QPushButton" name="button_abort_csv_export">
                    <property name="enabled">
                     <bool>true</bool>
+                   </property>
+                   <property name="sizePolicy">
+                    <sizepolicy hsizetype="Preferred" vsizetype="Fixed">
+                     <horstretch>0</horstretch>
+                     <verstretch>0</verstretch>
+                    </sizepolicy>
                    </property>
                    <property name="font">
                     <font>
@@ -1051,6 +1156,12 @@
                  </item>
                  <item>
                   <widget class="QPushButton" name="button_start_csv_export">
+                   <property name="sizePolicy">
+                    <sizepolicy hsizetype="Preferred" vsizetype="Fixed">
+                     <horstretch>0</horstretch>
+                     <verstretch>0</verstretch>
+                    </sizepolicy>
+                   </property>
                    <property name="font">
                     <font>
                      <family>Microsoft YaHei UI</family>
@@ -1183,7 +1294,22 @@
               <property name="title">
                <string>PROGRAM OUTPUT</string>
               </property>
-              <layout class="QVBoxLayout" name="verticalLayout_12">
+              <layout class="QVBoxLayout" name="verticalLayout_12" stretch="0">
+               <property name="spacing">
+                <number>6</number>
+               </property>
+               <property name="leftMargin">
+                <number>3</number>
+               </property>
+               <property name="topMargin">
+                <number>3</number>
+               </property>
+               <property name="rightMargin">
+                <number>3</number>
+               </property>
+               <property name="bottomMargin">
+                <number>6</number>
+               </property>
                <item>
                 <widget class="QTextEdit" name="text_edit_program_output">
                  <property name="sizePolicy">
@@ -1244,7 +1370,19 @@
               <property name="title">
                <string>XML OUTPUT</string>
               </property>
-              <layout class="QVBoxLayout" name="verticalLayout_6">
+              <layout class="QVBoxLayout" name="verticalLayout_6" stretch="0,0,0,0">
+               <property name="leftMargin">
+                <number>3</number>
+               </property>
+               <property name="topMargin">
+                <number>3</number>
+               </property>
+               <property name="rightMargin">
+                <number>3</number>
+               </property>
+               <property name="bottomMargin">
+                <number>6</number>
+               </property>
                <item>
                 <widget class="QTextEdit" name="text_edit_xml_output">
                  <property name="sizePolicy">
@@ -1729,6 +1867,18 @@
                <string>CSV CONVERSION</string>
               </property>
               <layout class="QVBoxLayout" name="verticalLayout_13">
+               <property name="leftMargin">
+                <number>3</number>
+               </property>
+               <property name="topMargin">
+                <number>3</number>
+               </property>
+               <property name="rightMargin">
+                <number>3</number>
+               </property>
+               <property name="bottomMargin">
+                <number>6</number>
+               </property>
                <item>
                 <widget class="QLabel" name="label_csv_conversion_title">
                  <property name="sizePolicy">
@@ -1831,6 +1981,9 @@ Supported output file types: Excel, Markdown, HTML and JSON</string>
                    </property>
                    <property name="text">
                     <string>Browse</string>
+                   </property>
+                   <property name="icon">
+                    <iconset theme="QIcon::ThemeIcon::FolderOpen"/>
                    </property>
                   </widget>
                  </item>
@@ -2061,6 +2214,9 @@ Supported output file types: Excel, Markdown, HTML and JSON</string>
                      <property name="text">
                       <string>Browse</string>
                      </property>
+                     <property name="icon">
+                      <iconset theme="QIcon::ThemeIcon::FolderOpen"/>
+                     </property>
                     </widget>
                    </item>
                   </layout>
@@ -2106,6 +2262,9 @@ Supported output file types: Excel, Markdown, HTML and JSON</string>
                        </property>
                        <property name="text">
                         <string>Browse</string>
+                       </property>
+                       <property name="icon">
+                        <iconset theme="QIcon::ThemeIcon::FolderOpen"/>
                        </property>
                       </widget>
                      </item>
@@ -2238,6 +2397,18 @@ Supported output file types: Excel, Markdown, HTML and JSON</string>
              <string>CSV OUTPUT</string>
             </property>
             <layout class="QHBoxLayout" name="horizontalLayout_8">
+             <property name="leftMargin">
+              <number>3</number>
+             </property>
+             <property name="topMargin">
+              <number>3</number>
+             </property>
+             <property name="rightMargin">
+              <number>3</number>
+             </property>
+             <property name="bottomMargin">
+              <number>6</number>
+             </property>
              <item>
               <widget class="QTextEdit" name="text_edit_csv_output">
                <property name="font">
@@ -2277,7 +2448,7 @@ Supported output file types: Excel, Markdown, HTML and JSON</string>
    </property>
    <widget class="QMenu" name="file_menu">
     <property name="title">
-     <string>File</string>
+     <string>Menu</string>
     </property>
     <widget class="QMenu" name="recent_xpath_expressions_menu">
      <property name="title">
@@ -2286,6 +2457,8 @@ Supported output file types: Excel, Markdown, HTML and JSON</string>
     </widget>
     <addaction name="recent_xpath_expressions_menu"/>
     <addaction name="clear_recent_xpath_expressions_action"/>
+    <addaction name="separator"/>
+    <addaction name="prompt_on_exit_action"/>
     <addaction name="separator"/>
     <addaction name="exit_action"/>
    </widget>
@@ -2330,6 +2503,9 @@ Supported output file types: Excel, Markdown, HTML and JSON</string>
    <addaction name="help_menu"/>
   </widget>
   <action name="clear_recent_xpath_expressions_action">
+   <property name="icon">
+    <iconset theme="QIcon::ThemeIcon::EditDelete"/>
+   </property>
    <property name="text">
     <string>Clear recent XPath expressions</string>
    </property>
@@ -2340,21 +2516,33 @@ Supported output file types: Excel, Markdown, HTML and JSON</string>
    </property>
   </action>
   <action name="exit_action">
+   <property name="icon">
+    <iconset theme="QIcon::ThemeIcon::ApplicationExit"/>
+   </property>
    <property name="text">
     <string>Exit</string>
    </property>
   </action>
   <action name="open_input_action">
+   <property name="icon">
+    <iconset theme="QIcon::ThemeIcon::DocumentOpen"/>
+   </property>
    <property name="text">
     <string>Open input XML folder</string>
    </property>
   </action>
   <action name="open_output_action">
+   <property name="icon">
+    <iconset theme="QIcon::ThemeIcon::DocumentOpen"/>
+   </property>
    <property name="text">
     <string>Open output CSV folder</string>
    </property>
   </action>
   <action name="open_csv_conversion_input_action">
+   <property name="icon">
+    <iconset theme="QIcon::ThemeIcon::DocumentOpen"/>
+   </property>
    <property name="text">
     <string>Open output CSV converted folder</string>
    </property>
@@ -2382,6 +2570,14 @@ Supported output file types: Excel, Markdown, HTML and JSON</string>
   <action name="open_pre_built_xpaths_manager_action">
    <property name="text">
     <string>Open pre-built XPaths Manager</string>
+   </property>
+  </action>
+  <action name="prompt_on_exit_action">
+   <property name="checkable">
+    <bool>true</bool>
+   </property>
+   <property name="text">
+    <string>Prompt on exit</string>
    </property>
   </action>
  </widget>

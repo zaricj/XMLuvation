@@ -1,4 +1,8 @@
 # main.py
+# REMOVE WHEN PROD READY:
+from fix_qrc_import import fix_qrc_import
+fix_qrc_import()
+
 import sys
 import os
 from pathlib import Path
@@ -30,9 +34,6 @@ if TYPE_CHECKING:
     
 from controllers.signal_handlers import SignalHandlerMixin
     
-# REMOVE WHEN PROD READY:
-from fix_qrc_import import fix_qrc_import
-fix_qrc_import()
 
 # ----------------------------
 # Constants
@@ -188,13 +189,20 @@ class MainWindow(QMainWindow, SignalHandlerMixin):
         self.group_matches_setting = self.settings.value(
             "group_matches", self.ui.checkbox_group_matches.isChecked(), type=bool
         )
+        # Group matches checked setting load
         if self.group_matches_setting:
             self.ui.checkbox_group_matches.setChecked(self.group_matches_setting)
 
+        # Current theme setting load
         if self.current_theme == "dark_theme.qss":
             self.theme_icon = self.light_mode_icon
         else:
             self.theme_icon = self.dark_mode_icon
+        
+        # Prompt on exit setting load
+        self.prompt_on_exit_setting = self.settings.value("prompt_on_exit", self.ui.prompt_on_exit_action.isChecked(), type=bool)
+        if self.prompt_on_exit_setting:
+            self.ui.prompt_on_exit_action.setChecked(self.prompt_on_exit_setting)
 
     def _initialize_theme(self):
         try:
@@ -226,21 +234,31 @@ class MainWindow(QMainWindow, SignalHandlerMixin):
         self.ui.line_edit_xml_output_find_text.hide()
 
     def closeEvent(self, event: QCloseEvent):
-        reply = QMessageBox.question(
-            self,
-            "Exit Program",
-            "Are you sure you want to exit the program?",
-            QMessageBox.Yes | QMessageBox.No,
-            QMessageBox.Yes,
-        )
-        if reply == QMessageBox.No:
-            event.ignore()
-            return
-        self.settings.setValue("app_theme", self.current_theme)
-        save_window_state(self, self.settings)
-        self.settings.setValue(
-            "group_matches", self.ui.checkbox_group_matches.isChecked()
-        )
+        if not self.ui.prompt_on_exit_action.isChecked():
+            reply = QMessageBox.question(
+                self,
+                "Exit Program",
+                "Are you sure you want to exit the program?",
+                QMessageBox.Yes | QMessageBox.No,
+                QMessageBox.Yes,
+            )
+            if reply == QMessageBox.No:
+                event.ignore()
+                return
+            self.settings.setValue("app_theme", self.current_theme)
+            save_window_state(self, self.settings)
+            self.settings.setValue(
+                "group_matches", self.ui.checkbox_group_matches.isChecked()
+            )
+            self.settings.setValue("prompt_on_exit", self.ui.prompt_on_exit_action.isChecked())
+        else:
+            self.settings.setValue("app_theme", self.current_theme)
+            save_window_state(self, self.settings)
+            self.settings.setValue(
+                "group_matches", self.ui.checkbox_group_matches.isChecked()
+            )
+            self.settings.setValue("prompt_on_exit", self.ui.prompt_on_exit_action.isChecked())
+            self.settings.setValue("group_matches", self.ui.checkbox_group_matches.isChecked())
         super().closeEvent(event)
 
 
