@@ -23,7 +23,7 @@ from PySide6.QtWidgets import (QApplication, QCheckBox, QComboBox, QFrame,
     QPushButton, QRadioButton, QSizePolicy, QSpacerItem,
     QSplitter, QTabWidget, QTextEdit, QVBoxLayout,
     QWidget)
-import resources.qrc.xmluvation_resources_rc
+import xmluvation_resources_rc
 
 class Ui_MainWindow(object):
     def setupUi(self, MainWindow):
