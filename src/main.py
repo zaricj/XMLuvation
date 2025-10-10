@@ -32,7 +32,7 @@ if TYPE_CHECKING:
 from gui.main.XMLuvation_ui import Ui_MainWindow
 from controllers.signal_handlers import SignalHandlerMixin
 from dialogs.exit_dialog import ExitDialog
-
+    
 
 # ----------------------------
 # Constants

@@ -9,15 +9,17 @@ dependencies = [
     "lxml>=6.0.1",
     "pandas>=2.3.1",
     "pyarrow>=21.0.0",
-    "pyside6-essentials>=6.9.2",
+    "pyside6-essentials>=6.10.0",
     "xlsxwriter>=3.2.5",
 ]
 
 [tool.pyside6-project]
 files = ["src/main.py"]
 include = [
+    "src/config/",
+    "src/controllers/",
+    "src/dialogs/",
+    "src/gui/",
     "src/modules/",
-    "src/resources/",
-    "src/widget/",
-    "src/config/"
+    "src/resources/"
 ]

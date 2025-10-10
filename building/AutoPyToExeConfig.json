@@ -79,11 +79,15 @@
   },
   {
    "optionDest": "datas",
-   "value": "C:/Users/ZaricJ/Documents/Entwicklung_und_Tools/GitHub/XMLuvation/src/ui;ui/"
+   "value": "C:/Users/ZaricJ/Documents/Entwicklung_und_Tools/GitHub/XMLuvation/src/controllers;controllers/"
   },
   {
    "optionDest": "datas",
-   "value": "C:/Users/ZaricJ/Documents/Entwicklung_und_Tools/GitHub/XMLuvation/src/resources;resources/"
+   "value": "C:/Users/ZaricJ/Documents/Entwicklung_und_Tools/GitHub/XMLuvation/src/dialogs;dialogs/"
+  },
+  {
+   "optionDest": "datas",
+   "value": "C:/Users/ZaricJ/Documents/Entwicklung_und_Tools/GitHub/XMLuvation/src/gui;gui/"
   }
  ],
  "nonPyinstallerOptions": {
