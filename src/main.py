@@ -189,11 +189,12 @@ class MainWindow(QMainWindow, SignalHandlerMixin):
         self.current_theme = self.settings.value("app_theme", "dark_theme.qss")
 
         self.group_matches_setting = self.settings.value(
-            "group_matches", self.ui.checkbox_group_matches.isChecked(), type=bool
+            "group_matches",
+            self.ui.checkbox_group_matches.isChecked(),
+            type=bool
         )
-        # Group matches checked setting load
-        if self.group_matches_setting:
-            self.ui.checkbox_group_matches.setChecked(self.group_matches_setting)
+        # Apply the setting unconditionally to the checkbox
+        self.ui.checkbox_group_matches.setChecked(self.group_matches_setting)
 
         # Current theme setting load
         if self.current_theme == "dark_theme.qss":
@@ -202,9 +203,11 @@ class MainWindow(QMainWindow, SignalHandlerMixin):
             self.theme_icon = self.dark_mode_icon
         
         # Prompt on exit setting load
-        self.prompt_on_exit_setting = self.settings.value("prompt_on_exit", self.ui.prompt_on_exit_action.isChecked(), type=bool)
-        if self.prompt_on_exit_setting:
-            self.ui.prompt_on_exit_action.setChecked(self.prompt_on_exit_setting)
+        prompt_value = self.settings.value("prompt_on_exit",
+                                        self.ui.prompt_on_exit_action.isChecked(),
+                                        type=bool)
+        # Apply the setting unconditionally to the QAction
+        self.ui.prompt_on_exit_action.setChecked(bool(prompt_value))
 
     def _initialize_theme(self):
         try:
@@ -241,28 +244,26 @@ class MainWindow(QMainWindow, SignalHandlerMixin):
         self.settings.setValue("group_matches", self.ui.checkbox_group_matches.isChecked())
         self.settings.setValue("prompt_on_exit", self.ui.prompt_on_exit_action.isChecked())
         save_window_state(self, self.settings) # Save windows location and state
+        # optional: force write to disk
+        self.settings.sync()
 
 
     def closeEvent(self, event: QCloseEvent):
         if self.ui.prompt_on_exit_action.isChecked():
             exit_dialog = ExitDialog(self)
-            exit_dialog.exec()
-            exit_dialog_result = exit_dialog.result()
-            exit_dialog_dont_ask_again = exit_dialog.ui.check_box_dont_ask_again.isChecked()
-            
-            if exit_dialog_result == QDialog.Rejected: # User pressed no button
+            if exit_dialog.exec() == QDialog.Rejected:
                 event.ignore()
                 return
-            elif exit_dialog_result == QDialog.Accepted: # User pressed yes button
-                self._save_app_settings()
-                # If user checked "Don't ask again", save that setting
-                if exit_dialog_dont_ask_again: # User checked "Don't ask again"
-                    self.ui.prompt_on_exit_action.setChecked(False) # Save setting to not prompt again
-                    self.settings.setValue("prompt_on_exit", False) # Value gets saved to the apps QSetting
-        else:
-            self._save_app_settings()
-        super().closeEvent(event)
 
+            # if user checked "Don't ask again", update the QAction (and settings)
+            if exit_dialog.ui.check_box_dont_ask_again.isChecked():
+                self.ui.prompt_on_exit_action.setChecked(False)
+                self.settings.setValue("prompt_on_exit", False)
+                self.settings.sync()
+
+        # always save other app settings once here
+        self._save_app_settings()
+        super().closeEvent(event)
 
 # ----------------------------
 # Entrypoint
