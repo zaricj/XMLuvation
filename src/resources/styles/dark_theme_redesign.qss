@@ -29,20 +29,23 @@ QMenu::item:selected {
 
 QPushButton {
 	background-color: #3E3E42;
+	border: 1px solid #5C5C60;
 	color: #F0F0F0;
 	font: bold;
     padding: 3px 6px; /* Reduced padding */
     border-radius: 4px;
-	border: 1px solid #5C5C60;
 }
 
 QPushButton:hover {
-    background-color: #393d81;
-    border: 1px solid #6D6D72;
+    border: 1px solid #000000;
+    /* glow effect using text-shadow is not supported in QSS, simulate with border + background */
+    background: qlineargradient(x1:0, y1:0, x2:0, y2:1,
+               stop:0 #323463, stop:1 #2a2d55);
 }
 
 QPushButton:pressed {
-    background-color: #2b2f61;
+    background: qlineargradient(x1:0, y1:0, x2:0, y2:1,
+               stop:0 #2a2a4f, stop:1 #23233d);
 }
 
 QPushButton:disabled {
