@@ -4,7 +4,7 @@ import pandas as pd
 from PySide6.QtWidgets import QMessageBox, QComboBox, QRadioButton, QListWidget, QPushButton, QLineEdit, QTextEdit
 from PySide6.QtGui import QTextDocument
 from modules.xpath_builder import create_xpath_validator, create_xpath_builder
-from modules.csv_export_optimized import create_optimized_csv_exporter
+from src.modules.xpath_search_and_csv_export import create_xpath_searcher_and_csv_exporter
 from modules.file_cleanup import create_lobster_profile_cleaner, create_csv_column_dropper
 from modules.xml_parser import create_xml_parser
 from modules.csv_converter import create_csv_conversion_thread
@@ -31,6 +31,7 @@ class ComboboxStateHandler:
     - 'element_count' --> len(list(root.iter())),
     - 'encoding' --> XMLUtils.get_xml_encoding(self.get_xml_file_path)
     """
+
     def __init__(self, main_window: "MainWindow", parsed_xml_data: dict, cb_tag_name: QComboBox, cb_tag_value: QComboBox, cb_attr_name: QComboBox, cb_attr_value: QComboBox):
         """Constructor of ComboboxState class
 
@@ -94,8 +95,8 @@ class ComboboxStateHandler:
 
         except Exception as ex:
             message = f"An exception of type {type(ex).__name__} occurred. Arguments: {ex.args!r}"
-            QMessageBox.critical(self.main_window, "An exception occurred on tag name changed:", message)
-
+            QMessageBox.critical(
+                self.main_window, "An exception occurred on tag name changed:", message)
 
     def on_attribute_name_changed(self, selected_attribute: str):
         """When the Combobox for the attribute name changes
@@ -105,7 +106,8 @@ class ComboboxStateHandler:
         """
         try:
             selected_tag = self.tag_name.currentText()
-            attribute_values = self.get_attribute_values(selected_tag, selected_attribute)
+            attribute_values = self.get_attribute_values(
+                selected_tag, selected_attribute)
             self.attr_value.clear()
             self.attr_value.addItems(attribute_values)
 
@@ -124,8 +126,8 @@ class ComboboxStateHandler:
                 self.tag_value.clear()
         except Exception as ex:
             message = f"An exception of type {type(ex).__name__} occurred. Arguments: {ex.args!r}"
-            QMessageBox.critical(self.main_window,"An exception occurred on attribute name changed:", message)
-
+            QMessageBox.critical(
+                self.main_window, "An exception occurred on attribute name changed:", message)
 
     def get_attribute_values(self, selected_tag: str, selected_attribute: str):
         """Get the attribute values based on the selected combobox values in tag name and attribute name
@@ -140,9 +142,9 @@ class ComboboxStateHandler:
             return self.parsed_xml_data.get('tag_attr_to_values', {}).get((selected_tag, selected_attribute), [])
         except Exception as ex:
             message = f"An exception of type {type(ex).__name__} occurred. Arguments: {ex.args!r}"
-            QMessageBox.critical(self.main_window, "An exception occurred on getting attribute values", message)
+            QMessageBox.critical(
+                self.main_window, "An exception occurred on getting attribute values", message)
             return []
-
 
     def get_tag_values(self, selected_tag: str):
         """Get the tag values based on the selected combobox values in tag name
@@ -156,9 +158,9 @@ class ComboboxStateHandler:
             return self.parsed_xml_data.get('tag_to_values', {}).get(selected_tag, [])
         except Exception as ex:
             message = f"An exception of type {type(ex).__name__} occurred. Arguments: {ex.args!r}"
-            QMessageBox.critical(self.main_window, "An exception occurred on get tag values:", message)
+            QMessageBox.critical(
+                self.main_window, "An exception occurred on get tag values:", message)
             return []
-
 
     def get_attributes(self, selected_tag: str):
         """Get the attribute names based on the selected combobox values in tag name
@@ -172,23 +174,27 @@ class ComboboxStateHandler:
             return self.parsed_xml_data.get('tag_to_attributes', {}).get(selected_tag, [])
         except Exception as ex:
             message = f"An exception of type {type(ex).__name__} occurred. Arguments: {ex.args!r}"
-            QMessageBox.critical(self.main_window, "An exception occurred on get attributes:", message)
+            QMessageBox.critical(
+                self.main_window, "An exception occurred on get attributes:", message)
             return []
 
 
 class CSVConversionHandler:
     """Handles methods and logic for csv_conversion_groupbox"""
+
     def __init__(self, main_window: "MainWindow", csv_file_to_convert: str, extension_type: str, write_index: bool):
         self.main_window = main_window
         self.csv_file_to_convert = csv_file_to_convert
-        self.extension_type = extension_type # Value of the combobox self.ui.combobox_csv_conversion_output_type
+        # Value of the combobox self.ui.combobox_csv_conversion_output_type
+        self.extension_type = extension_type
         self.write_index = write_index
-        
+
     def start_csv_conversion(self) -> None:
         try:
             """Initializes and starts the CSV conversion in a new thread."""
             # Create the conversion thread
-            converter = create_csv_conversion_thread("convert_csv", self.csv_file_to_convert, self.extension_type, self.write_index)
+            converter = create_csv_conversion_thread(
+                "convert_csv", self.csv_file_to_convert, self.extension_type, self.write_index)
             self.main_window.connect_csv_conversion_signals(converter)
             # Start the conversion thread
             self.main_window.thread_pool.start(converter)
@@ -203,35 +209,35 @@ class AddXPathExpressionToListHandler:
     """
     Handles methods and logic of the Button event for adding XPath Expression.
     """
+
     def __init__(self, main_window: "MainWindow", xpath_expression: str, xpath_filters: list | None, list_widget_xpath_expressions: QListWidget):
         self.main_window = main_window
         self.xpath_expression = xpath_expression
         self.xpath_filters = xpath_filters
         self.list_widget_xpath_expressions = list_widget_xpath_expressions
-        
-    
+
     def smart_split(self, s: str) -> list[str]:
         result = []
         current = []
         inside_single_quote = False
         inside_double_quote = False
-    
+
         for char in s:
             if char == "'" and not inside_double_quote:
                 inside_single_quote = not inside_single_quote
             elif char == '"' and not inside_single_quote:
                 inside_double_quote = not inside_double_quote
-    
+
             if char == ',' and not inside_single_quote and not inside_double_quote:
                 result.append(''.join(current).strip())
                 current = []
             else:
                 current.append(char)
-    
+
         # Add the last part
         if current:
             result.append(''.join(current).strip())
-    
+
         return result
 
         # === QListWidget HANDLER ===
@@ -246,12 +252,13 @@ class AddXPathExpressionToListHandler:
         try:
             # Check if the XPath input is not empty:
             if not self.xpath_expression:
-                QMessageBox.information(self.main_window, "Empty XPath", "Please enter a XPath expression.")
+                QMessageBox.information(
+                    self.main_window, "Empty XPath", "Please enter a XPath expression.")
                 return False
-            
+
             validator = create_xpath_validator()
-            
-            #if "," in self.xpath_expression:
+
+            # if "," in self.xpath_expression:
             #    try:
             #        # Split by comma and validate each XPath expression
             #        xpath_expressions = self.smart_split(self.xpath_expression)
@@ -268,7 +275,7 @@ class AddXPathExpressionToListHandler:
             #                return False
             #    except ValueError as e:
             #        QMessageBox.warning(self.main_window, "XPathSyntaxError", f"Invalid XPath expression: {str(e)}")
-            #else:
+            # else:
             if self.xpath_expression and not self._is_duplicate(self.xpath_expression, self.xpath_filters):
                 self.main_window.connect_xpath_builder_signals(validator)
                 # Validate the XPath expression
@@ -276,18 +283,21 @@ class AddXPathExpressionToListHandler:
                 is_valid = validator.validate_xpath_expression()
                 if is_valid:
                     self.xpath_filters.append(self.xpath_expression)
-                    self.list_widget_xpath_expressions.addItem(self.xpath_expression)
+                    self.list_widget_xpath_expressions.addItem(
+                        self.xpath_expression)
                     return True
             else:
-                QMessageBox.warning(self.main_window, "Duplicate XPath Expression", f"Cannot add duplicate XPath expression:\n{self.xpath_expression}")
+                QMessageBox.warning(self.main_window, "Duplicate XPath Expression",
+                                    f"Cannot add duplicate XPath expression:\n{self.xpath_expression}")
                 return False
         except Exception as ex:
             message = f"An exception of type {type(ex).__name__} occurred. Arguments: {ex.args!r}"
-            QMessageBox.critical(self.main_window, "Exception adding XPath Expression to List Widget", message)
+            QMessageBox.critical(
+                self.main_window, "Exception adding XPath Expression to List Widget", message)
             return False
 
     @staticmethod
-    def _is_duplicate(xpath_expression:str, xpath_filters:list) -> bool:
+    def _is_duplicate(xpath_expression: str, xpath_filters: list) -> bool:
         """Checks if the XPath expressions is a duplicate. Prevents from adding same XPath expressions to QListWidget
 
         Args:
@@ -304,6 +314,7 @@ class SearchAndExportToCSVHandler:
     """
     Handles methods and logic of a button event that starts the search with XPath Expression and export of a component.
     """
+
     def __init__(self, main_window: "MainWindow", xml_folder_path: str, xpath_filters: list, csv_folder_output_path: str, csv_headers_input: str, group_matches_flag: bool, set_max_threads: int):
         self.main_window = main_window
         self.xml_folder_path = xml_folder_path
@@ -318,7 +329,8 @@ class SearchAndExportToCSVHandler:
     def start_csv_export(self) -> None:
         """Initializes and starts the CSV export in a new thread."""
         try:
-            exporter = create_optimized_csv_exporter(self.xml_folder_path, self.xpath_filters, self.csv_folder_output_path, self._parse_csv_headers(self.csv_headers_input), self.group_matches_flag, self.set_max_threads)
+            exporter = create_xpath_searcher_and_csv_exporter(self.xml_folder_path, self.xpath_filters, self.csv_folder_output_path, self._parse_csv_headers(
+                self.csv_headers_input), self.group_matches_flag, self.set_max_threads)
             self.current_exporter = exporter
             self.main_window.connect_csv_export_signals(self.current_exporter)
             self.main_window.thread_pool.start(self.current_exporter)
@@ -328,7 +340,8 @@ class SearchAndExportToCSVHandler:
 
         except Exception as ex:
             message = f"An exception of type {type(ex).__name__} occurred. Arguments: {ex.args!r}"
-            QMessageBox.critical(self.main_window, "Exception on starting to export results to csv file", message)
+            QMessageBox.critical(
+                self.main_window, "Exception on starting to export results to csv file", message)
 
     def stop_csv_export(self) -> None:
         """Signals the currently running CSV export to stop."""
@@ -337,7 +350,7 @@ class SearchAndExportToCSVHandler:
             # QThreadPool.activeThreadCount() or check if the QRunnable is still in pool
             # For simplicity, we just call stop() and rely on the QRunnable's internal logic
             self.current_exporter.stop()
-            self.current_exporter = None # Clear the reference once stopped
+            self.current_exporter = None  # Clear the reference once stopped
 
     @staticmethod
     def _parse_csv_headers(raw_headers: str) -> list:
@@ -347,6 +360,7 @@ class SearchAndExportToCSVHandler:
 
 class LobsterProfileExportCleanupHandler:
     """Handles methods and logic of the lobster profile cleanup based on the selected csv file and the folder path that contains all lobster profile exports as XML files."""
+
     def __init__(self, main_window: "MainWindow", csv_file_path: str, profiles_folder_path: str):
         self.main_window = main_window
         self.csv_file_path = csv_file_path
@@ -355,7 +369,8 @@ class LobsterProfileExportCleanupHandler:
     def start_lobster_profile_cleanup(self) -> None:
         """Initializes and starts the lobster profile cleanup as a new thread."""
         try:
-            cleaner = create_lobster_profile_cleaner(self.csv_file_path, self.profiles_folder_path)
+            cleaner = create_lobster_profile_cleaner(
+                self.csv_file_path, self.profiles_folder_path)
             self.main_window.connect_file_cleanup_signals(cleaner)
             self.main_window.thread_pool.start(cleaner)
             # Optional: Keep track of the worker
@@ -363,11 +378,13 @@ class LobsterProfileExportCleanupHandler:
 
         except Exception as ex:
             message = f"An exception of type {type(ex).__name__} occurred. Arguments: {ex.args!r}"
-            QMessageBox.critical(self.main_window, "Exception on starting to clean up lobster xml files in specified folder", message)
+            QMessageBox.critical(
+                self.main_window, "Exception on starting to clean up lobster xml files in specified folder", message)
 
 
 class CSVColumnDropHandler:
     """_summary_"""
+
     def __init__(self, main_window: "MainWindow" = None, csv_file_path: str = None, column_to_drop: str = None, column_to_drop_index: int = None, csv_header_combobox: QComboBox = None, drop_header_button: QPushButton = None):
         self.main_window = main_window
         self.csv_file_path = csv_file_path
@@ -378,14 +395,16 @@ class CSVColumnDropHandler:
 
     def start_csv_column_drop(self) -> None:
         try:
-            dropper = create_csv_column_dropper(self.csv_file_path, self.column_to_drop, self.column_to_drop_index)
+            dropper = create_csv_column_dropper(
+                self.csv_file_path, self.column_to_drop, self.column_to_drop_index)
             self.main_window.connect_file_cleanup_signals(dropper)
             self.main_window.thread_pool.start(dropper)
             # Optional: Keep track of the worker
             self.main_window.active_workers.append(dropper)
         except Exception as ex:
             message = f"An exception of type {type(ex).__name__} occurred. Arguments: {ex.args!r}"
-            QMessageBox.critical(self.main_window, "Exception on starting to drop selected CSV header", message)
+            QMessageBox.critical(
+                self.main_window, "Exception on starting to drop selected CSV header", message)
 
     def on_csv_input_file_path_changed(self) -> None:
         try:
@@ -396,17 +415,21 @@ class CSVColumnDropHandler:
                 return
             else:
                 if os.path.isfile(self.csv_file_path) and self.csv_file_path.endswith(".csv"):
-                    headers = pd.read_csv(self.csv_file_path).columns # Get headers of CSV file
-                    self.csv_header_combobox.addItems(headers)  # Add headers to the combo box
+                    # Get headers of CSV file
+                    headers = pd.read_csv(self.csv_file_path).columns
+                    self.csv_header_combobox.addItems(
+                        headers)  # Add headers to the combo box
                     self.csv_header_combobox.setDisabled(False)
                     self.drop_header_button.setDisabled(False)
         except Exception as ex:
             message = f"An exception of type {type(ex).__name__} occurred. Arguments: {ex.args!r}"
-            QMessageBox.critical(self.main_window, "Exception adding read csv headers to the combobox", message)
+            QMessageBox.critical(
+                self.main_window, "Exception adding read csv headers to the combobox", message)
 
 
 class ParseXMLFileHandler:
     """Handles methods and logic of the XML parsing."""
+
     def __init__(self, main_window: "MainWindow", xml_file_path: str):
         self.main_window = main_window
         self.xml_file_path = xml_file_path
@@ -422,23 +445,25 @@ class ParseXMLFileHandler:
 
         except Exception as ex:
             message = f"An exception of type {type(ex).__name__} occurred. Arguments: {ex.args!r}"
-            QMessageBox.critical(self.main_window, "Exception on starting to pare xml file", message)
+            QMessageBox.critical(
+                self.main_window, "Exception on starting to pare xml file", message)
 
 
 class XPathBuildHandler:
     """Handles methods and logic of the XPath Build event based on the combobox values"""
+
     def __init__(self, main_window: "MainWindow",
-                    line_edit_xpath_builder: QLineEdit,
-                    tag_name_combo: QComboBox,
-                    tag_value_combo: QComboBox,
-                    attribute_name_combo: QComboBox,
-                    attribute_value_combo: QComboBox,
-                    radio_equals: QRadioButton,
-                    radio_contains: QRadioButton,
-                    radio_starts_with: QRadioButton,
-                    radio_greater: QRadioButton,
-                    radio_smaller: QRadioButton
-                    ):
+                 line_edit_xpath_builder: QLineEdit,
+                 tag_name_combo: QComboBox,
+                 tag_value_combo: QComboBox,
+                 attribute_name_combo: QComboBox,
+                 attribute_value_combo: QComboBox,
+                 radio_equals: QRadioButton,
+                 radio_contains: QRadioButton,
+                 radio_starts_with: QRadioButton,
+                 radio_greater: QRadioButton,
+                 radio_smaller: QRadioButton
+                 ):
 
         self.main_window = main_window
         self.line_edit_xpath_builder = line_edit_xpath_builder
@@ -457,16 +482,16 @@ class XPathBuildHandler:
         try:
             # Now build the expression using the already connected builder
             builder = create_xpath_builder(
-            self.tag_name_combo,
-            self.tag_value_combo,
-            self.attribute_name_combo,
-            self.attribute_value_combo,
-            self.radio_equals,
-            self.radio_contains,
-            self.radio_starts_with,
-            self.radio_greater,
-            self.radio_smaller
-        )
+                self.tag_name_combo,
+                self.tag_value_combo,
+                self.attribute_name_combo,
+                self.attribute_value_combo,
+                self.radio_equals,
+                self.radio_contains,
+                self.radio_starts_with,
+                self.radio_greater,
+                self.radio_smaller
+            )
 
             self.main_window.connect_xpath_builder_signals(builder)
 
@@ -477,21 +502,22 @@ class XPathBuildHandler:
 
         except Exception as ex:
             message = f"An exception of type {type(ex).__name__} occurred. Arguments: {ex.args!r}"
-            QMessageBox.critical(self.main_window, "Exception on building xpath expression", message)
+            QMessageBox.critical(
+                self.main_window, "Exception on building xpath expression", message)
 
 
 class GenerateCSVHeaderHandler:
     """Handles methods and logic of the csv generation based on the entered XPath Expression to the QListWidget."""
-    
+
     def __init__(self, main_window: "MainWindow",
-                    tag_name_combo: QComboBox,
-                    tag_value_combo: QComboBox,
-                    attribute_name_combo: QComboBox,
-                    attribute_value_combo: QComboBox,
-                    xpath_input: QLineEdit,
-                    csv_headers_input: QLineEdit
-                ):
-        
+                 tag_name_combo: QComboBox,
+                 tag_value_combo: QComboBox,
+                 attribute_name_combo: QComboBox,
+                 attribute_value_combo: QComboBox,
+                 xpath_input: QLineEdit,
+                 csv_headers_input: QLineEdit
+                 ):
+
         self.main_window = main_window
         self.tag_name_combo = tag_name_combo
         self.tag_value_combo = tag_value_combo
@@ -502,13 +528,13 @@ class GenerateCSVHeaderHandler:
 
     def generate_header(self) -> str:
         header = ""
-        
+
         tag_name = self.tag_name_combo.currentText()
         tag_value = self.tag_value_combo.currentText()
         attr_name = self.attribute_name_combo.currentText()
         attr_value = self.attribute_value_combo.currentText()
         headers_list: list[str] = self.csv_headers_input.text().split(",")
-        
+
         if tag_name != "" and tag_value != "" and attr_name != "" and attr_value != "":
             match (tag_name, tag_value, attr_name, attr_value):
                 case (tag, "", "", ""):
@@ -525,23 +551,21 @@ class GenerateCSVHeaderHandler:
                     header = f"{tag} {value} {attr} {val}"
                 case _:
                     header = "Header"
-            
-            if not self._is_duplicate(header, headers_list):
-                return header
-        #else: # 05.08.2025 Commented out, don't like this, here's a dreaded TODO Change this shieeeeeet
+
+        else:
             # If no tag, value, attribute or attribute value is selected, use the XPath input as header
-            # xpath_expression: str = self.xpath_input.text().strip()
-            # split_xpath: list[str] = xpath_expression.split("/")
-            # 
-            # part1 = split_xpath[-2]
-            # part2 = split_xpath[-1]
-            
-            # header = f"{part1} {part2}"
-            # 
-            # if not self._is_duplicate(header, headers_list):
-            #     return header
-    
-    def _is_duplicate(header :str, headers_list: str) -> bool:
+            xpath_expression: str = self.xpath_input.text().strip()
+            split_xpath: list[str] = xpath_expression.split("/")
+
+            part1 = split_xpath[-2]
+            part2 = split_xpath[-1]
+
+            header = f"{part1} {part2}"
+
+        if not self._is_duplicate(header, headers_list):
+            return header
+
+    def _is_duplicate(self, header: str, headers_list: str) -> bool:
         """Checks if the header is a duplicate. Prevents from adding the same header to the QLineEdit input for headers.
 
         Args:
@@ -550,18 +574,19 @@ class GenerateCSVHeaderHandler:
         Returns:
             bool: Returns True if the header already exists in the headers list else False
         """
-        
+
         return header in headers_list
 
 
 class SearchXMLOutputTextHandler:
     """Handles methods and logic of the search functionality of the XML Output Text in the QTextEdit"""
+
     def __init__(self,
-                main_window: "MainWindow",
-                line_edit_xml_output_find_text: QLineEdit,
-                text_edit_xml_output: QTextEdit
-                ):
-        
+                 main_window: "MainWindow",
+                 line_edit_xml_output_find_text: QLineEdit,
+                 text_edit_xml_output: QTextEdit
+                 ):
+
         self.main_window = main_window
         self.line_edit_xml_output_find_text = line_edit_xml_output_find_text
         self.text_edit_xml_output = text_edit_xml_output
@@ -572,18 +597,23 @@ class SearchXMLOutputTextHandler:
             if text:
                 self.text_edit_xml_output.find(text)
             else:
-                QMessageBox.information(self.main_window, "Find text input is empty", "No text has been entered for search criteria.")
+                QMessageBox.information(
+                    self.main_window, "Find text input is empty", "No text has been entered for search criteria.")
         except Exception as ex:
             message = f"An exception of type {type(ex).__name__} occurred. Arguments: {ex.args!r}"
-            QMessageBox.critical(self.main_window, "Exception on XML search next function", message)
+            QMessageBox.critical(
+                self.main_window, "Exception on XML search next function", message)
 
     def search_previous(self):
         text = self.line_edit_xml_output_find_text.text()
         try:
             if text:
-                self.text_edit_xml_output.find(text, QTextDocument.FindFlag.FindBackward)
+                self.text_edit_xml_output.find(
+                    text, QTextDocument.FindFlag.FindBackward)
             else:
-                QMessageBox.information(self.main_window, "Find text input is empty", "No text has been entered for search criteria.")
+                QMessageBox.information(
+                    self.main_window, "Find text input is empty", "No text has been entered for search criteria.")
         except Exception as ex:
             message = f"An exception of type {type(ex).__name__} occurred. Arguments: {ex.args!r}"
-            QMessageBox.critical(self.main_window, "Exception on XML search previous function", message)
+            QMessageBox.critical(
+                self.main_window, "Exception on XML search previous function", message)
