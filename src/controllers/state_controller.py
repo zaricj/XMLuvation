@@ -4,7 +4,7 @@ import pandas as pd
 from PySide6.QtWidgets import QMessageBox, QComboBox, QRadioButton, QListWidget, QPushButton, QLineEdit, QTextEdit
 from PySide6.QtGui import QTextDocument
 from modules.xpath_builder import create_xpath_validator, create_xpath_builder
-from src.modules.xpath_search_and_csv_export import create_xpath_searcher_and_csv_exporter
+from modules.xpath_search_and_csv_export import create_xpath_searcher_and_csv_exporter
 from modules.file_cleanup import create_lobster_profile_cleaner, create_csv_column_dropper
 from modules.xml_parser import create_xml_parser
 from modules.csv_converter import create_csv_conversion_thread

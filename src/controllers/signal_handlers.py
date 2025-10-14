@@ -27,7 +27,7 @@ from gui.main.XMLuvation_ui import Ui_MainWindow
 
 if TYPE_CHECKING:
     from PySide6.QtCore import QSettings
-    from controllers.state_controller import ComboboxStateHandler
+    from controllers.state_controller import ComboboxStateHandler, SearchXMLOutputTextHandler
     from modules.config_handler import ConfigHandler
 
 class SignalHandlerMixin:
@@ -42,6 +42,7 @@ class SignalHandlerMixin:
     current_theme: str
     config_handler: "ConfigHandler"
     theme_icon: QIcon
+    xml_text_searcher: 'SearchXMLOutputTextHandler'
     
     def __init__(self):
         super().__init__()
@@ -299,6 +300,7 @@ class SignalHandlerMixin:
     # ============= EVENT HANDLER METHODS =============
 
     # === Menu Bar Event Handlers ===
+    
     @Slot()
     def on_clearRecentXpathExpressions(self):
         """Clear recent XPath expressions."""
@@ -372,8 +374,11 @@ class SignalHandlerMixin:
         """Handle prompt on exit checkbox toggle."""
         is_checked = self.ui.prompt_on_exit_action.isChecked()
         self.settings.setValue("prompt_on_exit", is_checked)
+        
+    # =============================================================================== #
 
     # === UI Event Handlers ===
+    
     @Slot()
     def on_toggleXMLOutputSearchWidgets(self):
         """Toggle XML output search widgets visibility."""
@@ -425,8 +430,11 @@ class SignalHandlerMixin:
             drop_header_button=drop_header_button,
         )
         handler.on_csv_input_file_path_changed()
+        
+    # =============================================================================== #
 
-    # === Button Event Handlers ===
+    # === Button event handlers ===
+    
     @Slot()
     def on_browseXMLFolder(self):
         """Browse for XML folder."""
