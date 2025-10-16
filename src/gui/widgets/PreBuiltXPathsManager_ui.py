@@ -25,6 +25,7 @@ class Ui_PreBuiltXPathsManagerWidget(object):
     def setupUi(self, PreBuiltXPathsManagerWidget):
         if not PreBuiltXPathsManagerWidget.objectName():
             PreBuiltXPathsManagerWidget.setObjectName(u"PreBuiltXPathsManagerWidget")
+        PreBuiltXPathsManagerWidget.setWindowModality(Qt.WindowModality.WindowModal)
         PreBuiltXPathsManagerWidget.resize(1005, 675)
         icon = QIcon()
         icon.addFile(u":/icons/xml_256px.ico", QSize(), QIcon.Mode.Normal, QIcon.State.Off)
@@ -130,6 +131,11 @@ class Ui_PreBuiltXPathsManagerWidget(object):
         self.button_save_changes.setObjectName(u"button_save_changes")
 
         self.verticalLayout_2.addWidget(self.button_save_changes)
+
+        self.button_open_config_directory = QPushButton(self.groupBox_pre_built_xpaths_main)
+        self.button_open_config_directory.setObjectName(u"button_open_config_directory")
+
+        self.verticalLayout_2.addWidget(self.button_open_config_directory)
 
 
         self.LeftSide.addWidget(self.groupBox_pre_built_xpaths_main)
@@ -301,7 +307,7 @@ class Ui_PreBuiltXPathsManagerWidget(object):
     # setupUi
 
     def retranslateUi(self, PreBuiltXPathsManagerWidget):
-        PreBuiltXPathsManagerWidget.setWindowTitle(QCoreApplication.translate("PreBuiltXPathsManagerWidget", u"Form", None))
+        PreBuiltXPathsManagerWidget.setWindowTitle(QCoreApplication.translate("PreBuiltXPathsManagerWidget", u"PreBuilt XPaths Manager Widget", None))
 #if QT_CONFIG(tooltip)
         PreBuiltXPathsManagerWidget.setToolTip(QCoreApplication.translate("PreBuiltXPathsManagerWidget", u"Removes the all items in the focused listbox.", None))
 #endif // QT_CONFIG(tooltip)
@@ -322,6 +328,7 @@ class Ui_PreBuiltXPathsManagerWidget(object):
         self.button_save_changes.setToolTip(QCoreApplication.translate("PreBuiltXPathsManagerWidget", u"Save changes that you made to the two listboxes.", None))
 #endif // QT_CONFIG(tooltip)
         self.button_save_changes.setText(QCoreApplication.translate("PreBuiltXPathsManagerWidget", u"Save Changes", None))
+        self.button_open_config_directory.setText(QCoreApplication.translate("PreBuiltXPathsManagerWidget", u"Open Config Directory", None))
         self.groupBox.setTitle(QCoreApplication.translate("PreBuiltXPathsManagerWidget", u"Create pre-built XPaths", None))
         self.label.setText(QCoreApplication.translate("PreBuiltXPathsManagerWidget", u"Here you can create your own pre-built XPath Expression and CSV Headers autofill configuration:", None))
         self.label_5.setText(QCoreApplication.translate("PreBuiltXPathsManagerWidget", u"Add XPaths Expressions", None))
@@ -333,7 +340,7 @@ class Ui_PreBuiltXPathsManagerWidget(object):
         self.button_add_xpath_to_list.setText("")
         self.label_6.setText(QCoreApplication.translate("PreBuiltXPathsManagerWidget", u"Add CSV Headers", None))
         self.label_3.setText(QCoreApplication.translate("PreBuiltXPathsManagerWidget", u"Enter a CSV Header:", None))
-        self.line_edit_csv_header.setPlaceholderText(QCoreApplication.translate("PreBuiltXPathsManagerWidget", u"Enter a CSV Header...", None))
+        self.line_edit_csv_header.setPlaceholderText(QCoreApplication.translate("PreBuiltXPathsManagerWidget", u"Enter a CSV Header (can be comma-separated)...", None))
 #if QT_CONFIG(tooltip)
         self.button_add_csv_header_to_list.setToolTip(QCoreApplication.translate("PreBuiltXPathsManagerWidget", u"Add entered CSV Header to it's listbox.", None))
 #endif // QT_CONFIG(tooltip)

@@ -2,6 +2,9 @@
 <ui version="4.0">
  <class>PreBuiltXPathsManagerWidget</class>
  <widget class="QWidget" name="PreBuiltXPathsManagerWidget">
+  <property name="windowModality">
+   <enum>Qt::WindowModality::WindowModal</enum>
+  </property>
   <property name="geometry">
    <rect>
     <x>0</x>
@@ -11,7 +14,7 @@
    </rect>
   </property>
   <property name="windowTitle">
-   <string>Form</string>
+   <string>PreBuilt XPaths Manager Widget</string>
   </property>
   <property name="windowIcon">
    <iconset resource="../../resources/qrc/xmluvation_resources.qrc">
@@ -161,6 +164,13 @@
             </property>
            </widget>
           </item>
+          <item>
+           <widget class="QPushButton" name="button_open_config_directory">
+            <property name="text">
+             <string>Open Config Directory</string>
+            </property>
+           </widget>
+          </item>
          </layout>
         </widget>
        </item>
@@ -292,7 +302,7 @@
                <item>
                 <widget class="QLineEdit" name="line_edit_csv_header">
                  <property name="placeholderText">
-                  <string>Enter a CSV Header...</string>
+                  <string>Enter a CSV Header (can be comma-separated)...</string>
                  </property>
                 </widget>
                </item>
