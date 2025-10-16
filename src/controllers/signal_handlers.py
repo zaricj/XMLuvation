@@ -1012,6 +1012,11 @@ class SignalHandlerMixin:
             xpaths (list[str]): List of xpaths expressions in the config
             csv_headers (list[str]): List of csv headers in the config
         """
+        # Clear all existing items in the list widget and csv header input
+        self.ui.list_widget_main_xpath_expressions.clear()
+        self.xpath_filters.clear()
+        self.ui.line_edit_csv_headers_input.clear()
+        
         for xpath in xpaths:
             if xpath not in self.xpath_filters:
                 self.ui.list_widget_main_xpath_expressions.addItem(xpath)
