@@ -1,7 +1,10 @@
 from PySide6.QtCore import QObject, QRunnable, Signal, Slot
+from PySide6.QtGui import QMovie
+from PySide6.QtWidgets import QLabel
 import pandas as pd
 import csv
 import os
+from pathlib import Path
 
 class CSVConversionSignals(QObject):
     """Signals class for CSVConversionThread operations."""
@@ -11,19 +14,22 @@ class CSVConversionSignals(QObject):
     info_occurred = Signal(str, str)  # QMessageBox.information
     tab2_program_output_append = Signal(str) # Append to CSV Output QTextEdit
     set_file_open_path = Signal(str)  # Set the file path of the converted file in the "Open File" QLineEdit
+    start_gif = Signal()  # Tell Main Thread to start the GIF
+    stop_gif = Signal()   # Tell Main Thread to stop the GIF
 
 class CSVConversionThread(QRunnable):
     """Handles methods and logic for csv_conversion_groupbox"""
-    def __init__(self, operation: str, csv_file_to_convert: str, extension_type: str, write_index: bool):
+    def __init__(self, operation: str, csv_file_to_convert: str, extension_type: str, write_index: bool, label_loading_gif: QLabel):
         super().__init__() # Initialize QRunnable
         self.operation = operation
-        self.signals = CSVConversionSignals()
-        self.setAutoDelete(True)
-        
         # Operation parameters
         self.csv_file_to_convert = csv_file_to_convert
         self.extension_type = extension_type # Value of the combobox self.ui.combobox_csv_conversion_output_type
         self.write_index = write_index
+        self.label_loading_gif = label_loading_gif
+        
+        self.signals = CSVConversionSignals()
+        self.setAutoDelete(True)
         
     @Slot()
     def run(self):
@@ -115,8 +121,16 @@ class CSVConversionThread(QRunnable):
 
             # Execute conversion
             self.signals.tab2_program_output_append.emit("Starting conversion, please wait...")
-            convert_func(df, output_file_path)
+            
+            # Signal the main thread to START the GIF
+            self.signals.start_gif.emit()
 
+            # The conversion function will now run while the Main Thread is animating the GIF
+            convert_func(df, output_file_path) # Conversion runs here (can take a long time)
+
+            # Signal the main thread to STOP the GIF
+            self.signals.stop_gif.emit()
+                
             self.signals.tab2_program_output_append.emit(f"Successfully converted:\n{os.path.basename(self.csv_file_to_convert)} → {os.path.basename(output_file_path)}")
             
             # Set the file path of the converted file in the "Open File" QLineEdit
@@ -129,6 +143,6 @@ class CSVConversionThread(QRunnable):
             msg = f"{type(ex).__name__}: {ex}"
             self.signals.error_occurred.emit("Conversion Error", msg)
             
-def create_csv_conversion_thread(operation: str, csv_file_to_convert: str, extension_type: str, write_index: bool) -> CSVConversionThread:
+def create_csv_conversion_thread(operation: str, csv_file_to_convert: str, extension_type: str, write_index: bool, label_loading_gif: QLabel) -> CSVConversionThread:
     """Factory function to create a CSVConversionThread instance."""
-    return CSVConversionThread(operation, csv_file_to_convert, extension_type, write_index)
+    return CSVConversionThread(operation, csv_file_to_convert, extension_type, write_index, label_loading_gif)

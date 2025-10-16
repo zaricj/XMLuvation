@@ -1,9 +1,9 @@
 # -*- coding: utf-8 -*-
 
 ################################################################################
-## Form generated from reading UI file 'XMLuvation.ui'
+## Form generated from reading UI file 'XMLuvationvrMIyH.ui'
 ##
-## Created by: Qt User Interface Compiler version 6.10.0
+## Created by: Qt User Interface Compiler version 6.9.3
 ##
 ## WARNING! All changes made in this file will be lost when recompiling UI file!
 ################################################################################
@@ -948,6 +948,19 @@ class Ui_MainWindow(object):
 
         self.verticalLayout_10.addLayout(self.horizontalLayout_7)
 
+        self.verticalSpacer_2 = QSpacerItem(20, 40, QSizePolicy.Policy.Minimum, QSizePolicy.Policy.Expanding)
+
+        self.verticalLayout_10.addItem(self.verticalSpacer_2)
+
+        self.label_loading_gif = QLabel(self.groupbox_lobster_profiles_cleanup)
+        self.label_loading_gif.setObjectName(u"label_loading_gif")
+        self.label_loading_gif.setFrameShape(QFrame.Shape.NoFrame)
+        self.label_loading_gif.setTextFormat(Qt.TextFormat.PlainText)
+        self.label_loading_gif.setScaledContents(False)
+        self.label_loading_gif.setAlignment(Qt.AlignmentFlag.AlignCenter)
+
+        self.verticalLayout_10.addWidget(self.label_loading_gif)
+
         self.verticalSpacer = QSpacerItem(20, 40, QSizePolicy.Policy.Minimum, QSizePolicy.Policy.Expanding)
 
         self.verticalLayout_10.addItem(self.verticalSpacer)
@@ -1179,6 +1192,7 @@ class Ui_MainWindow(object):
         self.button_drop_csv_header.setToolTip(QCoreApplication.translate("MainWindow", u"Delete the selected header from the CSV file and save changes.", None))
 #endif // QT_CONFIG(tooltip)
         self.button_drop_csv_header.setText(QCoreApplication.translate("MainWindow", u"Drop Header", None))
+        self.label_loading_gif.setText("")
         self.group_box_tab2_program_output.setTitle(QCoreApplication.translate("MainWindow", u"PROGRAM OUTPUT", None))
         self.tabWidget.setTabText(self.tabWidget.indexOf(self.tab_csv_conversion), QCoreApplication.translate("MainWindow", u"CSV Conversion and Cleanup", None))
         self.file_menu.setTitle(QCoreApplication.translate("MainWindow", u"Menu", None))

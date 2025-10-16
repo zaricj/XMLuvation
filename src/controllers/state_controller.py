@@ -1,7 +1,7 @@
 # File: modules/state_controller.py
 import os
 import pandas as pd
-from PySide6.QtWidgets import QMessageBox, QComboBox, QRadioButton, QListWidget, QPushButton, QLineEdit, QTextEdit
+from PySide6.QtWidgets import QMessageBox, QComboBox, QRadioButton, QListWidget, QPushButton, QLineEdit, QTextEdit, QLabel
 from PySide6.QtGui import QTextDocument
 from modules.xpath_builder import create_xpath_validator, create_xpath_builder
 from modules.xpath_search_and_csv_export import create_xpath_searcher_and_csv_exporter
@@ -182,23 +182,23 @@ class ComboboxStateHandler:
 class CSVConversionHandler:
     """Handles methods and logic for csv_conversion_groupbox"""
 
-    def __init__(self, main_window: "MainWindow", csv_file_to_convert: str, extension_type: str, write_index: bool):
+    def __init__(self, main_window: "MainWindow", csv_file_to_convert: str, extension_type: str, write_index: bool, label_loading_gif: QLabel):
         self.main_window = main_window
         self.csv_file_to_convert = csv_file_to_convert
         # Value of the combobox self.ui.combobox_csv_conversion_output_type
         self.extension_type = extension_type
         self.write_index = write_index
+        self.label_loading_gif = label_loading_gif
 
     def start_csv_conversion(self) -> None:
         try:
             """Initializes and starts the CSV conversion in a new thread."""
             # Create the conversion thread
             converter = create_csv_conversion_thread(
-                "convert_csv", self.csv_file_to_convert, self.extension_type, self.write_index)
+                "convert_csv", self.csv_file_to_convert, self.extension_type, self.write_index, self.label_loading_gif)
             self.main_window.connect_csv_conversion_signals(converter)
             # Start the conversion thread
             self.main_window.thread_pool.start(converter)
-
             # Optional: Keep track of the worker
             self.main_window.active_workers.append(converter)
         except FileNotFoundError as e:

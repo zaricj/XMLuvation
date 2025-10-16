@@ -2,6 +2,7 @@
 import webbrowser
 import datetime
 import os
+from pathlib import Path
 from PySide6.QtWidgets import (
     QMenu,
     QFileDialog,
@@ -10,7 +11,7 @@ from PySide6.QtWidgets import (
     QTextEdit
     
 )
-from PySide6.QtGui import QAction, QShortcut, QKeySequence, QDesktopServices, QIcon
+from PySide6.QtGui import QAction, QShortcut, QKeySequence, QDesktopServices, QIcon, QMovie
 from PySide6.QtCore import (
     Qt,
     Slot,
@@ -43,12 +44,7 @@ class SignalHandlerMixin:
     config_handler: "ConfigHandler"
     theme_icon: QIcon
     xml_text_searcher: 'SearchXMLOutputTextHandler'
-    
-    def __init__(self):
-        super().__init__()
-        self._current_xml_parser = None
-        self._current_csv_exporter = None
-        self._current_xpath_builder = None
+    _main_thread_loading_movie_ref: QMovie | None = None
         
     def connect_menu_bar_actions(self):
         """Connect all menu bar actions to their handlers."""
@@ -62,8 +58,8 @@ class SignalHandlerMixin:
         self.ui.open_paths_manager.triggered.connect(self.on_openPathsManager)
         self.ui.open_pre_built_xpaths_manager_action.triggered.connect(self.on_openPrebuiltXPathsManager)
         self.ui.xpath_help_action.triggered.connect(self.on_xpathHelp)
-        self.toggle_theme_action.triggered.connect(self.on_changeTheme)
         self.ui.prompt_on_exit_action.checkableChanged.connect(self.on_PromptOnExitChecked)
+        self.toggle_theme_action.triggered.connect(self.on_changeTheme)
 
         # Connect recent xpath expressions menu
         for action in self.ui.recent_xpath_expressions_menu.actions():
@@ -170,6 +166,38 @@ class SignalHandlerMixin:
     def handler_set_converted_file_path(self, file_path: str):
         """Set the file path of the converted file in the "Open File" QLineEdit."""
         self.ui.line_edit_csv_conversion_open_file_path.setText(file_path)
+        
+    @Slot()
+    def handle_start_loading_gif(self):
+        """Handle starting the loading GIF - creates QMovie on main thread."""
+        try:
+            root = Path(__file__).parent.parent
+            gif = root / "resources" / "gifs" / "loading_circle_small.gif"
+            
+            # Create QMovie on the MAIN thread
+            movie = QMovie(str(gif))
+            
+            if not movie.isValid():
+                QMessageBox.warning(self, "GIF Not Found", f"GIF file not found or invalid: {gif}")
+                return
+                
+            self._main_thread_loading_movie_ref = movie
+            self.ui.label_loading_gif.setMovie(movie)
+            movie.start()
+            self.ui.label_loading_gif.setVisible(True)
+        except Exception as e:
+            QMessageBox.critical(self, "GIF Error", f"Error loading GIF: {e}")
+            
+    @Slot()
+    def handle_stop_loading_gif(self):
+        """Handle stopping the loading GIF."""
+        movie = self._main_thread_loading_movie_ref
+        if movie:
+            movie.stop()
+            movie.deleteLater()  # Clean up the QMovie object
+            self._main_thread_loading_movie_ref = None
+        self.ui.label_loading_gif.clear()
+        self.ui.label_loading_gif.setVisible(False)
 
     @Slot(str)
     def handle_file_processing_label(self, message: str):
@@ -296,6 +324,8 @@ class SignalHandlerMixin:
         worker.signals.warning_occurred.connect(self.handle_warning_message)
         worker.signals.tab2_program_output_append.connect(self.handle_csv_tab_output_append)
         worker.signals.set_file_open_path.connect(self.handler_set_converted_file_path)
+        worker.signals.start_gif.connect(self.handle_start_loading_gif)
+        worker.signals.stop_gif.connect(self.handle_stop_loading_gif)
 
     # ============= EVENT HANDLER METHODS =============
 
@@ -601,16 +631,18 @@ class SignalHandlerMixin:
         """Start CSV conversion process."""
         try:
             from controllers.state_controller import CSVConversionHandler
-            
+
             csv_file_to_convert = self.ui.line_edit_csv_conversion_path_input.text()
             extension_type = self.ui.combobox_csv_conversion_output_type.currentText()
             write_index = self.ui.checkbox_write_index_column.isChecked()
-
+            label_loading_gif = self.ui.label_loading_gif
+            
             self.csv_conversion_controller = CSVConversionHandler(
                 main_window=self,
                 csv_file_to_convert=csv_file_to_convert,
                 extension_type=extension_type,
                 write_index=write_index,
+                label_loading_gif=label_loading_gif
             )
             self.csv_conversion_controller.start_csv_conversion()
         except Exception as ex:

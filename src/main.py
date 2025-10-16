@@ -96,9 +96,9 @@ def restore_window_state(window: QMainWindow, settings: QSettings):
 # ----------------------------
 class MainWindow(QMainWindow, SignalHandlerMixin):
     # type hints...
-    parsed_xml_data: Dict[str, Any]
-    current_read_xml_file: Optional[str]
-    csv_exporter_handler: Optional['SearchAndExportToCSVHandler']
+    _parsed_xml_data_ref: Dict[str, Any]
+    _current_read_xml_file_ref: Optional[str]
+    _csv_exporter_handler_ref: Optional['SearchAndExportToCSVHandler']
     xpath_filters: List[str]
     active_workers: List[Any]
     recent_xpath_expressions: List[str]
@@ -121,6 +121,11 @@ class MainWindow(QMainWindow, SignalHandlerMixin):
         self.ui.setupUi(self)
         self.setWindowTitle(f"{APP_NAME} {APP_VERSION}")
 
+        self._parsed_xml_data_ref = {}
+        self._current_read_xml_file_ref = None
+        self._csv_exporter_handler_ref = None
+        self._main_thread_loading_movie_ref = None
+
         self.initialize_attributes()
         self.setup_application()
         self._initialize_theme()
@@ -131,13 +136,9 @@ class MainWindow(QMainWindow, SignalHandlerMixin):
         from controllers.state_controller import SearchXMLOutputTextHandler
         from modules.config_handler import ConfigHandler
 
-        self.parsed_xml_data = {}
-        self.current_read_xml_file = None
-        self.csv_exporter_handler = None
-
         self.cb_state_controller = ComboboxStateHandler(
             main_window=self,
-            parsed_xml_data=self.parsed_xml_data,
+            parsed_xml_data=self._parsed_xml_data_ref,
             cb_tag_name=self.ui.combobox_tag_names,
             cb_tag_value=self.ui.combobox_tag_values,
             cb_attr_name=self.ui.combobox_attribute_names,
