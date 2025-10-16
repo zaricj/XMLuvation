@@ -14,7 +14,6 @@ FILE_PATH = Path(__file__).resolve()
 
 # Get the project src directory
 SRC_ROOT_DIR = FILE_PATH.parents[3]
-print(SRC_ROOT_DIR)
 
 class ExitDialog(QDialog):
     def __init__(self, main_window: "MainWindow"):
