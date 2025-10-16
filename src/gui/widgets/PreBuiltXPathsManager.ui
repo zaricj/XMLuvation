@@ -187,10 +187,10 @@
           <item>
            <widget class="QLabel" name="label">
             <property name="text">
-             <string>Here you can create your own pre-built XPath Expression and CSV Headers autofill configuration:</string>
+             <string>Here you can create your own pre-built autofill configuration:</string>
             </property>
             <property name="alignment">
-             <set>Qt::AlignmentFlag::AlignCenter</set>
+             <set>Qt::AlignmentFlag::AlignLeading|Qt::AlignmentFlag::AlignLeft|Qt::AlignmentFlag::AlignVCenter</set>
             </property>
            </widget>
           </item>
@@ -204,33 +204,23 @@
             </property>
             <layout class="QVBoxLayout" name="verticalLayout_3">
              <item>
-              <widget class="QLabel" name="label_5">
-               <property name="font">
-                <font>
-                 <bold>true</bold>
-                </font>
-               </property>
-               <property name="text">
-                <string>Add XPaths Expressions</string>
-               </property>
-               <property name="alignment">
-                <set>Qt::AlignmentFlag::AlignLeading|Qt::AlignmentFlag::AlignLeft|Qt::AlignmentFlag::AlignVCenter</set>
-               </property>
-              </widget>
-             </item>
-             <item>
               <layout class="QHBoxLayout" name="horizontalLayout_3">
                <item>
                 <widget class="QLabel" name="label_2">
+                 <property name="font">
+                  <font>
+                   <bold>true</bold>
+                  </font>
+                 </property>
                  <property name="text">
-                  <string>Enter a XPath Expression:</string>
+                  <string>Add XPaths Expressions</string>
                  </property>
                 </widget>
                </item>
                <item>
                 <widget class="QLineEdit" name="line_edit_xpath_expression">
                  <property name="placeholderText">
-                  <string>Enter a XPath Expression...</string>
+                  <string>Enter a Xpath Expression here...</string>
                  </property>
                 </widget>
                </item>
@@ -276,33 +266,23 @@
             </property>
             <layout class="QVBoxLayout" name="verticalLayout_6">
              <item>
-              <widget class="QLabel" name="label_6">
-               <property name="font">
-                <font>
-                 <bold>true</bold>
-                </font>
-               </property>
-               <property name="text">
-                <string>Add CSV Headers</string>
-               </property>
-               <property name="alignment">
-                <set>Qt::AlignmentFlag::AlignLeading|Qt::AlignmentFlag::AlignLeft|Qt::AlignmentFlag::AlignVCenter</set>
-               </property>
-              </widget>
-             </item>
-             <item>
               <layout class="QHBoxLayout" name="horizontalLayout_4">
                <item>
                 <widget class="QLabel" name="label_3">
+                 <property name="font">
+                  <font>
+                   <bold>true</bold>
+                  </font>
+                 </property>
                  <property name="text">
-                  <string>Enter a CSV Header:</string>
+                  <string>Add CSV Headers</string>
                  </property>
                 </widget>
                </item>
                <item>
                 <widget class="QLineEdit" name="line_edit_csv_header">
                  <property name="placeholderText">
-                  <string>Enter a CSV Header (can be comma-separated)...</string>
+                  <string>Enter header name here (can be comma-separated)...</string>
                  </property>
                 </widget>
                </item>
@@ -336,7 +316,7 @@
             <item>
              <widget class="QLabel" name="label_4">
               <property name="text">
-               <string>Enter a name for the pre-built autofill:</string>
+               <string>Pre-bult name:</string>
               </property>
              </widget>
             </item>

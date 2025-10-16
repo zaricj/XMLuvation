@@ -11,7 +11,7 @@ QMenuBar {
 }
 
 QMenuBar::item:selected {
-	background-color: #393d81;
+	background-color: #be5c35;
 	border-radius: 4px;
 	color: #F0F0F0;
 }
@@ -24,7 +24,7 @@ QMenu {
 }
 
 QMenu::item:selected {
-	background-color: #393d81;
+	background-color: #be5c35;
 }
 
 QPushButton {
@@ -39,11 +39,11 @@ QPushButton {
 QPushButton:hover {
     border: 1px solid #000000;
     /* glow effect using text-shadow is not supported in QSS, simulate with border + background */
-	background: #393d81;
+    background: #be5c35;
 }
 
 QPushButton:pressed {
-    background: #2d2f64;
+    background: #97492b;
 }
 
 QPushButton:disabled {
@@ -57,12 +57,12 @@ QLineEdit {
     border: 1px solid #5C5C60;
     padding: 3px; /* Reduced padding */
     border-radius: 4px;
-    selection-background-color: #393d81;
+    selection-background-color: #be5c35;
     selection-color: #FFFFFF;
 }
 
 QLineEdit:focus {
-    border: 1px solid #393d81; /* Accent color on focus */
+    border: 1px solid #be5c35; /* Accent color on focus */
 }
 
 QComboBox,
@@ -105,13 +105,13 @@ QListWidget::item {
 }
 
 QListWidget::item:selected {
-	background-color: #393d81;
+	background-color: #be5c35;
 	color: #F0F0F0;
 }
 
 QComboBox::drop-down {
 	border: none;
-	background-color: #393d81;
+	background-color: #be5c35;
 	width: 20px;
 	border-top-right-radius: 6px;
 	border-bottom-right-radius: 6px;
@@ -141,7 +141,7 @@ QTabBar::tab {
 }
 
 QTabBar::tab:selected {
-	background-color: #393d81;
+	background-color: #be5c35;
 	color: #F0F0F0;
 }
 
@@ -233,7 +233,7 @@ QCheckBox::indicator {
 }
 
 QCheckBox::indicator:checked {
-    background-color: #393d81;
+    background-color: #be5c35;
     border: 1px solid #555773;
 	image: url(:/images/checkmark_white_48x48.png);
 }
@@ -245,5 +245,5 @@ QCheckBox::indicator:unchecked {
 }
 
 QComboBox:hover,QAbstractSpinBox:hover,QLineEdit:hover,QTextEdit:hover,QPlainTextEdit:hover,QAbstractView:hover,QTreeView:hover {
-    border: 1px solid #393d81;
+    border: 1px solid #be5c35;
 }
