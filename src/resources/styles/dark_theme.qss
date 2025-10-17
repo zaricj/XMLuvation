@@ -1,78 +1,103 @@
 QWidget {
 	background-color: #232428;
-	color: #ffffff;
-	border-radius: 6px;
+    color: #F0F0F0;
+    font-family: 'Segoe UI', 'Helvetica Neue', 'Helvetica', 'Arial', sans-serif;
+    font-size: 10pt;
 }
 
 QMenuBar {
-	background-color: #232428;
+	background-color: #212225;
 	padding: 4px;
 }
 
 QMenuBar::item:selected {
-	background-color: #ffc857;
+	background-color: #393d81;
 	border-radius: 4px;
-	color: #1e1e1e;
+	color: #F0F0F0;
 }
 
 QMenu {
 	background-color: #232428;
 	border: 1px solid #313338;
-	border-radius: 2px;
+    color: #F0F0F0;
+    border-radius: 4px;
 }
 
 QMenu::item:selected {
-	background-color: #ffc857;
-	color: #1e1e1e;
+	background-color: #393d81;
 }
 
 QPushButton {
-	background-color: #ffc857;
-	color: #000000;
-	border: none;
-	padding: 5px 7px;
-	border-radius: 6px;
-	border: 1px solid #4a4a4a;
+	background-color: #3E3E42;
+	border: 1px solid #5C5C60;
+	color: #F0F0F0;
+	font: bold;
+    padding: 3px 6px; /* Reduced padding */
+    border-radius: 4px;
 }
 
 QPushButton:hover {
-	background-color: #dbab4c;
+    border: 1px solid #000000;
+    /* glow effect using text-shadow is not supported in QSS, simulate with border + background */
+	background: #393d81;
 }
 
 QPushButton:pressed {
-	background-color: #b08a40;
+    background: #2d2f64;
 }
 
 QPushButton:disabled {
-	background-color: #808080;
+    background-color: #3E3E42;
+    border: 1px solid #5C5C60;
+    color: #999999;
 }
 
-QLineEdit,
+QLineEdit {
+    background-color: #313338;
+    border: 1px solid #5C5C60;
+    padding: 3px; /* Reduced padding */
+    border-radius: 4px;
+    selection-background-color: #393d81;
+    selection-color: #FFFFFF;
+}
+
+QLineEdit:focus {
+    border: 1px solid #393d81; /* Accent color on focus */
+}
+
 QComboBox,
 QTextEdit {
 	background-color: #313338;
-	border: 1px solid #4a4a4a;
+	border: 1px solid #5C5C60;
 	padding: 2px 3px;
 	border-radius: 6px;
 }
 
 QLabel#statusbar_xpath_expressions {
 	background-color: rgb(49, 51, 56);
-	border: 1px solid #4a4a4a;
+	border: 1px solid #5C5C60;
+	color: #ffc857;
+	font: bold;
 }
 
 QLabel#statusbar_xml_files_count {
 	background-color: rgb(49, 51, 56);
-	border: 1px solid #4a4a4a;
+	border: 1px solid #5C5C60;
+	color: #ffc857;
+	font: bold;
 }
 
 QLabel#label_file_processing {
 	background-color: rgb(49, 51, 56);
-	border: 1px solid #4a4a4a;
+	border: 1px solid #5C5C60;
+	color: #ffc857;
+	font: bold;
 }
 
 QListWidget {
 	background-color: #313338;
+	border: 1px solid #5C5C60;
+	border-radius: 6px;
 }
 
 QListWidget::item {
@@ -80,13 +105,13 @@ QListWidget::item {
 }
 
 QListWidget::item:selected {
-	background-color: #ffc857;
-	color: #000000;
+	background-color: #393d81;
+	color: #F0F0F0;
 }
 
 QComboBox::drop-down {
 	border: none;
-	background-color: #ffc857;
+	background-color: #393d81;
 	width: 20px;
 	border-top-right-radius: 6px;
 	border-bottom-right-radius: 6px;
@@ -108,7 +133,7 @@ QTabWidget::pane {
 }
 
 QTabBar::tab {
-	background-color: #232428;
+	background-color: #313338;
 	border: 1px solid #313338;
 	padding: 8px 14px;
 	border-radius: 6px;
@@ -116,8 +141,8 @@ QTabBar::tab {
 }
 
 QTabBar::tab:selected {
-	background-color: #ffc857;
-	color: #000000;
+	background-color: #393d81;
+	color: #F0F0F0;
 }
 
 QTableView {
@@ -183,7 +208,7 @@ QScrollBar::sub-line:vertical {
 /* Progress Bar */
 QProgressBar {
 	background-color: #313338;
-	border: 1px solid #4a4a4a;
+	border: 1px solid #5C5C60;
 	border-radius: 6px;
 	text-align: center;
 	color: #ffffff;
@@ -191,7 +216,7 @@ QProgressBar {
 }
 
 QProgressBar::chunk {
-	background-color: #4e84f0;
+	background-color: #363BA6;
 }
 
 /* CheckBox */
@@ -204,21 +229,21 @@ QCheckBox::indicator {
 	height: 16px;
 	border-radius: 4px;
 	background-color: #313338;
-	border: 1px solid #4a4a4a;
+	border: 1px solid #5C5C60;
 }
 
 QCheckBox::indicator:checked {
-	background-color: #4e84f0;
-	border: 1px solid #4a4a4a;
-	image: url(:/images/checkmark_48x48.png);
+    background-color: #393d81;
+    border: 1px solid #555773;
+	image: url(:/images/checkmark_white_48x48.png);
 }
 
 QCheckBox::indicator:unchecked {
 	background-color: #313338;
-	border: 1px solid #4a4a4a;
+	border: 1px solid #5C5C60;
 	image: none;
 }
 
 QComboBox:hover,QAbstractSpinBox:hover,QLineEdit:hover,QTextEdit:hover,QPlainTextEdit:hover,QAbstractView:hover,QTreeView:hover {
-    border: 1px solid #ffc857;
+    border: 1px solid #393d81;
 }

@@ -925,32 +925,6 @@
                  </property>
                 </widget>
                </item>
-               <item>
-                <widget class="QLabel" name="statusbar_xpath_expressions">
-                 <property name="sizePolicy">
-                  <sizepolicy hsizetype="Preferred" vsizetype="Preferred">
-                   <horstretch>0</horstretch>
-                   <verstretch>0</verstretch>
-                  </sizepolicy>
-                 </property>
-                 <property name="font">
-                  <font>
-                   <family>Microsoft YaHei UI</family>
-                   <pointsize>10</pointsize>
-                   <italic>false</italic>
-                   <bold>true</bold>
-                   <underline>false</underline>
-                   <strikeout>false</strikeout>
-                  </font>
-                 </property>
-                 <property name="styleSheet">
-                  <string notr="true"/>
-                 </property>
-                 <property name="text">
-                  <string/>
-                 </property>
-                </widget>
-               </item>
               </layout>
              </widget>
             </item>

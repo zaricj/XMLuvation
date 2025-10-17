@@ -553,14 +553,17 @@ class GenerateCSVHeaderHandler:
                     header = "Header"
 
         else:
-            # If no tag, value, attribute or attribute value is selected, use the XPath input as header
-            xpath_expression: str = self.xpath_input.text().strip()
-            split_xpath: list[str] = xpath_expression.split("/")
+            try:
+                # If no tag, value, attribute or attribute value is selected, use the XPath input as header
+                xpath_expression: str = self.xpath_input.text().strip()
+                split_xpath: list[str] = xpath_expression.split("/")
 
-            part1 = split_xpath[-2]
-            part2 = split_xpath[-1]
+                part1 = split_xpath[-2]
+                part2 = split_xpath[-1]
 
-            header = f"{part1} {part2}"
+                header = f"{part1} {part2}"
+            except IndexError:
+                header = "Header"
 
         if not self._is_duplicate(header, headers_list):
             return header

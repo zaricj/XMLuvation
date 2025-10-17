@@ -41,7 +41,7 @@ CURRENT_DIR = Path(__file__).parent
 GUI_CONFIG_DIRECTORY: Path = CURRENT_DIR / "config"
 GUI_CONFIG_FILE_PATH: Path = GUI_CONFIG_DIRECTORY / "config.json"
 
-DARK_THEME_PATH: Path = CURRENT_DIR / "resources" / "styles" / "dark_theme_redesign.qss"
+DARK_THEME_PATH: Path = CURRENT_DIR / "resources" / "styles" / "dark_theme.qss"
 LIGHT_THEME_PATH: Path = CURRENT_DIR / "resources" / "styles" / "light_theme.qss"
 
 ICON_PATH: Path = CURRENT_DIR / "resources" / "icons" / "xml_256px.ico"

@@ -1,9 +1,9 @@
 # -*- coding: utf-8 -*-
 
 ################################################################################
-## Form generated from reading UI file 'XMLuvationvrMIyH.ui'
+## Form generated from reading UI file 'XMLuvation.ui'
 ##
-## Created by: Qt User Interface Compiler version 6.9.3
+## Created by: Qt User Interface Compiler version 6.10.0
 ##
 ## WARNING! All changes made in this file will be lost when recompiling UI file!
 ################################################################################
@@ -424,15 +424,6 @@ class Ui_MainWindow(object):
         self.list_widget_main_xpath_expressions.setSortingEnabled(False)
 
         self.verticalLayout_8.addWidget(self.list_widget_main_xpath_expressions)
-
-        self.statusbar_xpath_expressions = QLabel(self.group_box_xpath_expressions_list)
-        self.statusbar_xpath_expressions.setObjectName(u"statusbar_xpath_expressions")
-        sizePolicy1.setHeightForWidth(self.statusbar_xpath_expressions.sizePolicy().hasHeightForWidth())
-        self.statusbar_xpath_expressions.setSizePolicy(sizePolicy1)
-        self.statusbar_xpath_expressions.setFont(font4)
-        self.statusbar_xpath_expressions.setStyleSheet(u"")
-
-        self.verticalLayout_8.addWidget(self.statusbar_xpath_expressions)
 
 
         self.vert_layout_main.addWidget(self.group_box_xpath_expressions_list)
@@ -1104,7 +1095,6 @@ class Ui_MainWindow(object):
 #endif // QT_CONFIG(tooltip)
         self.button_add_xpath_to_list.setText(QCoreApplication.translate("MainWindow", u"Add XPath expression to list", None))
         self.group_box_xpath_expressions_list.setTitle(QCoreApplication.translate("MainWindow", u"LIST OF XPATH FILTERS TO SEARCH AND MATCH IN XML FILES", None))
-        self.statusbar_xpath_expressions.setText("")
         self.group_box_export_to_csv.setTitle(QCoreApplication.translate("MainWindow", u"EXPORT SEARCH RESULT TO CSV FILE", None))
         self.label_csv_headers_info.setText(QCoreApplication.translate("MainWindow", u"Enter CSV headers for each XPath expression (comma-separated):", None))
         self.line_edit_csv_headers_input.setPlaceholderText(QCoreApplication.translate("MainWindow", u"Enter CSV header names... (comma-separated)", None))

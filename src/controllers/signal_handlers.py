@@ -548,7 +548,6 @@ class SignalHandlerMixin:
             if is_added:
                 current_text = csv_headers_input.text()
                 self._add_recent_xpath_expression(xpath_input)
-                self._update_statusbar_xpath_listbox_count()
 
                 generator = GenerateCSVHeaderHandler(
                     self,
@@ -1054,7 +1053,6 @@ class SignalHandlerMixin:
                 self.ui.text_edit_program_output.append(
                     f"Removed item: {item_to_remove.text()} at row {current_selected_item}"
                 )
-                self._update_statusbar_xpath_listbox_count()
             else:
                 self.ui.text_edit_program_output.append("No item selected to delete.")
         except IndexError:
@@ -1070,7 +1068,6 @@ class SignalHandlerMixin:
                 self.xpath_filters.clear()
                 self.ui.list_widget_main_xpath_expressions.clear()
                 self.ui.text_edit_program_output.setText("Deleted all items from the list.")
-                self._update_statusbar_xpath_listbox_count()
                 # Clean CSV Header Input if it has any value in it
                 if len(self.ui.line_edit_csv_headers_input.text()) > 1:
                     self.ui.line_edit_csv_headers_input.clear()
