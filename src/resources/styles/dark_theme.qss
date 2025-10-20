@@ -164,6 +164,26 @@ QGroupBox::title {
 	padding: 0 6px;
 }
 
+QGroupBox::indicator {
+	width: 12px;
+	height: 12px;
+	border-radius: 4px;
+	background-color: #313338;
+	border: 1px solid #5C5C60;
+}
+
+QGroupBox::indicator:unchecked {
+	background-color: #313338;
+	border: 1px solid #5C5C60;
+	image: none;
+}
+
+QGroupBox::indicator:checked {
+    background-color: #393d81;
+    border: 1px solid #555773;
+	image: url(:/images/checkmark_white_48x48.png);
+}
+
 QRadioButton {
 	spacing: 6px;
 }
