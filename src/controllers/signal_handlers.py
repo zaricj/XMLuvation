@@ -274,6 +274,7 @@ class SignalHandlerMixin:
         """Handle CSV export completion."""
         self.ui.button_abort_csv_export.setVisible(False)
         self.ui.label_file_processing.setVisible(False)
+        self.ui.progressbar_main.setVisible(False)
         self._set_ui_widgets_disabled(False)
         self.ui.progressbar_main.reset()
         
@@ -481,6 +482,7 @@ class SignalHandlerMixin:
                 self, "Select XML File", "", "XML File (*.xml)"
             )
             if file_name:
+                self.ui.text_edit_program_output.clear()
                 self._parse_xml_file(file_name)
                 # Add the read XML files path to the XML path input field if it's not already set
                 if not self.ui.line_edit_xml_folder_path_input.text():

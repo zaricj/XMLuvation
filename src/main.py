@@ -233,6 +233,7 @@ class MainWindow(QMainWindow, SignalHandlerMixin):
         self.ui.button_find_next.hide()
         self.ui.button_find_previous.hide()
         self.ui.button_abort_csv_export.hide()
+        self.ui.progressbar_main.hide()
         self.ui.label_file_processing.hide()
         self.ui.line_edit_xml_output_find_text.hide()
         
