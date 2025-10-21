@@ -1,9 +1,9 @@
 # -*- coding: utf-8 -*-
 
 ################################################################################
-## Form generated from reading UI file 'XMLuvation.ui'
+## Form generated from reading UI file 'XMLuvationASKKfj.ui'
 ##
-## Created by: Qt User Interface Compiler version 6.10.0
+## Created by: Qt User Interface Compiler version 6.9.2
 ##
 ## WARNING! All changes made in this file will be lost when recompiling UI file!
 ################################################################################
@@ -425,6 +425,23 @@ class Ui_MainWindow(object):
 
         self.verticalLayout_8.addWidget(self.list_widget_main_xpath_expressions)
 
+        self.label_csv_headers_info = QLabel(self.group_box_xpath_expressions_list)
+        self.label_csv_headers_info.setObjectName(u"label_csv_headers_info")
+        sizePolicy1.setHeightForWidth(self.label_csv_headers_info.sizePolicy().hasHeightForWidth())
+        self.label_csv_headers_info.setSizePolicy(sizePolicy1)
+        self.label_csv_headers_info.setFont(font3)
+
+        self.verticalLayout_8.addWidget(self.label_csv_headers_info)
+
+        self.line_edit_csv_headers_input = QLineEdit(self.group_box_xpath_expressions_list)
+        self.line_edit_csv_headers_input.setObjectName(u"line_edit_csv_headers_input")
+        sizePolicy3.setHeightForWidth(self.line_edit_csv_headers_input.sizePolicy().hasHeightForWidth())
+        self.line_edit_csv_headers_input.setSizePolicy(sizePolicy3)
+        self.line_edit_csv_headers_input.setFont(font3)
+        self.line_edit_csv_headers_input.setClearButtonEnabled(True)
+
+        self.verticalLayout_8.addWidget(self.line_edit_csv_headers_input)
+
 
         self.vert_layout_main.addWidget(self.group_box_xpath_expressions_list)
 
@@ -436,25 +453,8 @@ class Ui_MainWindow(object):
         self.verticalLayout_11 = QVBoxLayout(self.group_box_export_to_csv)
         self.verticalLayout_11.setObjectName(u"verticalLayout_11")
         self.verticalLayout_11.setContentsMargins(3, 3, 3, 3)
-        self.label_csv_headers_info = QLabel(self.group_box_export_to_csv)
-        self.label_csv_headers_info.setObjectName(u"label_csv_headers_info")
-        sizePolicy1.setHeightForWidth(self.label_csv_headers_info.sizePolicy().hasHeightForWidth())
-        self.label_csv_headers_info.setSizePolicy(sizePolicy1)
-        self.label_csv_headers_info.setFont(font3)
-
-        self.verticalLayout_11.addWidget(self.label_csv_headers_info)
-
         self.hor_layout_csv_headers = QHBoxLayout()
         self.hor_layout_csv_headers.setObjectName(u"hor_layout_csv_headers")
-        self.line_edit_csv_headers_input = QLineEdit(self.group_box_export_to_csv)
-        self.line_edit_csv_headers_input.setObjectName(u"line_edit_csv_headers_input")
-        sizePolicy3.setHeightForWidth(self.line_edit_csv_headers_input.sizePolicy().hasHeightForWidth())
-        self.line_edit_csv_headers_input.setSizePolicy(sizePolicy3)
-        self.line_edit_csv_headers_input.setFont(font3)
-        self.line_edit_csv_headers_input.setClearButtonEnabled(True)
-
-        self.hor_layout_csv_headers.addWidget(self.line_edit_csv_headers_input)
-
 
         self.verticalLayout_11.addLayout(self.hor_layout_csv_headers)
 
@@ -546,6 +546,22 @@ class Ui_MainWindow(object):
 
 
         self.verticalLayout_11.addLayout(self.horizontalLayout_2)
+
+        self.line_3 = QFrame(self.group_box_export_to_csv)
+        self.line_3.setObjectName(u"line_3")
+        self.line_3.setFrameShape(QFrame.Shape.HLine)
+        self.line_3.setFrameShadow(QFrame.Shadow.Sunken)
+
+        self.verticalLayout_11.addWidget(self.line_3)
+
+        self.label_file_processing = QLabel(self.group_box_export_to_csv)
+        self.label_file_processing.setObjectName(u"label_file_processing")
+        sizePolicy1.setHeightForWidth(self.label_file_processing.sizePolicy().hasHeightForWidth())
+        self.label_file_processing.setSizePolicy(sizePolicy1)
+        self.label_file_processing.setFont(font4)
+        self.label_file_processing.setStyleSheet(u"")
+
+        self.verticalLayout_11.addWidget(self.label_file_processing)
 
 
         self.vert_layout_main.addWidget(self.group_box_export_to_csv)
@@ -677,26 +693,12 @@ class Ui_MainWindow(object):
 
         self.verticalLayout_12.addWidget(self.text_edit_program_output)
 
-        self.vert_layout_pbar_n_status_label = QVBoxLayout()
-        self.vert_layout_pbar_n_status_label.setObjectName(u"vert_layout_pbar_n_status_label")
         self.progressbar_main = QProgressBar(self.group_box_program_output)
         self.progressbar_main.setObjectName(u"progressbar_main")
         self.progressbar_main.setFont(font3)
         self.progressbar_main.setValue(0)
 
-        self.vert_layout_pbar_n_status_label.addWidget(self.progressbar_main)
-
-        self.label_file_processing = QLabel(self.group_box_program_output)
-        self.label_file_processing.setObjectName(u"label_file_processing")
-        sizePolicy1.setHeightForWidth(self.label_file_processing.sizePolicy().hasHeightForWidth())
-        self.label_file_processing.setSizePolicy(sizePolicy1)
-        self.label_file_processing.setFont(font4)
-        self.label_file_processing.setStyleSheet(u"")
-
-        self.vert_layout_pbar_n_status_label.addWidget(self.label_file_processing)
-
-
-        self.verticalLayout_12.addLayout(self.vert_layout_pbar_n_status_label)
+        self.verticalLayout_12.addWidget(self.progressbar_main)
 
 
         self.vert_layout_xml_output.addWidget(self.group_box_program_output)
@@ -1099,9 +1101,9 @@ class Ui_MainWindow(object):
 #endif // QT_CONFIG(tooltip)
         self.button_add_xpath_to_list.setText(QCoreApplication.translate("MainWindow", u"Add XPath expression to list", None))
         self.group_box_xpath_expressions_list.setTitle(QCoreApplication.translate("MainWindow", u"LIST OF XPATH FILTERS TO SEARCH AND MATCH IN XML FILES", None))
-        self.group_box_export_to_csv.setTitle(QCoreApplication.translate("MainWindow", u"EXPORT SEARCH RESULT TO CSV FILE", None))
         self.label_csv_headers_info.setText(QCoreApplication.translate("MainWindow", u"Enter CSV headers for each XPath expression (comma-separated):", None))
         self.line_edit_csv_headers_input.setPlaceholderText(QCoreApplication.translate("MainWindow", u"Enter CSV header names... (comma-separated)", None))
+        self.group_box_export_to_csv.setTitle(QCoreApplication.translate("MainWindow", u"EXPORT SEARCH RESULT TO CSV FILE", None))
         self.label_csv_export_input.setText(QCoreApplication.translate("MainWindow", u"Browse file path where to save the csv result:", None))
         self.line_edit_csv_output_path.setPlaceholderText(QCoreApplication.translate("MainWindow", u"Choose a folder where to save the CSV evaluation...", None))
 #if QT_CONFIG(tooltip)
@@ -1122,6 +1124,7 @@ class Ui_MainWindow(object):
 #endif // QT_CONFIG(tooltip)
         self.checkbox_group_matches.setText(QCoreApplication.translate("MainWindow", u"Group matches", None))
         self.button_pass_csv_to_converter.setText(QCoreApplication.translate("MainWindow", u"<a href=\"#\" style=\"color:#1763d3;\">Pass CSV Path to Converter</a>", None))
+        self.label_file_processing.setText("")
         self.group_box_xml_output.setTitle(QCoreApplication.translate("MainWindow", u"XML OUTPUT", None))
         self.line_edit_xml_output_find_text.setPlaceholderText(QCoreApplication.translate("MainWindow", u"Find text in summary...", None))
 #if QT_CONFIG(tooltip)
@@ -1134,7 +1137,6 @@ class Ui_MainWindow(object):
         self.button_find_previous.setText(QCoreApplication.translate("MainWindow", u"Previous", None))
         self.group_box_program_output.setTitle(QCoreApplication.translate("MainWindow", u"PROGRAM OUTPUT", None))
         self.progressbar_main.setFormat(QCoreApplication.translate("MainWindow", u"%p%", None))
-        self.label_file_processing.setText("")
         self.tabWidget.setTabText(self.tabWidget.indexOf(self.tab_xml_evaluation), QCoreApplication.translate("MainWindow", u"XML Evaluation", None))
         self.groupbox_csv_conversion.setTitle(QCoreApplication.translate("MainWindow", u"CSV CONVERSION", None))
         self.label_csv_conversion_desc.setText(QCoreApplication.translate("MainWindow", u"Convert CSV File to a different file type with the Pandas module\n"

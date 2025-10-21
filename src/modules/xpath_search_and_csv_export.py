@@ -271,11 +271,11 @@ class OptimizedCSVExportThread(QRunnable):
                 "Please set the path to the folder that contains XML files to process."
             )
             return False
-
-        if not self.output_path:
+        
+        if len(self.output_path.__str__().strip()) <= 1 or self.output_path.suffix.lower() != ".csv":
             self.signals.warning_occurred.emit(
-                "CSV Output Path is Empty",
-                "Please set an output folder path for the csv file."
+                "CSV Output Path is Invalid",
+                "Please set a valid output folder path for the csv file."
             )
             return False
 

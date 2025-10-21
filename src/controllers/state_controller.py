@@ -352,11 +352,10 @@ class SearchAndExportToCSVHandler:
             self.current_exporter.stop()
             self.current_exporter = None  # Clear the reference once stopped
 
-    @staticmethod
-    def _parse_csv_headers(raw_headers: str) -> list:
+    def _parse_csv_headers(self, raw_headers: str) -> list:
         """Splits comma-separated string into a list of headers."""
         return [h.strip() for h in raw_headers.split(",") if h.strip()]
-
+    
 
 class LobsterProfileExportCleanupHandler:
     """Handles methods and logic of the lobster profile cleanup based on the selected csv file and the folder path that contains all lobster profile exports as XML files."""
