@@ -28,7 +28,11 @@ class HelperMethods:
     def _browse_folder_helper(self, dialog_message: str, line_widget: QLineEdit):
         """Helper for folder browsing dialogs."""
         try:
-            folder = QFileDialog.getExistingDirectory(self.main_window, dialog_message)
+            input_text = line_widget.text()
+            if len(input_text) > 0:
+                folder = QFileDialog.getExistingDirectory(self.main_window, dialog_message, input_text)
+            else:
+                folder = QFileDialog.getExistingDirectory(self.main_window, dialog_message)
             if folder:
                 line_widget.setText(folder)
         except Exception as ex:
