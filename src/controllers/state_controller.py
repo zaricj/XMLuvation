@@ -567,11 +567,12 @@ class GenerateCSVHeaderHandler:
         if not self._is_duplicate(header, headers_list):
             return header
 
-    def _is_duplicate(self, header: str, headers_list: str) -> bool:
+    def _is_duplicate(self, header: str, headers_list: list) -> bool:
         """Checks if the header is a duplicate. Prevents from adding the same header to the QLineEdit input for headers.
 
         Args:
             header (str): Headers input
+            header_list (list): A list that contains already added headers
 
         Returns:
             bool: Returns True if the header already exists in the headers list else False

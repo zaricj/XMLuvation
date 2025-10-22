@@ -20,10 +20,13 @@ from PySide6.QtCore import (
 from typing import List, TYPE_CHECKING
 from gui.main.XMLuvation_ui import Ui_MainWindow
 
+
 if TYPE_CHECKING:
     from PySide6.QtCore import QSettings
     from controllers.state_controller import ComboboxStateHandler, SearchXMLOutputTextHandler
     from modules.config_handler import ConfigHandler
+    from main import MainWindow
+    from controllers.helper_methods import HelperMethods
 
 class SignalHandlerMixin:
     """Mixin class to handle all signal connections and slot methods"""
@@ -34,10 +37,11 @@ class SignalHandlerMixin:
     cb_state_controller: 'ComboboxStateHandler'
     set_max_threads: int
     current_theme: str
-    config_handler: "ConfigHandler"
+    config_handler: 'ConfigHandler'
     theme_icon: QIcon
     xml_text_searcher: 'SearchXMLOutputTextHandler'
     _main_thread_loading_movie_ref: QMovie | None = None
+    helper: 'HelperMethods'
         
     def connect_menu_bar_actions(self):
         """Connect all menu bar actions to their handlers."""
@@ -463,13 +467,13 @@ class SignalHandlerMixin:
     @Slot()
     def on_browseXMLFolder(self):
         """Browse for XML folder."""
-        self._browse_folder_helper(
+        self.helper._browse_folder_helper(
             dialog_message="Select directory that contains XML files",
             line_widget=self.ui.line_edit_xml_folder_path_input,
         )
 
     @Slot()
-    def on_readXMLFile(self):
+    def on_readXMLFile(self: "MainWindow"):
         """Read XML file dialog and parsing."""
         try:
             file_name, _ = QFileDialog.getOpenFileName(
@@ -490,7 +494,7 @@ class SignalHandlerMixin:
     @Slot()
     def on_browseCSVOutput(self):
         """Browse for CSV output file."""
-        self._browse_save_file_as_helper(
+        self.helper._browse_save_file_as_helper(
             dialog_message="Save as",
             line_widget=self.ui.line_edit_csv_output_path,
             file_extension_filter="CSV File (*.csv)",
@@ -522,7 +526,7 @@ class SignalHandlerMixin:
             QMessageBox.critical(self, "Exception on building xpath expression", message)
 
     @Slot()
-    def on_addXPathToList(self):
+    def on_addXPathToList(self: "MainWindow"):
         """Add XPath expression to list."""
         try:
             from controllers.state_controller import AddXPathExpressionToListHandler, GenerateCSVHeaderHandler
@@ -569,7 +573,7 @@ class SignalHandlerMixin:
             QMessageBox.critical(self, "Exception adding XPath Expression to list widget", message)
 
     @Slot()
-    def on_startCSVSearch(self):
+    def on_startCSVSearch(self: "MainWindow"):
         """Start CSV search and export process."""
         try:
             from controllers.state_controller import SearchAndExportToCSVHandler
@@ -615,7 +619,7 @@ class SignalHandlerMixin:
     @Slot()
     def on_browseCSVConversionInput(self):
         """Browse for CSV conversion input file."""
-        self._browse_file_helper(
+        self.helper._browse_file_helper(
             dialog_message="Select csv file for conversion",
             line_widget=self.ui.line_edit_csv_conversion_path_input,
             file_extension_filter="CSV File (*.csv)",
@@ -647,7 +651,7 @@ class SignalHandlerMixin:
     @Slot()
     def on_browseProfileCleanupCSV(self):
         """Browse for profile cleanup CSV file."""
-        self._browse_file_helper(
+        self.helper._browse_file_helper(
             dialog_message="Select csv file",
             line_widget=self.ui.line_edit_profile_cleanup_csv_file_path,
             file_extension_filter="CSV File (*.csv)",
@@ -656,7 +660,7 @@ class SignalHandlerMixin:
     @Slot()
     def on_browseProfileCleanupFolder(self):
         """Browse for profile cleanup folder."""
-        self._browse_folder_helper(
+        self.helper._browse_folder_helper(
             dialog_message="Select directory that contains XML files",
             line_widget=self.ui.line_edit_profile_cleanup_folder_path,
         )
@@ -789,7 +793,7 @@ class SignalHandlerMixin:
 
     # === Context Menu Event Handlers ===
     @Slot(QPoint)
-    def on_showXPathContextMenu(self, position: QPoint):
+    def on_showXPathContextMenu(self: "MainWindow", position: QPoint):
         """Show context menu for XPath expressions list."""
         context_menu = QMenu(self)
         remove_action = QAction("Remove Selected", self)
@@ -853,7 +857,7 @@ class SignalHandlerMixin:
         self.ui.line_edit_xpath_builder.setText(expression)
         
     @Slot()
-    def on_OpenConvertedFile(self):
+    def on_OpenConvertedFile(self: "MainWindow"):
         """Open the converted file in the default application."""
         file_path = self.ui.line_edit_csv_conversion_open_file_path.text()
         self._open_file_directly(file_path)

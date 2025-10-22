@@ -34,8 +34,8 @@ if TYPE_CHECKING:
 
 from gui.main.XMLuvation_ui import Ui_MainWindow
 from controllers.signal_handlers import SignalHandlerMixin
+from controllers.helper_methods import HelperMethods
 from dialogs.exit_dialog import ExitDialog
-    
 
 # ----------------------------
 # Constants
@@ -112,6 +112,7 @@ class MainWindow(QMainWindow, SignalHandlerMixin):
     cb_state_controller: 'ComboboxStateHandler'
     xml_text_searcher: 'SearchXMLOutputTextHandler'
     config_handler: 'ConfigHandler'
+    helper: 'HelperMethods'
 
     current_theme: str
     dark_theme_file: str
@@ -122,6 +123,7 @@ class MainWindow(QMainWindow, SignalHandlerMixin):
         self.ui = Ui_MainWindow()
         self.ui.setupUi(self)
         self.setWindowTitle(f"{APP_NAME} {APP_VERSION}")
+        self.helper = HelperMethods(main_window=self)
 
         self._parsed_xml_data_ref = {}
         self._current_read_xml_file_ref = None
@@ -280,40 +282,7 @@ class MainWindow(QMainWindow, SignalHandlerMixin):
 
     # ============= HELPER METHODS =============
 
-    def _browse_folder_helper(self, dialog_message: str, line_widget: QLineEdit):
-        """Helper for folder browsing dialogs."""
-        try:
-            folder = QFileDialog.getExistingDirectory(self, dialog_message)
-            if folder:
-                line_widget.setText(folder)
-        except Exception as ex:
-            message = f"An exception of type {type(ex).__name__} occurred. Arguments: {ex.args!r}"
-            QMessageBox.critical(self, "An exception occurred in browse folder method", message)
 
-    def _browse_file_helper(self, dialog_message: str, line_widget: QLineEdit, file_extension_filter: str):
-        """Helper for file browsing dialogs."""
-        try:
-            file_name, _ = QFileDialog.getOpenFileName(
-                self, caption=dialog_message, filter=file_extension_filter
-            )
-            if file_name:
-                line_widget.setText(file_name)
-        except Exception as ex:
-            message = f"An exception of type {type(ex).__name__} occurred. Arguments: {ex.args!r}"
-            QMessageBox.critical(self, "An exception occurred in browse folder method", message)
-
-    def _browse_save_file_as_helper(self, dialog_message: str, line_widget: QLineEdit, 
-                                   file_extension_filter: str, filename_placeholder: str = ""):
-        """Helper for save file dialogs."""
-        try:
-            file_name, _ = QFileDialog.getSaveFileName(
-                self, caption=dialog_message, dir=filename_placeholder, filter=file_extension_filter
-            )
-            if file_name:
-                line_widget.setText(file_name)
-        except Exception as ex:
-            message = f"An exception of type {type(ex).__name__} occurred. Arguments: {ex.args!r}"
-            QMessageBox.critical(self, "An exception occurred in browse save file method", message)
 
     def _parse_xml_file(self, xml_file_path: str):
         """Parse XML file and display content."""
