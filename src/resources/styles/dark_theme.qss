@@ -32,13 +32,12 @@ QPushButton {
 	border: 1px solid #5C5C60;
 	color: #F0F0F0;
 	font: bold;
-    padding: 3px 6px; /* Reduced padding */
+    padding: 4px 6px; /* Reduced padding */
     border-radius: 4px;
 }
 
 QPushButton:hover {
     border: 1px solid #000000;
-    /* glow effect using text-shadow is not supported in QSS, simulate with border + background */
 	background: #393d81;
 }
 

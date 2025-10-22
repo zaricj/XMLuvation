@@ -20,7 +20,7 @@ class HelperMethods:
                 QMessageBox.critical(self, "An exception occurred", message)
         else:
             QMessageBox.warning(
-                self,
+                self.main_window,
                 "Error",
                 f"Path does not exist or is not a valid path:\n{file_path}"
             )

@@ -9,7 +9,7 @@
    <rect>
     <x>0</x>
     <y>0</y>
-    <width>1129</width>
+    <width>1127</width>
     <height>869</height>
    </rect>
   </property>
@@ -864,7 +864,7 @@
                      <string>Add the entered or generated XPath expression to the list below.</string>
                     </property>
                     <property name="text">
-                     <string>Add XPath expression to list</string>
+                     <string>Add XPath To List</string>
                     </property>
                    </widget>
                   </item>
@@ -962,7 +962,7 @@
                      </font>
                     </property>
                     <property name="text">
-                     <string>Enter CSV headers for each XPath expression (comma-separated):</string>
+                     <string>Enter CSV Headers (comma-separated):</string>
                     </property>
                    </widget>
                   </item>
@@ -985,7 +985,7 @@
                      </font>
                     </property>
                     <property name="placeholderText">
-                     <string>Enter CSV header names... (comma-separated)</string>
+                     <string>Enter CSV headers for each XPath expression (comma-separated)...</string>
                     </property>
                     <property name="clearButtonEnabled">
                      <bool>true</bool>
@@ -1031,29 +1031,6 @@
                   </property>
                   <item>
                    <layout class="QHBoxLayout" name="hor_layout_csv_headers"/>
-                  </item>
-                  <item>
-                   <widget class="QLabel" name="label_csv_export_input">
-                    <property name="sizePolicy">
-                     <sizepolicy hsizetype="Preferred" vsizetype="Preferred">
-                      <horstretch>0</horstretch>
-                      <verstretch>0</verstretch>
-                     </sizepolicy>
-                    </property>
-                    <property name="font">
-                     <font>
-                      <family>Microsoft YaHei UI</family>
-                      <pointsize>10</pointsize>
-                      <italic>false</italic>
-                      <bold>false</bold>
-                      <underline>false</underline>
-                      <strikeout>false</strikeout>
-                     </font>
-                    </property>
-                    <property name="text">
-                     <string>Browse file path where to save the csv result:</string>
-                    </property>
-                   </widget>
                   </item>
                   <item>
                    <layout class="QHBoxLayout" name="hor_layout_csv_input_and_export">
@@ -1972,7 +1949,7 @@ Supported output file types: Excel, Markdown, HTML and JSON</string>
                        </font>
                       </property>
                       <property name="placeholderText">
-                       <string>Select the CSV file which you want to connvert...</string>
+                       <string>Select a CSV file to connvert...</string>
                       </property>
                       <property name="clearButtonEnabled">
                        <bool>true</bool>
@@ -2005,6 +1982,56 @@ Supported output file types: Excel, Markdown, HTML and JSON</string>
                    </layout>
                   </item>
                   <item>
+                   <layout class="QHBoxLayout" name="horizontalLayout_9">
+                    <item>
+                     <widget class="QLineEdit" name="line_edit_csv_conversion_open_file_path">
+                      <property name="enabled">
+                       <bool>true</bool>
+                      </property>
+                      <property name="font">
+                       <font>
+                        <family>Microsoft YaHei UI</family>
+                        <pointsize>10</pointsize>
+                        <italic>false</italic>
+                        <bold>false</bold>
+                        <underline>false</underline>
+                        <strikeout>false</strikeout>
+                       </font>
+                      </property>
+                      <property name="readOnly">
+                       <bool>true</bool>
+                      </property>
+                      <property name="placeholderText">
+                       <string>The converted file's path will be set here after conversion...</string>
+                      </property>
+                     </widget>
+                    </item>
+                    <item>
+                     <widget class="QPushButton" name="button_csv_conversion_open_file">
+                      <property name="enabled">
+                       <bool>true</bool>
+                      </property>
+                      <property name="font">
+                       <font>
+                        <family>Microsoft YaHei UI</family>
+                        <pointsize>10</pointsize>
+                        <italic>false</italic>
+                        <bold>false</bold>
+                        <underline>false</underline>
+                        <strikeout>false</strikeout>
+                       </font>
+                      </property>
+                      <property name="toolTip">
+                       <string>Open the converted file directly</string>
+                      </property>
+                      <property name="text">
+                       <string>Open File</string>
+                      </property>
+                     </widget>
+                    </item>
+                   </layout>
+                  </item>
+                  <item>
                    <layout class="QHBoxLayout" name="hor_layout_csv_conversion_path_output">
                     <item>
                      <widget class="QLabel" name="label_csv_conversion_output_type">
@@ -2015,7 +2042,7 @@ Supported output file types: Excel, Markdown, HTML and JSON</string>
                        </sizepolicy>
                       </property>
                       <property name="text">
-                       <string>Select output file format:</string>
+                       <string>Output file format:</string>
                       </property>
                      </widget>
                     </item>
@@ -2094,47 +2121,7 @@ Supported output file types: Excel, Markdown, HTML and JSON</string>
                        <string>Convert the CSV file to the selected file type.</string>
                       </property>
                       <property name="text">
-                       <string>Convert File</string>
-                      </property>
-                     </widget>
-                    </item>
-                   </layout>
-                  </item>
-                  <item>
-                   <layout class="QHBoxLayout" name="horizontalLayout_9">
-                    <item>
-                     <widget class="QLineEdit" name="line_edit_csv_conversion_open_file_path">
-                      <property name="enabled">
-                       <bool>true</bool>
-                      </property>
-                      <property name="readOnly">
-                       <bool>true</bool>
-                      </property>
-                      <property name="placeholderText">
-                       <string>The converted file's path will be set here after conversion...</string>
-                      </property>
-                     </widget>
-                    </item>
-                    <item>
-                     <widget class="QPushButton" name="button_csv_conversion_open_file">
-                      <property name="enabled">
-                       <bool>true</bool>
-                      </property>
-                      <property name="font">
-                       <font>
-                        <family>Microsoft YaHei UI</family>
-                        <pointsize>10</pointsize>
-                        <italic>false</italic>
-                        <bold>false</bold>
-                        <underline>false</underline>
-                        <strikeout>false</strikeout>
-                       </font>
-                      </property>
-                      <property name="toolTip">
-                       <string>Open the converted file directly</string>
-                      </property>
-                      <property name="text">
-                       <string>Open File</string>
+                       <string>Convert CSV</string>
                       </property>
                      </widget>
                     </item>
@@ -2159,32 +2146,6 @@ Supported output file types: Excel, Markdown, HTML and JSON</string>
                   <string>PROFILE EXPORT CLEAN UP</string>
                  </property>
                  <layout class="QVBoxLayout" name="verticalLayout_10">
-                  <item>
-                   <widget class="QLabel" name="label_title_profile_cleanup">
-                    <property name="sizePolicy">
-                     <sizepolicy hsizetype="Preferred" vsizetype="Maximum">
-                      <horstretch>0</horstretch>
-                      <verstretch>0</verstretch>
-                     </sizepolicy>
-                    </property>
-                    <property name="font">
-                     <font>
-                      <family>Microsoft YaHei UI</family>
-                      <pointsize>10</pointsize>
-                      <italic>false</italic>
-                      <bold>true</bold>
-                      <underline>false</underline>
-                      <strikeout>false</strikeout>
-                     </font>
-                    </property>
-                    <property name="styleSheet">
-                     <string notr="true"/>
-                    </property>
-                    <property name="text">
-                     <string>CSV File Clean Up</string>
-                    </property>
-                   </widget>
-                  </item>
                   <item>
                    <widget class="QLabel" name="label_2">
                     <property name="sizePolicy">
@@ -2339,7 +2300,7 @@ Supported output file types: Excel, Markdown, HTML and JSON</string>
                        <string>Perform cleanup operations on the XML files.</string>
                       </property>
                       <property name="text">
-                       <string>Clean up XML files</string>
+                       <string>Clean up XML Files</string>
                       </property>
                      </widget>
                     </item>
@@ -2482,6 +2443,16 @@ Supported output file types: Excel, Markdown, HTML and JSON</string>
                    <layout class="QFormLayout" name="formLayout_2">
                     <item row="0" column="0">
                      <widget class="QLabel" name="label_from_hexadecimal">
+                      <property name="font">
+                       <font>
+                        <family>Microsoft YaHei UI</family>
+                        <pointsize>10</pointsize>
+                        <italic>false</italic>
+                        <bold>false</bold>
+                        <underline>false</underline>
+                        <strikeout>false</strikeout>
+                       </font>
+                      </property>
                       <property name="text">
                        <string>From Hexadecimal:</string>
                       </property>
@@ -2489,6 +2460,16 @@ Supported output file types: Excel, Markdown, HTML and JSON</string>
                     </item>
                     <item row="0" column="1">
                      <widget class="QLabel" name="label_to_decimal">
+                      <property name="font">
+                       <font>
+                        <family>Microsoft YaHei UI</family>
+                        <pointsize>10</pointsize>
+                        <italic>false</italic>
+                        <bold>false</bold>
+                        <underline>false</underline>
+                        <strikeout>false</strikeout>
+                       </font>
+                      </property>
                       <property name="text">
                        <string>To Decimal:</string>
                       </property>
@@ -2504,7 +2485,7 @@ Supported output file types: Excel, Markdown, HTML and JSON</string>
                       </property>
                       <property name="minimumSize">
                        <size>
-                        <width>0</width>
+                        <width>250</width>
                         <height>0</height>
                        </size>
                       </property>
@@ -2515,6 +2496,12 @@ Supported output file types: Excel, Markdown, HTML and JSON</string>
                     </item>
                     <item row="1" column="1">
                      <widget class="QLineEdit" name="line_edit_decimal">
+                      <property name="sizePolicy">
+                       <sizepolicy hsizetype="Expanding" vsizetype="Fixed">
+                        <horstretch>0</horstretch>
+                        <verstretch>0</verstretch>
+                       </sizepolicy>
+                      </property>
                       <property name="minimumSize">
                        <size>
                         <width>0</width>
@@ -2623,22 +2610,15 @@ Supported output file types: Excel, Markdown, HTML and JSON</string>
                   </size>
                  </property>
                  <property name="title">
-                  <string>CSV Data</string>
+                  <string>CSV DATA</string>
                  </property>
                  <layout class="QVBoxLayout" name="verticalLayout_15">
                   <item>
                    <layout class="QHBoxLayout" name="horizontalLayout_10">
                     <item>
-                     <widget class="QLabel" name="label_filter_table">
-                      <property name="text">
-                       <string>Filter:</string>
-                      </property>
-                     </widget>
-                    </item>
-                    <item>
                      <widget class="QLineEdit" name="line_edit_filter_table">
                       <property name="placeholderText">
-                       <string>Filter data with entered text...</string>
+                       <string>Filter data based on the inputted text here...</string>
                       </property>
                      </widget>
                     </item>
@@ -2699,7 +2679,7 @@ Supported output file types: Excel, Markdown, HTML and JSON</string>
     <rect>
      <x>0</x>
      <y>0</y>
-     <width>1129</width>
+     <width>1127</width>
      <height>33</height>
     </rect>
    </property>
