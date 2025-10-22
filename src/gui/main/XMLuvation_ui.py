@@ -1,9 +1,9 @@
 # -*- coding: utf-8 -*-
 
 ################################################################################
-## Form generated from reading UI file 'XMLuvationASKKfj.ui'
+## Form generated from reading UI file 'XMLuvation.ui'
 ##
-## Created by: Qt User Interface Compiler version 6.9.2
+## Created by: Qt User Interface Compiler version 6.10.0
 ##
 ## WARNING! All changes made in this file will be lost when recompiling UI file!
 ################################################################################
@@ -554,14 +554,26 @@ class Ui_MainWindow(object):
 
         self.verticalLayout_11.addWidget(self.line_3)
 
+        self.horizontalLayout_3 = QHBoxLayout()
+        self.horizontalLayout_3.setObjectName(u"horizontalLayout_3")
         self.label_file_processing = QLabel(self.group_box_export_to_csv)
         self.label_file_processing.setObjectName(u"label_file_processing")
-        sizePolicy1.setHeightForWidth(self.label_file_processing.sizePolicy().hasHeightForWidth())
-        self.label_file_processing.setSizePolicy(sizePolicy1)
+        sizePolicy2.setHeightForWidth(self.label_file_processing.sizePolicy().hasHeightForWidth())
+        self.label_file_processing.setSizePolicy(sizePolicy2)
         self.label_file_processing.setFont(font4)
         self.label_file_processing.setStyleSheet(u"")
 
-        self.verticalLayout_11.addWidget(self.label_file_processing)
+        self.horizontalLayout_3.addWidget(self.label_file_processing)
+
+        self.progressbar_main = QProgressBar(self.group_box_export_to_csv)
+        self.progressbar_main.setObjectName(u"progressbar_main")
+        self.progressbar_main.setFont(font3)
+        self.progressbar_main.setValue(0)
+
+        self.horizontalLayout_3.addWidget(self.progressbar_main)
+
+
+        self.verticalLayout_11.addLayout(self.horizontalLayout_3)
 
 
         self.vert_layout_main.addWidget(self.group_box_export_to_csv)
@@ -692,13 +704,6 @@ class Ui_MainWindow(object):
         self.text_edit_program_output.setReadOnly(True)
 
         self.verticalLayout_12.addWidget(self.text_edit_program_output)
-
-        self.progressbar_main = QProgressBar(self.group_box_program_output)
-        self.progressbar_main.setObjectName(u"progressbar_main")
-        self.progressbar_main.setFont(font3)
-        self.progressbar_main.setValue(0)
-
-        self.verticalLayout_12.addWidget(self.progressbar_main)
 
 
         self.vert_layout_xml_output.addWidget(self.group_box_program_output)
@@ -1125,6 +1130,7 @@ class Ui_MainWindow(object):
         self.checkbox_group_matches.setText(QCoreApplication.translate("MainWindow", u"Group matches", None))
         self.button_pass_csv_to_converter.setText(QCoreApplication.translate("MainWindow", u"<a href=\"#\" style=\"color:#1763d3;\">Pass CSV Path to Converter</a>", None))
         self.label_file_processing.setText("")
+        self.progressbar_main.setFormat(QCoreApplication.translate("MainWindow", u"%p%", None))
         self.group_box_xml_output.setTitle(QCoreApplication.translate("MainWindow", u"XML OUTPUT", None))
         self.line_edit_xml_output_find_text.setPlaceholderText(QCoreApplication.translate("MainWindow", u"Find text in summary...", None))
 #if QT_CONFIG(tooltip)
@@ -1136,7 +1142,6 @@ class Ui_MainWindow(object):
 #endif // QT_CONFIG(tooltip)
         self.button_find_previous.setText(QCoreApplication.translate("MainWindow", u"Previous", None))
         self.group_box_program_output.setTitle(QCoreApplication.translate("MainWindow", u"PROGRAM OUTPUT", None))
-        self.progressbar_main.setFormat(QCoreApplication.translate("MainWindow", u"%p%", None))
         self.tabWidget.setTabText(self.tabWidget.indexOf(self.tab_xml_evaluation), QCoreApplication.translate("MainWindow", u"XML Evaluation", None))
         self.groupbox_csv_conversion.setTitle(QCoreApplication.translate("MainWindow", u"CSV CONVERSION", None))
         self.label_csv_conversion_desc.setText(QCoreApplication.translate("MainWindow", u"Convert CSV File to a different file type with the Pandas module\n"

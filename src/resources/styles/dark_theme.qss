@@ -90,6 +90,9 @@ QLabel#statusbar_xml_files_count {
 QLabel#label_file_processing {
 	background-color: rgb(49, 51, 56);
 	border: 1px solid #5C5C60;
+	border-radius: 6px;
+	padding: 2px;
+	height: 14px;
 	color: #ffc857;
 	font: bold;
 }
@@ -230,6 +233,7 @@ QProgressBar {
 	background-color: #313338;
 	border: 1px solid #5C5C60;
 	border-radius: 6px;
+	height: 18px;
 	text-align: center;
 	color: #ffffff;
 	padding: 2px;
