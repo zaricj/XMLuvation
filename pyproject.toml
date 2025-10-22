@@ -1,6 +1,6 @@
 [project]
 name = "xmluvation"
-version = "1.3.4"
+version = "1.3.5"
 description = "A XML searcher with XPath expressions, with the ability to export matches to a CSV file."
 readme = "README.md"
 requires-python = ">=3.13"

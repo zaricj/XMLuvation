@@ -3,12 +3,12 @@ import webbrowser
 import datetime
 import os
 from pathlib import Path
+import pandas as pd
 from PySide6.QtWidgets import (
     QMenu,
     QFileDialog,
     QMessageBox,
     QTextEdit,
-    QLineEdit
     
 )
 from PySide6.QtGui import QAction, QShortcut, QKeySequence, QIcon, QMovie
@@ -88,6 +88,7 @@ class SignalHandlerMixin:
         # Line Edit events
         self.ui.line_edit_xml_folder_path_input.textChanged.connect(self.on_XMLFolderPathChanged)
         self.ui.line_edit_profile_cleanup_csv_file_path.textChanged.connect(self.on_CSVProfileCleanupInputChanged)
+        self.ui.line_edit_filter_table.textChanged.connect(self.on_filterTable)
 
         # ComboBox events
         self.ui.combobox_tag_names.currentTextChanged.connect(self.cb_state_controller.on_tag_name_changed)
@@ -112,11 +113,14 @@ class SignalHandlerMixin:
         self.ui.button_find_previous.clicked.connect(self.on_XMLOutputSearchPrevious)
         self.ui.button_csv_conversion_open_file.clicked.connect(self.on_OpenConvertedFile)
         self.ui.button_convert_hexadecimal_to_decimal.clicked.connect(self.on_ConvertHexToDecimal)
+        self.ui.button_load_csv.clicked.connect(self.on_loadCSVFileForTable)
+        self.ui.button_clear_table.clicked.connect(self.on_clearTable)
 
         # CheckBox events
         self.ui.checkbox_write_index_column.toggled.connect(self.on_writeIndexCheckBoxToggled)
         self.ui.checkbox_group_matches.toggled.connect(self.on_groupMatchesCheckBoxToggled)
-        
+    
+    # Handle the enabled/disabled state of all the specified widgets that are in the search and export to csv GroupBox
     def _set_ui_widgets_disabled(self, state: bool):
         """Helper to disable/enable UI widgets during operations."""
         self.ui.button_browse_xml_folder.setDisabled(state)
@@ -128,6 +132,11 @@ class SignalHandlerMixin:
         self.ui.button_start_csv_export.setDisabled(state)
         self.ui.line_edit_xml_folder_path_input.setReadOnly(state)
         self.ui.line_edit_csv_output_path.setReadOnly(state)
+    
+    # Handle the enabled/disabled state of all the specified widgets that affect the Table GroupBox
+    def _set_ui_widgets_table_disabled(self, state: bool):
+        self.ui.button_clear_table.setDisabled(state)
+        self.ui.line_edit_filter_table.setDisabled(state)
 
     # ============= SLOT METHODS =============
     
@@ -661,7 +670,52 @@ class SignalHandlerMixin:
         except Exception as ex:
             message = f"An exception of type {type(ex).__name__} occurred. Arguments: {ex.args!r}"
             QMessageBox.critical(self, "Exception on starting csv convert to other filetype", message)
+            
+    @Slot()
+    def on_loadCSVFileForTable(self: "MainWindow"):
+        """Browse for profile cleanup CSV file."""
+        try:
+            csv_path = self.helper._browse_file_helper_non_input(
+                dialog_message="Select csv file",
+                file_extension_filter="CSV File (*.csv)",
+            )
+            if csv_path:
+                # Convert to a pandas dataframe
+                results_df = pd.read_csv(csv_path)
+                # Fill table widget
+                self._populate_results_table(results_df)
+                self._set_ui_widgets_table_disabled(False)
+                self.ui.text_edit_csv_output.setText("CSV Data loaded successfully into the table!")
+                
+        except Exception as ex:
+            message = f"An exception of type {type(ex).__name__} occurred. Arguments: {ex.args!r}"
+            QMessageBox.critical(self, "Exception on loading csv file for table", message)
+            
+    @Slot()
+    def on_clearTable(self):
+        """Clears all data from the QTableWidget"""
+        if self.ui.table_csv_data.columnCount() > 0:
+            self.ui.table_csv_data.clearContents()
+            self.ui.table_csv_data.setRowCount(0)
+            self.ui.text_edit_csv_output.showText("Cleared results table!")
+            # Disabled widgets again
+            self._set_ui_widgets_table_disabled(True)
+        
+    @Slot()
+    def on_filterTable(self, text: str):
+        """Filter QTableWidget rows based on the search text"""
+        text = text.strip().lower()
 
+        for row in range(self.ui.table_csv_data.rowCount()):
+            row_match = False
+            for col in range(self.ui.table_csv_data.columnCount()):
+                item = self.ui.table_csv_data.item(row, col)
+                if item and text in item.text().lower():
+                    row_match = True
+                    break
+
+            self.ui.table_csv_data.setRowHidden(row, not row_match)
+            
     @Slot()
     def on_browseProfileCleanupCSV(self):
         """Browse for profile cleanup CSV file."""

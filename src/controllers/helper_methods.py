@@ -43,6 +43,26 @@ class HelperMethods:
                 message,
             )
 
+    def _browse_file_helper_non_input(self, dialog_message: str, file_extension_filter: str) -> str:
+        """Helper for file browsing dialogs.
+        
+        Returns:
+            Path of selected file as string.
+        """
+        try:
+            file_name, _ = QFileDialog.getOpenFileName(
+                self.main_window, caption=dialog_message, filter=file_extension_filter
+            )
+            if file_name:
+                return file_name
+        except Exception as ex:
+            message = f"An exception of type {type(ex).__name__} occurred. Arguments: {ex.args!r}"
+            QMessageBox.critical(
+                self.main_window,
+                "An exception occurred in browse file method",
+                message,
+            )
+
     def _browse_file_helper(
         self, dialog_message: str, line_widget: QLineEdit, file_extension_filter: str
     ):
@@ -57,7 +77,7 @@ class HelperMethods:
             message = f"An exception of type {type(ex).__name__} occurred. Arguments: {ex.args!r}"
             QMessageBox.critical(
                 self.main_window,
-                "An exception occurred in browse folder method",
+                "An exception occurred in browse file method",
                 message,
             )
 

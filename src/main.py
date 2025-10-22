@@ -2,6 +2,7 @@
 import sys
 import os
 from pathlib import Path
+import pandas as pd
 from typing import List, Optional, Dict, Any, TYPE_CHECKING
 
 from PySide6.QtWidgets import (
@@ -9,8 +10,9 @@ from PySide6.QtWidgets import (
     QMainWindow,
     QMessageBox,
     QDialog,
-    QListWidget
-)
+    QListWidget,
+    QTableWidgetItem)
+
 from PySide6.QtGui import QIcon, QCloseEvent, QGuiApplication, QAction, QDesktopServices
 from PySide6.QtCore import (
     Qt,
@@ -19,7 +21,7 @@ from PySide6.QtCore import (
     QTextStream,
     QIODevice,
     QSettings,
-    QThreadPool,
+    QThreadPool
 )
 
 if TYPE_CHECKING:
@@ -50,7 +52,7 @@ ICON_PATH: Path = CURRENT_DIR / "resources" / "icons" / "xml_256px.ico"
 DARK_THEME_QMENU_ICON: Path = CURRENT_DIR / "resources" / "images" / "dark.png"
 LIGHT_THEME_QMENU_ICON: Path = CURRENT_DIR / "resources" / "images" / "light.png"
 
-APP_VERSION: str = "v1.3.4"
+APP_VERSION: str = "v1.3.5"
 APP_NAME: str = "XMLuvation"
 AUTHOR: str = "Jovan"
 
@@ -132,6 +134,7 @@ class MainWindow(QMainWindow, SignalHandlerMixin):
         self.setup_application()
         self._initialize_theme()
         self.setup_widgets_and_visibility_states()
+        self.setup_widgets_enabled_states()
 
     def initialize_attributes(self):
         from controllers.state_controller import ComboboxStateHandler
@@ -208,6 +211,25 @@ class MainWindow(QMainWindow, SignalHandlerMixin):
         # Apply the setting unconditionally to the QAction
         self.ui.prompt_on_exit_action.setChecked(bool(prompt_value))
         
+
+    def setup_application(self):
+        self.connect_ui_events()
+        self.connect_menu_bar_actions()
+        self._update_paths_menu()
+        self._update_autofill_menu()
+
+    def setup_widgets_and_visibility_states(self):
+        self.ui.button_find_next.hide()
+        self.ui.button_find_previous.hide()
+        self.ui.button_abort_csv_export.hide()
+        self.ui.progressbar_main.hide()
+        self.ui.label_file_processing.hide()
+        self.ui.line_edit_xml_output_find_text.hide()
+        
+    def setup_widgets_enabled_states(self):
+        self.ui.button_clear_table.setDisabled(True)
+        self.ui.line_edit_filter_table.setDisabled(True)
+        
     def _initialize_theme_file(self, theme_file: str):
         """Initialize theme from file."""
         try:
@@ -237,21 +259,7 @@ class MainWindow(QMainWindow, SignalHandlerMixin):
                 file.close()
         except Exception as ex:
             QMessageBox.critical(self, "Theme load error", f"Failed to load theme: {ex}")
-
-    def setup_application(self):
-        self.connect_ui_events()
-        self.connect_menu_bar_actions()
-        self._update_paths_menu()
-        self._update_autofill_menu()
-
-    def setup_widgets_and_visibility_states(self):
-        self.ui.button_find_next.hide()
-        self.ui.button_find_previous.hide()
-        self.ui.button_abort_csv_export.hide()
-        self.ui.progressbar_main.hide()
-        self.ui.label_file_processing.hide()
-        self.ui.line_edit_xml_output_find_text.hide()
-        
+            
     # Helper method to save apps settings in a more DRY way
     def _save_app_settings(self):
         self.settings.setValue("app_theme", self.current_theme)
@@ -279,8 +287,24 @@ class MainWindow(QMainWindow, SignalHandlerMixin):
         super().closeEvent(event)
 
     # ============= HELPER METHODS =============
+    
+    # Populate the Table Widget
+    def _populate_results_table(self, results: pd.DataFrame):
+        """Populate the results table with DataFrame data"""
+        self.ui.table_csv_data.clear()
 
+        if results.empty:
+            return
 
+        self.ui.table_csv_data.setRowCount(len(results))
+        self.ui.table_csv_data.setColumnCount(len(results.columns))
+        self.ui.table_csv_data.setHorizontalHeaderLabels(
+            results.columns.tolist())
+
+        for row, record in results.iterrows():
+            for col, (key, value) in enumerate(record.items()):
+                item = QTableWidgetItem(str(value))
+                self.ui.table_csv_data.setItem(row, col, item)
 
     def _parse_xml_file(self, xml_file_path: str):
         """Parse XML file and display content."""
