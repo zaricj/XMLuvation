@@ -50,7 +50,7 @@ ICON_PATH: Path = CURRENT_DIR / "resources" / "icons" / "xml_256px.ico"
 DARK_THEME_QMENU_ICON: Path = CURRENT_DIR / "resources" / "images" / "dark.png"
 LIGHT_THEME_QMENU_ICON: Path = CURRENT_DIR / "resources" / "images" / "light.png"
 
-APP_VERSION: str = "v1.3.3"
+APP_VERSION: str = "v1.3.4"
 APP_NAME: str = "XMLuvation"
 AUTHOR: str = "Jovan"
 
