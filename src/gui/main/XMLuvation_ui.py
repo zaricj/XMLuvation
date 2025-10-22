@@ -1083,7 +1083,7 @@ class Ui_MainWindow(object):
         self.retranslateUi(MainWindow)
         self.group_box_program_output.toggled.connect(self.text_edit_program_output.setVisible)
 
-        self.tabWidget.setCurrentIndex(1)
+        self.tabWidget.setCurrentIndex(0)
         self.combobox_tag_names.setCurrentIndex(-1)
         self.combobox_tag_values.setCurrentIndex(-1)
         self.combobox_attribute_names.setCurrentIndex(-1)
