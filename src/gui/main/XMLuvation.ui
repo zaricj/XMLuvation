@@ -9,8 +9,8 @@
    <rect>
     <x>0</x>
     <y>0</y>
-    <width>1086</width>
-    <height>840</height>
+    <width>972</width>
+    <height>860</height>
    </rect>
   </property>
   <property name="font">
@@ -71,7 +71,7 @@
        <enum>QTabWidget::TabPosition::North</enum>
       </property>
       <property name="currentIndex">
-       <number>0</number>
+       <number>1</number>
       </property>
       <property name="usesScrollButtons">
        <bool>false</bool>
@@ -169,6 +169,9 @@
                  </property>
                  <property name="styleSheet">
                   <string notr="true"/>
+                 </property>
+                 <property name="frameShape">
+                  <enum>QFrame::Shape::StyledPanel</enum>
                  </property>
                  <property name="text">
                   <string/>
@@ -1746,6 +1749,12 @@
                 <verstretch>0</verstretch>
                </sizepolicy>
               </property>
+              <property name="minimumSize">
+               <size>
+                <width>0</width>
+                <height>0</height>
+               </size>
+              </property>
               <property name="font">
                <font>
                 <family>Microsoft YaHei UI</family>
@@ -2016,6 +2025,9 @@ Supported output file types: Excel, Markdown, HTML and JSON</string>
                    <property name="toolTip">
                     <string>Write an index colum starting at 1 for the supported output file formats.</string>
                    </property>
+                   <property name="autoFillBackground">
+                    <bool>false</bool>
+                   </property>
                    <property name="text">
                     <string>Write index column?</string>
                    </property>
@@ -2046,13 +2058,6 @@ Supported output file types: Excel, Markdown, HTML and JSON</string>
                <item>
                 <layout class="QHBoxLayout" name="horizontalLayout_9">
                  <item>
-                  <widget class="QLabel" name="label">
-                   <property name="text">
-                    <string>File path:</string>
-                   </property>
-                  </widget>
-                 </item>
-                 <item>
                   <widget class="QLineEdit" name="line_edit_csv_conversion_open_file_path">
                    <property name="enabled">
                     <bool>true</bool>
@@ -2060,10 +2065,26 @@ Supported output file types: Excel, Markdown, HTML and JSON</string>
                    <property name="readOnly">
                     <bool>true</bool>
                    </property>
+                   <property name="placeholderText">
+                    <string>The converted file's path will be set here after conversion...</string>
+                   </property>
                   </widget>
                  </item>
                  <item>
                   <widget class="QPushButton" name="button_csv_conversion_open_file">
+                   <property name="enabled">
+                    <bool>true</bool>
+                   </property>
+                   <property name="font">
+                    <font>
+                     <family>Microsoft YaHei UI</family>
+                     <pointsize>10</pointsize>
+                     <italic>false</italic>
+                     <bold>false</bold>
+                     <underline>false</underline>
+                     <strikeout>false</strikeout>
+                    </font>
+                   </property>
                    <property name="toolTip">
                     <string>Open the converted file directly</string>
                    </property>
@@ -2356,7 +2377,7 @@ Supported output file types: Excel, Markdown, HTML and JSON</string>
                 </layout>
                </item>
                <item>
-                <spacer name="verticalSpacer_2">
+                <spacer name="verticalSpacer_3">
                  <property name="orientation">
                   <enum>Qt::Orientation::Vertical</enum>
                  </property>
@@ -2388,7 +2409,7 @@ Supported output file types: Excel, Markdown, HTML and JSON</string>
                 </widget>
                </item>
                <item>
-                <spacer name="verticalSpacer">
+                <spacer name="verticalSpacer_2">
                  <property name="orientation">
                   <enum>Qt::Orientation::Vertical</enum>
                  </property>
@@ -2399,6 +2420,82 @@ Supported output file types: Excel, Markdown, HTML and JSON</string>
                   </size>
                  </property>
                 </spacer>
+               </item>
+              </layout>
+             </widget>
+            </item>
+            <item>
+             <widget class="QGroupBox" name="groupbox_hexadecimal_to_decimal">
+              <property name="font">
+               <font>
+                <family>Microsoft YaHei UI</family>
+                <pointsize>10</pointsize>
+                <italic>false</italic>
+                <bold>true</bold>
+                <underline>false</underline>
+                <strikeout>false</strikeout>
+               </font>
+              </property>
+              <property name="title">
+               <string>HEXADECIMAL TO DECIMAL CONVERTER</string>
+              </property>
+              <layout class="QVBoxLayout" name="verticalLayout_2">
+               <item>
+                <layout class="QFormLayout" name="formLayout">
+                 <item row="0" column="0">
+                  <widget class="QLabel" name="label_from_hexadecimal">
+                   <property name="text">
+                    <string>From Hexadecimal:</string>
+                   </property>
+                  </widget>
+                 </item>
+                 <item row="0" column="1">
+                  <widget class="QLabel" name="label_to_decimal">
+                   <property name="text">
+                    <string>To Decimal:</string>
+                   </property>
+                  </widget>
+                 </item>
+                 <item row="1" column="0">
+                  <widget class="QLineEdit" name="line_edit_hexadecimal">
+                   <property name="sizePolicy">
+                    <sizepolicy hsizetype="Expanding" vsizetype="Fixed">
+                     <horstretch>0</horstretch>
+                     <verstretch>0</verstretch>
+                    </sizepolicy>
+                   </property>
+                   <property name="minimumSize">
+                    <size>
+                     <width>250</width>
+                     <height>0</height>
+                    </size>
+                   </property>
+                   <property name="clearButtonEnabled">
+                    <bool>true</bool>
+                   </property>
+                  </widget>
+                 </item>
+                 <item row="1" column="1">
+                  <widget class="QLineEdit" name="line_edit_decimal">
+                   <property name="minimumSize">
+                    <size>
+                     <width>300</width>
+                     <height>0</height>
+                    </size>
+                   </property>
+                   <property name="clearButtonEnabled">
+                    <bool>true</bool>
+                   </property>
+                  </widget>
+                 </item>
+                </layout>
+               </item>
+               <item>
+                <widget class="QPushButton" name="button_convert_hexadecimal_to_decimal">
+                 <property name="text">
+                  <string>Convert</string>
+                 </property>
+                </widget>
                </item>
               </layout>
              </widget>
@@ -2466,7 +2563,7 @@ Supported output file types: Excel, Markdown, HTML and JSON</string>
     <rect>
      <x>0</x>
      <y>0</y>
-     <width>1086</width>
+     <width>972</width>
      <height>33</height>
     </rect>
    </property>

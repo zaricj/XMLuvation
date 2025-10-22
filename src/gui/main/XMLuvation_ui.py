@@ -16,13 +16,13 @@ from PySide6.QtGui import (QAction, QBrush, QColor, QConicalGradient,
     QIcon, QImage, QKeySequence, QLinearGradient,
     QPainter, QPalette, QPixmap, QRadialGradient,
     QTransform)
-from PySide6.QtWidgets import (QApplication, QCheckBox, QComboBox, QFrame,
-    QGroupBox, QHBoxLayout, QLabel, QLayout,
-    QLineEdit, QListView, QListWidget, QListWidgetItem,
-    QMainWindow, QMenu, QMenuBar, QProgressBar,
-    QPushButton, QRadioButton, QSizePolicy, QSpacerItem,
-    QSplitter, QTabWidget, QTextEdit, QVBoxLayout,
-    QWidget)
+from PySide6.QtWidgets import (QApplication, QCheckBox, QComboBox, QFormLayout,
+    QFrame, QGroupBox, QHBoxLayout, QLabel,
+    QLayout, QLineEdit, QListView, QListWidget,
+    QListWidgetItem, QMainWindow, QMenu, QMenuBar,
+    QProgressBar, QPushButton, QRadioButton, QSizePolicy,
+    QSpacerItem, QSplitter, QTabWidget, QTextEdit,
+    QVBoxLayout, QWidget)
 import resources.qrc.xmluvation_resources_rc
 
 class Ui_MainWindow(object):
@@ -30,7 +30,7 @@ class Ui_MainWindow(object):
         if not MainWindow.objectName():
             MainWindow.setObjectName(u"MainWindow")
         MainWindow.setEnabled(True)
-        MainWindow.resize(1086, 840)
+        MainWindow.resize(972, 860)
         font = QFont()
         font.setFamilies([u"Calibri"])
         font.setPointSize(10)
@@ -155,6 +155,7 @@ class Ui_MainWindow(object):
         sizePolicy1.setHeightForWidth(self.statusbar_xml_files_count.sizePolicy().hasHeightForWidth())
         self.statusbar_xml_files_count.setSizePolicy(sizePolicy1)
         self.statusbar_xml_files_count.setStyleSheet(u"")
+        self.statusbar_xml_files_count.setFrameShape(QFrame.Shape.StyledPanel)
 
         self.verticalLayout_7.addWidget(self.statusbar_xml_files_count)
 
@@ -689,6 +690,7 @@ class Ui_MainWindow(object):
         self.group_box_program_output.setObjectName(u"group_box_program_output")
         sizePolicy1.setHeightForWidth(self.group_box_program_output.sizePolicy().hasHeightForWidth())
         self.group_box_program_output.setSizePolicy(sizePolicy1)
+        self.group_box_program_output.setMinimumSize(QSize(0, 0))
         self.group_box_program_output.setFont(font4)
         self.group_box_program_output.setCheckable(True)
         self.verticalLayout_12 = QVBoxLayout(self.group_box_program_output)
@@ -791,6 +793,7 @@ class Ui_MainWindow(object):
         sizePolicy6.setHeightForWidth(self.checkbox_write_index_column.sizePolicy().hasHeightForWidth())
         self.checkbox_write_index_column.setSizePolicy(sizePolicy6)
         self.checkbox_write_index_column.setFont(font3)
+        self.checkbox_write_index_column.setAutoFillBackground(False)
 
         self.hor_layout_csv_conversion_path_output.addWidget(self.checkbox_write_index_column)
 
@@ -805,11 +808,6 @@ class Ui_MainWindow(object):
 
         self.horizontalLayout_9 = QHBoxLayout()
         self.horizontalLayout_9.setObjectName(u"horizontalLayout_9")
-        self.label = QLabel(self.groupbox_csv_conversion)
-        self.label.setObjectName(u"label")
-
-        self.horizontalLayout_9.addWidget(self.label)
-
         self.line_edit_csv_conversion_open_file_path = QLineEdit(self.groupbox_csv_conversion)
         self.line_edit_csv_conversion_open_file_path.setObjectName(u"line_edit_csv_conversion_open_file_path")
         self.line_edit_csv_conversion_open_file_path.setEnabled(True)
@@ -819,6 +817,8 @@ class Ui_MainWindow(object):
 
         self.button_csv_conversion_open_file = QPushButton(self.groupbox_csv_conversion)
         self.button_csv_conversion_open_file.setObjectName(u"button_csv_conversion_open_file")
+        self.button_csv_conversion_open_file.setEnabled(True)
+        self.button_csv_conversion_open_file.setFont(font3)
 
         self.horizontalLayout_9.addWidget(self.button_csv_conversion_open_file)
 
@@ -949,9 +949,9 @@ class Ui_MainWindow(object):
 
         self.verticalLayout_10.addLayout(self.horizontalLayout_7)
 
-        self.verticalSpacer_2 = QSpacerItem(20, 40, QSizePolicy.Policy.Minimum, QSizePolicy.Policy.Expanding)
+        self.verticalSpacer_3 = QSpacerItem(20, 40, QSizePolicy.Policy.Minimum, QSizePolicy.Policy.Expanding)
 
-        self.verticalLayout_10.addItem(self.verticalSpacer_2)
+        self.verticalLayout_10.addItem(self.verticalSpacer_3)
 
         self.label_loading_gif = QLabel(self.groupbox_lobster_profiles_cleanup)
         self.label_loading_gif.setObjectName(u"label_loading_gif")
@@ -962,12 +962,56 @@ class Ui_MainWindow(object):
 
         self.verticalLayout_10.addWidget(self.label_loading_gif)
 
-        self.verticalSpacer = QSpacerItem(20, 40, QSizePolicy.Policy.Minimum, QSizePolicy.Policy.Expanding)
+        self.verticalSpacer_2 = QSpacerItem(20, 40, QSizePolicy.Policy.Minimum, QSizePolicy.Policy.Expanding)
 
-        self.verticalLayout_10.addItem(self.verticalSpacer)
+        self.verticalLayout_10.addItem(self.verticalSpacer_2)
 
 
         self.verticalLayout.addWidget(self.groupbox_lobster_profiles_cleanup)
+
+        self.groupbox_hexadecimal_to_decimal = QGroupBox(self.tab_csv_conversion)
+        self.groupbox_hexadecimal_to_decimal.setObjectName(u"groupbox_hexadecimal_to_decimal")
+        self.groupbox_hexadecimal_to_decimal.setFont(font4)
+        self.verticalLayout_2 = QVBoxLayout(self.groupbox_hexadecimal_to_decimal)
+        self.verticalLayout_2.setObjectName(u"verticalLayout_2")
+        self.formLayout = QFormLayout()
+        self.formLayout.setObjectName(u"formLayout")
+        self.label_from_hexadecimal = QLabel(self.groupbox_hexadecimal_to_decimal)
+        self.label_from_hexadecimal.setObjectName(u"label_from_hexadecimal")
+
+        self.formLayout.setWidget(0, QFormLayout.ItemRole.LabelRole, self.label_from_hexadecimal)
+
+        self.label_to_decimal = QLabel(self.groupbox_hexadecimal_to_decimal)
+        self.label_to_decimal.setObjectName(u"label_to_decimal")
+
+        self.formLayout.setWidget(0, QFormLayout.ItemRole.FieldRole, self.label_to_decimal)
+
+        self.line_edit_hexadecimal = QLineEdit(self.groupbox_hexadecimal_to_decimal)
+        self.line_edit_hexadecimal.setObjectName(u"line_edit_hexadecimal")
+        sizePolicy3.setHeightForWidth(self.line_edit_hexadecimal.sizePolicy().hasHeightForWidth())
+        self.line_edit_hexadecimal.setSizePolicy(sizePolicy3)
+        self.line_edit_hexadecimal.setMinimumSize(QSize(250, 0))
+        self.line_edit_hexadecimal.setClearButtonEnabled(True)
+
+        self.formLayout.setWidget(1, QFormLayout.ItemRole.LabelRole, self.line_edit_hexadecimal)
+
+        self.line_edit_decimal = QLineEdit(self.groupbox_hexadecimal_to_decimal)
+        self.line_edit_decimal.setObjectName(u"line_edit_decimal")
+        self.line_edit_decimal.setMinimumSize(QSize(300, 0))
+        self.line_edit_decimal.setClearButtonEnabled(True)
+
+        self.formLayout.setWidget(1, QFormLayout.ItemRole.FieldRole, self.line_edit_decimal)
+
+
+        self.verticalLayout_2.addLayout(self.formLayout)
+
+        self.button_convert_hexadecimal_to_decimal = QPushButton(self.groupbox_hexadecimal_to_decimal)
+        self.button_convert_hexadecimal_to_decimal.setObjectName(u"button_convert_hexadecimal_to_decimal")
+
+        self.verticalLayout_2.addWidget(self.button_convert_hexadecimal_to_decimal)
+
+
+        self.verticalLayout.addWidget(self.groupbox_hexadecimal_to_decimal)
 
 
         self.main_layout_csv_conversion_and_cleanup_tab.addLayout(self.verticalLayout)
@@ -998,7 +1042,7 @@ class Ui_MainWindow(object):
         MainWindow.setCentralWidget(self.centralwidget)
         self.menu_bar = QMenuBar(MainWindow)
         self.menu_bar.setObjectName(u"menu_bar")
-        self.menu_bar.setGeometry(QRect(0, 0, 1086, 33))
+        self.menu_bar.setGeometry(QRect(0, 0, 972, 33))
         self.file_menu = QMenu(self.menu_bar)
         self.file_menu.setObjectName(u"file_menu")
         self.recent_xpath_expressions_menu = QMenu(self.file_menu)
@@ -1039,7 +1083,7 @@ class Ui_MainWindow(object):
         self.retranslateUi(MainWindow)
         self.group_box_program_output.toggled.connect(self.text_edit_program_output.setVisible)
 
-        self.tabWidget.setCurrentIndex(0)
+        self.tabWidget.setCurrentIndex(1)
         self.combobox_tag_names.setCurrentIndex(-1)
         self.combobox_tag_values.setCurrentIndex(-1)
         self.combobox_attribute_names.setCurrentIndex(-1)
@@ -1165,7 +1209,7 @@ class Ui_MainWindow(object):
         self.button_csv_conversion_convert.setToolTip(QCoreApplication.translate("MainWindow", u"Convert the CSV file to the selected file type.", None))
 #endif // QT_CONFIG(tooltip)
         self.button_csv_conversion_convert.setText(QCoreApplication.translate("MainWindow", u"Convert File", None))
-        self.label.setText(QCoreApplication.translate("MainWindow", u"File path:", None))
+        self.line_edit_csv_conversion_open_file_path.setPlaceholderText(QCoreApplication.translate("MainWindow", u"The converted file's path will be set here after conversion...", None))
 #if QT_CONFIG(tooltip)
         self.button_csv_conversion_open_file.setToolTip(QCoreApplication.translate("MainWindow", u"Open the converted file directly", None))
 #endif // QT_CONFIG(tooltip)
@@ -1194,6 +1238,10 @@ class Ui_MainWindow(object):
 #endif // QT_CONFIG(tooltip)
         self.button_drop_csv_header.setText(QCoreApplication.translate("MainWindow", u"Drop Header", None))
         self.label_loading_gif.setText("")
+        self.groupbox_hexadecimal_to_decimal.setTitle(QCoreApplication.translate("MainWindow", u"HEXADECIMAL TO DECIMAL CONVERTER", None))
+        self.label_from_hexadecimal.setText(QCoreApplication.translate("MainWindow", u"From Hexadecimal:", None))
+        self.label_to_decimal.setText(QCoreApplication.translate("MainWindow", u"To Decimal:", None))
+        self.button_convert_hexadecimal_to_decimal.setText(QCoreApplication.translate("MainWindow", u"Convert", None))
         self.group_box_tab2_program_output.setTitle(QCoreApplication.translate("MainWindow", u"PROGRAM OUTPUT", None))
         self.tabWidget.setTabText(self.tabWidget.indexOf(self.tab_csv_conversion), QCoreApplication.translate("MainWindow", u"CSV Conversion and Cleanup", None))
         self.file_menu.setTitle(QCoreApplication.translate("MainWindow", u"Menu", None))

@@ -1,10 +1,29 @@
 from PySide6.QtWidgets import QMessageBox, QFileDialog, QLineEdit
+from PySide6.QtGui import QDesktopServices
+from PySide6.QtCore import QUrl
+import os
 
 
 class HelperMethods:
     def __init__(self, main_window):
         """Accepts a reference to the main window so dialogs have a valid parent."""
         self.main_window = main_window
+        
+
+    def _open_file_directly(self, file_path: str):
+        """Helper method to open file in default application."""
+        if file_path and os.path.exists(file_path):
+            try:
+                QDesktopServices.openUrl(QUrl.fromLocalFile(file_path))
+            except Exception as ex:
+                message = f"An exception of type {type(ex).__name__} occurred. Arguments: {ex.args!r}"
+                QMessageBox.critical(self, "An exception occurred", message)
+        else:
+            QMessageBox.warning(
+                self,
+                "Error",
+                f"Path does not exist or is not a valid path:\n{file_path}"
+            )
 
     def _browse_folder_helper(self, dialog_message: str, line_widget: QLineEdit):
         """Helper for folder browsing dialogs."""

@@ -7,7 +7,8 @@ from PySide6.QtWidgets import (
     QMenu,
     QFileDialog,
     QMessageBox,
-    QTextEdit
+    QTextEdit,
+    QLineEdit
     
 )
 from PySide6.QtGui import QAction, QShortcut, QKeySequence, QIcon, QMovie
@@ -110,10 +111,23 @@ class SignalHandlerMixin:
         self.ui.button_find_next.clicked.connect(self.on_XMLOutputSearchNext)
         self.ui.button_find_previous.clicked.connect(self.on_XMLOutputSearchPrevious)
         self.ui.button_csv_conversion_open_file.clicked.connect(self.on_OpenConvertedFile)
+        self.ui.button_convert_hexadecimal_to_decimal.clicked.connect(self.on_ConvertHexToDecimal)
 
         # CheckBox events
         self.ui.checkbox_write_index_column.toggled.connect(self.on_writeIndexCheckBoxToggled)
         self.ui.checkbox_group_matches.toggled.connect(self.on_groupMatchesCheckBoxToggled)
+        
+    def _set_ui_widgets_disabled(self, state: bool):
+        """Helper to disable/enable UI widgets during operations."""
+        self.ui.button_browse_xml_folder.setDisabled(state)
+        self.ui.button_read_xml.setDisabled(state)
+        self.ui.button_build_xpath.setDisabled(state)
+        self.ui.button_add_xpath_to_list.setDisabled(state)
+        self.ui.button_browse_csv.setDisabled(state)
+        self.ui.button_browse_csv_conversion_path_input.setDisabled(state)
+        self.ui.button_start_csv_export.setDisabled(state)
+        self.ui.line_edit_xml_folder_path_input.setReadOnly(state)
+        self.ui.line_edit_csv_output_path.setReadOnly(state)
 
     # ============= SLOT METHODS =============
     
@@ -860,16 +874,26 @@ class SignalHandlerMixin:
     def on_OpenConvertedFile(self: "MainWindow"):
         """Open the converted file in the default application."""
         file_path = self.ui.line_edit_csv_conversion_open_file_path.text()
-        self._open_file_directly(file_path)
-
-    def _set_ui_widgets_disabled(self, state: bool):
-        """Helper to disable/enable UI widgets during operations."""
-        self.ui.button_browse_xml_folder.setDisabled(state)
-        self.ui.button_read_xml.setDisabled(state)
-        self.ui.button_build_xpath.setDisabled(state)
-        self.ui.button_add_xpath_to_list.setDisabled(state)
-        self.ui.button_browse_csv.setDisabled(state)
-        self.ui.button_browse_csv_conversion_path_input.setDisabled(state)
-        self.ui.button_start_csv_export.setDisabled(state)
-        self.ui.line_edit_xml_folder_path_input.setReadOnly(state)
-        self.ui.line_edit_csv_output_path.setReadOnly(state)
+        self.helper._open_file_directly(file_path)
+        
+    @Slot()
+    def on_ConvertHexToDecimal(self) -> None:
+        """
+        Converts the instance's hexadecimal string to its decimal equivalent.
+        Returns:
+            None
+        """
+        try:
+            # Clean up hex string (removing the delimiter ':' from the string)
+            hex_string = self.ui.line_edit_hexadecimal.text()
+            if ":" in hex_string:
+                hex_string = hex_string.replace(":", "")
+            decimal_value = int(hex_string, 16)
+            # Set decimal value to the second input field
+            self.ui.line_edit_decimal.setText(str(decimal_value))
+        except ValueError as ve:
+            QMessageBox.critical(
+                self,
+                "Invalid Hexadecimal Input",
+                f"The provided input is not a valid hexadecimal string.\nError details: {ve}"
+            )

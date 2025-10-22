@@ -9,8 +9,6 @@ from PySide6.QtWidgets import (
     QMainWindow,
     QMessageBox,
     QDialog,
-    QFileDialog,
-    QLineEdit,
     QListWidget
 )
 from PySide6.QtGui import QIcon, QCloseEvent, QGuiApplication, QAction, QDesktopServices
@@ -308,20 +306,6 @@ class MainWindow(QMainWindow, SignalHandlerMixin):
                 self,
                 "Error",
                 f"Path does not exist or is not a valid path:\n{folder_path}"
-            )
-    def _open_file_directly(self, file_path: str):
-        """Helper method to open file in default application."""
-        if file_path and os.path.exists(file_path):
-            try:
-                QDesktopServices.openUrl(QUrl.fromLocalFile(file_path))
-            except Exception as ex:
-                message = f"An exception of type {type(ex).__name__} occurred. Arguments: {ex.args!r}"
-                QMessageBox.critical(self, "An exception occurred", message)
-        else:
-            QMessageBox.warning(
-                self,
-                "Error",
-                f"Path does not exist or is not a valid path:\n{file_path}"
             )
 
     def _add_recent_xpath_expression(self, expression: str):
