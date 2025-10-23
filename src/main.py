@@ -10,8 +10,7 @@ from PySide6.QtWidgets import (
     QMainWindow,
     QMessageBox,
     QDialog,
-    QListWidget,
-    QTableWidgetItem)
+    QListWidget)
 
 from PySide6.QtGui import QIcon, QCloseEvent, QGuiApplication, QAction, QDesktopServices
 from PySide6.QtCore import (
@@ -32,10 +31,17 @@ if TYPE_CHECKING:
     )
     from modules.config_handler import ConfigHandler
 
-from gui.main.XMLuvation_ui import Ui_MainWindow
-from controllers.signal_handlers import SignalHandlerMixin
-from controllers.helper_methods import HelperMethods
-from dialogs.exit_dialog import ExitDialog
+from ui.dialogs.exit_dialog.exit_dialog import ExitDialog
+
+from mixins.menu_actions_mixin import MenuActionsMixin
+from mixins.button_actions_mixin import ButtonActionsMixin
+from mixins.context_menu_mixin import ContextMenuMixin
+from mixins.signal_slots_mixin import SignalSlotsMixin
+from mixins.line_edit_actions_mixin import LineEditActionsMixin
+from mixins.keyboard_shortcut_actions_mixin import KeyboardShortcutActionsMixin
+from mixins.checkbox_actions_mixin import CheckboxActionsMixin
+from mixins.combobox_actions_mixin import ComboboxActionsMixin
+from ui.widgets.main.XMLuvation_ui import Ui_MainWindow
 
 # ----------------------------
 # Constants
@@ -44,13 +50,13 @@ CURRENT_DIR = Path(__file__).parent
 GUI_CONFIG_DIRECTORY: Path = CURRENT_DIR / "config"
 GUI_CONFIG_FILE_PATH: Path = GUI_CONFIG_DIRECTORY / "config.json"
 
-DARK_THEME_PATH: Path = CURRENT_DIR / "resources" / "styles" / "dark_theme.qss"
-LIGHT_THEME_PATH: Path = CURRENT_DIR / "resources" / "styles" / "light_theme.qss"
+DARK_THEME_PATH: Path = CURRENT_DIR / "ui" / "resources" / "styles" / "dark_theme.qss"
+LIGHT_THEME_PATH: Path = CURRENT_DIR / "ui" / "resources" / "styles" / "light_theme.qss"
 
-ICON_PATH: Path = CURRENT_DIR / "resources" / "icons" / "xml_256px.ico"
+ICON_PATH: Path = CURRENT_DIR / "ui" / "resources" / "icons" / "xml_256px.ico"
 
-DARK_THEME_QMENU_ICON: Path = CURRENT_DIR / "resources" / "images" / "dark.png"
-LIGHT_THEME_QMENU_ICON: Path = CURRENT_DIR / "resources" / "images" / "light.png"
+DARK_THEME_QMENU_ICON: Path = CURRENT_DIR / "ui" / "resources" / "images" / "dark.png"
+LIGHT_THEME_QMENU_ICON: Path = CURRENT_DIR / "ui" / "resources" / "images" / "light.png"
 
 APP_VERSION: str = "v1.3.5"
 APP_NAME: str = "XMLuvation"
@@ -97,7 +103,16 @@ def restore_window_state(window: QMainWindow, settings: QSettings):
 # ----------------------------
 # MainWindow class
 # ----------------------------
-class MainWindow(QMainWindow, SignalHandlerMixin):
+class MainWindow(QMainWindow, 
+                 MenuActionsMixin, 
+                 ButtonActionsMixin, 
+                 ContextMenuMixin,
+                 SignalSlotsMixin,
+                 LineEditActionsMixin,
+                 KeyboardShortcutActionsMixin,
+                 CheckboxActionsMixin,
+                 ComboboxActionsMixin):
+
     # type hints...
     _parsed_xml_data_ref: Dict[str, Any]
     _current_read_xml_file_ref: Optional[str]
@@ -112,7 +127,6 @@ class MainWindow(QMainWindow, SignalHandlerMixin):
     cb_state_controller: 'ComboboxStateHandler'
     xml_text_searcher: 'SearchXMLOutputTextHandler'
     config_handler: 'ConfigHandler'
-    helper: 'HelperMethods'
 
     current_theme: str
     dark_theme_file: str
@@ -123,7 +137,6 @@ class MainWindow(QMainWindow, SignalHandlerMixin):
         self.ui = Ui_MainWindow()
         self.ui.setupUi(self)
         self.setWindowTitle(f"{APP_NAME} {APP_VERSION}")
-        self.helper = HelperMethods(main_window=self)
 
         self._parsed_xml_data_ref = {}
         self._current_read_xml_file_ref = None
@@ -135,6 +148,23 @@ class MainWindow(QMainWindow, SignalHandlerMixin):
         self._initialize_theme()
         self.setup_widgets_and_visibility_states()
         self.setup_widgets_enabled_states()
+        
+    def setup_application(self):
+        # Initialize controllers
+        # self._init_controllers()
+        
+        # Connect all signals
+        self.connect_button_actions()
+        self.connect_combobox_actions()
+        self.connect_checkbox_actions()
+        self.connect_context_menus()
+        self.connect_keyboard_shortcut_actions()
+        self.connect_menu_bar_actions()
+        self.connect_line_edit_actions()
+        
+        # Connect menubar signals
+        self._update_paths_menu()
+        self._update_autofill_menu()
 
     def initialize_attributes(self):
         from controllers.state_controller import ComboboxStateHandler
@@ -210,13 +240,6 @@ class MainWindow(QMainWindow, SignalHandlerMixin):
                                         type=bool)
         # Apply the setting unconditionally to the QAction
         self.ui.prompt_on_exit_action.setChecked(bool(prompt_value))
-        
-
-    def setup_application(self):
-        self.connect_ui_events()
-        self.connect_menu_bar_actions()
-        self._update_paths_menu()
-        self._update_autofill_menu()
 
     def setup_widgets_and_visibility_states(self):
         self.ui.button_find_next.hide()
@@ -312,20 +335,7 @@ class MainWindow(QMainWindow, SignalHandlerMixin):
             message = f"An exception of type {type(ex).__name__} occurred. Arguments: {ex.args!r}"
             QMessageBox.critical(self, "Exception on starting to parse xml file", message)
 
-    def _open_folder_in_file_explorer(self, folder_path: str):
-        """Helper method to open folder in file explorer."""
-        if folder_path and os.path.exists(folder_path):
-            try:
-                QDesktopServices.openUrl(QUrl.fromLocalFile(folder_path))
-            except Exception as ex:
-                message = f"An exception of type {type(ex).__name__} occurred. Arguments: {ex.args!r}"
-                QMessageBox.critical(self, "An exception occurred", message)
-        else:
-            QMessageBox.warning(
-                self,
-                "Error",
-                f"Path does not exist or is not a valid path:\n{folder_path}"
-            )
+
 
     def _add_recent_xpath_expression(self, expression: str):
         """Add XPath expression to recent expressions."""
@@ -393,37 +403,7 @@ class MainWindow(QMainWindow, SignalHandlerMixin):
         if csv_headers:
             self.ui.line_edit_csv_headers_input.setText(', '.join(csv_headers))
 
-    def _remove_selected_xpath_item(self):
-        """Remove selected XPath item from list."""
-        try:
-            current_selected_item = self.ui.list_widget_main_xpath_expressions.currentRow()
-            if current_selected_item != -1:
-                item_to_remove = self.ui.list_widget_main_xpath_expressions.takeItem(current_selected_item)
-                self.ui.text_edit_program_output.append(
-                    f"Removed item: {item_to_remove.text()} at row {current_selected_item}"
-                )
-            else:
-                self.ui.text_edit_program_output.append("No item selected to delete.")
-        except IndexError:
-            self.ui.text_edit_program_output.append("Nothing to delete.")
-        except Exception as ex:
-            message = f"An exception of type {type(ex).__name__} occurred. Arguments: {ex.args!r}"
-            self.ui.text_edit_program_output.setText(f"Error removing selected item from list: {message}")
 
-    def _remove_all_xpath_items(self):
-        """Remove all XPath items from list."""
-        try:
-            if self.ui.list_widget_main_xpath_expressions.count() > 0:
-                self.ui.list_widget_main_xpath_expressions.clear()
-                self.ui.text_edit_program_output.setText("Deleted all items from the list.")
-                # Clean CSV Header Input if it has any value in it
-                if len(self.ui.line_edit_csv_headers_input.text()) > 1:
-                    self.ui.line_edit_csv_headers_input.clear()
-            else:
-                self.ui.text_edit_program_output.setText("No items to delete in list.")
-        except Exception as ex:
-            message = f"An exception of type {type(ex).__name__} occurred. Arguments: {ex.args!r}"
-            self.ui.text_edit_program_output.setText(f"Error removing all items from list: {message}")
 
     def _listwidget_to_list(self, widget: QListWidget) -> list[str]:
         """Helper method to convert QItems from a specified QListWidget to a list of strings.
