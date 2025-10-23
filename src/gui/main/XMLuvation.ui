@@ -71,7 +71,7 @@
        <enum>QTabWidget::TabPosition::North</enum>
       </property>
       <property name="currentIndex">
-       <number>0</number>
+       <number>1</number>
       </property>
       <property name="usesScrollButtons">
        <bool>false</bool>
@@ -2586,7 +2586,7 @@ Supported output file types: Excel, Markdown, HTML and JSON</string>
                 </layout>
                </item>
                <item>
-                <widget class="QTableWidget" name="table_csv_data">
+                <widget class="QTableView" name="table_csv_data">
                  <property name="minimumSize">
                   <size>
                    <width>0</width>

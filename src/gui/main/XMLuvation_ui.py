@@ -1,7 +1,7 @@
 # -*- coding: utf-8 -*-
 
 ################################################################################
-## Form generated from reading UI file 'XMLuvationIlJXyk.ui'
+## Form generated from reading UI file 'XMLuvationORBWDx.ui'
 ##
 ## Created by: Qt User Interface Compiler version 6.9.3
 ##
@@ -21,8 +21,8 @@ from PySide6.QtWidgets import (QApplication, QCheckBox, QComboBox, QFormLayout,
     QLabel, QLineEdit, QListView, QListWidget,
     QListWidgetItem, QMainWindow, QMenu, QMenuBar,
     QProgressBar, QPushButton, QRadioButton, QSizePolicy,
-    QSpacerItem, QSplitter, QTabWidget, QTableWidget,
-    QTableWidgetItem, QTextEdit, QVBoxLayout, QWidget)
+    QSpacerItem, QSplitter, QTabWidget, QTableView,
+    QTextEdit, QVBoxLayout, QWidget)
 import resources.qrc.xmluvation_resources_rc
 
 class Ui_MainWindow(object):
@@ -1038,7 +1038,7 @@ class Ui_MainWindow(object):
 
         self.verticalLayout_15.addLayout(self.horizontalLayout_10)
 
-        self.table_csv_data = QTableWidget(self.groupBox)
+        self.table_csv_data = QTableView(self.groupBox)
         self.table_csv_data.setObjectName(u"table_csv_data")
         self.table_csv_data.setMinimumSize(QSize(0, 0))
         self.table_csv_data.setAlternatingRowColors(False)
@@ -1116,7 +1116,7 @@ class Ui_MainWindow(object):
         self.retranslateUi(MainWindow)
         self.group_box_program_output.toggled.connect(self.text_edit_program_output.setVisible)
 
-        self.tabWidget.setCurrentIndex(0)
+        self.tabWidget.setCurrentIndex(1)
         self.combobox_tag_names.setCurrentIndex(-1)
         self.combobox_tag_values.setCurrentIndex(-1)
         self.combobox_attribute_names.setCurrentIndex(-1)

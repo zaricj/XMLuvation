@@ -1,1 +1,76 @@
-{}
+{
+    "custom_xpaths_autofill": {
+        "Alte Geis Filter": {
+            "xpath_expression": [
+                "//field/filter[@id > 511]/@id ",
+                "//field/filter[@id > 511]/@description",
+                "//field[filter[@id > 511]]/@name",
+                "//node[filter/@id > 511]/@name"
+            ],
+            "csv_header": [
+                "Funktion ID",
+                "Funktion Beschreibung",
+                "Feld Name",
+                "Knoten Name"
+            ]
+        },
+        "Lobster All Filter Evaluation": {
+            "xpath_expression": [
+                "//field/filter/@id",
+                "//field/filter/@description",
+                "//field[filter]/@name",
+                "//node[filter]/@name"
+            ],
+            "csv_header": [
+                "Funktion ID",
+                "Funktion Beschreibung",
+                "Feld Name",
+                "Knoten Name"
+            ]
+        },
+        "Wait(a) Mapping Phase": {
+            "xpath_expression": [
+                "/datawizardprofile/dataproperties/structuredefinition/outputtree/node//field/filter[@id='234']/@description",
+                "/datawizardprofile/dataproperties/structuredefinition/outputtree/node//field/filter[@id='234']//a/@fieldconstant",
+                "/datawizardprofile/dataproperties/structuredefinition/outputtree/node//field[filter[@id='234']]/@name",
+                "/datawizardprofile/dataproperties/structuredefinition/outputtree//node[filter[@id='234']]/@name"
+            ],
+            "csv_header": [
+                "Filter Name",
+                "Filter Value",
+                " Is in Field",
+                "Is in Node"
+            ]
+        },
+        "D_V3_LFSV5_Logistik_P_Jasperlink_Printserver_(mi)": {
+            "xpath_expression": [
+                "/datawizardprofile/responsesettings/responseunits//unit_message[profile='D_V3_LFSV5_Logistik_P_Jasperlink_Printserver_(mi)']/type/text()",
+                "/datawizardprofile/responsesettings/responseunits//unit_message[profile='D_V3_LFSV5_Logistik_P_Jasperlink_Printserver_(mi)']/context/text()",
+                "/datawizardprofile/responsesettings/responseunits//unit_message[profile='D_V3_LFSV5_Logistik_P_Jasperlink_Printserver_(mi)']/queue/text()",
+                "/datawizardprofile/responsesettings/responseunits//unit_message[profile='D_V3_LFSV5_Logistik_P_Jasperlink_Printserver_(mi)']/description/text()"
+            ],
+            "csv_header": [
+                "Message Type",
+                "Message Context",
+                "Message Queue",
+                "Message Description"
+            ]
+        },
+        "select count(*) from pingtable": {
+            "xpath_expression": [
+                "//source_sql[text()='select count(*) from pingtable']",
+                "/datawizardprofile/active[//source_sql[text()='select count(*) from pingtable']]/text()"
+            ],
+            "csv_header": [
+                "select count(*) from pingtable",
+                "Profil Aktiv"
+            ]
+        }
+    },
+    "custom_paths": {
+        "NESISNCP01": "C:\\Users\\ZaricJ\\Downloads\\Lobster Profile Export\\ProfileExportNCEcht",
+        "NESISNCT01": "C:\\Users\\ZaricJ\\Downloads\\Lobster Profile Export\\ProfileExportNCTest",
+        "NESIST02": "C:/Users/ZaricJ/Downloads/Lobster Profile Export/ProfileExportTest",
+        "NESIS002": "C:/Users/ZaricJ/Downloads/Lobster Profile Export/ProfileExportEcht"
+    }
+}

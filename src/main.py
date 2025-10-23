@@ -290,21 +290,16 @@ class MainWindow(QMainWindow, SignalHandlerMixin):
     
     # Populate the Table Widget
     def _populate_results_table(self, results: pd.DataFrame):
-        """Populate the results table with DataFrame data"""
-        self.ui.table_csv_data.clear()
-
+        """Display the DataFrame efficiently in a QTableView."""
+        from modules.pandas_model import PandasModel
+        
         if results.empty:
+            self.ui.table_csv_data.setModel(None)
             return
 
-        self.ui.table_csv_data.setRowCount(len(results))
-        self.ui.table_csv_data.setColumnCount(len(results.columns))
-        self.ui.table_csv_data.setHorizontalHeaderLabels(
-            results.columns.tolist())
-
-        for row, record in results.iterrows():
-            for col, (key, value) in enumerate(record.items()):
-                item = QTableWidgetItem(str(value))
-                self.ui.table_csv_data.setItem(row, col, item)
+        model = PandasModel(results)
+        self.ui.table_csv_data.setModel(model)
+        self.ui.table_csv_data.resizeColumnsToContents()
 
     def _parse_xml_file(self, xml_file_path: str):
         """Parse XML file and display content."""

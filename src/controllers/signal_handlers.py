@@ -693,17 +693,15 @@ class SignalHandlerMixin:
             
     @Slot()
     def on_clearTable(self):
-        """Clears all data from the QTableWidget"""
-        if self.ui.table_csv_data.columnCount() > 0:
-            self.ui.table_csv_data.clearContents()
-            self.ui.table_csv_data.setRowCount(0)
-            self.ui.text_edit_csv_output.showText("Cleared results table!")
-            # Disabled widgets again
-            self._set_ui_widgets_table_disabled(True)
+        """Clears all data from the QTableView"""
+        self.ui.table_csv_data.setModel(None)
+        self.ui.text_edit_csv_output.setText("Cleared results table!")
+        # Disable widgets again
+        self._set_ui_widgets_table_disabled(True)
         
     @Slot()
     def on_filterTable(self, text: str):
-        """Filter QTableWidget rows based on the search text"""
+        """Filter QTableView rows based on the search text"""
         text = text.strip().lower()
 
         for row in range(self.ui.table_csv_data.rowCount()):
