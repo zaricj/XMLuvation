@@ -16,6 +16,7 @@ import time
 from queue import Queue
 from threading import Thread
 
+
 @dataclass
 class ProcessingStats:
     """Statistics for processing results."""
@@ -31,7 +32,7 @@ class ProcessingStats:
 
 class OptimizedXMLProcessor:
     """Optimized XML processor with caching and better memory management."""
-    
+
     def __init__(self):
         # Remove the shared parser — not thread-safe
         self._compiled_regexes = {
@@ -47,7 +48,7 @@ class OptimizedXMLProcessor:
         """Cached check if XPath targets string values."""
         xpath = xpath.strip()
         return (
-            self._compiled_regexes['text_xpath'].search(xpath) is not None or 
+            self._compiled_regexes['text_xpath'].search(xpath) is not None or
             self._compiled_regexes['attr_xpath'].search(xpath) is not None
         )
 
@@ -76,7 +77,6 @@ class OptimizedXMLProcessor:
                 results[xpath] = []
         return results
 
-    
     def format_match_value(self, match: Any) -> str:
         """Optimized value formatting."""
         if isinstance(match, str):
@@ -101,16 +101,16 @@ def process_single_xml_optimized(
 ) -> Tuple[List[Dict[str, str]], int, int]:
     """
     Optimized single XML file processing.
-    
+
     Returns:
         Tuple of (result_rows, total_matches, file_had_matches_flag)
     """
     if terminate_event.is_set():
         return [], 0, 0
-    
+
     xml_file_path = folder / xml_file
     xml_file_name = xml_file_path.stem
-    
+
     try:
         root = processor.parse_xml_file(str(xml_file_path))
         if root is None:
@@ -118,25 +118,25 @@ def process_single_xml_optimized(
     except Exception as e:
         logging.error(f"Error processing {xml_file_path}: {e}")
         return [], 0, 0
-    
+
     # Batch execute all XPath expressions
     xpath_results = processor.execute_xpath_batch(root, xpath_expressions)
-    
+
     # Process results efficiently
     all_results = {}
     max_matches = 0
     total_matches = 0
     has_matches = False
-    
+
     for xpath, header in zip(xpath_expressions, headers):
         if terminate_event.is_set():
             return [], 0, 0
-        
+
         matches = xpath_results.get(xpath, [])
         if not matches:
             all_results[header] = []
             continue
-        
+
         if processor._is_string_value_xpath(xpath):
             # Process string values
             values = []
@@ -144,7 +144,7 @@ def process_single_xml_optimized(
                 formatted_value = processor.format_match_value(match)
                 if formatted_value:  # Only non-empty values
                     values.append(formatted_value)
-            
+
             all_results[header] = values
             if values:
                 has_matches = True
@@ -154,7 +154,7 @@ def process_single_xml_optimized(
             # Count-based expressions
             match_count = len(matches)
             count_header = f"{header} Match Count"
-            
+
             if match_count > 0:
                 all_results[count_header] = [str(match_count)]
                 has_matches = True
@@ -162,15 +162,15 @@ def process_single_xml_optimized(
                 max_matches = max(max_matches, 1)
             else:
                 all_results[count_header] = []
-    
+
     # Generate result rows only if there are matches
     result_rows = []
     if has_matches:
         num_rows = 1 if group_matches_flag else max_matches
-        
+
         for row_index in range(num_rows):
             row = {"Filename": xml_file_name}
-            
+
             for xpath, header in zip(xpath_expressions, headers):
                 if processor._is_string_value_xpath(xpath):
                     values = all_results.get(header, [])
@@ -186,9 +186,9 @@ def process_single_xml_optimized(
                     count_header = f"{header} Match Count"
                     values = all_results.get(count_header, [])
                     row[count_header] = values[0] if values and row_index == 0 else ""
-            
+
             result_rows.append(row)
-    
+
     return result_rows, total_matches, 1 if has_matches else 0
 
 
@@ -207,40 +207,45 @@ class CSVExportSignals(QObject):
 
 class OptimizedCSVExportThread(QRunnable):
     """Highly optimized CSV export thread with better resource management."""
+
     def __init__(self, operation: str, **kwargs):
         super().__init__()
         self.operation = operation
         self.kwargs = kwargs
         self.signals = CSVExportSignals()
         self.setAutoDelete(True)
-        
+
         # Threading controls
         self._terminate_event = threading.Event()
         self._executor = None
-        
+
         # Configuration
-        self.folder_path = Path(kwargs.get("folder_path_containing_xml_files", ""))
+        self.folder_path = Path(kwargs.get(
+            "folder_path_containing_xml_files", ""))
         self.xpath_expressions = kwargs.get("xpath_expressions_list", [])
-        self.output_path = Path(kwargs.get("output_save_path_for_csv_export", ""))
+        self.output_path = Path(kwargs.get(
+            "output_save_path_for_csv_export", ""))
         self.headers = kwargs.get("csv_headers_list", [])
         self.group_matches_flag = kwargs.get("group_matches_flag", True)
-        self.max_threads = min(kwargs.get("max_threads", os.cpu_count() or 4), 32)  # Cap at 32
-        
+        self.max_threads = min(kwargs.get(
+            "max_threads", os.cpu_count() or 4), 32)  # Cap at 32
+
         # Initialize processor
         self._processor = OptimizedXMLProcessor()
-        
+
         # Statistics
         self._stats = ProcessingStats()
-    
+
     def stop(self):
         """Signal termination and cleanup resources."""
-        self.signals.program_output_progress_append.emit("Aborting CSV export...")
+        self.signals.program_output_progress_append.emit(
+            "Aborting CSV export...")
         self._terminate_event.set()
-        
+
         if self._executor:
             # Graceful shutdown
             self._executor.shutdown(wait=False, cancel_futures=True)
-    
+
     @Slot()
     def run(self):
         """Main execution method."""
@@ -252,52 +257,52 @@ class OptimizedCSVExportThread(QRunnable):
         except Exception as e:
             error_details = traceback.format_exc()
             self.signals.error_occurred.emit(
-                "Operation Error", 
+                "Operation Error",
                 f"{str(e)}\n\nDetails:\n{error_details}"
             )
         finally:
             self.signals.finished.emit()
-    
+
     def _validate_inputs(self) -> bool:
         """Validate all inputs before processing."""
         if not self.folder_path.exists() or not self.folder_path.is_dir():
             self.signals.warning_occurred.emit(
-                "XML Folder not found", 
+                "XML Folder not found",
                 "Please set the path to the folder that contains XML files to process."
             )
             return False
         
-        if not self.output_path:
+        if len(self.output_path.__str__().strip()) <= 1 or self.output_path.suffix.lower() != ".csv":
             self.signals.warning_occurred.emit(
-                "CSV Output Path is Empty", 
-                "Please set an output folder path for the csv file."
+                "CSV Output Path is Invalid",
+                "Please set a valid output folder path for the csv file."
             )
             return False
-        
+
         if len(self.headers) != len(self.xpath_expressions):
             self.signals.warning_occurred.emit(
                 "Header/XPath Length Mismatch",
                 f"CSV headers length ({len(self.headers)}) doesn't match XPath expressions length ({len(self.xpath_expressions)})"
             )
             return False
-        
+
         if not self.headers or not self.xpath_expressions:
             self.signals.warning_occurred.emit(
-                "Empty Configuration", 
+                "Empty Configuration",
                 "No headers or XPath expressions found\nPlease add xpath expressions and headers in order to start an evaluation."
             )
             return False
-        
+
         return True
-    
+
     def _get_xml_files(self) -> List[str]:
         """Get list of XML files efficiently."""
         return [f.name for f in self.folder_path.glob("*.xml") if f.is_file()]
-    
+
     def _generate_csv_headers(self) -> List[str]:
         """Generate appropriate CSV headers."""
         headers = ["Filename"]
-        
+
         for xpath, header in zip(self.xpath_expressions, self.headers):
             if self._processor._is_string_value_xpath(xpath):
                 if header not in headers:
@@ -306,60 +311,61 @@ class OptimizedCSVExportThread(QRunnable):
                 count_header = f"{header} Match Count"
                 if count_header not in headers:
                     headers.append(count_header)
-        
+
         return headers
-    
+
     @contextmanager
     def _csv_writer_context(self):
         """Context manager for CSV writing."""
         try:
             # Ensure output directory exists
             self.output_path.parent.mkdir(parents=True, exist_ok=True)
-            
+
             with open(self.output_path, 'w', newline='', encoding='utf-8') as csvfile:
                 headers = self._generate_csv_headers()
-                writer = csv.DictWriter(csvfile, fieldnames=headers, extrasaction='ignore')
+                writer = csv.DictWriter(
+                    csvfile, fieldnames=headers, extrasaction='ignore')
                 writer.writeheader()
                 yield writer
         except Exception as e:
             raise IOError(f"Failed to create CSV writer: {e}")
-    
+
     def _export_search_to_csv(self):
         """Optimized CSV export with better resource management."""
         # Validation
         if not self._validate_inputs():
             return
-        
+
         # Start time tracking
         self._stats.start_time = time.time()
-        
+
         # Get XML files
         xml_files = self._get_xml_files()
         self._stats.total_files = len(xml_files)
-        
+
         if not xml_files:
             self.signals.warning_occurred.emit(
-                "No XML Files Found", 
+                "No XML Files Found",
                 "No XML files found in selected folder."
             )
             return
-        
+
         self.signals.program_output_progress_append.emit(
             f"Starting search and CSV export of {len(xml_files)} files with {self.max_threads} threads..."
         )
         self.signals.visible_state_widget.emit(True)
-        
-        from queue import Queue
-        from threading import Thread
+
         result_queue = Queue(maxsize=5000)
         writer_thread_stop = threading.Event()
+
         def writer_worker():
             """Runs in background thread; consumes rows from queue and writes to CSV."""
             try:
                 # Large buffer = fewer disk flushes, faster sequential writes
                 with open(self.output_path, 'w', newline='', encoding='utf-8', buffering=1_048_576) as csvfile:
                     headers = self._generate_csv_headers()
-                    writer = csv.DictWriter(csvfile, fieldnames=headers, extrasaction='ignore')
+                    writer = csv.DictWriter(
+                        csvfile, fieldnames=headers, extrasaction='ignore')
                     writer.writeheader()
                     while not (writer_thread_stop.is_set() and result_queue.empty()):
                         try:
@@ -373,10 +379,11 @@ class OptimizedCSVExportThread(QRunnable):
                             continue
             except Exception as e:
                 self.signals.error_occurred.emit("CSV Write Error", str(e))
-                    
-        writer_thread = Thread(target=writer_worker, daemon=True, name="CSVWriterThread")
+
+        writer_thread = Thread(target=writer_worker,
+                               daemon=True, name="CSVWriterThread")
         writer_thread.start()
-        
+
         try:
             # Create thread pool for XML processing
             self._executor = ThreadPoolExecutor(
@@ -402,11 +409,13 @@ class OptimizedCSVExportThread(QRunnable):
             # Process completed futures as they finish
             for future in as_completed(futures):
                 if self._terminate_event.is_set():
-                    self.signals.program_output_progress_append.emit("Export aborted by user.")
+                    self.signals.program_output_progress_append.emit(
+                        "Export aborted by user.")
                     break
 
                 try:
-                    result_rows, file_matches, has_matches = future.result(timeout=30)
+                    result_rows, file_matches, has_matches = future.result(
+                        timeout=30)
 
                     # Enqueue rows instead of writing directly
                     if result_rows and has_matches:
@@ -420,7 +429,8 @@ class OptimizedCSVExportThread(QRunnable):
                     self._stats.processed_files += 1
 
                     # Update UI
-                    progress = int((self._stats.processed_files / self._stats.total_files) * 100)
+                    progress = int(
+                        (self._stats.processed_files / self._stats.total_files) * 100)
                     self.signals.progressbar_update.emit(progress)
                     self.signals.file_processing_progress.emit(
                         f"Processed {self._stats.processed_files}/{self._stats.total_files}"
@@ -431,7 +441,6 @@ class OptimizedCSVExportThread(QRunnable):
                     self._stats.errors.append(error_msg)
                     self._stats.processed_files += 1
                     logging.error(error_msg)
-
 
             # Ensure all queued rows are written before finishing
             result_queue.join()
@@ -452,7 +461,7 @@ class OptimizedCSVExportThread(QRunnable):
         finally:
             if self._executor:
                 self._executor.shutdown(wait=True)
-    
+
     def _emit_completion_message(self):
         """Emit completion status message."""
         message_parts = [
@@ -464,14 +473,16 @@ class OptimizedCSVExportThread(QRunnable):
             f"Output saved: {self.output_path}",
             f"Elapsed time: {self._stats.end_time - self._stats.start_time:.2f} seconds"
         ]
-        
+
         if self._stats.errors:
-            message_parts.append(f"Errors encountered: {len(self._stats.errors)}")
-        
-        self.signals.program_output_progress_set_text.emit("\n".join(message_parts))
+            message_parts.append(
+                f"Errors encountered: {len(self._stats.errors)}")
+
+        self.signals.program_output_progress_set_text.emit(
+            "\n".join(message_parts))
 
 
-def create_optimized_csv_exporter(
+def create_xpath_searcher_and_csv_exporter(
     folder_path_containing_xml_files: str,
     xpath_expressions_list: List[str],
     output_save_path_for_csv_export: str,
@@ -480,7 +491,7 @@ def create_optimized_csv_exporter(
     max_threads: int = None
 ) -> OptimizedCSVExportThread:
     """Create an optimized CSV export thread.
-    
+
     Args:
         folder_path_containing_xml_files: Folder containing XML files
         xpath_expressions_list: XPath expressions to evaluate
@@ -488,13 +499,13 @@ def create_optimized_csv_exporter(
         csv_headers_list: CSV headers for each XPath
         group_matches_flag: Whether to group matches in single row
         max_threads: Maximum threads to use (defaults to CPU count)
-    
+
     Returns:
         Optimized CSV export thread
     """
     if max_threads is None:
         max_threads = min(os.cpu_count() or 4, 16)  # Reasonable default
-    
+
     return OptimizedCSVExportThread(
         "export",
         folder_path_containing_xml_files=folder_path_containing_xml_files,

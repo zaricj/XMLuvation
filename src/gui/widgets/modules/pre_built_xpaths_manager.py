@@ -3,10 +3,6 @@ from PySide6.QtCore import Slot, QFile, QIODevice, QTextStream
 from PySide6.QtGui import QCloseEvent
 from pathlib import Path
 
-from gevent import config
-
-from controllers.state_controller import AddXPathExpressionToListHandler
-
 from modules.config_handler import ConfigHandler
 from gui.widgets.PreBuiltXPathsManager_ui import Ui_PreBuiltXPathsManagerWidget
 
@@ -20,22 +16,10 @@ FILE_PATH = Path(__file__).resolve()
 
 # Get the project src directory
 SRC_ROOT_DIR = FILE_PATH.parents[3]
-#print(SRC_ROOT_DIR)
 
 # Path Constants
 GUI_CONFIG_DIRECTORY: Path = SRC_ROOT_DIR / "config"
 GUI_CONFIG_FILE_PATH: Path = SRC_ROOT_DIR / "config" / "config.json"
-
-# Theme files
-DARK_THEME_PATH: Path = SRC_ROOT_DIR / "resources" / "styles" / "dark_theme.qss"
-LIGHT_THEME_PATH: Path = SRC_ROOT_DIR / "resources" / "styles" / "light_theme.qss"
-
-ICON_PATH: Path = SRC_ROOT_DIR / "resources" / "icons" / "xml_256px.ico"
-
-# Theme file icons
-DARK_THEME_QMENU_ICON: Path = SRC_ROOT_DIR / "resources" / "images" / "dark.png"
-LIGHT_THEME_QMENU_ICON: Path = SRC_ROOT_DIR / "resources" / "images" / "light.png"
-
 
 class PreBuiltXPathsManager(QWidget):
     def __init__(self, main_window: "MainWindow"):
@@ -56,7 +40,6 @@ class PreBuiltXPathsManager(QWidget):
             main_window=self # Pass self as the parent for QMessageBox in ConfigHandler
         )
         
-        # TODO Continue development, UI file is built.
         # Connect signals/slots
         self.ui.button_add_xpath_to_list.clicked.connect(self.onAddXpathToList)
         self.ui.button_add_csv_header_to_list.clicked.connect(self.onAddCSVHeaderToList)
@@ -66,6 +49,7 @@ class PreBuiltXPathsManager(QWidget):
         self.ui.button_delete_config.clicked.connect(self.onDeleteConfig)
         self.ui.button_remove_selected.clicked.connect(self.onRemoveSelected)
         self.ui.button_remove_all.clicked.connect(self.onRemoveAll)
+        self.ui.button_open_config_directory.clicked.connect(lambda: self.main_window._open_folder_in_file_explorer(GUI_CONFIG_DIRECTORY))
         
         # 2. Connect list widget signals to update the active_list_widget
         self.ui.list_widget_xpath_expressions.itemClicked.connect(
@@ -125,11 +109,19 @@ class PreBuiltXPathsManager(QWidget):
     @Slot() # On button click event add csv header to list
     def onAddCSVHeaderToList(self):
         csv_header_to_add = self.ui.line_edit_csv_header.text()
-        list_widget_csv_headers = self.ui.list_widget_csv_headers
         
-        # Add entered CSV Header to list widget
-        self._add_items_to_list_widget(csv_header_to_add, list_widget_csv_headers)
-        self.ui.line_edit_csv_header.clear()
+        # Check if text has comma to separate multiple headers
+        if "," in csv_header_to_add:
+            headers = [header.strip() for header in csv_header_to_add.split(",") if header.strip()]
+            for header in headers:
+                self._add_items_to_list_widget(header, self.ui.list_widget_csv_headers)
+            self.ui.line_edit_csv_header.clear()
+            return
+        else:
+            list_widget_csv_headers = self.ui.list_widget_csv_headers
+            # Add entered CSV Header to list widget
+            self._add_items_to_list_widget(csv_header_to_add, list_widget_csv_headers)
+            self.ui.line_edit_csv_header.clear()
         
     @Slot(str) # On button click event save config
     def onSaveConfig(self):
@@ -140,7 +132,7 @@ class PreBuiltXPathsManager(QWidget):
         """
         # Check list widgets and inputs
         list_widgets_to_validate = [self.ui.list_widget_xpath_expressions, self.ui.list_widget_csv_headers, self.ui.line_edit_config_name]
-        valid_widgets = self._validate_inputs(list_widgets_to_validate)
+        valid_widgets = self._validate_widget_inputs(list_widgets_to_validate)
 
         if valid_widgets:
             xpath_expressions = self._listwidget_to_list(self.ui.list_widget_xpath_expressions)
@@ -166,7 +158,7 @@ class PreBuiltXPathsManager(QWidget):
         """Saves the changes that have been made to the loaded configuration, mainly with the 'Remove' buttons at the bottom."""
         # Check list widgets if valid
         list_widgets_to_validate = [self.ui.list_widget_edit_xpath_expressions, self.ui.list_widget_edit_csv_headers]
-        valid_widgets = self._validate_inputs(list_widgets_to_validate)
+        valid_widgets = self._validate_widget_inputs(list_widgets_to_validate)
 
         if valid_widgets:
             xpath_expressions = self._listwidget_to_list(self.ui.list_widget_edit_xpath_expressions)
@@ -309,7 +301,7 @@ class PreBuiltXPathsManager(QWidget):
             self.ui.combobox_xpath_configs.addItems(config_file_values)
     
     # A widget input validator
-    def _validate_inputs(self, widgets_to_validate: list) -> bool:
+    def _validate_widget_inputs(self, widgets_to_validate: list) -> bool:
         """Validate that QLineEdit and QListWidget inputs are not empty."""
 
         list_widgets = []

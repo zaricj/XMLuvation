@@ -403,7 +403,6 @@ class XMLParserThread(QRunnable):
                 'tag_attr_to_values': tag_attr_to_values,
             }
 
-            self.signals.program_output_progress.emit("XML parsing completed successfully!")
             self.signals.finished.emit(result)
         except Exception as ex:
             message = f"An exception of type {type(ex).__name__} occurred. Arguments: {ex.args!r}"

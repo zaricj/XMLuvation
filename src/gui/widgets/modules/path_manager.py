@@ -16,25 +16,10 @@ FILE_PATH = Path(__file__).resolve()
 
 # Get the project src directory
 SRC_ROOT_DIR = FILE_PATH.parents[3]
-#print(SRC_ROOT_DIR)
 
 # Path Constants
 GUI_CONFIG_DIRECTORY: Path = SRC_ROOT_DIR / "config"
 GUI_CONFIG_FILE_PATH: Path = SRC_ROOT_DIR / "config" / "config.json"
-
-# Theme files
-DARK_THEME_PATH: Path = SRC_ROOT_DIR / "resources" / "styles" / "dark_theme.qss"
-LIGHT_THEME_PATH: Path = SRC_ROOT_DIR / "resources" / "styles" / "light_theme.qss"
-
-ICON_PATH: Path = SRC_ROOT_DIR / "resources" / "icons" / "xml_256px.ico"
-
-# Theme file icons
-DARK_THEME_QMENU_ICON: Path = SRC_ROOT_DIR / "resources" / "images" / "dark.png"
-LIGHT_THEME_QMENU_ICON: Path = SRC_ROOT_DIR / "resources" / "images" / "light.png"
-
-
-# App related constants
-APP_NAME: str = "Custom Paths Manager"
 
 class CustomPathsManager(QWidget):
     def __init__(self, main_window: "MainWindow"):
@@ -58,6 +43,7 @@ class CustomPathsManager(QWidget):
         self.ui.button_delete_action.clicked.connect(self.delete_custom_path_event)
         self.ui.button_create_custom_path.clicked.connect(self.create_custom_path_event)
         self.ui.button_browse_path_folder.clicked.connect(lambda: self.browse_folder("Select a folder for the custom path value", self.ui.line_edit_custom_path_value))
+        self.ui.button_open_config_directory.clicked.connect(lambda: self.main_window._open_folder_in_file_explorer(GUI_CONFIG_DIRECTORY))
 
         # Initialize theme for app
         self._initialize_theme()
