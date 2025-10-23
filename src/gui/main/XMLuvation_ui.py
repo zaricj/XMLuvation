@@ -1,9 +1,9 @@
 # -*- coding: utf-8 -*-
 
 ################################################################################
-## Form generated from reading UI file 'XMLuvationouUOtb.ui'
+## Form generated from reading UI file 'XMLuvationIlJXyk.ui'
 ##
-## Created by: Qt User Interface Compiler version 6.9.2
+## Created by: Qt User Interface Compiler version 6.9.3
 ##
 ## WARNING! All changes made in this file will be lost when recompiling UI file!
 ################################################################################
@@ -18,12 +18,11 @@ from PySide6.QtGui import (QAction, QBrush, QColor, QConicalGradient,
     QTransform)
 from PySide6.QtWidgets import (QApplication, QCheckBox, QComboBox, QFormLayout,
     QFrame, QGroupBox, QHBoxLayout, QHeaderView,
-    QLabel, QLayout, QLineEdit, QListView,
-    QListWidget, QListWidgetItem, QMainWindow, QMenu,
-    QMenuBar, QProgressBar, QPushButton, QRadioButton,
-    QSizePolicy, QSpacerItem, QSplitter, QTabWidget,
-    QTableWidget, QTableWidgetItem, QTextEdit, QVBoxLayout,
-    QWidget)
+    QLabel, QLineEdit, QListView, QListWidget,
+    QListWidgetItem, QMainWindow, QMenu, QMenuBar,
+    QProgressBar, QPushButton, QRadioButton, QSizePolicy,
+    QSpacerItem, QSplitter, QTabWidget, QTableWidget,
+    QTableWidgetItem, QTextEdit, QVBoxLayout, QWidget)
 import resources.qrc.xmluvation_resources_rc
 
 class Ui_MainWindow(object):
@@ -88,8 +87,8 @@ class Ui_MainWindow(object):
         font1.setItalic(False)
         font1.setUnderline(False)
         self.centralwidget.setFont(font1)
-        self.verticalLayout_3 = QVBoxLayout(self.centralwidget)
-        self.verticalLayout_3.setObjectName(u"verticalLayout_3")
+        self.horizontalLayout = QHBoxLayout(self.centralwidget)
+        self.horizontalLayout.setObjectName(u"horizontalLayout")
         self.tabWidget = QTabWidget(self.centralwidget)
         self.tabWidget.setObjectName(u"tabWidget")
         self.tabWidget.setEnabled(True)
@@ -118,25 +117,12 @@ class Ui_MainWindow(object):
         font3.setUnderline(False)
         font3.setStrikeOut(False)
         self.tab_xml_evaluation.setFont(font3)
-        self.verticalLayout_4 = QVBoxLayout(self.tab_xml_evaluation)
-        self.verticalLayout_4.setObjectName(u"verticalLayout_4")
+        self.horizontalLayout_4 = QHBoxLayout(self.tab_xml_evaluation)
+        self.horizontalLayout_4.setObjectName(u"horizontalLayout_4")
         self.splitter = QSplitter(self.tab_xml_evaluation)
         self.splitter.setObjectName(u"splitter")
-        sizePolicy1 = QSizePolicy(QSizePolicy.Policy.Preferred, QSizePolicy.Policy.Preferred)
-        sizePolicy1.setHorizontalStretch(0)
-        sizePolicy1.setVerticalStretch(0)
-        sizePolicy1.setHeightForWidth(self.splitter.sizePolicy().hasHeightForWidth())
-        self.splitter.setSizePolicy(sizePolicy1)
-        self.splitter.setMinimumSize(QSize(0, 0))
-        self.splitter.setMaximumSize(QSize(16777215, 16777215))
         self.splitter.setOrientation(Qt.Orientation.Horizontal)
-        self.layoutWidget_2 = QWidget(self.splitter)
-        self.layoutWidget_2.setObjectName(u"layoutWidget_2")
-        self.vert_layout_main = QVBoxLayout(self.layoutWidget_2)
-        self.vert_layout_main.setObjectName(u"vert_layout_main")
-        self.vert_layout_main.setSizeConstraint(QLayout.SizeConstraint.SetDefaultConstraint)
-        self.vert_layout_main.setContentsMargins(0, 0, 0, 0)
-        self.frame_left_2 = QFrame(self.layoutWidget_2)
+        self.frame_left_2 = QFrame(self.splitter)
         self.frame_left_2.setObjectName(u"frame_left_2")
         self.frame_left_2.setMaximumSize(QSize(16777215, 16777215))
         self.frame_left_2.setFrameShape(QFrame.Shape.NoFrame)
@@ -145,6 +131,9 @@ class Ui_MainWindow(object):
         self.verticalLayout.setObjectName(u"verticalLayout")
         self.group_box_xml_input_xpath_builder = QGroupBox(self.frame_left_2)
         self.group_box_xml_input_xpath_builder.setObjectName(u"group_box_xml_input_xpath_builder")
+        sizePolicy1 = QSizePolicy(QSizePolicy.Policy.Preferred, QSizePolicy.Policy.Preferred)
+        sizePolicy1.setHorizontalStretch(0)
+        sizePolicy1.setVerticalStretch(0)
         sizePolicy1.setHeightForWidth(self.group_box_xml_input_xpath_builder.sizePolicy().hasHeightForWidth())
         self.group_box_xml_input_xpath_builder.setSizePolicy(sizePolicy1)
         font4 = QFont()
@@ -579,22 +568,14 @@ class Ui_MainWindow(object):
 
         self.verticalLayout.addWidget(self.group_box_export_to_csv)
 
-
-        self.vert_layout_main.addWidget(self.frame_left_2)
-
-        self.splitter.addWidget(self.layoutWidget_2)
-        self.layoutWidget = QWidget(self.splitter)
-        self.layoutWidget.setObjectName(u"layoutWidget")
-        self.vert_layout_xml_output = QVBoxLayout(self.layoutWidget)
-        self.vert_layout_xml_output.setObjectName(u"vert_layout_xml_output")
-        self.vert_layout_xml_output.setContentsMargins(0, 0, 0, 0)
-        self.frame_right_2 = QFrame(self.layoutWidget)
+        self.splitter.addWidget(self.frame_left_2)
+        self.frame_right_2 = QFrame(self.splitter)
         self.frame_right_2.setObjectName(u"frame_right_2")
         self.frame_right_2.setMinimumSize(QSize(400, 0))
         self.frame_right_2.setFrameShape(QFrame.Shape.NoFrame)
         self.frame_right_2.setFrameShadow(QFrame.Shadow.Raised)
-        self.verticalLayout_14 = QVBoxLayout(self.frame_right_2)
-        self.verticalLayout_14.setObjectName(u"verticalLayout_14")
+        self.verticalLayout_4 = QVBoxLayout(self.frame_right_2)
+        self.verticalLayout_4.setObjectName(u"verticalLayout_4")
         self.group_box_xml_output = QGroupBox(self.frame_right_2)
         self.group_box_xml_output.setObjectName(u"group_box_xml_output")
         sizePolicy1.setHeightForWidth(self.group_box_xml_output.sizePolicy().hasHeightForWidth())
@@ -694,7 +675,7 @@ class Ui_MainWindow(object):
         self.verticalLayout_6.addLayout(self.hor_layout_find_functionality)
 
 
-        self.verticalLayout_14.addWidget(self.group_box_xml_output)
+        self.verticalLayout_4.addWidget(self.group_box_xml_output)
 
         self.group_box_program_output = QGroupBox(self.frame_right_2)
         self.group_box_program_output.setObjectName(u"group_box_program_output")
@@ -718,31 +699,27 @@ class Ui_MainWindow(object):
         self.verticalLayout_12.addWidget(self.text_edit_program_output)
 
 
-        self.verticalLayout_14.addWidget(self.group_box_program_output)
+        self.verticalLayout_4.addWidget(self.group_box_program_output)
 
+        self.splitter.addWidget(self.frame_right_2)
 
-        self.vert_layout_xml_output.addWidget(self.frame_right_2)
-
-        self.splitter.addWidget(self.layoutWidget)
-
-        self.verticalLayout_4.addWidget(self.splitter)
+        self.horizontalLayout_4.addWidget(self.splitter)
 
         self.tabWidget.addTab(self.tab_xml_evaluation, "")
         self.tab_csv_conversion = QWidget()
         self.tab_csv_conversion.setObjectName(u"tab_csv_conversion")
         self.tab_csv_conversion.setFont(font3)
-        self.horizontalLayout_4 = QHBoxLayout(self.tab_csv_conversion)
-        self.horizontalLayout_4.setObjectName(u"horizontalLayout_4")
-        self.horizontalLayout = QHBoxLayout()
-        self.horizontalLayout.setObjectName(u"horizontalLayout")
-        self.verticalLayout_left = QVBoxLayout()
-        self.verticalLayout_left.setObjectName(u"verticalLayout_left")
-        self.frame_left = QFrame(self.tab_csv_conversion)
+        self.verticalLayout_17 = QVBoxLayout(self.tab_csv_conversion)
+        self.verticalLayout_17.setObjectName(u"verticalLayout_17")
+        self.splitter_2 = QSplitter(self.tab_csv_conversion)
+        self.splitter_2.setObjectName(u"splitter_2")
+        self.splitter_2.setOrientation(Qt.Orientation.Horizontal)
+        self.frame_left = QFrame(self.splitter_2)
         self.frame_left.setObjectName(u"frame_left")
         self.frame_left.setFrameShape(QFrame.Shape.NoFrame)
         self.frame_left.setFrameShadow(QFrame.Shadow.Raised)
-        self.verticalLayout_2 = QVBoxLayout(self.frame_left)
-        self.verticalLayout_2.setObjectName(u"verticalLayout_2")
+        self.verticalLayout_3 = QVBoxLayout(self.frame_left)
+        self.verticalLayout_3.setObjectName(u"verticalLayout_3")
         self.groupbox_csv_conversion = QGroupBox(self.frame_left)
         self.groupbox_csv_conversion.setObjectName(u"groupbox_csv_conversion")
         self.groupbox_csv_conversion.setMaximumSize(QSize(16777215, 16777215))
@@ -846,7 +823,7 @@ class Ui_MainWindow(object):
         self.verticalLayout_13.addLayout(self.hor_layout_csv_conversion_path_output)
 
 
-        self.verticalLayout_2.addWidget(self.groupbox_csv_conversion)
+        self.verticalLayout_3.addWidget(self.groupbox_csv_conversion)
 
         self.groupbox_lobster_profiles_cleanup = QGroupBox(self.frame_left)
         self.groupbox_lobster_profiles_cleanup.setObjectName(u"groupbox_lobster_profiles_cleanup")
@@ -971,13 +948,13 @@ class Ui_MainWindow(object):
         self.verticalLayout_10.addItem(self.verticalSpacer_2)
 
 
-        self.verticalLayout_2.addWidget(self.groupbox_lobster_profiles_cleanup)
+        self.verticalLayout_3.addWidget(self.groupbox_lobster_profiles_cleanup)
 
         self.groupbox_hexadecimal_to_decimal = QGroupBox(self.frame_left)
         self.groupbox_hexadecimal_to_decimal.setObjectName(u"groupbox_hexadecimal_to_decimal")
         self.groupbox_hexadecimal_to_decimal.setFont(font4)
-        self.verticalLayout_17 = QVBoxLayout(self.groupbox_hexadecimal_to_decimal)
-        self.verticalLayout_17.setObjectName(u"verticalLayout_17")
+        self.verticalLayout_18 = QVBoxLayout(self.groupbox_hexadecimal_to_decimal)
+        self.verticalLayout_18.setObjectName(u"verticalLayout_18")
         self.formLayout_2 = QFormLayout()
         self.formLayout_2.setObjectName(u"formLayout_2")
         self.label_from_hexadecimal = QLabel(self.groupbox_hexadecimal_to_decimal)
@@ -1011,15 +988,15 @@ class Ui_MainWindow(object):
         self.formLayout_2.setWidget(1, QFormLayout.ItemRole.FieldRole, self.line_edit_decimal)
 
 
-        self.verticalLayout_17.addLayout(self.formLayout_2)
+        self.verticalLayout_18.addLayout(self.formLayout_2)
 
         self.button_convert_hexadecimal_to_decimal = QPushButton(self.groupbox_hexadecimal_to_decimal)
         self.button_convert_hexadecimal_to_decimal.setObjectName(u"button_convert_hexadecimal_to_decimal")
 
-        self.verticalLayout_17.addWidget(self.button_convert_hexadecimal_to_decimal)
+        self.verticalLayout_18.addWidget(self.button_convert_hexadecimal_to_decimal)
 
 
-        self.verticalLayout_2.addWidget(self.groupbox_hexadecimal_to_decimal)
+        self.verticalLayout_3.addWidget(self.groupbox_hexadecimal_to_decimal)
 
         self.group_box_tab2_program_output = QGroupBox(self.frame_left)
         self.group_box_tab2_program_output.setObjectName(u"group_box_tab2_program_output")
@@ -1035,23 +1012,16 @@ class Ui_MainWindow(object):
         self.horizontalLayout_8.addWidget(self.text_edit_csv_output)
 
 
-        self.verticalLayout_2.addWidget(self.group_box_tab2_program_output)
+        self.verticalLayout_3.addWidget(self.group_box_tab2_program_output)
 
-
-        self.verticalLayout_left.addWidget(self.frame_left)
-
-
-        self.horizontalLayout.addLayout(self.verticalLayout_left)
-
-        self.verticalLayout_right = QVBoxLayout()
-        self.verticalLayout_right.setObjectName(u"verticalLayout_right")
-        self.frame_right = QFrame(self.tab_csv_conversion)
+        self.splitter_2.addWidget(self.frame_left)
+        self.frame_right = QFrame(self.splitter_2)
         self.frame_right.setObjectName(u"frame_right")
         self.frame_right.setMinimumSize(QSize(500, 0))
         self.frame_right.setFrameShape(QFrame.Shape.NoFrame)
         self.frame_right.setFrameShadow(QFrame.Shadow.Raised)
-        self.verticalLayout_18 = QVBoxLayout(self.frame_right)
-        self.verticalLayout_18.setObjectName(u"verticalLayout_18")
+        self.verticalLayout_2 = QVBoxLayout(self.frame_right)
+        self.verticalLayout_2.setObjectName(u"verticalLayout_2")
         self.groupBox = QGroupBox(self.frame_right)
         self.groupBox.setObjectName(u"groupBox")
         self.groupBox.setMinimumSize(QSize(0, 0))
@@ -1092,20 +1062,15 @@ class Ui_MainWindow(object):
         self.verticalLayout_15.addLayout(self.horizontalLayout_11)
 
 
-        self.verticalLayout_18.addWidget(self.groupBox)
+        self.verticalLayout_2.addWidget(self.groupBox)
 
+        self.splitter_2.addWidget(self.frame_right)
 
-        self.verticalLayout_right.addWidget(self.frame_right)
-
-
-        self.horizontalLayout.addLayout(self.verticalLayout_right)
-
-
-        self.horizontalLayout_4.addLayout(self.horizontalLayout)
+        self.verticalLayout_17.addWidget(self.splitter_2)
 
         self.tabWidget.addTab(self.tab_csv_conversion, "")
 
-        self.verticalLayout_3.addWidget(self.tabWidget)
+        self.horizontalLayout.addWidget(self.tabWidget)
 
         MainWindow.setCentralWidget(self.centralwidget)
         self.menu_bar = QMenuBar(MainWindow)
