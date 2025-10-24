@@ -36,6 +36,7 @@ class SignalHandlerMixin:
     xml_text_searcher: 'SearchXMLOutputTextHandler'
     _main_thread_loading_movie_ref: QMovie | None = None
     helper: 'HelperMethods'
+    ui_state_manager: 'UIStateManager'  # UI state management service
     
     def _initialize_handlers(self):
         """Initialize all specialized event handlers."""
@@ -87,23 +88,14 @@ class SignalHandlerMixin:
         """Connect signals for CSV conversion operations."""
         self.signal_connector.connect_csv_conversion_signals(worker)
     
-    # Helper methods for UI state management
+    # Helper methods for UI state management (delegated to UIStateManager)
     def _set_ui_widgets_disabled(self, state: bool):
         """Helper to disable/enable UI widgets during operations."""
-        self.ui.button_browse_xml_folder.setDisabled(state)
-        self.ui.button_read_xml.setDisabled(state)
-        self.ui.button_build_xpath.setDisabled(state)
-        self.ui.button_add_xpath_to_list.setDisabled(state)
-        self.ui.button_browse_csv.setDisabled(state)
-        self.ui.button_browse_csv_conversion_path_input.setDisabled(state)
-        self.ui.button_start_csv_export.setDisabled(state)
-        self.ui.line_edit_xml_folder_path_input.setReadOnly(state)
-        self.ui.line_edit_csv_output_path.setReadOnly(state)
+        self.ui_state_manager.set_main_widgets_disabled(state)
     
     def _set_ui_widgets_table_disabled(self, state: bool):
         """Helper to disable/enable table widgets."""
-        self.ui.button_clear_table.setDisabled(state)
-        self.ui.line_edit_filter_table.setDisabled(state)
+        self.ui_state_manager.set_table_widgets_disabled(state)
     
     # ============= SLOT METHODS FOR WORKER SIGNALS =============
     
@@ -252,20 +244,12 @@ class SignalHandlerMixin:
     @Slot(str)
     def handle_csv_export_started(self, message: str):
         """Handle CSV export start."""
-        self.ui.button_start_csv_export.hide()
-        self.ui.button_abort_csv_export.show()
-        self.ui.progressbar_main.show()
-        self.ui.label_file_processing.show()
-        self._set_ui_widgets_disabled(True)
+        self.ui_state_manager.set_csv_export_widgets_state(exporting=True)
 
     @Slot(str)
     def handle_csv_export_finished(self, message: str):
         """Handle CSV export completion."""
-        self.ui.button_start_csv_export.show()
-        self.ui.button_abort_csv_export.hide()
-        self.ui.progressbar_main.hide()
-        self.ui.label_file_processing.hide()
-        self._set_ui_widgets_disabled(False)
+        self.ui_state_manager.set_csv_export_widgets_state(exporting=False)
         
         # Show completion message
         self.ui.text_edit_program_output.append(message)

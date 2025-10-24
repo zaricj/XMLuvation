@@ -26,12 +26,4 @@ class KeyboardShortcutHandler:
     @Slot()
     def on_toggle_xml_output_search_widgets(self):
         """Toggle XML output search widgets visibility."""
-        ui = self.main_window.ui
-        is_hidden = ui.line_edit_xml_output_find_text.isHidden()
-        
-        ui.line_edit_xml_output_find_text.setHidden(not is_hidden)
-        ui.button_find_next.setHidden(not is_hidden)
-        ui.button_find_previous.setHidden(not is_hidden)
-        
-        if not is_hidden:
-            ui.line_edit_xml_output_find_text.clear()
+        self.main_window.ui_state_manager.toggle_search_widgets_visibility()

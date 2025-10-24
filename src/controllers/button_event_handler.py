@@ -384,7 +384,7 @@ class ButtonEventHandler:
             if file_path:
                 df = pd.read_csv(file_path)
                 self.main_window._populate_results_table(df)
-                self.main_window._set_ui_widgets_table_disabled(False)
+                self.main_window.ui_state_manager.set_table_widgets_disabled(False)
         except Exception as ex:
             message = f"An exception of type {type(ex).__name__} occurred. Arguments: {ex.args!r}"
             QMessageBox.critical(self.main_window, "Exception loading CSV file", message)
@@ -394,4 +394,4 @@ class ButtonEventHandler:
         """Clear table data."""
         self.main_window.ui.table_csv_data.setModel(None)
         self.main_window.ui.line_edit_filter_table.clear()
-        self.main_window._set_ui_widgets_table_disabled(True)
+        self.main_window.ui_state_manager.set_table_widgets_disabled(True)

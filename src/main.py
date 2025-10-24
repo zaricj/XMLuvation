@@ -141,6 +141,7 @@ class MainWindow(QMainWindow, SignalHandlerMixin):
         from controllers.state_controller import ComboboxStateHandler
         from controllers.state_controller import SearchXMLOutputTextHandler
         from modules.config_handler import ConfigHandler
+        from services.ui_state_manager import UIStateManager
 
         self.cb_state_controller = ComboboxStateHandler(
             main_window=self,
@@ -156,6 +157,9 @@ class MainWindow(QMainWindow, SignalHandlerMixin):
             line_edit_xml_output_find_text=self.ui.line_edit_xml_output_find_text,
             text_edit_xml_output=self.ui.text_edit_xml_output,
         )
+        
+        # Initialize UI state manager
+        self.ui_state_manager = UIStateManager(main_window=self)
 
         self.settings = QSettings("Jovan", "XMLuvation")
 
@@ -220,16 +224,12 @@ class MainWindow(QMainWindow, SignalHandlerMixin):
         self._update_autofill_menu()
 
     def setup_widgets_and_visibility_states(self):
-        self.ui.button_find_next.hide()
-        self.ui.button_find_previous.hide()
-        self.ui.button_abort_csv_export.hide()
-        self.ui.progressbar_main.hide()
-        self.ui.label_file_processing.hide()
-        self.ui.line_edit_xml_output_find_text.hide()
+        # Use UIStateManager for initial setup
+        self.ui_state_manager.setup_initial_widget_states()
         
     def setup_widgets_enabled_states(self):
-        self.ui.button_clear_table.setDisabled(True)
-        self.ui.line_edit_filter_table.setDisabled(True)
+        # Already handled by ui_state_manager.setup_initial_widget_states()
+        pass
         
     def _initialize_theme_file(self, theme_file: str):
         """Initialize theme from file."""
