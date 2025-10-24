@@ -1,0 +1,24 @@
+<RCC>
+  <qresource>
+    <file>../gifs/loading_circle_small.gif</file>
+    <file>../images/checkmark_32x32.png</file>
+    <file>../icons/xml_256px.ico</file>
+    <file>../images/checkmark_white_48x48.png</file>
+    <file>../images/radiobutton_black_64x64.png.png</file>
+    <file>../images/radiobutton_unchecked_black_64x64.png</file>
+    <file>../images/radiobutton_unchecked_white_64x64.png</file>
+    <file>../images/radiobutton_white_64x64.png</file>
+    <file>../images/checkmark_48x48.png</file>
+    <file>../images/dark.png</file>
+    <file>../images/Geis_logo_with_text.png</file>
+    <file>../images/dropdown_arrow_dark.png</file>
+    <file>../images/dropdown_arrow_dark_14x14.png</file>
+    <file>../images/dropdown_arrow_light.png</file>
+    <file>../images/dropdown_arrow_light_14x14.png</file>
+    <file>../images/question-circle.png</file>
+    <file>../images/question-circle_48x48.png</file>
+    <file>../images/Geis_no_bg.png</file>
+    <file>../images/Geis_no_bg_60x60.png</file>
+    <file>../images/light.png</file>
+  </qresource>
+</RCC>

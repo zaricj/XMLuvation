@@ -1,7 +1,7 @@
 # -*- coding: utf-8 -*-
 
 ################################################################################
-## Form generated from reading UI file 'XMLuvationpxMCOe.ui'
+## Form generated from reading UI file 'XMLuvationBPIDPQ.ui'
 ##
 ## Created by: Qt User Interface Compiler version 6.9.3
 ##
@@ -23,14 +23,14 @@ from PySide6.QtWidgets import (QApplication, QCheckBox, QComboBox, QFormLayout,
     QProgressBar, QPushButton, QRadioButton, QSizePolicy,
     QSpacerItem, QSplitter, QTabWidget, QTableView,
     QTextEdit, QVBoxLayout, QWidget)
-import resources.qrc.xmluvation_resources_rc
+import gui.resources.qrc.xmluvation_resources_rc
 
 class Ui_MainWindow(object):
     def setupUi(self, MainWindow):
         if not MainWindow.objectName():
             MainWindow.setObjectName(u"MainWindow")
         MainWindow.setEnabled(True)
-        MainWindow.resize(1127, 869)
+        MainWindow.resize(1085, 869)
         font = QFont()
         font.setFamilies([u"Calibri"])
         font.setPointSize(10)
@@ -121,6 +121,7 @@ class Ui_MainWindow(object):
         self.horizontalLayout_4.setObjectName(u"horizontalLayout_4")
         self.splitter = QSplitter(self.tab_xml_evaluation)
         self.splitter.setObjectName(u"splitter")
+        self.splitter.setFont(font3)
         self.splitter.setOrientation(Qt.Orientation.Horizontal)
         self.frame_left_2 = QFrame(self.splitter)
         self.frame_left_2.setObjectName(u"frame_left_2")
@@ -129,6 +130,7 @@ class Ui_MainWindow(object):
         self.frame_left_2.setFrameShadow(QFrame.Shadow.Raised)
         self.verticalLayout = QVBoxLayout(self.frame_left_2)
         self.verticalLayout.setObjectName(u"verticalLayout")
+        self.verticalLayout.setContentsMargins(-1, 0, -1, 0)
         self.group_box_xml_input_xpath_builder = QGroupBox(self.frame_left_2)
         self.group_box_xml_input_xpath_builder.setObjectName(u"group_box_xml_input_xpath_builder")
         sizePolicy1 = QSizePolicy(QSizePolicy.Policy.Preferred, QSizePolicy.Policy.Preferred)
@@ -576,6 +578,7 @@ class Ui_MainWindow(object):
         self.frame_right_2.setFrameShadow(QFrame.Shadow.Raised)
         self.verticalLayout_4 = QVBoxLayout(self.frame_right_2)
         self.verticalLayout_4.setObjectName(u"verticalLayout_4")
+        self.verticalLayout_4.setContentsMargins(-1, 0, -1, 0)
         self.group_box_xml_output = QGroupBox(self.frame_right_2)
         self.group_box_xml_output.setObjectName(u"group_box_xml_output")
         sizePolicy1.setHeightForWidth(self.group_box_xml_output.sizePolicy().hasHeightForWidth())
@@ -719,7 +722,9 @@ class Ui_MainWindow(object):
         self.frame_left.setFrameShape(QFrame.Shape.NoFrame)
         self.frame_left.setFrameShadow(QFrame.Shadow.Raised)
         self.verticalLayout_3 = QVBoxLayout(self.frame_left)
+        self.verticalLayout_3.setSpacing(6)
         self.verticalLayout_3.setObjectName(u"verticalLayout_3")
+        self.verticalLayout_3.setContentsMargins(-1, 0, -1, 0)
         self.groupbox_csv_conversion = QGroupBox(self.frame_left)
         self.groupbox_csv_conversion.setObjectName(u"groupbox_csv_conversion")
         self.groupbox_csv_conversion.setMaximumSize(QSize(16777215, 16777215))
@@ -1022,6 +1027,7 @@ class Ui_MainWindow(object):
         self.frame_right.setFrameShadow(QFrame.Shadow.Raised)
         self.verticalLayout_2 = QVBoxLayout(self.frame_right)
         self.verticalLayout_2.setObjectName(u"verticalLayout_2")
+        self.verticalLayout_2.setContentsMargins(-1, 0, -1, 0)
         self.groupBox = QGroupBox(self.frame_right)
         self.groupBox.setObjectName(u"groupBox")
         self.groupBox.setMinimumSize(QSize(0, 0))
@@ -1075,7 +1081,7 @@ class Ui_MainWindow(object):
         MainWindow.setCentralWidget(self.centralwidget)
         self.menu_bar = QMenuBar(MainWindow)
         self.menu_bar.setObjectName(u"menu_bar")
-        self.menu_bar.setGeometry(QRect(0, 0, 1127, 33))
+        self.menu_bar.setGeometry(QRect(0, 0, 1085, 33))
         self.file_menu = QMenu(self.menu_bar)
         self.file_menu.setObjectName(u"file_menu")
         self.recent_xpath_expressions_menu = QMenu(self.file_menu)
@@ -1282,9 +1288,9 @@ class Ui_MainWindow(object):
         self.file_menu.setTitle(QCoreApplication.translate("MainWindow", u"Menu", None))
         self.recent_xpath_expressions_menu.setTitle(QCoreApplication.translate("MainWindow", u"Recent XPath Expressions", None))
         self.open_menu.setTitle(QCoreApplication.translate("MainWindow", u"Open", None))
-        self.paths_menu.setTitle(QCoreApplication.translate("MainWindow", u"Paths", None))
+        self.paths_menu.setTitle(QCoreApplication.translate("MainWindow", u"Paths Autofill", None))
         self.settings_menu.setTitle(QCoreApplication.translate("MainWindow", u"Manage", None))
         self.help_menu.setTitle(QCoreApplication.translate("MainWindow", u"Help", None))
-        self.menu_autofill.setTitle(QCoreApplication.translate("MainWindow", u"Autofill", None))
+        self.menu_autofill.setTitle(QCoreApplication.translate("MainWindow", u"XPath Autofill", None))
     # retranslateUi
 

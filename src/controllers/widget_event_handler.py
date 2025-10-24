@@ -59,7 +59,7 @@ class WidgetEventHandler:
     @Slot()
     def on_csv_profile_cleanup_input_changed(self):
         """Handle CSV profile cleanup input changes."""
-        from controllers.state_controller import CSVColumnDropHandler
+        from controllers.modules_controller import CSVColumnDropHandler
         
         csv_file_path = self.main_window.ui.line_edit_profile_cleanup_csv_file_path.text()
         column_to_drop = self.main_window.ui.combobox_csv_headers.currentText()

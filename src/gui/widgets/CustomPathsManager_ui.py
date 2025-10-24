@@ -18,7 +18,7 @@ from PySide6.QtGui import (QBrush, QColor, QConicalGradient, QCursor,
 from PySide6.QtWidgets import (QApplication, QComboBox, QFrame, QGroupBox,
     QHBoxLayout, QLabel, QLineEdit, QPushButton,
     QSizePolicy, QVBoxLayout, QWidget)
-import resources.qrc.xmluvation_resources_rc
+import gui.resources.qrc.xmluvation_resources_rc
 
 class Ui_CustomPathsManagerWidget(object):
     def setupUi(self, CustomPathsManagerWidget):
@@ -229,15 +229,32 @@ class Ui_CustomPathsManagerWidget(object):
 
         self.verticalLayout_3.addLayout(self.horizontalLayout_5)
 
-        self.button_save_changes = QPushButton(self.groupBox_2)
-        self.button_save_changes.setObjectName(u"button_save_changes")
+        self.horizontalLayout_8 = QHBoxLayout()
+        self.horizontalLayout_8.setObjectName(u"horizontalLayout_8")
+        self.label_2 = QLabel(self.groupBox_2)
+        self.label_2.setObjectName(u"label_2")
 
-        self.verticalLayout_3.addWidget(self.button_save_changes)
+        self.horizontalLayout_8.addWidget(self.label_2)
 
         self.button_open_config_directory = QPushButton(self.groupBox_2)
         self.button_open_config_directory.setObjectName(u"button_open_config_directory")
+        sizePolicy5 = QSizePolicy(QSizePolicy.Policy.Expanding, QSizePolicy.Policy.Fixed)
+        sizePolicy5.setHorizontalStretch(0)
+        sizePolicy5.setVerticalStretch(0)
+        sizePolicy5.setHeightForWidth(self.button_open_config_directory.sizePolicy().hasHeightForWidth())
+        self.button_open_config_directory.setSizePolicy(sizePolicy5)
 
-        self.verticalLayout_3.addWidget(self.button_open_config_directory)
+        self.horizontalLayout_8.addWidget(self.button_open_config_directory)
+
+        self.button_save_changes = QPushButton(self.groupBox_2)
+        self.button_save_changes.setObjectName(u"button_save_changes")
+        sizePolicy5.setHeightForWidth(self.button_save_changes.sizePolicy().hasHeightForWidth())
+        self.button_save_changes.setSizePolicy(sizePolicy5)
+
+        self.horizontalLayout_8.addWidget(self.button_save_changes)
+
+
+        self.verticalLayout_3.addLayout(self.horizontalLayout_8)
 
 
         self.verticalLayout_4.addWidget(self.groupBox_2)
@@ -271,7 +288,8 @@ class Ui_CustomPathsManagerWidget(object):
         self.line_edit_path_name.setPlaceholderText(QCoreApplication.translate("CustomPathsManagerWidget", u"Path name as shown in the menubar...", None))
         self.label_path_value.setText(QCoreApplication.translate("CustomPathsManagerWidget", u"Path folder", None))
         self.line_edit_path_value.setPlaceholderText(QCoreApplication.translate("CustomPathsManagerWidget", u"Path value of the path name...", None))
-        self.button_save_changes.setText(QCoreApplication.translate("CustomPathsManagerWidget", u"Save Changes", None))
+        self.label_2.setText(QCoreApplication.translate("CustomPathsManagerWidget", u"Options:", None))
         self.button_open_config_directory.setText(QCoreApplication.translate("CustomPathsManagerWidget", u"Open Config Directory", None))
+        self.button_save_changes.setText(QCoreApplication.translate("CustomPathsManagerWidget", u"Save Changes", None))
     # retranslateUi
 

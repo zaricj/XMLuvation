@@ -17,7 +17,7 @@
    <string>Custom Paths Manager</string>
   </property>
   <property name="windowIcon">
-   <iconset resource="../../resources/qrc/xmluvation_resources.qrc">
+   <iconset resource="../resources/qrc/xmluvation_resources.qrc">
     <normaloff>:/icons/xml_256px.ico</normaloff>:/icons/xml_256px.ico</iconset>
   </property>
   <property name="styleSheet">
@@ -293,18 +293,41 @@
          </layout>
         </item>
         <item>
-         <widget class="QPushButton" name="button_save_changes">
-          <property name="text">
-           <string>Save Changes</string>
-          </property>
-         </widget>
-        </item>
-        <item>
-         <widget class="QPushButton" name="button_open_config_directory">
-          <property name="text">
-           <string>Open Config Directory</string>
-          </property>
-         </widget>
+         <layout class="QHBoxLayout" name="horizontalLayout_8">
+          <item>
+           <widget class="QLabel" name="label_2">
+            <property name="text">
+             <string>Options:</string>
+            </property>
+           </widget>
+          </item>
+          <item>
+           <widget class="QPushButton" name="button_open_config_directory">
+            <property name="sizePolicy">
+             <sizepolicy hsizetype="Expanding" vsizetype="Fixed">
+              <horstretch>0</horstretch>
+              <verstretch>0</verstretch>
+             </sizepolicy>
+            </property>
+            <property name="text">
+             <string>Open Config Directory</string>
+            </property>
+           </widget>
+          </item>
+          <item>
+           <widget class="QPushButton" name="button_save_changes">
+            <property name="sizePolicy">
+             <sizepolicy hsizetype="Expanding" vsizetype="Fixed">
+              <horstretch>0</horstretch>
+              <verstretch>0</verstretch>
+             </sizepolicy>
+            </property>
+            <property name="text">
+             <string>Save Changes</string>
+            </property>
+           </widget>
+          </item>
+         </layout>
         </item>
        </layout>
       </widget>
@@ -314,7 +337,7 @@
   </layout>
  </widget>
  <resources>
-  <include location="../../resources/qrc/xmluvation_resources.qrc"/>
+  <include location="../resources/qrc/xmluvation_resources.qrc"/>
  </resources>
  <connections/>
 </ui>

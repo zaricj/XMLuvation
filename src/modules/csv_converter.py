@@ -4,7 +4,6 @@ from PySide6.QtWidgets import QLabel
 import pandas as pd
 import csv
 import os
-from pathlib import Path
 
 class CSVConversionSignals(QObject):
     """Signals class for CSVConversionThread operations."""

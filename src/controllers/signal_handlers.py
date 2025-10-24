@@ -13,9 +13,10 @@ from gui.main.XMLuvation_ui import Ui_MainWindow
 
 if TYPE_CHECKING:
     from PySide6.QtCore import QSettings
-    from controllers.state_controller import ComboboxStateHandler, SearchXMLOutputTextHandler
+    from controllers.modules_controller import ComboboxStateHandler, SearchXMLOutputTextHandler
     from modules.config_handler import ConfigHandler
     from main import MainWindow
+    from services.ui_state_manager import UIStateManager
     from controllers.helper_methods import HelperMethods
 
 
@@ -151,7 +152,7 @@ class SignalHandlerMixin:
         """Handle starting the loading GIF - creates QMovie on main thread."""
         try:
             root = Path(__file__).parent.parent
-            gif = root / "resources" / "gifs" / "loading_circle_small.gif"
+            gif = root / "gui" / "resources" / "gifs" / "loading_circle_small.gif"
             
             # Create QMovie on the MAIN thread
             movie = QMovie(str(gif))
@@ -166,6 +167,7 @@ class SignalHandlerMixin:
             self.ui.label_loading_gif.setVisible(True)
         except Exception as e:
             QMessageBox.critical(self, "GIF Error", f"Error loading GIF: {e}")
+            return
             
     @Slot()
     def handle_stop_loading_gif(self):
@@ -242,14 +244,12 @@ class SignalHandlerMixin:
             QMessageBox.critical(self, "Error processing parsing results", message)
 
     @Slot(str)
-    def handle_csv_export_started(self, message: str):
+    def handle_visible_state_widget(self):
         """Handle CSV export start."""
         self.ui_state_manager.set_csv_export_widgets_state(exporting=True)
 
     @Slot(str)
-    def handle_csv_export_finished(self, message: str):
+    def handle_csv_export_finished(self):
         """Handle CSV export completion."""
         self.ui_state_manager.set_csv_export_widgets_state(exporting=False)
-        
-        # Show completion message
-        self.ui.text_edit_program_output.append(message)
+

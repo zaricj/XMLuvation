@@ -28,7 +28,7 @@ but current names are maintained for backward compatibility.
 from typing import TYPE_CHECKING
 
 if TYPE_CHECKING:
-    from controllers.state_controller import (
+    from src.controllers.modules_controller import (
         SearchAndExportToCSVHandler,
         ParseXMLFileHandler,
         CSVConversionHandler,

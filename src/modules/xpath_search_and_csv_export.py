@@ -353,6 +353,7 @@ class OptimizedCSVExportThread(QRunnable):
         self.signals.program_output_progress_append.emit(
             f"Starting search and CSV export of {len(xml_files)} files with {self.max_threads} threads..."
         )
+        # Hide the widget during processing
         self.signals.visible_state_widget.emit(True)
 
         result_queue = Queue(maxsize=5000)
@@ -381,7 +382,7 @@ class OptimizedCSVExportThread(QRunnable):
                 self.signals.error_occurred.emit("CSV Write Error", str(e))
 
         writer_thread = Thread(target=writer_worker,
-                               daemon=True, name="CSVWriterThread")
+                            daemon=True, name="CSVWriterThread")
         writer_thread.start()
 
         try:

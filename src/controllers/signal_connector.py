@@ -32,7 +32,6 @@ class SignalConnector:
     def connect_csv_export_signals(self, worker):
         """Connect signals for CSV export operations."""
         self._current_csv_exporter = worker
-        worker.signals.finished.connect(self.main_window.handle_csv_export_finished)
         worker.signals.error_occurred.connect(self.main_window.handle_critical_message)
         worker.signals.info_occurred.connect(self.main_window.handle_info_message)
         worker.signals.warning_occurred.connect(self.main_window.handle_warning_message)
@@ -40,7 +39,8 @@ class SignalConnector:
         worker.signals.program_output_progress_set_text.connect(self.main_window.handle_program_output_set_text)
         worker.signals.file_processing_progress.connect(self.main_window.handle_file_processing_label)
         worker.signals.progressbar_update.connect(self.main_window.handle_progress_bar_update)
-        worker.signals.visible_state_widget.connect(self.main_window.handle_csv_export_started)
+        worker.signals.visible_state_widget.connect(self.main_window.handle_visible_state_widget)
+        worker.signals.finished.connect(self.main_window.handle_csv_export_finished)
     
     def connect_file_cleanup_signals(self, worker):
         """Connect signals for file cleanup operations."""

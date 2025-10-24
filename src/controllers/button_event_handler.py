@@ -101,7 +101,7 @@ class ButtonEventHandler:
     def on_build_xpath_expression(self):
         """Build XPath expression based on selected combobox values."""
         try:
-            from controllers.state_controller import XPathBuildHandler
+            from controllers.modules_controller import XPathBuildHandler
             
             builder = XPathBuildHandler(
                 main_window=self.main_window,
@@ -125,7 +125,7 @@ class ButtonEventHandler:
     def on_add_xpath_to_list(self):
         """Add XPath expression to list."""
         try:
-            from controllers.state_controller import AddXPathExpressionToListHandler, GenerateCSVHeaderHandler
+            from controllers.modules_controller import AddXPathExpressionToListHandler, GenerateCSVHeaderHandler
             
             xpath_input = self.main_window.ui.line_edit_xpath_builder.text()
             xpath_filters = self.main_window._listwidget_to_list(self.main_window.ui.list_widget_main_xpath_expressions)
@@ -172,7 +172,7 @@ class ButtonEventHandler:
     def on_start_csv_search(self):
         """Start CSV search and export process."""
         try:
-            from controllers.state_controller import SearchAndExportToCSVHandler
+            from controllers.modules_controller import SearchAndExportToCSVHandler
             
             xml_folder_path = self.main_window.ui.line_edit_xml_folder_path_input.text()
             csv_folder_output_path = self.main_window.ui.line_edit_csv_output_path.text()
@@ -231,10 +231,12 @@ class ButtonEventHandler:
     def on_convert_csv_file(self):
         """Convert CSV file."""
         try:
-            from controllers.state_controller import CSVConversionHandler
+            from controllers.modules_controller import CSVConversionHandler
             
             csv_path = self.main_window.ui.line_edit_csv_conversion_path_input.text()
             write_index = self.main_window.ui.checkbox_write_index_column.isChecked()
+            extension_type = self.main_window.ui.combobox_csv_conversion_output_type.currentText()
+            label_gif = self.main_window.ui.label_loading_gif
 
             if not csv_path or not os.path.exists(csv_path):
                 QMessageBox.warning(
@@ -244,8 +246,10 @@ class ButtonEventHandler:
 
             handler = CSVConversionHandler(
                 main_window=self.main_window,
-                csv_file_path=csv_path,
-                write_index_flag=write_index,
+                csv_file_to_convert=csv_path,
+                extension_type=extension_type,
+                write_index=write_index,
+                label_loading_gif=label_gif
             )
             handler.start_csv_conversion()
         except Exception as ex:
@@ -279,7 +283,7 @@ class ButtonEventHandler:
     def on_start_profile_cleanup(self):
         """Start profile cleanup process."""
         try:
-            from controllers.state_controller import LobsterProfileExportCleanupHandler
+            from controllers.modules_controller import LobsterProfileExportCleanupHandler
             
             csv_file = self.main_window.ui.line_edit_profile_cleanup_csv_file_path.text()
             profiles_folder_path = self.main_window.ui.line_edit_profile_cleanup_folder_path.text()
@@ -297,7 +301,7 @@ class ButtonEventHandler:
     @Slot()
     def on_drop_current_csv_header(self):
         """Drop selected CSV header."""
-        from controllers.state_controller import CSVColumnDropHandler
+        from controllers.modules_controller import CSVColumnDropHandler
         
         csv_file_path = self.main_window.ui.line_edit_profile_cleanup_csv_file_path.text()
         column_to_drop = self.main_window.ui.combobox_csv_headers.currentText()
@@ -350,10 +354,10 @@ class ButtonEventHandler:
     def on_convert_hex_to_decimal(self):
         """Convert hexadecimal to decimal."""
         try:
-            hex_value = self.main_window.ui.line_edit_hex_input.text()
+            hex_value = self.main_window.ui.line_edit_hexadecimal.text()
             if hex_value:
                 decimal_value = int(hex_value, 16)
-                self.main_window.ui.line_edit_decimal_output.setText(str(decimal_value))
+                self.main_window.ui.line_edit_decimal.setText(str(decimal_value))
             else:
                 QMessageBox.warning(
                     self.main_window,

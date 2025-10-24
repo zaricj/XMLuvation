@@ -25,7 +25,7 @@ from PySide6.QtCore import (
 )
 
 if TYPE_CHECKING:
-    from controllers.state_controller import (
+    from controllers.modules_controller import (
         ComboboxStateHandler, 
         SearchXMLOutputTextHandler,
         SearchAndExportToCSVHandler
@@ -35,7 +35,8 @@ if TYPE_CHECKING:
 from gui.main.XMLuvation_ui import Ui_MainWindow
 from controllers.signal_handlers import SignalHandlerMixin
 from controllers.helper_methods import HelperMethods
-from dialogs.exit_dialog import ExitDialog
+from services.ui_state_manager import UIStateManager
+from gui.dialogs.exit_dialog import ExitDialog
 
 # ----------------------------
 # Constants
@@ -44,13 +45,13 @@ CURRENT_DIR = Path(__file__).parent
 GUI_CONFIG_DIRECTORY: Path = CURRENT_DIR / "config"
 GUI_CONFIG_FILE_PATH: Path = GUI_CONFIG_DIRECTORY / "config.json"
 
-DARK_THEME_PATH: Path = CURRENT_DIR / "resources" / "styles" / "dark_theme.qss"
-LIGHT_THEME_PATH: Path = CURRENT_DIR / "resources" / "styles" / "light_theme.qss"
+DARK_THEME_PATH: Path = CURRENT_DIR / "gui" / "resources" / "styles" / "dark_theme.qss"
+LIGHT_THEME_PATH: Path = CURRENT_DIR / "gui" / "resources" / "styles" / "light_theme.qss"
 
-ICON_PATH: Path = CURRENT_DIR / "resources" / "icons" / "xml_256px.ico"
+ICON_PATH: Path = CURRENT_DIR / "gui" / "resources" / "icons" / "xml_256px.ico"
 
-DARK_THEME_QMENU_ICON: Path = CURRENT_DIR / "resources" / "images" / "dark.png"
-LIGHT_THEME_QMENU_ICON: Path = CURRENT_DIR / "resources" / "images" / "light.png"
+DARK_THEME_QMENU_ICON: Path = CURRENT_DIR / "gui" / "resources" / "images" / "dark.png"
+LIGHT_THEME_QMENU_ICON: Path = CURRENT_DIR / "gui" / "resources" / "images" / "light.png"
 
 APP_VERSION: str = "v1.3.5"
 APP_NAME: str = "XMLuvation"
@@ -135,13 +136,12 @@ class MainWindow(QMainWindow, SignalHandlerMixin):
         self.setup_application()
         self._initialize_theme()
         self.setup_widgets_and_visibility_states()
-        self.setup_widgets_enabled_states()
 
     def initialize_attributes(self):
-        from controllers.state_controller import ComboboxStateHandler
-        from controllers.state_controller import SearchXMLOutputTextHandler
+        from controllers.modules_controller import ComboboxStateHandler
+        from controllers.modules_controller import SearchXMLOutputTextHandler
         from modules.config_handler import ConfigHandler
-        from services.ui_state_manager import UIStateManager
+        
 
         self.cb_state_controller = ComboboxStateHandler(
             main_window=self,
@@ -227,10 +227,6 @@ class MainWindow(QMainWindow, SignalHandlerMixin):
         # Use UIStateManager for initial setup
         self.ui_state_manager.setup_initial_widget_states()
         
-    def setup_widgets_enabled_states(self):
-        # Already handled by ui_state_manager.setup_initial_widget_states()
-        pass
-        
     def _initialize_theme_file(self, theme_file: str):
         """Initialize theme from file."""
         try:
@@ -305,7 +301,7 @@ class MainWindow(QMainWindow, SignalHandlerMixin):
     def _parse_xml_file(self, xml_file_path: str):
         """Parse XML file and display content."""
         try:
-            from controllers.state_controller import ParseXMLFileHandler
+            from controllers.modules_controller import ParseXMLFileHandler
             
             xml_parser = ParseXMLFileHandler(main_window=self, xml_file_path=xml_file_path)
             xml_parser.start_xml_parsing()

@@ -19,7 +19,7 @@ from PySide6.QtWidgets import (QApplication, QComboBox, QFrame, QGroupBox,
     QHBoxLayout, QLabel, QLineEdit, QListWidget,
     QListWidgetItem, QPushButton, QSizePolicy, QVBoxLayout,
     QWidget)
-import resources.qrc.xmluvation_resources_rc
+import gui.resources.qrc.xmluvation_resources_rc
 
 class Ui_PreBuiltXPathsManagerWidget(object):
     def setupUi(self, PreBuiltXPathsManagerWidget):
@@ -127,15 +127,29 @@ class Ui_PreBuiltXPathsManagerWidget(object):
 
         self.verticalLayout_2.addWidget(self.frame_4)
 
+        self.horizontalLayout_6 = QHBoxLayout()
+        self.horizontalLayout_6.setObjectName(u"horizontalLayout_6")
+        self.label_2 = QLabel(self.groupBox_pre_built_xpaths_main)
+        self.label_2.setObjectName(u"label_2")
+
+        self.horizontalLayout_6.addWidget(self.label_2)
+
         self.button_save_changes = QPushButton(self.groupBox_pre_built_xpaths_main)
         self.button_save_changes.setObjectName(u"button_save_changes")
+        sizePolicy.setHeightForWidth(self.button_save_changes.sizePolicy().hasHeightForWidth())
+        self.button_save_changes.setSizePolicy(sizePolicy)
 
-        self.verticalLayout_2.addWidget(self.button_save_changes)
+        self.horizontalLayout_6.addWidget(self.button_save_changes)
 
         self.button_open_config_directory = QPushButton(self.groupBox_pre_built_xpaths_main)
         self.button_open_config_directory.setObjectName(u"button_open_config_directory")
+        sizePolicy.setHeightForWidth(self.button_open_config_directory.sizePolicy().hasHeightForWidth())
+        self.button_open_config_directory.setSizePolicy(sizePolicy)
 
-        self.verticalLayout_2.addWidget(self.button_open_config_directory)
+        self.horizontalLayout_6.addWidget(self.button_open_config_directory)
+
+
+        self.verticalLayout_2.addLayout(self.horizontalLayout_6)
 
 
         self.LeftSide.addWidget(self.groupBox_pre_built_xpaths_main)
@@ -163,12 +177,6 @@ class Ui_PreBuiltXPathsManagerWidget(object):
         self.verticalLayout_3.setObjectName(u"verticalLayout_3")
         self.horizontalLayout_3 = QHBoxLayout()
         self.horizontalLayout_3.setObjectName(u"horizontalLayout_3")
-        self.label_2 = QLabel(self.frame)
-        self.label_2.setObjectName(u"label_2")
-        self.label_2.setFont(font)
-
-        self.horizontalLayout_3.addWidget(self.label_2)
-
         self.line_edit_xpath_expression = QLineEdit(self.frame)
         self.line_edit_xpath_expression.setObjectName(u"line_edit_xpath_expression")
 
@@ -208,12 +216,6 @@ class Ui_PreBuiltXPathsManagerWidget(object):
         self.verticalLayout_6.setObjectName(u"verticalLayout_6")
         self.horizontalLayout_4 = QHBoxLayout()
         self.horizontalLayout_4.setObjectName(u"horizontalLayout_4")
-        self.label_3 = QLabel(self.frame_2)
-        self.label_3.setObjectName(u"label_3")
-        self.label_3.setFont(font)
-
-        self.horizontalLayout_4.addWidget(self.label_3)
-
         self.line_edit_csv_header = QLineEdit(self.frame_2)
         self.line_edit_csv_header.setObjectName(u"line_edit_csv_header")
 
@@ -310,8 +312,9 @@ class Ui_PreBuiltXPathsManagerWidget(object):
         self.button_delete_config.setToolTip(QCoreApplication.translate("PreBuiltXPathsManagerWidget", u"Deletes the selected configurtion all it's values.", None))
 #endif // QT_CONFIG(tooltip)
         self.button_delete_config.setText(QCoreApplication.translate("PreBuiltXPathsManagerWidget", u"Delete", None))
-        self.label_7.setText(QCoreApplication.translate("PreBuiltXPathsManagerWidget", u"Edit XPath Expressions", None))
-        self.label_8.setText(QCoreApplication.translate("PreBuiltXPathsManagerWidget", u"Edit CSV Headers", None))
+        self.label_7.setText(QCoreApplication.translate("PreBuiltXPathsManagerWidget", u"Edit XPath Expressions:", None))
+        self.label_8.setText(QCoreApplication.translate("PreBuiltXPathsManagerWidget", u"Edit CSV Headers:", None))
+        self.label_2.setText(QCoreApplication.translate("PreBuiltXPathsManagerWidget", u"Optons:", None))
 #if QT_CONFIG(tooltip)
         self.button_save_changes.setToolTip(QCoreApplication.translate("PreBuiltXPathsManagerWidget", u"Save changes that you made to the two listboxes.", None))
 #endif // QT_CONFIG(tooltip)
@@ -319,13 +322,11 @@ class Ui_PreBuiltXPathsManagerWidget(object):
         self.button_open_config_directory.setText(QCoreApplication.translate("PreBuiltXPathsManagerWidget", u"Open Config Directory", None))
         self.groupBox.setTitle(QCoreApplication.translate("PreBuiltXPathsManagerWidget", u"Create pre-built XPaths", None))
         self.label.setText(QCoreApplication.translate("PreBuiltXPathsManagerWidget", u"Here you can create your own pre-built autofill configuration:", None))
-        self.label_2.setText(QCoreApplication.translate("PreBuiltXPathsManagerWidget", u"Add XPaths Expressions", None))
         self.line_edit_xpath_expression.setPlaceholderText(QCoreApplication.translate("PreBuiltXPathsManagerWidget", u"Enter a Xpath Expression here...", None))
 #if QT_CONFIG(tooltip)
         self.button_add_xpath_to_list.setToolTip(QCoreApplication.translate("PreBuiltXPathsManagerWidget", u"Add entered XPath Expression to it's listbox.", None))
 #endif // QT_CONFIG(tooltip)
         self.button_add_xpath_to_list.setText("")
-        self.label_3.setText(QCoreApplication.translate("PreBuiltXPathsManagerWidget", u"Add CSV Headers", None))
         self.line_edit_csv_header.setPlaceholderText(QCoreApplication.translate("PreBuiltXPathsManagerWidget", u"Enter header name here (can be comma-separated)...", None))
 #if QT_CONFIG(tooltip)
         self.button_add_csv_header_to_list.setToolTip(QCoreApplication.translate("PreBuiltXPathsManagerWidget", u"Add entered CSV Header to it's listbox.", None))
@@ -340,10 +341,10 @@ class Ui_PreBuiltXPathsManagerWidget(object):
 #if QT_CONFIG(tooltip)
         self.button_remove_selected.setToolTip(QCoreApplication.translate("PreBuiltXPathsManagerWidget", u"Removes the currently selected item in the focused listbox.", None))
 #endif // QT_CONFIG(tooltip)
-        self.button_remove_selected.setText(QCoreApplication.translate("PreBuiltXPathsManagerWidget", u"Remove Selected", None))
+        self.button_remove_selected.setText(QCoreApplication.translate("PreBuiltXPathsManagerWidget", u"Remove Selected Value", None))
 #if QT_CONFIG(tooltip)
         self.button_remove_all.setToolTip(QCoreApplication.translate("PreBuiltXPathsManagerWidget", u"Removes all items in the focused listbox.", None))
 #endif // QT_CONFIG(tooltip)
-        self.button_remove_all.setText(QCoreApplication.translate("PreBuiltXPathsManagerWidget", u"Remove All", None))
+        self.button_remove_all.setText(QCoreApplication.translate("PreBuiltXPathsManagerWidget", u"Remove All Values", None))
     # retranslateUi
 

@@ -9,7 +9,7 @@
    <rect>
     <x>0</x>
     <y>0</y>
-    <width>1127</width>
+    <width>1085</width>
     <height>869</height>
    </rect>
   </property>
@@ -26,7 +26,7 @@
    <string>XMLuvation</string>
   </property>
   <property name="windowIcon">
-   <iconset resource="../../resources/qrc/xmluvation_resources.qrc">
+   <iconset resource="../resources/qrc/xmluvation_resources.qrc">
     <normaloff>:/icons/xml_256px.ico</normaloff>:/icons/xml_256px.ico</iconset>
   </property>
   <property name="autoFillBackground">
@@ -99,6 +99,16 @@
        <layout class="QHBoxLayout" name="horizontalLayout_4">
         <item>
          <widget class="QSplitter" name="splitter">
+          <property name="font">
+           <font>
+            <family>Microsoft YaHei UI</family>
+            <pointsize>10</pointsize>
+            <italic>false</italic>
+            <bold>false</bold>
+            <underline>false</underline>
+            <strikeout>false</strikeout>
+           </font>
+          </property>
           <property name="orientation">
            <enum>Qt::Orientation::Horizontal</enum>
           </property>
@@ -116,6 +126,12 @@
             <enum>QFrame::Shadow::Raised</enum>
            </property>
            <layout class="QVBoxLayout" name="verticalLayout">
+            <property name="topMargin">
+             <number>0</number>
+            </property>
+            <property name="bottomMargin">
+             <number>0</number>
+            </property>
             <item>
              <widget class="QGroupBox" name="group_box_xml_input_xpath_builder">
               <property name="sizePolicy">
@@ -1290,6 +1306,12 @@
             <enum>QFrame::Shadow::Raised</enum>
            </property>
            <layout class="QVBoxLayout" name="verticalLayout_4">
+            <property name="topMargin">
+             <number>0</number>
+            </property>
+            <property name="bottomMargin">
+             <number>0</number>
+            </property>
             <item>
              <widget class="QGroupBox" name="group_box_xml_output">
               <property name="sizePolicy">
@@ -1830,6 +1852,15 @@
             <enum>QFrame::Shadow::Raised</enum>
            </property>
            <layout class="QVBoxLayout" name="verticalLayout_3">
+            <property name="spacing">
+             <number>6</number>
+            </property>
+            <property name="topMargin">
+             <number>0</number>
+            </property>
+            <property name="bottomMargin">
+             <number>0</number>
+            </property>
             <item>
              <widget class="QGroupBox" name="groupbox_csv_conversion">
               <property name="maximumSize">
@@ -2556,6 +2587,12 @@ Supported output file types: Excel, Markdown, HTML and JSON</string>
             <enum>QFrame::Shadow::Raised</enum>
            </property>
            <layout class="QVBoxLayout" name="verticalLayout_2">
+            <property name="topMargin">
+             <number>0</number>
+            </property>
+            <property name="bottomMargin">
+             <number>0</number>
+            </property>
             <item>
              <widget class="QGroupBox" name="groupBox">
               <property name="minimumSize">
@@ -2637,7 +2674,7 @@ Supported output file types: Excel, Markdown, HTML and JSON</string>
     <rect>
      <x>0</x>
      <y>0</y>
-     <width>1127</width>
+     <width>1085</width>
      <height>33</height>
     </rect>
    </property>
@@ -2668,7 +2705,7 @@ Supported output file types: Excel, Markdown, HTML and JSON</string>
    </widget>
    <widget class="QMenu" name="paths_menu">
     <property name="title">
-     <string>Paths</string>
+     <string>Paths Autofill</string>
     </property>
     <addaction name="add_custom_path_action"/>
    </widget>
@@ -2687,7 +2724,7 @@ Supported output file types: Excel, Markdown, HTML and JSON</string>
    </widget>
    <widget class="QMenu" name="menu_autofill">
     <property name="title">
-     <string>Autofill</string>
+     <string>XPath Autofill</string>
     </property>
    </widget>
    <addaction name="file_menu"/>
@@ -2780,7 +2817,7 @@ Supported output file types: Excel, Markdown, HTML and JSON</string>
   </action>
  </widget>
  <resources>
-  <include location="../../resources/qrc/xmluvation_resources.qrc"/>
+  <include location="../resources/qrc/xmluvation_resources.qrc"/>
  </resources>
  <connections>
   <connection>

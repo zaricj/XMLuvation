@@ -1,0 +1,249 @@
+QWidget {
+	background-color: #232428;
+    color: #F0F0F0;
+    font-family: 'Segoe UI', 'Helvetica Neue', 'Helvetica', 'Arial', sans-serif;
+    font-size: 10pt;
+}
+
+QMenuBar {
+	background-color: #212225;
+	padding: 4px;
+}
+
+QMenuBar::item:selected {
+	background-color: #be5c35;
+	border-radius: 4px;
+	color: #F0F0F0;
+}
+
+QMenu {
+	background-color: #232428;
+	border: 1px solid #313338;
+    color: #F0F0F0;
+    border-radius: 4px;
+}
+
+QMenu::item:selected {
+	background-color: #be5c35;
+}
+
+QPushButton {
+	background-color: #3E3E42;
+	border: 1px solid #5C5C60;
+	color: #F0F0F0;
+	font: bold;
+    padding: 3px 6px; /* Reduced padding */
+    border-radius: 4px;
+}
+
+QPushButton:hover {
+    border: 1px solid #000000;
+    /* glow effect using text-shadow is not supported in QSS, simulate with border + background */
+    background: #be5c35;
+}
+
+QPushButton:pressed {
+    background: #97492b;
+}
+
+QPushButton:disabled {
+    background-color: #3E3E42;
+    border: 1px solid #5C5C60;
+    color: #999999;
+}
+
+QLineEdit {
+    background-color: #313338;
+    border: 1px solid #5C5C60;
+    padding: 3px; /* Reduced padding */
+    border-radius: 4px;
+    selection-background-color: #be5c35;
+    selection-color: #FFFFFF;
+}
+
+QLineEdit:focus {
+    border: 1px solid #be5c35; /* Accent color on focus */
+}
+
+QComboBox,
+QTextEdit {
+	background-color: #313338;
+	border: 1px solid #5C5C60;
+	padding: 2px 3px;
+	border-radius: 6px;
+}
+
+QLabel#statusbar_xpath_expressions {
+	background-color: rgb(49, 51, 56);
+	border: 1px solid #5C5C60;
+	color: #ffc857;
+	font: bold;
+}
+
+QLabel#statusbar_xml_files_count {
+	background-color: rgb(49, 51, 56);
+	border: 1px solid #5C5C60;
+	color: #ffc857;
+	font: bold;
+}
+
+QLabel#label_file_processing {
+	background-color: rgb(49, 51, 56);
+	border: 1px solid #5C5C60;
+	color: #ffc857;
+	font: bold;
+}
+
+QListWidget {
+	background-color: #313338;
+	border: 1px solid #5C5C60;
+	border-radius: 6px;
+}
+
+QListWidget::item {
+	height: 26px;
+}
+
+QListWidget::item:selected {
+	background-color: #be5c35;
+	color: #F0F0F0;
+}
+
+QComboBox::drop-down {
+	border: none;
+	background-color: #be5c35;
+	width: 20px;
+	border-top-right-radius: 6px;
+	border-bottom-right-radius: 6px;
+	image: url(:/images/dropdown_arrow_light_14x14.png);
+}
+
+QComboBox:disabled {
+	background-color: #808080;
+}
+
+QComboBox::drop-down:disabled {
+	border: none;
+	background-color: #3d3d3d;
+}
+
+QTabWidget::pane {
+	border: 1px solid #313338;
+	border-radius: 6px;
+}
+
+QTabBar::tab {
+	background-color: #232428;
+	border: 1px solid #313338;
+	padding: 8px 14px;
+	border-radius: 6px;
+	margin: 0 2px;
+}
+
+QTabBar::tab:selected {
+	background-color: #be5c35;
+	color: #F0F0F0;
+}
+
+QTableView {
+	background-color: #313338;
+}
+
+QGroupBox {
+	border: 1px solid #313338;
+	border-radius: 6px;
+	margin-top: 10px;
+	padding: 10px;
+	font: bold;
+}
+
+QGroupBox::title {
+	subcontrol-origin: margin;
+	subcontrol-position: top left;
+	left: 12px;
+	padding: 0 6px;
+}
+
+QRadioButton {
+	spacing: 6px;
+}
+
+QRadioButton::indicator {
+	width: 16px;
+	height: 16px;
+}
+
+/* Optional: disabled text color */
+QRadioButton:disabled {
+	color: #808080;
+}
+
+QRadioButton::indicator:unchecked {
+	image: url(:/images/radiobutton_unchecked_white_64x64.png);
+}
+
+QRadioButton::indicator:checked {
+	image: url(:/images/radiobutton_white_64x64.png);
+}
+
+QScrollBar:vertical {
+	border: none;
+	background: #232428;
+	width: 12px;
+	margin: 4px;
+	border-radius: 6px;
+}
+
+QScrollBar::handle:vertical {
+	background: #313338;
+	min-height: 20px;
+	border-radius: 6px;
+}
+
+QScrollBar::add-line:vertical,
+QScrollBar::sub-line:vertical {
+	height: 0px;
+}
+
+/* Progress Bar */
+QProgressBar {
+	background-color: #313338;
+	border: 1px solid #5C5C60;
+	border-radius: 6px;
+	text-align: center;
+	color: #ffffff;
+	padding: 2px;
+}
+
+QProgressBar::chunk {
+	background-color: #363BA6;
+}
+
+/* CheckBox */
+QCheckBox {
+	spacing: 6px;
+}
+
+QCheckBox::indicator {
+	width: 16px;
+	height: 16px;
+	border-radius: 4px;
+	background-color: #313338;
+	border: 1px solid #5C5C60;
+}
+
+QCheckBox::indicator:checked {
+    background-color: #be5c35;
+    border: 1px solid #555773;
+	image: url(:/images/checkmark_white_48x48.png);
+}
+
+QCheckBox::indicator:unchecked {
+	background-color: #313338;
+	border: 1px solid #5C5C60;
+	image: none;
+}
+
+QComboBox:hover,QAbstractSpinBox:hover,QLineEdit:hover,QTextEdit:hover,QPlainTextEdit:hover,QAbstractView:hover,QTreeView:hover {
+    border: 1px solid #be5c35;
+}
