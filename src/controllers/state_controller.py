@@ -17,8 +17,15 @@ if TYPE_CHECKING:
 
 class ComboboxStateHandler:
     """
-    Controller the states of the ComboBoxes based on the selected values. Values need to be loaded from an XML file.
-
+    UI State Controller: Manages combobox states based on XML data.
+    
+    This controller:
+    - Updates combobox options based on XML file content
+    - Manages dependencies between comboboxes (tags, attributes, values)
+    - Handles state changes when selections are made
+    
+    Architectural Role: Controller (manages UI state logic)
+    
     parsed_xml_data is a dictionary and contains the following keys:
     - 'xml_string' --> xml_string,
     - 'tags' --> sorted(tags),
@@ -180,7 +187,17 @@ class ComboboxStateHandler:
 
 
 class CSVConversionHandler:
-    """Handles methods and logic for csv_conversion_groupbox"""
+    """
+    Service Orchestrator: Manages CSV file conversion operations.
+    
+    This class orchestrates CSV conversion by:
+    - Creating and configuring CSV conversion worker threads
+    - Managing conversion lifecycle
+    - Handling conversion signal connections
+    
+    Architectural Role: Service Orchestrator (not a UI event handler)
+    The name "Handler" is maintained for backward compatibility.
+    """
 
     def __init__(self, main_window: "MainWindow", csv_file_to_convert: str, extension_type: str, write_index: bool, label_loading_gif: QLabel):
         self.main_window = main_window
@@ -312,7 +329,16 @@ class AddXPathExpressionToListHandler:
 
 class SearchAndExportToCSVHandler:
     """
-    Handles methods and logic of a button event that starts the search with XPath Expression and export of a component.
+    Service Orchestrator: Manages CSV export operations.
+    
+    This class orchestrates the CSV export process by:
+    - Creating and configuring CSV export worker threads
+    - Managing thread lifecycle (start/stop)
+    - Coordinating between UI and background workers
+    
+    Architectural Role: Service Orchestrator (not a UI event handler)
+    The name "Handler" is maintained for backward compatibility, but this class
+    functions as a service that orchestrates business logic.
     """
 
     def __init__(self, main_window: "MainWindow", xml_folder_path: str, xpath_filters: list, csv_folder_output_path: str, csv_headers_input: str, group_matches_flag: bool, set_max_threads: int):
@@ -427,7 +453,17 @@ class CSVColumnDropHandler:
 
 
 class ParseXMLFileHandler:
-    """Handles methods and logic of the XML parsing."""
+    """
+    Service Orchestrator: Manages XML file parsing operations.
+    
+    This class orchestrates XML parsing by:
+    - Creating and configuring XML parser worker threads
+    - Managing parsing lifecycle
+    - Handling parser signal connections
+    
+    Architectural Role: Service Orchestrator (not a UI event handler)
+    The name "Handler" is maintained for backward compatibility.
+    """
 
     def __init__(self, main_window: "MainWindow", xml_file_path: str):
         self.main_window = main_window
