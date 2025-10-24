@@ -131,6 +131,7 @@ class MainWindow(QMainWindow, SignalHandlerMixin):
         self._main_thread_loading_movie_ref = None
 
         self.initialize_attributes()
+        self._initialize_handlers()  # Initialize specialized handlers
         self.setup_application()
         self._initialize_theme()
         self.setup_widgets_and_visibility_states()
