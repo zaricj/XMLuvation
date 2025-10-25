@@ -2,7 +2,9 @@
 """Handler for menu bar action events."""
 import webbrowser
 from PySide6.QtWidgets import QMessageBox
-from PySide6.QtCore import Slot
+from PySide6.QtCore import Slot, QUrl
+from PySide6.QtGui import QDesktopServices
+import os
 from typing import TYPE_CHECKING
 
 if TYPE_CHECKING:
@@ -70,7 +72,7 @@ class MenuActionHandler:
     def on_open_input_directory(self):
         """Open input directory in file explorer."""
         folder_path = self.main_window.ui.line_edit_xml_folder_path_input.text()
-        self.main_window._open_folder_in_file_explorer(folder_path)
+        self.open_folder_in_file_explorer(folder_path)
     
     @Slot()
     def on_open_output_directory(self):
@@ -79,7 +81,7 @@ class MenuActionHandler:
         if csv_path:
             import os
             folder_path = os.path.dirname(csv_path)
-            self.main_window._open_folder_in_file_explorer(folder_path)
+            self.open_folder_in_file_explorer(folder_path)
         else:
             QMessageBox.warning(
                 self.main_window,
@@ -94,12 +96,27 @@ class MenuActionHandler:
         if csv_path:
             import os
             folder_path = os.path.dirname(csv_path)
-            self.main_window._open_folder_in_file_explorer(folder_path)
+            self.open_folder_in_file_explorer(folder_path)
         else:
             QMessageBox.warning(
                 self.main_window,
                 "No Input Path",
                 "No CSV conversion input path has been set."
+            )
+            
+    def open_folder_in_file_explorer(self, folder_path: str):
+        """Helper method to open folder in file explorer."""
+        if folder_path and os.path.exists(folder_path):
+            try:
+                QDesktopServices.openUrl(QUrl.fromLocalFile(folder_path))
+            except Exception as ex:
+                message = f"An exception of type {type(ex).__name__} occurred. Arguments: {ex.args!r}"
+                QMessageBox.critical(self, "An exception occurred", message)
+        else:
+            QMessageBox.warning(
+                self,
+                "Error",
+                f"Path does not exist or is not a valid path:\n{folder_path}"
             )
     
     @Slot()
@@ -126,11 +143,11 @@ class MenuActionHandler:
         """Toggle application theme."""
         if self.main_window.current_theme == "dark_theme.qss":
             self.main_window.toggle_theme_action.setIcon(self.main_window.dark_mode_icon)
-            self.main_window._initialize_theme_file(self.main_window.light_theme_file)
+            self.main_window.initialize_theme_file(self.main_window.light_theme_file)
             self.main_window.current_theme = "light_theme.qss"
         else:
             self.main_window.toggle_theme_action.setIcon(self.main_window.light_mode_icon)
-            self.main_window._initialize_theme_file(self.main_window.dark_theme_file)
+            self.main_window.initialize_theme_file(self.main_window.dark_theme_file)
             self.main_window.current_theme = "dark_theme.qss"
     
     @Slot()

@@ -23,9 +23,9 @@ class ExitDialog(QDialog):
         self.ui = Ui_ExitAppDialog()
         self.ui.setupUi(self)
         
-        self._initialize_theme()
+        self.initialize_theme()
         
-    def _initialize_theme(self):
+    def initialize_theme(self):
         """Initialize UI theme files (.qss)"""
         try:
             if self.main_window.current_theme == "dark_theme.qss":

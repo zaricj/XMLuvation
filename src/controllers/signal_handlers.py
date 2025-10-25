@@ -39,7 +39,7 @@ class SignalHandlerMixin:
     helper: 'HelperMethods'
     ui_state_manager: 'UIStateManager'  # UI state management service
     
-    def _initialize_handlers(self):
+    def initialize_handlers(self):
         """Initialize all specialized event handlers."""
         from controllers.menu_action_handler import MenuActionHandler
         from controllers.button_event_handler import ButtonEventHandler

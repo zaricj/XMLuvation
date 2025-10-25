@@ -2,6 +2,7 @@
 """Handler for widget events (ComboBox, LineEdit, CheckBox)."""
 import os
 from PySide6.QtCore import Slot
+from PySide6.QtWidgets import QMessageBox
 from typing import TYPE_CHECKING
 
 if TYPE_CHECKING:
@@ -92,13 +93,56 @@ class WidgetEventHandler:
 
             self.main_window.ui.table_csv_data.setRowHidden(row, not row_match)
     
-    @Slot(bool)
-    def on_write_index_checkbox_toggled(self, checked: bool):
-        """Handle write index column checkbox toggle."""
-        # This is handled within the CSV conversion handler
-        pass
-    
-    @Slot(bool)
-    def on_group_matches_checkbox_toggled(self, checked: bool):
+    @Slot()
+    def on_write_index_checkbox_toggled(self):
+        """Handle write index checkbox toggle."""
+        message_with_index = """
+        Data will look like this:
+
+        | Index           | Header 1   | Header 2    |
+        |-------------------|-------------------|-------------------|
+        | 1                  | Data...         | Data...        |
+        """
+        message_without_index = """
+        Data will look like this:
+
+        | Header 1 | Header 2      |
+        |------------------|-------------------|
+        | Data...       | Data...         |
+        """
+        try:
+            if self.main_window.ui.checkbox_write_index_column.isChecked():
+                self.main_window.ui.text_edit_csv_output.setText(message_with_index)
+            else:
+                self.main_window.ui.text_edit_csv_output.setText(message_without_index)
+        except Exception as ex:
+            message = f"An exception of type {type(ex).__name__} occurred. Arguments: {ex.args!r}"
+            QMessageBox.critical(self.main_window, "Exception in Program", f"An error occurred: {message}")
+            
+    @Slot()
+    def on_group_matches_checkbox_toggled(self):
         """Handle group matches checkbox toggle."""
-        self.main_window.settings.setValue("group_matches", checked)
+        example_on = """
+        | Header 1 | Header 2      |
+        |------------------|-------------------|
+        | Data...       | Match 1; Match 2; Match 3 |"""
+        
+        example_off = """
+        | Header 1 | Header 2      |
+        |------------------|-------------------|
+        | Data...       | Match 1         |
+        | Data...       | Match 2         |
+        | Data...       | Match 3         |"""
+        
+        try:
+            if self.main_window.ui.checkbox_group_matches.isChecked():
+                self.main_window.ui.text_edit_program_output.setText(
+                    f"Group Matches is enabled. All matches for each XPath expression will be grouped together in the CSV output.\n{example_on}"
+                )
+            else:
+                self.main_window.ui.text_edit_program_output.setText(
+                    f"Group Matches is disabled. Each match will be listed separately in the CSV output.\n{example_off}"
+                )
+        except Exception as ex:
+            message = f"An exception of type {type(ex).__name__} occurred. Arguments: {ex.args!r}"
+            QMessageBox.critical(self.main_window, "Exception in Program", f"An error occurred: {message}")

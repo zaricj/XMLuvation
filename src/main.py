@@ -2,22 +2,18 @@
 import sys
 import os
 from pathlib import Path
-import pandas as pd
 from typing import List, Optional, Dict, Any, TYPE_CHECKING
 
 from PySide6.QtWidgets import (
     QApplication,
     QMainWindow,
     QMessageBox,
-    QDialog,
-    QListWidget,
-    QTableWidgetItem)
+    QDialog)
 
-from PySide6.QtGui import QIcon, QCloseEvent, QGuiApplication, QAction, QDesktopServices
+from PySide6.QtGui import QIcon, QCloseEvent, QGuiApplication, QAction
 from PySide6.QtCore import (
     Qt,
     QFile,
-    QUrl,
     QTextStream,
     QIODevice,
     QSettings,
@@ -132,9 +128,9 @@ class MainWindow(QMainWindow, SignalHandlerMixin):
         self._main_thread_loading_movie_ref = None
 
         self.initialize_attributes()
-        self._initialize_handlers()  # Initialize specialized handlers
+        self.initialize_handlers()  # Initialize specialized handlers
         self.setup_application()
-        self._initialize_theme()
+        self.initialize_theme()
         self.setup_widgets_and_visibility_states()
 
     def initialize_attributes(self):
@@ -142,7 +138,6 @@ class MainWindow(QMainWindow, SignalHandlerMixin):
         from controllers.modules_controller import SearchXMLOutputTextHandler
         from modules.config_handler import ConfigHandler
         
-
         self.cb_state_controller = ComboboxStateHandler(
             main_window=self,
             parsed_xml_data=self._parsed_xml_data_ref,
@@ -160,15 +155,9 @@ class MainWindow(QMainWindow, SignalHandlerMixin):
         
         # Initialize UI state manager
         self.ui_state_manager = UIStateManager(main_window=self)
-
+        
         self.settings = QSettings("Jovan", "XMLuvation")
 
-        # Restore geometry safely
-        restore_window_state(self, self.settings)
-
-        self.recent_xpath_expressions = self.settings.value(
-            "recent_xpath_expressions", type=list
-        ) or []
 
         self.thread_pool = QThreadPool()
         max_threads = self.thread_pool.maxThreadCount()
@@ -192,31 +181,9 @@ class MainWindow(QMainWindow, SignalHandlerMixin):
 
         self.dark_theme_file = str(DARK_THEME_PATH)
         self.light_theme_file = str(LIGHT_THEME_PATH)
-
-        self.current_theme = self.settings.value("app_theme", "dark_theme.qss")
-
-        self.group_matches_setting = self.settings.value(
-            "group_matches",
-            self.ui.checkbox_group_matches.isChecked(),
-            type=bool
-        )
-        # Apply the setting unconditionally to the checkbox
-        self.ui.checkbox_group_matches.setChecked(self.group_matches_setting)
-
-        # Current theme setting load
-        if self.current_theme == "dark_theme.qss":
-            self.theme_icon = self.light_mode_icon
-        else:
-            self.theme_icon = self.dark_mode_icon
         
-        # Prompt on exit setting load
-        prompt_value = self.settings.value("prompt_on_exit",
-                                        self.ui.prompt_on_exit_action.isChecked(),
-                                        type=bool)
-        # Apply the setting unconditionally to the QAction
-        self.ui.prompt_on_exit_action.setChecked(bool(prompt_value))
+        self.load_app_settings()
         
-
     def setup_application(self):
         self.connect_ui_events()
         self.connect_menu_bar_actions()
@@ -227,21 +194,7 @@ class MainWindow(QMainWindow, SignalHandlerMixin):
         # Use UIStateManager for initial setup
         self.ui_state_manager.setup_initial_widget_states()
         
-    def _initialize_theme_file(self, theme_file: str):
-        """Initialize theme from file."""
-        try:
-            file = QFile(theme_file)
-            if not file.open(QIODevice.OpenModeFlag.ReadOnly | QIODevice.OpenModeFlag.Text):
-                return
-            else:
-                stream = QTextStream(file)
-                stylesheet = stream.readAll()
-                self.setStyleSheet(stylesheet)
-            file.close()
-        except Exception as ex:
-            QMessageBox.critical(self, "Theme load error", f"Failed to load theme: {str(ex)}")
-
-    def _initialize_theme(self):
+    def initialize_theme(self):
         try:
             theme_file = (
                 self.dark_theme_file
@@ -257,14 +210,72 @@ class MainWindow(QMainWindow, SignalHandlerMixin):
         except Exception as ex:
             QMessageBox.critical(self, "Theme load error", f"Failed to load theme: {ex}")
             
+    def initialize_theme_file(self, theme_file: str):
+        """Initialize theme from file."""
+        try:
+            file = QFile(theme_file)
+            if not file.open(QIODevice.OpenModeFlag.ReadOnly | QIODevice.OpenModeFlag.Text):
+                return
+            else:
+                stream = QTextStream(file)
+                stylesheet = stream.readAll()
+                self.setStyleSheet(stylesheet)
+            file.close()
+        except Exception as ex:
+            QMessageBox.critical(self, "Theme load error", f"Failed to load theme: {str(ex)}")
+            
     # Helper method to save apps settings in a more DRY way
     def _save_app_settings(self):
         self.settings.setValue("app_theme", self.current_theme)
         self.settings.setValue("group_matches", self.ui.checkbox_group_matches.isChecked())
         self.settings.setValue("prompt_on_exit", self.ui.prompt_on_exit_action.isChecked())
+        self.settings.setValue("recent_xpath_expressions", self.recent_xpath_expressions)
         save_window_state(self, self.settings) # Save windows location and state
         # optional: force write to disk
         self.settings.sync()
+        
+    def load_app_settings(self):
+        """Load application settings from QSettings."""
+        # Restore geometry safely
+        restore_window_state(self, self.settings)
+
+        self.recent_xpath_expressions = self.settings.value(
+            "recent_xpath_expressions", type=list
+        ) or []
+
+        self._update_recent_xpath_expressions_menu()
+
+        # Current theme setting load
+        self.current_theme = self.settings.value("app_theme", "dark_theme.qss")
+        if self.current_theme == "dark_theme.qss":
+            self.theme_icon = self.light_mode_icon
+        else:
+            self.theme_icon = self.dark_mode_icon
+
+        self.group_matches_setting = self.settings.value(
+            "group_matches",
+            self.ui.checkbox_group_matches.isChecked(),
+            type=bool
+        )
+        
+        # Group matches checkbox
+        self.ui.checkbox_group_matches.setChecked(self.group_matches_setting)
+
+        # Prompt on exit setting load
+        prompt_value = self.settings.value("prompt_on_exit",
+                                        self.ui.prompt_on_exit_action.isChecked(),
+                                        type=bool)
+        
+        # Apply the setting unconditionally to the QAction
+        self.ui.prompt_on_exit_action.setChecked(bool(prompt_value))
+        
+        # Prompt on exit checkbox in menubar
+        prompt_on_exit = self.settings.value(
+            "prompt_on_exit",
+            self.ui.prompt_on_exit_action.isChecked(),
+            type=bool
+        )
+        self.ui.prompt_on_exit_action.setChecked(prompt_on_exit)
 
     def closeEvent(self, event: QCloseEvent):
         if self.ui.prompt_on_exit_action.isChecked():
@@ -284,45 +295,6 @@ class MainWindow(QMainWindow, SignalHandlerMixin):
         super().closeEvent(event)
 
     # ============= HELPER METHODS =============
-    
-    # Populate the Table Widget
-    def _populate_results_table(self, results: pd.DataFrame):
-        """Display the DataFrame efficiently in a QTableView."""
-        from modules.pandas_model import PandasModel
-        
-        if results.empty:
-            self.ui.table_csv_data.setModel(None)
-            return
-
-        model = PandasModel(results)
-        self.ui.table_csv_data.setModel(model)
-        self.ui.table_csv_data.resizeColumnsToContents()
-
-    def _parse_xml_file(self, xml_file_path: str):
-        """Parse XML file and display content."""
-        try:
-            from controllers.modules_controller import ParseXMLFileHandler
-            
-            xml_parser = ParseXMLFileHandler(main_window=self, xml_file_path=xml_file_path)
-            xml_parser.start_xml_parsing()
-        except Exception as ex:
-            message = f"An exception of type {type(ex).__name__} occurred. Arguments: {ex.args!r}"
-            QMessageBox.critical(self, "Exception on starting to parse xml file", message)
-
-    def _open_folder_in_file_explorer(self, folder_path: str):
-        """Helper method to open folder in file explorer."""
-        if folder_path and os.path.exists(folder_path):
-            try:
-                QDesktopServices.openUrl(QUrl.fromLocalFile(folder_path))
-            except Exception as ex:
-                message = f"An exception of type {type(ex).__name__} occurred. Arguments: {ex.args!r}"
-                QMessageBox.critical(self, "An exception occurred", message)
-        else:
-            QMessageBox.warning(
-                self,
-                "Error",
-                f"Path does not exist or is not a valid path:\n{folder_path}"
-            )
 
     def _add_recent_xpath_expression(self, expression: str):
         """Add XPath expression to recent expressions."""
@@ -389,49 +361,6 @@ class MainWindow(QMainWindow, SignalHandlerMixin):
             self.ui.list_widget_main_xpath_expressions.addItem(xpath)
         if csv_headers:
             self.ui.line_edit_csv_headers_input.setText(', '.join(csv_headers))
-
-    def _remove_selected_xpath_item(self):
-        """Remove selected XPath item from list."""
-        try:
-            current_selected_item = self.ui.list_widget_main_xpath_expressions.currentRow()
-            if current_selected_item != -1:
-                item_to_remove = self.ui.list_widget_main_xpath_expressions.takeItem(current_selected_item)
-                self.ui.text_edit_program_output.append(
-                    f"Removed item: {item_to_remove.text()} at row {current_selected_item}"
-                )
-            else:
-                self.ui.text_edit_program_output.append("No item selected to delete.")
-        except IndexError:
-            self.ui.text_edit_program_output.append("Nothing to delete.")
-        except Exception as ex:
-            message = f"An exception of type {type(ex).__name__} occurred. Arguments: {ex.args!r}"
-            self.ui.text_edit_program_output.setText(f"Error removing selected item from list: {message}")
-
-    def _remove_all_xpath_items(self):
-        """Remove all XPath items from list."""
-        try:
-            if self.ui.list_widget_main_xpath_expressions.count() > 0:
-                self.ui.list_widget_main_xpath_expressions.clear()
-                self.ui.text_edit_program_output.setText("Deleted all items from the list.")
-                # Clean CSV Header Input if it has any value in it
-                if len(self.ui.line_edit_csv_headers_input.text()) > 1:
-                    self.ui.line_edit_csv_headers_input.clear()
-            else:
-                self.ui.text_edit_program_output.setText("No items to delete in list.")
-        except Exception as ex:
-            message = f"An exception of type {type(ex).__name__} occurred. Arguments: {ex.args!r}"
-            self.ui.text_edit_program_output.setText(f"Error removing all items from list: {message}")
-
-    def _listwidget_to_list(self, widget: QListWidget) -> list[str]:
-        """Helper method to convert QItems from a specified QListWidget to a list of strings.
-
-        Args:
-            widget (QListWidget): The specified list widget.
-
-        Returns:
-            list[str]: Returns a list of QItems from a QListWidget as strings.
-        """
-        return [widget.item(i).text() for i in range(widget.count())]
 
 # ----------------------------
 # Entrypoint

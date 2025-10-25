@@ -2,7 +2,8 @@
 """Handler for button click events."""
 import datetime
 import os
-from PySide6.QtWidgets import QFileDialog, QMessageBox
+import pandas as pd
+from PySide6.QtWidgets import QFileDialog, QMessageBox, QListWidget
 from PySide6.QtCore import Slot
 from typing import TYPE_CHECKING
 
@@ -77,7 +78,7 @@ class ButtonEventHandler:
             )
             if file_name:
                 self.main_window.ui.text_edit_program_output.clear()
-                self.main_window._parse_xml_file(file_name)
+                self.parse_xml_file(file_name)
                 # Add the read XML files path to the XML path input field if it's not already set
                 if not self.main_window.ui.line_edit_xml_folder_path_input.text():
                     self.main_window.ui.line_edit_xml_folder_path_input.setText(
@@ -86,7 +87,18 @@ class ButtonEventHandler:
         except Exception as ex:
             message = f"An exception of type {type(ex).__name__} occurred. Arguments: {ex.args!r}"
             QMessageBox.critical(self.main_window, "Exception reading xml file", message)
-    
+            
+    def parse_xml_file(self, xml_file_path: str):
+        """Parse XML file and display content."""
+        try:
+            from controllers.modules_controller import ParseXMLFileHandler
+            
+            xml_parser = ParseXMLFileHandler(main_window=self.main_window, xml_file_path=xml_file_path)
+            xml_parser.start_xml_parsing()
+        except Exception as ex:
+            message = f"An exception of type {type(ex).__name__} occurred. Arguments: {ex.args!r}"
+            QMessageBox.critical(self.main_window, "Exception on starting to parse xml file", message)
+
     @Slot()
     def on_browse_csv_output(self):
         """Browse for CSV output file."""
@@ -128,7 +140,7 @@ class ButtonEventHandler:
             from controllers.modules_controller import AddXPathExpressionToListHandler, GenerateCSVHeaderHandler
             
             xpath_input = self.main_window.ui.line_edit_xpath_builder.text()
-            xpath_filters = self.main_window._listwidget_to_list(self.main_window.ui.list_widget_main_xpath_expressions)
+            xpath_filters = self.listwidget_to_list(self.main_window.ui.list_widget_main_xpath_expressions)
             csv_headers_input = self.main_window.ui.line_edit_csv_headers_input
             list_widget_xpath_expressions = self.main_window.ui.list_widget_main_xpath_expressions
 
@@ -168,6 +180,17 @@ class ButtonEventHandler:
             message = f"An exception of type {type(ex).__name__} occurred. Arguments: {ex.args!r}"
             QMessageBox.critical(self.main_window, "Exception adding XPath Expression to list widget", message)
     
+    def listwidget_to_list(self, widget: QListWidget) -> list[str]:
+        """Helper method to convert QItems from a specified QListWidget to a list of strings.
+
+        Args:
+            widget (QListWidget): The specified list widget.
+
+        Returns:
+            list[str]: Returns a list of QItems from a QListWidget as strings.
+        """
+        return [widget.item(i).text() for i in range(widget.count())]
+    
     @Slot()
     def on_start_csv_search(self):
         """Start CSV search and export process."""
@@ -178,7 +201,7 @@ class ButtonEventHandler:
             csv_folder_output_path = self.main_window.ui.line_edit_csv_output_path.text()
             csv_headers_input = self.main_window.ui.line_edit_csv_headers_input.text()
             group_matches_flag = self.main_window.ui.checkbox_group_matches.isChecked()
-            xpath_filters = self.main_window._listwidget_to_list(self.main_window.ui.list_widget_main_xpath_expressions)
+            xpath_filters = self.listwidget_to_list(self.main_window.ui.list_widget_main_xpath_expressions)
 
             if not xml_folder_path or not os.path.isdir(xml_folder_path):
                 QMessageBox.warning(
@@ -387,11 +410,24 @@ class ButtonEventHandler:
             
             if file_path:
                 df = pd.read_csv(file_path)
-                self.main_window._populate_results_table(df)
+                self.populate_results_table(df)
                 self.main_window.ui_state_manager.set_table_widgets_disabled(False)
         except Exception as ex:
             message = f"An exception of type {type(ex).__name__} occurred. Arguments: {ex.args!r}"
             QMessageBox.critical(self.main_window, "Exception loading CSV file", message)
+            
+    # Populate the Table Widget
+    def populate_results_table(self, results: pd.DataFrame):
+        """Display the DataFrame efficiently in a QTableView."""
+        from modules.pandas_model import PandasModel
+        
+        if results.empty:
+            self.main_window.ui.table_csv_data.setModel(None)
+            return
+
+        model = PandasModel(results)
+        self.main_window.ui.table_csv_data.setModel(model)
+        self.main_window.ui.table_csv_data.resizeColumnsToContents()
     
     @Slot()
     def on_clear_table(self):

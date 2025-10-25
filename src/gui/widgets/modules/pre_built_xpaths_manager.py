@@ -66,7 +66,7 @@ class PreBuiltXPathsManager(QWidget):
         )
         
         # Initialize current app theme
-        self._initialize_theme()
+        self.initialize_theme()
         # Update combobox with configuration values
         self.update_combobox("custom_xpaths_autofill")
         
@@ -75,7 +75,7 @@ class PreBuiltXPathsManager(QWidget):
         """Sets the list widget that was just clicked/selected."""
         self.active_list_widget = list_widget
         
-    def _initialize_theme(self):
+    def initialize_theme(self):
         """Initialize UI theme files (.qss)"""
         try:
             if self.main_window.current_theme == "dark_theme.qss":

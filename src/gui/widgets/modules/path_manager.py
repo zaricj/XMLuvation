@@ -46,12 +46,12 @@ class CustomPathsManager(QWidget):
         self.ui.button_open_config_directory.clicked.connect(lambda: self.main_window._open_folder_in_file_explorer(GUI_CONFIG_DIRECTORY))
 
         # Initialize theme for app
-        self._initialize_theme()
+        self.initialize_theme()
         
         # Initial population of the combobox
         self.update_combobox()
 
-    def _initialize_theme(self):
+    def initialize_theme(self):
         """Initialize UI theme files (.qss)"""
         try:
             if self.main_window.current_theme == "dark_theme.qss":
