@@ -166,11 +166,57 @@ All changes maintain full backward compatibility:
 ## Future Improvements
 
 Potential areas for further enhancement:
-1. Extract more services from state_controller.py
+1. ~~Extract more services from state_controller.py~~ ✅ **COMPLETED** (see Update 2025-10-26 below)
 2. Add unit tests for each focused class
 3. Consider dependency injection container
 4. Add logging throughout application
 5. Consider async/await for some operations
+
+## Update 2025-10-26: Additional Refactoring of modules_controller.py
+
+### Problem Identified
+The `modules_controller.py` file (658 lines) contained 10 different handler classes, violating the Single Responsibility Principle and making the codebase harder to navigate.
+
+### Solution Implemented
+Split the monolithic file into focused, single-responsibility files organized by functionality:
+
+**UI State Controllers** (in `controllers/`):
+- `combobox_state_handler.py` (177 lines) - Manages combobox states based on XML data
+- `xml_output_search_handler.py` (48 lines) - Search functionality in XML output text
+
+**XPath Handlers** (in `controllers/`):
+- `xpath_handlers.py` (245 lines) - Contains three related XPath handlers:
+  - `AddXPathExpressionToListHandler` - Validates and adds XPath expressions
+  - `XPathBuildHandler` - Builds XPath expressions from UI selections
+  - `GenerateCSVHeaderHandler` - Generates CSV headers from XPath expressions
+
+**CSV Service Orchestrators** (in `services/`):
+- `csv_service_handlers.py` (172 lines) - Contains four CSV-related service orchestrators:
+  - `CSVConversionHandler` - Manages CSV file conversions
+  - `SearchAndExportToCSVHandler` - Orchestrates CSV export operations
+  - `LobsterProfileExportCleanupHandler` - Handles lobster profile cleanup
+  - `CSVColumnDropHandler` - Manages CSV column dropping operations
+
+**XML Service Orchestrators** (in `services/`):
+- `xml_service_handlers.py` (39 lines) - Contains:
+  - `ParseXMLFileHandler` - Orchestrates XML parsing operations
+
+**Backward Compatibility Facade**:
+- `modules_controller.py` (31 lines) - Re-exports all classes, maintaining full backward compatibility
+
+### Benefits Achieved
+1. **Better Organization**: Related functionality grouped together
+2. **Easier Navigation**: Clear file names indicate purpose
+3. **Single Responsibility**: Each file has a focused purpose
+4. **Maintainability**: Smaller files are easier to understand
+5. **Backward Compatibility**: All existing imports continue to work seamlessly
+
+### Metrics
+- **Before**: 1 file with 658 lines containing 10 mixed classes
+- **After**: 5 focused files + 1 compatibility facade (31 lines)
+- **Reduction**: modules_controller.py reduced by 95% (658 → 31 lines)
+- **Total new files created**: 5 new modular files
+- **Backward compatibility**: 100% maintained through facade pattern
 
 ## Conclusion
 
@@ -178,5 +224,6 @@ The refactoring successfully addresses all three key issues raised:
 1. ✅ Mixed responsibilities in MainWindow - Separated into services and handlers
 2. ✅ SignalHandlerMixin too large - Reduced by 73% through decomposition
 3. ✅ Unclear service roles - Documented and clarified architecture
+4. ✅ **NEW**: modules_controller.py too large - Reduced by 95% through modularization
 
 The codebase is now more maintainable, testable, and aligned with SOLID principles while maintaining full backward compatibility.
