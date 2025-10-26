@@ -64,7 +64,7 @@ class ButtonEventHandler:
     @Slot()
     def on_browse_xml_folder(self):
         """Browse for XML folder."""
-        self.main_window.helper._browse_folder_helper(
+        self.main_window.helper.browse_folder_helper(
             dialog_message="Select directory that contains XML files",
             line_widget=self.main_window.ui.line_edit_xml_folder_path_input,
         )
@@ -102,7 +102,7 @@ class ButtonEventHandler:
     @Slot()
     def on_browse_csv_output(self):
         """Browse for CSV output file."""
-        self.main_window.helper._browse_save_file_as_helper(
+        self.main_window.helper.browse_save_file_as_helper(
             dialog_message="Save as",
             line_widget=self.main_window.ui.line_edit_csv_output_path,
             file_extension_filter="CSV File (*.csv)",
@@ -244,7 +244,7 @@ class ButtonEventHandler:
     @Slot()
     def on_browse_csv_conversion_input(self):
         """Browse for CSV conversion input file."""
-        self.main_window.helper._browse_file_helper(
+        self.main_window.helper.browse_file_helper(
             dialog_message="Select csv file",
             line_widget=self.main_window.ui.line_edit_csv_conversion_path_input,
             file_extension_filter="CSV File (*.csv)",
@@ -283,12 +283,12 @@ class ButtonEventHandler:
     def on_open_converted_file(self):
         """Open converted file."""
         file_path = self.main_window.ui.line_edit_csv_conversion_open_file_path.text()
-        self.main_window.helper._open_file_directly(file_path)
+        self.main_window.helper.open_file_directly(file_path)
     
     @Slot()
     def on_browse_profile_cleanup_csv(self):
         """Browse for profile cleanup CSV file."""
-        self.main_window.helper._browse_file_helper(
+        self.main_window.helper.browse_file_helper(
             dialog_message="Select csv file",
             line_widget=self.main_window.ui.line_edit_profile_cleanup_csv_file_path,
             file_extension_filter="CSV File (*.csv)",
@@ -297,7 +297,7 @@ class ButtonEventHandler:
     @Slot()
     def on_browse_profile_cleanup_folder(self):
         """Browse for profile cleanup folder."""
-        self.main_window.helper._browse_folder_helper(
+        self.main_window.helper.browse_folder_helper(
             dialog_message="Select directory that contains XML files",
             line_widget=self.main_window.ui.line_edit_profile_cleanup_folder_path,
         )
@@ -403,7 +403,7 @@ class ButtonEventHandler:
         try:
             import pandas as pd
             
-            file_path = self.main_window.helper._browse_file_helper_non_input(
+            file_path = self.main_window.helper.browse_file_helper_non_input(
                 dialog_message="Select CSV file to display",
                 file_extension_filter="CSV File (*.csv)"
             )

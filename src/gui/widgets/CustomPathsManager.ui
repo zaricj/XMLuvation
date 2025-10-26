@@ -79,12 +79,16 @@
           <item>
            <widget class="QLabel" name="label_path_name_2">
             <property name="text">
-             <string>Path name:</string>
+             <string>Config Name:</string>
             </property>
            </widget>
           </item>
           <item>
-           <widget class="QLineEdit" name="line_edit_custom_path_name"/>
+           <widget class="QLineEdit" name="line_edit_custom_path_name">
+            <property name="placeholderText">
+             <string>Enter a name for the new configuration...</string>
+            </property>
+           </widget>
           </item>
          </layout>
         </item>
@@ -93,12 +97,16 @@
           <item>
            <widget class="QLabel" name="label_path_folder">
             <property name="text">
-             <string>Path folder:</string>
+             <string>Folder Path:</string>
             </property>
            </widget>
           </item>
           <item>
-           <widget class="QLineEdit" name="line_edit_custom_path_value"/>
+           <widget class="QLineEdit" name="line_edit_custom_path_value">
+            <property name="placeholderText">
+             <string>Enter a folder's path which will be saved to the configuration...</string>
+            </property>
+           </widget>
           </item>
           <item>
            <widget class="QPushButton" name="button_browse_path_folder">
@@ -220,6 +228,12 @@
           </item>
           <item>
            <widget class="QComboBox" name="combobox_path_names">
+            <property name="sizePolicy">
+             <sizepolicy hsizetype="Expanding" vsizetype="Fixed">
+              <horstretch>0</horstretch>
+              <verstretch>0</verstretch>
+             </sizepolicy>
+            </property>
             <property name="placeholderText">
              <string notr="true">Custom paths...</string>
             </property>
@@ -261,14 +275,14 @@
           <item>
            <widget class="QLabel" name="label_path_name">
             <property name="text">
-             <string>Path name:</string>
+             <string>Config Name:</string>
             </property>
            </widget>
           </item>
           <item>
            <widget class="QLineEdit" name="line_edit_path_name">
             <property name="placeholderText">
-             <string>Path name as shown in the menubar...</string>
+             <string>Name of the configuration as shown in the autofill menubar...</string>
             </property>
            </widget>
           </item>
@@ -279,14 +293,14 @@
           <item>
            <widget class="QLabel" name="label_path_value">
             <property name="text">
-             <string>Path folder</string>
+             <string>Folder Path:</string>
             </property>
            </widget>
           </item>
           <item>
            <widget class="QLineEdit" name="line_edit_path_value">
             <property name="placeholderText">
-             <string>Path value of the path name...</string>
+             <string>Path of the folder that is saved to the configuration...</string>
             </property>
            </widget>
           </item>

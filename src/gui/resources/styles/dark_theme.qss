@@ -37,7 +37,6 @@ QPushButton {
 }
 
 QPushButton:hover {
-    border: 1px solid #000000;
 	background: #393d81;
 }
 

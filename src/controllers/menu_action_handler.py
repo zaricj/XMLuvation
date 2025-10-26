@@ -72,7 +72,7 @@ class MenuActionHandler:
     def on_open_input_directory(self):
         """Open input directory in file explorer."""
         folder_path = self.main_window.ui.line_edit_xml_folder_path_input.text()
-        self.open_folder_in_file_explorer(folder_path)
+        self.main_window.helper.open_folder_in_file_explorer(folder_path)
     
     @Slot()
     def on_open_output_directory(self):
@@ -81,12 +81,12 @@ class MenuActionHandler:
         if csv_path:
             import os
             folder_path = os.path.dirname(csv_path)
-            self.open_folder_in_file_explorer(folder_path)
+            self.main_window.helper.open_folder_in_file_explorer(folder_path)
         else:
-            QMessageBox.warning(
+            QMessageBox.information(
                 self.main_window,
-                "No Output Path",
-                "No CSV output path has been set."
+                "Missing Output Path",
+                "Could not open output directory, please set a valid output path first."
             )
     
     @Slot()
@@ -96,27 +96,12 @@ class MenuActionHandler:
         if csv_path:
             import os
             folder_path = os.path.dirname(csv_path)
-            self.open_folder_in_file_explorer(folder_path)
+            self.main_window.helper.open_folder_in_file_explorer(folder_path)
         else:
-            QMessageBox.warning(
+            QMessageBox.information(
                 self.main_window,
-                "No Input Path",
-                "No CSV conversion input path has been set."
-            )
-            
-    def open_folder_in_file_explorer(self, folder_path: str):
-        """Helper method to open folder in file explorer."""
-        if folder_path and os.path.exists(folder_path):
-            try:
-                QDesktopServices.openUrl(QUrl.fromLocalFile(folder_path))
-            except Exception as ex:
-                message = f"An exception of type {type(ex).__name__} occurred. Arguments: {ex.args!r}"
-                QMessageBox.critical(self, "An exception occurred", message)
-        else:
-            QMessageBox.warning(
-                self,
-                "Error",
-                f"Path does not exist or is not a valid path:\n{folder_path}"
+                "Missing Input Path",
+                "Could not open CSV conversion input directory, please set a valid input path first."
             )
     
     @Slot()

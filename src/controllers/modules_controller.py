@@ -304,7 +304,7 @@ class AddXPathExpressionToListHandler:
                             self.xpath_expression)
                         return True
                 else:
-                    QMessageBox.warning(self.main_window, "Duplicate XPath Expression",
+                    QMessageBox.information(self.main_window, "Duplicate XPath Expression",
                                         f"Cannot add duplicate XPath expression:\n{self.xpath_expression}")
                     return False
         except Exception as ex:

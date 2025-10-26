@@ -1,9 +1,9 @@
 # -*- coding: utf-8 -*-
 
 ################################################################################
-## Form generated from reading UI file 'CustomPathsManager.ui'
+## Form generated from reading UI file 'CustomPathsManagerRjbMgK.ui'
 ##
-## Created by: Qt User Interface Compiler version 6.10.0
+## Created by: Qt User Interface Compiler version 6.9.2
 ##
 ## WARNING! All changes made in this file will be lost when recompiling UI file!
 ################################################################################
@@ -179,6 +179,11 @@ class Ui_CustomPathsManagerWidget(object):
 
         self.combobox_path_names = QComboBox(self.groupBox_2)
         self.combobox_path_names.setObjectName(u"combobox_path_names")
+        sizePolicy5 = QSizePolicy(QSizePolicy.Policy.Expanding, QSizePolicy.Policy.Fixed)
+        sizePolicy5.setHorizontalStretch(0)
+        sizePolicy5.setVerticalStretch(0)
+        sizePolicy5.setHeightForWidth(self.combobox_path_names.sizePolicy().hasHeightForWidth())
+        self.combobox_path_names.setSizePolicy(sizePolicy5)
         self.combobox_path_names.setPlaceholderText(u"Custom paths...")
 
         self.horizontalLayout_Buttons.addWidget(self.combobox_path_names)
@@ -238,9 +243,6 @@ class Ui_CustomPathsManagerWidget(object):
 
         self.button_open_config_directory = QPushButton(self.groupBox_2)
         self.button_open_config_directory.setObjectName(u"button_open_config_directory")
-        sizePolicy5 = QSizePolicy(QSizePolicy.Policy.Expanding, QSizePolicy.Policy.Fixed)
-        sizePolicy5.setHorizontalStretch(0)
-        sizePolicy5.setVerticalStretch(0)
         sizePolicy5.setHeightForWidth(self.button_open_config_directory.sizePolicy().hasHeightForWidth())
         self.button_open_config_directory.setSizePolicy(sizePolicy5)
 
@@ -273,8 +275,10 @@ class Ui_CustomPathsManagerWidget(object):
         self.groupBox.setTitle(QCoreApplication.translate("CustomPathsManagerWidget", u"Create custom paths", None))
         self.label.setText(QCoreApplication.translate("CustomPathsManagerWidget", u"Description:", None))
         self.label_description_create_custom_path.setText(QCoreApplication.translate("CustomPathsManagerWidget", u"Here you can add and create custom path configurations.", None))
-        self.label_path_name_2.setText(QCoreApplication.translate("CustomPathsManagerWidget", u"Path name:", None))
-        self.label_path_folder.setText(QCoreApplication.translate("CustomPathsManagerWidget", u"Path folder:", None))
+        self.label_path_name_2.setText(QCoreApplication.translate("CustomPathsManagerWidget", u"Config Name:", None))
+        self.line_edit_custom_path_name.setPlaceholderText(QCoreApplication.translate("CustomPathsManagerWidget", u"Enter a name for the new configuration...", None))
+        self.label_path_folder.setText(QCoreApplication.translate("CustomPathsManagerWidget", u"Folder Path:", None))
+        self.line_edit_custom_path_value.setPlaceholderText(QCoreApplication.translate("CustomPathsManagerWidget", u"Enter a folder's path which will be saved to the configuration...", None))
         self.button_browse_path_folder.setText(QCoreApplication.translate("CustomPathsManagerWidget", u"Browse", None))
         self.label_save_config.setText(QCoreApplication.translate("CustomPathsManagerWidget", u"Save config:", None))
         self.button_create_custom_path.setText(QCoreApplication.translate("CustomPathsManagerWidget", u"Save Configuration", None))
@@ -284,10 +288,10 @@ class Ui_CustomPathsManagerWidget(object):
         self.label_combobox_desc.setText(QCoreApplication.translate("CustomPathsManagerWidget", u"Select a custom path:", None))
         self.button_load_action.setText(QCoreApplication.translate("CustomPathsManagerWidget", u"Load Path", None))
         self.button_delete_action.setText(QCoreApplication.translate("CustomPathsManagerWidget", u"Delete Path", None))
-        self.label_path_name.setText(QCoreApplication.translate("CustomPathsManagerWidget", u"Path name:", None))
-        self.line_edit_path_name.setPlaceholderText(QCoreApplication.translate("CustomPathsManagerWidget", u"Path name as shown in the menubar...", None))
-        self.label_path_value.setText(QCoreApplication.translate("CustomPathsManagerWidget", u"Path folder", None))
-        self.line_edit_path_value.setPlaceholderText(QCoreApplication.translate("CustomPathsManagerWidget", u"Path value of the path name...", None))
+        self.label_path_name.setText(QCoreApplication.translate("CustomPathsManagerWidget", u"Config Name:", None))
+        self.line_edit_path_name.setPlaceholderText(QCoreApplication.translate("CustomPathsManagerWidget", u"Name of the configuration as shown in the autofill menubar...", None))
+        self.label_path_value.setText(QCoreApplication.translate("CustomPathsManagerWidget", u"Folder Path:", None))
+        self.line_edit_path_value.setPlaceholderText(QCoreApplication.translate("CustomPathsManagerWidget", u"Path of the folder that is saved to the configuration...", None))
         self.label_2.setText(QCoreApplication.translate("CustomPathsManagerWidget", u"Options:", None))
         self.button_open_config_directory.setText(QCoreApplication.translate("CustomPathsManagerWidget", u"Open Config Directory", None))
         self.button_save_changes.setText(QCoreApplication.translate("CustomPathsManagerWidget", u"Save Changes", None))

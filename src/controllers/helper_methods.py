@@ -9,23 +9,37 @@ class HelperMethods:
         """Accepts a reference to the main window so dialogs have a valid parent."""
         self.main_window = main_window
         
+    def open_folder_in_file_explorer(self, folder_path: str):
+        """Helper method to open folder in file explorer."""
+        if folder_path and os.path.exists(folder_path):
+            try:
+                QDesktopServices.openUrl(QUrl.fromLocalFile(folder_path))
+            except Exception as ex:
+                message = f"An exception of type {type(ex).__name__} occurred. Arguments: {ex.args!r}"
+                QMessageBox.critical(self.main_window, "An exception occurred", message)
+        else:
+            QMessageBox.information(
+                self.main_window,
+                "Invalid or Missing Path",
+                f"Could not open directory: {folder_path}"
+            )
 
-    def _open_file_directly(self, file_path: str):
+    def open_file_directly(self, file_path: str):
         """Helper method to open file in default application."""
         if file_path and os.path.exists(file_path):
             try:
                 QDesktopServices.openUrl(QUrl.fromLocalFile(file_path))
             except Exception as ex:
                 message = f"An exception of type {type(ex).__name__} occurred. Arguments: {ex.args!r}"
-                QMessageBox.critical(self, "An exception occurred", message)
+                QMessageBox.critical(self.main_window, "An exception occurred", message)
         else:
-            QMessageBox.warning(
+            QMessageBox.information(
                 self.main_window,
-                "Error",
-                f"Path does not exist or is not a valid path:\n{file_path}"
+                "Invalid or Missing Path",
+                f"Could not open file: {file_path}"
             )
 
-    def _browse_folder_helper(self, dialog_message: str, line_widget: QLineEdit):
+    def browse_folder_helper(self, dialog_message: str, line_widget: QLineEdit):
         """Helper for folder browsing dialogs."""
         try:
             input_text = line_widget.text()
@@ -43,7 +57,7 @@ class HelperMethods:
                 message,
             )
 
-    def _browse_file_helper_non_input(self, dialog_message: str, file_extension_filter: str) -> str:
+    def browse_file_helper_non_input(self, dialog_message: str, file_extension_filter: str) -> str:
         """Helper for file browsing dialogs.
         
         Returns:
@@ -63,7 +77,7 @@ class HelperMethods:
                 message,
             )
 
-    def _browse_file_helper(
+    def browse_file_helper(
         self, dialog_message: str, line_widget: QLineEdit, file_extension_filter: str
     ):
         """Helper for file browsing dialogs."""
@@ -81,7 +95,7 @@ class HelperMethods:
                 message,
             )
 
-    def _browse_save_file_as_helper(
+    def browse_save_file_as_helper(
         self,
         dialog_message: str,
         line_widget: QLineEdit,
