@@ -204,19 +204,19 @@ class ButtonEventHandler:
             xpath_filters = self.listwidget_to_list(self.main_window.ui.list_widget_main_xpath_expressions)
 
             if not xml_folder_path or not os.path.isdir(xml_folder_path):
-                QMessageBox.warning(
-                    self.main_window, "Invalid XML Folder", "Please select a valid XML folder path."
+                QMessageBox.information(
+                    self.main_window, "Invalid XML Folder", "Please select a valid XML folder directory."
                 )
                 return
 
             if not csv_folder_output_path:
-                QMessageBox.warning(
-                    self.main_window, "Invalid CSV Output", "Please select a CSV output path."
+                QMessageBox.information(
+                    self.main_window, "Invalid CSV Output", "Please select a CSV output directory."
                 )
                 return
 
             if not xpath_filters:
-                QMessageBox.warning(
+                QMessageBox.information(
                     self.main_window, "No XPath Expressions", "Please add at least one XPath expression."
                 )
                 return
@@ -262,7 +262,7 @@ class ButtonEventHandler:
             label_gif = self.main_window.ui.label_loading_gif
 
             if not csv_path or not os.path.exists(csv_path):
-                QMessageBox.warning(
+                QMessageBox.information(
                     self.main_window, "Invalid CSV File", "Please select a valid CSV file."
                 )
                 return

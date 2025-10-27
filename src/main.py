@@ -26,11 +26,11 @@ if TYPE_CHECKING:
         SearchXMLOutputTextHandler,
         SearchAndExportToCSVHandler
     )
-    from modules.config_handler import ConfigHandler
+    from handlers.config_handler import ConfigHandler
 
 from gui.main.XMLuvation_ui import Ui_MainWindow
-from controllers.signal_handlers import SignalHandlerMixin
-from controllers.helper_methods import HelperMethods
+from handlers.signal_handlers import SignalHandlerMixin
+from utils.helper_methods import HelperMethods
 from services.ui_state_manager import UIStateManager
 from gui.dialogs.exit_dialog import ExitDialog
 
@@ -136,7 +136,7 @@ class MainWindow(QMainWindow, SignalHandlerMixin):
     def initialize_attributes(self):
         from controllers.modules_controller import ComboboxStateHandler
         from controllers.modules_controller import SearchXMLOutputTextHandler
-        from modules.config_handler import ConfigHandler
+        from handlers.config_handler import ConfigHandler
         
         self.cb_state_controller = ComboboxStateHandler(
             main_window=self,

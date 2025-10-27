@@ -5,7 +5,7 @@ from PySide6.QtGui import QKeySequence, Qt, QAction
 from PySide6.QtCore import Slot, QPoint
 from typing import TYPE_CHECKING
 
-from controllers.keyboard_shortcut_handler import KeyboardShortcutHandler
+from handlers.keyboard_shortcut_handler import KeyboardShortcutHandler
 
 if TYPE_CHECKING:
     from main import MainWindow
