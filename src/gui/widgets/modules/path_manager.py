@@ -3,12 +3,12 @@ from PySide6.QtCore import Slot, QFile, QIODevice, QTextStream
 from PySide6.QtGui import QCloseEvent
 from pathlib import Path
 
-from src.handlers.config_handler import ConfigHandler
+from handlers.config_handler import ConfigHandler
 from gui.widgets.CustomPathsManager_ui import Ui_CustomPathsManagerWidget
 
 from typing import TYPE_CHECKING, Any, List
 if TYPE_CHECKING:
-    from src.main import MainWindow
+    from main import MainWindow
 
 
 # Determine the path of the current file and resolve it to handle symlinks/etc.
@@ -70,7 +70,6 @@ class CustomPathsManager(QWidget):
                 self, "Theme load error", f"Failed to load theme: {str(ex)}"
             )
 
-        
     # An input validator
     def _validate_inputs(self, inputs_to_validate: List[Any]) -> bool:
         try:
@@ -82,7 +81,8 @@ class CustomPathsManager(QWidget):
                     raise ValueError
                 
         except Exception as ex:
-            QMessageBox.warning(self, "Input validation failed", f"Something went wrong: {str(ex)}")
+            message = f"Please make sure all required fields are filled in correctly.\nError details: {str(ex)}"
+            QMessageBox.warning(self, "Input validation failed", message)
             return False
         
     # Create Path section

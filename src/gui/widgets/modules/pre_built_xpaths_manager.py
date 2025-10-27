@@ -3,12 +3,12 @@ from PySide6.QtCore import Slot, QFile, QIODevice, QTextStream
 from PySide6.QtGui import QCloseEvent
 from pathlib import Path
 
-from src.handlers.config_handler import ConfigHandler
+from handlers.config_handler import ConfigHandler
 from gui.widgets.PreBuiltXPathsManager_ui import Ui_PreBuiltXPathsManagerWidget
 
 from typing import TYPE_CHECKING
 if TYPE_CHECKING:
-    from src.main import MainWindow
+    from main import MainWindow
 
 
 # Determine the path of the current file and resolve it to handle symlinks/etc.
