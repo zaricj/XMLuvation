@@ -9,7 +9,7 @@
    <rect>
     <x>0</x>
     <y>0</y>
-    <width>1085</width>
+    <width>1088</width>
     <height>893</height>
    </rect>
   </property>
@@ -99,6 +99,12 @@
        <layout class="QHBoxLayout" name="horizontalLayout_4">
         <item>
          <widget class="QSplitter" name="splitter">
+          <property name="minimumSize">
+           <size>
+            <width>0</width>
+            <height>0</height>
+           </size>
+          </property>
           <property name="font">
            <font>
             <family>Microsoft YaHei UI</family>
@@ -1374,7 +1380,7 @@
           <widget class="QFrame" name="frame_right_2">
            <property name="minimumSize">
             <size>
-             <width>400</width>
+             <width>450</width>
              <height>0</height>
             </size>
            </property>
@@ -2678,7 +2684,7 @@ Supported output file types: Excel, Markdown, HTML and JSON</string>
     <rect>
      <x>0</x>
      <y>0</y>
-     <width>1085</width>
+     <width>1088</width>
      <height>33</height>
     </rect>
    </property>
@@ -2731,12 +2737,18 @@ Supported output file types: Excel, Markdown, HTML and JSON</string>
      <string>XPath Autofill</string>
     </property>
    </widget>
+   <widget class="QMenu" name="theme_menu">
+    <property name="title">
+     <string>Theme</string>
+    </property>
+   </widget>
    <addaction name="file_menu"/>
    <addaction name="open_menu"/>
    <addaction name="paths_menu"/>
    <addaction name="menu_autofill"/>
    <addaction name="settings_menu"/>
    <addaction name="help_menu"/>
+   <addaction name="theme_menu"/>
   </widget>
   <action name="clear_recent_xpath_expressions_action">
    <property name="icon">

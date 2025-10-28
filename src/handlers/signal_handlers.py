@@ -57,8 +57,6 @@ class SignalHandlerMixin:
         
     def connect_menu_bar_actions(self):
         """Connect all menu bar actions to their handlers."""
-        # Add theme action to Menu Bar at the far right
-        self.toggle_theme_action = self.ui.menu_bar.addAction(self.theme_icon, "Toggle Theme")
         self.menu_handler.connect_signals()
 
     def connect_ui_events(self):

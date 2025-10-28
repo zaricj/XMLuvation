@@ -1,9 +1,9 @@
 # -*- coding: utf-8 -*-
 
 ################################################################################
-## Form generated from reading UI file 'XMLuvation.ui'
+## Form generated from reading UI file 'XMLuvationlbihKP.ui'
 ##
-## Created by: Qt User Interface Compiler version 6.10.0
+## Created by: Qt User Interface Compiler version 6.9.3
 ##
 ## WARNING! All changes made in this file will be lost when recompiling UI file!
 ################################################################################
@@ -30,7 +30,7 @@ class Ui_MainWindow(object):
         if not MainWindow.objectName():
             MainWindow.setObjectName(u"MainWindow")
         MainWindow.setEnabled(True)
-        MainWindow.resize(1085, 893)
+        MainWindow.resize(1088, 893)
         font = QFont()
         font.setFamilies([u"Calibri"])
         font.setPointSize(10)
@@ -121,6 +121,7 @@ class Ui_MainWindow(object):
         self.horizontalLayout_4.setObjectName(u"horizontalLayout_4")
         self.splitter = QSplitter(self.tab_xml_evaluation)
         self.splitter.setObjectName(u"splitter")
+        self.splitter.setMinimumSize(QSize(0, 0))
         self.splitter.setFont(font3)
         self.splitter.setOrientation(Qt.Orientation.Horizontal)
         self.frame_left_2 = QFrame(self.splitter)
@@ -598,7 +599,7 @@ class Ui_MainWindow(object):
         self.splitter.addWidget(self.frame_left_2)
         self.frame_right_2 = QFrame(self.splitter)
         self.frame_right_2.setObjectName(u"frame_right_2")
-        self.frame_right_2.setMinimumSize(QSize(400, 0))
+        self.frame_right_2.setMinimumSize(QSize(450, 0))
         self.frame_right_2.setFrameShape(QFrame.Shape.NoFrame)
         self.frame_right_2.setFrameShadow(QFrame.Shadow.Raised)
         self.verticalLayout_4 = QVBoxLayout(self.frame_right_2)
@@ -1082,7 +1083,7 @@ class Ui_MainWindow(object):
         MainWindow.setCentralWidget(self.centralwidget)
         self.menu_bar = QMenuBar(MainWindow)
         self.menu_bar.setObjectName(u"menu_bar")
-        self.menu_bar.setGeometry(QRect(0, 0, 1085, 33))
+        self.menu_bar.setGeometry(QRect(0, 0, 1088, 33))
         self.file_menu = QMenu(self.menu_bar)
         self.file_menu.setObjectName(u"file_menu")
         self.recent_xpath_expressions_menu = QMenu(self.file_menu)
@@ -1097,6 +1098,8 @@ class Ui_MainWindow(object):
         self.help_menu.setObjectName(u"help_menu")
         self.menu_autofill = QMenu(self.menu_bar)
         self.menu_autofill.setObjectName(u"menu_autofill")
+        self.theme_menu = QMenu(self.menu_bar)
+        self.theme_menu.setObjectName(u"theme_menu")
         MainWindow.setMenuBar(self.menu_bar)
 
         self.menu_bar.addAction(self.file_menu.menuAction())
@@ -1105,6 +1108,7 @@ class Ui_MainWindow(object):
         self.menu_bar.addAction(self.menu_autofill.menuAction())
         self.menu_bar.addAction(self.settings_menu.menuAction())
         self.menu_bar.addAction(self.help_menu.menuAction())
+        self.menu_bar.addAction(self.theme_menu.menuAction())
         self.file_menu.addAction(self.recent_xpath_expressions_menu.menuAction())
         self.file_menu.addAction(self.clear_recent_xpath_expressions_action)
         self.file_menu.addSeparator()
@@ -1293,5 +1297,6 @@ class Ui_MainWindow(object):
         self.settings_menu.setTitle(QCoreApplication.translate("MainWindow", u"Manage", None))
         self.help_menu.setTitle(QCoreApplication.translate("MainWindow", u"Help", None))
         self.menu_autofill.setTitle(QCoreApplication.translate("MainWindow", u"XPath Autofill", None))
+        self.theme_menu.setTitle(QCoreApplication.translate("MainWindow", u"Theme", None))
     # retranslateUi
 

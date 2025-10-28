@@ -38,9 +38,6 @@ class MenuActionHandler:
         # Settings menu actions
         ui.prompt_on_exit_action.checkableChanged.connect(self.on_prompt_on_exit_checked)
         
-        # Theme toggle action
-        self.main_window.toggle_theme_action.triggered.connect(self.on_change_theme)
-        
         # Connect recent xpath expressions menu
         for action in ui.recent_xpath_expressions_menu.actions():
             action.triggered.connect(
@@ -122,18 +119,6 @@ class MenuActionHandler:
     def on_xpath_help(self):
         """Open XPath help webpage."""
         webbrowser.open("https://www.w3schools.com/xml/xpath_syntax.asp")
-    
-    @Slot()
-    def on_change_theme(self):
-        """Toggle application theme."""
-        if self.main_window.current_theme == "dark_theme.qss":
-            self.main_window.toggle_theme_action.setIcon(self.main_window.dark_mode_icon)
-            self.main_window.initialize_theme_file(self.main_window.light_theme_file)
-            self.main_window.current_theme = "light_theme.qss"
-        else:
-            self.main_window.toggle_theme_action.setIcon(self.main_window.light_mode_icon)
-            self.main_window.initialize_theme_file(self.main_window.dark_theme_file)
-            self.main_window.current_theme = "dark_theme.qss"
     
     @Slot()
     def on_prompt_on_exit_checked(self):

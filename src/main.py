@@ -41,14 +41,24 @@ CURRENT_DIR = Path(__file__).parent
 GUI_CONFIG_DIRECTORY: Path = CURRENT_DIR / "config"
 GUI_CONFIG_FILE_PATH: Path = GUI_CONFIG_DIRECTORY / "config.json"
 
-DARK_THEME_PATH: Path = CURRENT_DIR / "gui" / "resources" / "styles" / "dark_theme.qss"
-LIGHT_THEME_PATH: Path = CURRENT_DIR / "gui" / "resources" / "styles" / "light_theme.qss"
+# Dictionary of all theme files in the directory under gui/resources/styles
+THEME_FILES: Dict[str, Path] = {
+    "dark_theme": CURRENT_DIR / "gui" / "resources" / "styles" / "dark_theme.qss",
+    "light_theme": CURRENT_DIR / "gui" / "resources" / "styles" / "light_theme.qss",
+    "dark_theme_yellow": CURRENT_DIR / "gui" / "resources" / "styles" / "other" / "dark_theme_yellow.qss",
+    "dark_theme_peach": CURRENT_DIR / "gui" / "resources" / "styles" / "other" / "dark_theme_peach.qss",
+    "dark_theme_qlementine": CURRENT_DIR / "gui" / "resources" / "styles" / "other" / "dark_theme_qlementine.qss",
+    "dark_theme_metallic_spaceship": CURRENT_DIR / "gui" / "resources" / "styles" / "other" / "dark_theme_metallic_spaceship.qss",
+}
 
+# Application icon path
 ICON_PATH: Path = CURRENT_DIR / "gui" / "resources" / "icons" / "xml_256px.ico"
 
+# Theme icons for menubar
 DARK_THEME_QMENU_ICON: Path = CURRENT_DIR / "gui" / "resources" / "images" / "dark.png"
 LIGHT_THEME_QMENU_ICON: Path = CURRENT_DIR / "gui" / "resources" / "images" / "light.png"
 
+# Application versioning and metadata
 APP_VERSION: str = "v1.3.5"
 APP_NAME: str = "XMLuvation"
 AUTHOR: str = "Jovan"
@@ -112,8 +122,7 @@ class MainWindow(QMainWindow, SignalHandlerMixin):
     helper: 'HelperMethods'
 
     current_theme: str
-    dark_theme_file: str
-    light_theme_file: str
+
 
     def __init__(self):
         super().__init__()
@@ -176,12 +185,10 @@ class MainWindow(QMainWindow, SignalHandlerMixin):
         self.ui.text_edit_program_output.setContextMenuPolicy(Qt.CustomContextMenu)
         self.ui.text_edit_csv_output.setContextMenuPolicy(Qt.CustomContextMenu)
 
-        self.light_mode_icon = QIcon(str(LIGHT_THEME_QMENU_ICON))
-        self.dark_mode_icon = QIcon(str(DARK_THEME_QMENU_ICON))
+        # Default theme KEY (must be one of THEME_FILES keys)
+        self.current_theme = "dark_theme"
 
-        self.dark_theme_file = str(DARK_THEME_PATH)
-        self.light_theme_file = str(LIGHT_THEME_PATH)
-        
+        # Load saved settings (this will override current_theme if user saved one)
         self.load_app_settings()
         
     def setup_application(self):
@@ -189,6 +196,7 @@ class MainWindow(QMainWindow, SignalHandlerMixin):
         self.connect_menu_bar_actions()
         self._update_paths_menu()
         self._update_autofill_menu()
+        self._update_themes_menu()
 
     def setup_widgets_and_visibility_states(self):
         # Use UIStateManager for initial setup
@@ -196,12 +204,9 @@ class MainWindow(QMainWindow, SignalHandlerMixin):
         
     def initialize_theme(self):
         try:
-            theme_file = (
-                self.dark_theme_file
-                if self.current_theme == "dark_theme.qss"
-                else self.light_theme_file
-            )
-            file = QFile(theme_file)
+            # Determine theme files
+            theme_path = THEME_FILES.get(self.current_theme, THEME_FILES.get("dark_theme"))
+            file = QFile(str(theme_path))
             if file.open(QIODevice.ReadOnly | QIODevice.Text):
                 stream = QTextStream(file)
                 stylesheet = stream.readAll()
@@ -210,22 +215,22 @@ class MainWindow(QMainWindow, SignalHandlerMixin):
         except Exception as ex:
             QMessageBox.critical(self, "Theme load error", f"Failed to load theme: {ex}")
             
-    def initialize_theme_file(self, theme_file: str):
+    def initialize_theme_file(self, theme_file_path: Path):
         """Initialize theme from file."""
         try:
-            file = QFile(theme_file)
+            file = QFile(str(theme_file_path))  # Path gets transformed to string as QFile supports strings only
             if not file.open(QIODevice.OpenModeFlag.ReadOnly | QIODevice.OpenModeFlag.Text):
                 return
-            else:
-                stream = QTextStream(file)
-                stylesheet = stream.readAll()
-                self.setStyleSheet(stylesheet)
+            stream = QTextStream(file)
+            stylesheet = stream.readAll()
+            self.setStyleSheet(stylesheet)
             file.close()
         except Exception as ex:
             QMessageBox.critical(self, "Theme load error", f"Failed to load theme: {str(ex)}")
             
     # Helper method to save apps settings in a more DRY way
     def _save_app_settings(self):
+        # Save the theme KEY (one of THEME_FILES). This is stable vs saving filenames.
         self.settings.setValue("app_theme", self.current_theme)
         self.settings.setValue("group_matches", self.ui.checkbox_group_matches.isChecked())
         self.settings.setValue("prompt_on_exit", self.ui.prompt_on_exit_action.isChecked())
@@ -245,12 +250,10 @@ class MainWindow(QMainWindow, SignalHandlerMixin):
 
         self._update_recent_xpath_expressions_menu()
 
-        # Current theme setting load
-        self.current_theme = self.settings.value("app_theme", "dark_theme.qss")
-        if self.current_theme == "dark_theme.qss":
-            self.theme_icon = self.light_mode_icon
-        else:
-            self.theme_icon = self.dark_mode_icon
+        # Current theme setting load (store theme KEY, not filename)
+        self.current_theme = self.settings.value("app_theme", "dark_theme")
+        if self.current_theme not in THEME_FILES:
+            self.current_theme = "dark_theme"
 
         self.group_matches_setting = self.settings.value(
             "group_matches",
@@ -341,6 +344,44 @@ class MainWindow(QMainWindow, SignalHandlerMixin):
                 )
             )
             self.ui.menu_autofill.addAction(action)
+            
+    def _update_themes_menu(self):
+        """Update the themes menu with available themes."""
+        self.ui.theme_menu.clear()
+
+        for theme_name, theme_path in THEME_FILES.items():
+            action = QAction(theme_name.replace("_", " ").title(), self)
+            # Use the theme key so selection persists; call helper to apply and save
+            action.triggered.connect(
+                lambda checked, key=theme_name: self.set_theme_by_key(key)
+            )
+            self.ui.theme_menu.addAction(action)
+
+    def set_theme_by_key(self, theme_key: str, save: bool = True):
+        """Apply a theme by its key from THEME_FILES and optionally save the choice.
+
+        Args:
+            theme_key: key present in THEME_FILES
+            save: if True, persist the selection to QSettings
+        """
+        if theme_key not in THEME_FILES:
+            QMessageBox.warning(self, "Theme Error", f"Unknown theme: {theme_key}")
+            return
+
+        theme_path = THEME_FILES[theme_key]
+        try:
+            self.initialize_theme_file(theme_path)
+            self.current_theme = theme_key
+            # update icon
+            if theme_key.startswith("dark"):
+                self.theme_icon = self.light_mode_icon
+            else:
+                self.theme_icon = self.dark_mode_icon
+
+            if save:
+                self._save_app_settings()
+        except Exception as ex:
+            QMessageBox.critical(self, "Theme Error", f"Failed to set theme {theme_key}: {ex}")
             
     def _set_path_in_input(self, path: str):
         """Set path in input field."""
