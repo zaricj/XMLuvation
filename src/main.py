@@ -43,8 +43,8 @@ GUI_CONFIG_FILE_PATH: Path = GUI_CONFIG_DIRECTORY / "config.json"
 
 # Dictionary of all theme files in the directory under gui/resources/styles
 THEME_FILES: Dict[str, Path] = {
-    "dark_theme": CURRENT_DIR / "gui" / "resources" / "styles" / "dark_theme.qss",
-    "light_theme": CURRENT_DIR / "gui" / "resources" / "styles" / "light_theme.qss",
+    "dark_theme_default": CURRENT_DIR / "gui" / "resources" / "styles" / "dark_theme.qss",
+    "light_theme_default": CURRENT_DIR / "gui" / "resources" / "styles" / "light_theme.qss",
     "dark_theme_yellow": CURRENT_DIR / "gui" / "resources" / "styles" / "other" / "dark_theme_yellow.qss",
     "dark_theme_peach": CURRENT_DIR / "gui" / "resources" / "styles" / "other" / "dark_theme_peach.qss",
     "dark_theme_qlementine": CURRENT_DIR / "gui" / "resources" / "styles" / "other" / "dark_theme_qlementine.qss",
@@ -186,7 +186,7 @@ class MainWindow(QMainWindow, SignalHandlerMixin):
         self.ui.text_edit_csv_output.setContextMenuPolicy(Qt.CustomContextMenu)
 
         # Default theme KEY (must be one of THEME_FILES keys)
-        self.current_theme = "dark_theme"
+        self.current_theme = "dark_theme_default"
 
         # Load saved settings (this will override current_theme if user saved one)
         self.load_app_settings()
@@ -205,7 +205,7 @@ class MainWindow(QMainWindow, SignalHandlerMixin):
     def initialize_theme(self):
         try:
             # Determine theme files
-            theme_path = THEME_FILES.get(self.current_theme, THEME_FILES.get("dark_theme"))
+            theme_path = THEME_FILES.get(self.current_theme, THEME_FILES.get("dark_theme_default"))
             file = QFile(str(theme_path))
             if file.open(QIODevice.ReadOnly | QIODevice.Text):
                 stream = QTextStream(file)
@@ -251,9 +251,9 @@ class MainWindow(QMainWindow, SignalHandlerMixin):
         self._update_recent_xpath_expressions_menu()
 
         # Current theme setting load (store theme KEY, not filename)
-        self.current_theme = self.settings.value("app_theme", "dark_theme")
+        self.current_theme = self.settings.value("app_theme", "dark_theme_default")
         if self.current_theme not in THEME_FILES:
-            self.current_theme = "dark_theme"
+            self.current_theme = "dark_theme_default"
 
         self.group_matches_setting = self.settings.value(
             "group_matches",
@@ -356,6 +356,9 @@ class MainWindow(QMainWindow, SignalHandlerMixin):
                 lambda checked, key=theme_name: self.set_theme_by_key(key)
             )
             self.ui.theme_menu.addAction(action)
+            # Add a separator between right after the light theme, should always be second after the default dark theme
+            if theme_name.endswith("light_theme_default"):
+                self.ui.theme_menu.addSeparator()
 
     def set_theme_by_key(self, theme_key: str, save: bool = True):
         """Apply a theme by its key from THEME_FILES and optionally save the choice.
@@ -372,12 +375,6 @@ class MainWindow(QMainWindow, SignalHandlerMixin):
         try:
             self.initialize_theme_file(theme_path)
             self.current_theme = theme_key
-            # update icon
-            if theme_key.startswith("dark"):
-                self.theme_icon = self.light_mode_icon
-            else:
-                self.theme_icon = self.dark_mode_icon
-
             if save:
                 self._save_app_settings()
         except Exception as ex:
