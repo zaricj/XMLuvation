@@ -1,6 +1,7 @@
 from gui.dialogs.ui.exit_dialog_box_ui import Ui_ExitAppDialog
 from PySide6.QtWidgets import QDialog, QMessageBox
-from PySide6.QtCore import Slot, QFile, QIODevice, QTextStream
+from PySide6.QtCore import QFile, QIODevice, QTextStream
+from typing import Dict
 
 from pathlib import Path
 
@@ -11,9 +12,18 @@ if TYPE_CHECKING:
 # Constants
 # Determine the path of the current file and resolve it to handle symlinks/etc.
 FILE_PATH = Path(__file__).resolve()
-
 # Get the project src directory
-SRC_ROOT_DIR = FILE_PATH.parents[3]
+SRC_ROOT_DIR = FILE_PATH.parents[2]
+
+# Dictionary of all theme files in the directory under gui/resources/styles
+THEME_FILES: Dict[str, Path] = {
+    "dark_theme_default": SRC_ROOT_DIR / "gui" / "resources" / "styles" / "dark_theme.qss",
+    "light_theme_default": SRC_ROOT_DIR / "gui" / "resources" / "styles" / "light_theme.qss",
+    "dark_theme_yellow": SRC_ROOT_DIR / "gui" / "resources" / "styles" / "other" / "dark_theme_yellow.qss",
+    "dark_theme_peach": SRC_ROOT_DIR / "gui" / "resources" / "styles" / "other" / "dark_theme_peach.qss",
+    "dark_theme_qlementine": SRC_ROOT_DIR / "gui" / "resources" / "styles" / "other" / "dark_theme_qlementine.qss",
+    "dark_theme_metallic_spaceship": SRC_ROOT_DIR / "gui" / "resources" / "styles" / "other" / "dark_theme_metallic_spaceship.qss",
+}
 
 class ExitDialog(QDialog):
     def __init__(self, main_window: "MainWindow"):
@@ -26,20 +36,14 @@ class ExitDialog(QDialog):
         self.initialize_theme()
         
     def initialize_theme(self):
-        """Initialize UI theme files (.qss)"""
         try:
-            if self.main_window.current_theme == "dark_theme.qss":
-                theme_file = self.main_window.dark_theme_file
-            else:
-                theme_file = self.main_window.light_theme_file
-
-            file = QFile(theme_file)
-            if not file.open(QIODevice.ReadOnly | QIODevice.Text):
-                return
-            stylesheet = QTextStream(file).readAll()
-            self.setStyleSheet(stylesheet)
-            file.close()
+            # Determine theme files
+            theme_path = THEME_FILES.get(self.main_window.current_theme, THEME_FILES.get("dark_theme_default"))
+            file = QFile(str(theme_path))
+            if file.open(QIODevice.ReadOnly | QIODevice.Text):
+                stream = QTextStream(file)
+                stylesheet = stream.readAll()
+                self.setStyleSheet(stylesheet)
+                file.close()
         except Exception as ex:
-            QMessageBox.critical(
-                self, "Theme load error", f"Failed to load theme: {str(ex)}"
-            )
+            QMessageBox.critical(self, "Theme load error", f"Failed to load theme: {ex}")
