@@ -19,7 +19,7 @@
   },
   {
    "optionDest": "icon_file",
-   "value": "C:/Users/ZaricJ/Documents/Entwicklung_und_Tools/GitHub/XMLuvation/src/resources/icons/xml_256px.ico"
+   "value": "C:/Users/ZaricJ/Documents/Entwicklung_und_Tools/GitHub/XMLuvation/src/gui/resources/icons/xml_256px.ico"
   },
   {
    "optionDest": "name",
@@ -75,19 +75,23 @@
   },
   {
    "optionDest": "datas",
-   "value": "C:/Users/ZaricJ/Documents/Entwicklung_und_Tools/GitHub/XMLuvation/src/resources;resources/"
-  },
-  {
-   "optionDest": "datas",
    "value": "C:/Users/ZaricJ/Documents/Entwicklung_und_Tools/GitHub/XMLuvation/src/controllers;controllers/"
   },
   {
    "optionDest": "datas",
-   "value": "C:/Users/ZaricJ/Documents/Entwicklung_und_Tools/GitHub/XMLuvation/src/dialogs;dialogs/"
+   "value": "C:/Users/ZaricJ/Documents/Entwicklung_und_Tools/GitHub/XMLuvation/src/gui;gui/"
   },
   {
    "optionDest": "datas",
-   "value": "C:/Users/ZaricJ/Documents/Entwicklung_und_Tools/GitHub/XMLuvation/src/gui;gui/"
+   "value": "C:/Users/ZaricJ/Documents/Entwicklung_und_Tools/GitHub/XMLuvation/src/handlers;handlers/"
+  },
+  {
+   "optionDest": "datas",
+   "value": "C:/Users/ZaricJ/Documents/Entwicklung_und_Tools/GitHub/XMLuvation/src/services;services/"
+  },
+  {
+   "optionDest": "datas",
+   "value": "C:/Users/ZaricJ/Documents/Entwicklung_und_Tools/GitHub/XMLuvation/src/utils;utils/"
   }
  ],
  "nonPyinstallerOptions": {
