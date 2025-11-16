@@ -1,11 +1,8 @@
 from gui.dialogs.ui.exit_dialog_box_ui import Ui_ExitAppDialog
 from PySide6.QtWidgets import QDialog, QMessageBox
 from PySide6.QtCore import QFile, QIODevice, QTextStream
-from typing import Dict
-
 from pathlib import Path
-
-from typing import TYPE_CHECKING
+from typing import TYPE_CHECKING, Dict
 if TYPE_CHECKING:
     from src.main import MainWindow
     
