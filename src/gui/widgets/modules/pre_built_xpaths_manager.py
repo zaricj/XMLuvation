@@ -59,7 +59,7 @@ class PreBuiltXPathsManager(QWidget):
         self.ui.button_delete_config.clicked.connect(self.onDeleteConfig)
         self.ui.button_remove_selected.clicked.connect(self.onRemoveSelected)
         self.ui.button_remove_all.clicked.connect(self.onRemoveAll)
-        self.ui.button_open_config_directory.clicked.connect(lambda: self.main_window._open_folder_in_file_explorer(GUI_CONFIG_DIRECTORY))
+        self.ui.button_open_config_directory.clicked.connect(lambda: self.main_window.helper.open_folder_in_file_explorer(GUI_CONFIG_DIRECTORY))
         
         # 2. Connect list widget signals to update the active_list_widget
         self.ui.list_widget_xpath_expressions.itemClicked.connect(

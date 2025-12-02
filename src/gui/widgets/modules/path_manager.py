@@ -53,7 +53,7 @@ class CustomPathsManager(QWidget):
         self.ui.button_delete_action.clicked.connect(self.delete_custom_path_event)
         self.ui.button_create_custom_path.clicked.connect(self.create_custom_path_event)
         self.ui.button_browse_path_folder.clicked.connect(lambda: self.browse_folder("Select a folder for the custom path value", self.ui.line_edit_custom_path_value))
-        self.ui.button_open_config_directory.clicked.connect(lambda: self.main_window._open_folder_in_file_explorer(GUI_CONFIG_DIRECTORY))
+        self.ui.button_open_config_directory.clicked.connect(lambda: self.main_window.helper.open_folder_in_file_explorer(GUI_CONFIG_DIRECTORY))
 
         # Initialize theme for app
         self.initialize_theme()
