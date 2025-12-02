@@ -157,13 +157,6 @@
           <item>
            <layout class="QHBoxLayout" name="horizontalLayout_6">
             <item>
-             <widget class="QLabel" name="label_2">
-              <property name="text">
-               <string>Optons:</string>
-              </property>
-             </widget>
-            </item>
-            <item>
              <widget class="QPushButton" name="button_save_changes">
               <property name="sizePolicy">
                <sizepolicy hsizetype="Expanding" vsizetype="Fixed">

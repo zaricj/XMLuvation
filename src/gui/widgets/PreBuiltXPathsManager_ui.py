@@ -129,11 +129,6 @@ class Ui_PreBuiltXPathsManagerWidget(object):
 
         self.horizontalLayout_6 = QHBoxLayout()
         self.horizontalLayout_6.setObjectName(u"horizontalLayout_6")
-        self.label_2 = QLabel(self.groupBox_pre_built_xpaths_main)
-        self.label_2.setObjectName(u"label_2")
-
-        self.horizontalLayout_6.addWidget(self.label_2)
-
         self.button_save_changes = QPushButton(self.groupBox_pre_built_xpaths_main)
         self.button_save_changes.setObjectName(u"button_save_changes")
         sizePolicy.setHeightForWidth(self.button_save_changes.sizePolicy().hasHeightForWidth())
@@ -314,7 +309,6 @@ class Ui_PreBuiltXPathsManagerWidget(object):
         self.button_delete_config.setText(QCoreApplication.translate("PreBuiltXPathsManagerWidget", u"Delete", None))
         self.label_7.setText(QCoreApplication.translate("PreBuiltXPathsManagerWidget", u"Edit XPath Expressions:", None))
         self.label_8.setText(QCoreApplication.translate("PreBuiltXPathsManagerWidget", u"Edit CSV Headers:", None))
-        self.label_2.setText(QCoreApplication.translate("PreBuiltXPathsManagerWidget", u"Optons:", None))
 #if QT_CONFIG(tooltip)
         self.button_save_changes.setToolTip(QCoreApplication.translate("PreBuiltXPathsManagerWidget", u"Save changes that you made to the two listboxes.", None))
 #endif // QT_CONFIG(tooltip)
