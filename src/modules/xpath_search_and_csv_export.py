@@ -366,7 +366,7 @@ class OptimizedCSVExportThread(QRunnable):
                 with open(self.output_path, 'w', newline='', encoding='utf-8', buffering=1_048_576) as csvfile:
                     headers = self._generate_csv_headers()
                     writer = csv.DictWriter(
-                        csvfile, fieldnames=headers, extrasaction='ignore')
+                        csvfile, fieldnames=headers, extrasaction='ignore', delimiter=',', quotechar='"', quoting=csv.QUOTE_MINIMAL)
                     writer.writeheader()
                     while not (writer_thread_stop.is_set() and result_queue.empty()):
                         try:
