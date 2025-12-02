@@ -26,7 +26,7 @@ class Ui_PreBuiltXPathsManagerWidget(object):
         if not PreBuiltXPathsManagerWidget.objectName():
             PreBuiltXPathsManagerWidget.setObjectName(u"PreBuiltXPathsManagerWidget")
         PreBuiltXPathsManagerWidget.setWindowModality(Qt.WindowModality.WindowModal)
-        PreBuiltXPathsManagerWidget.resize(1005, 675)
+        PreBuiltXPathsManagerWidget.resize(1201, 669)
         icon = QIcon()
         icon.addFile(u":/icons/xml_256px.ico", QSize(), QIcon.Mode.Normal, QIcon.State.Off)
         PreBuiltXPathsManagerWidget.setWindowIcon(icon)
