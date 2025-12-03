@@ -60,7 +60,7 @@ class CSVConversionThread(QRunnable):
                 raise FileNotFoundError
             try:
                 # Detect delimiter
-                with open(self.csv_file_to_convert, encoding="utf-8") as file:
+                with open(self.csv_file_to_convert, newline="",encoding="utf-8") as file:
                     sample = file.read(2048)
                     sniffer = csv.Sniffer()
                     delimiter = sniffer.sniff(sample).delimiter
