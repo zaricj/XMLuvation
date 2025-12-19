@@ -2,9 +2,7 @@
 """Handler for menu bar action events."""
 import webbrowser
 from PySide6.QtWidgets import QMessageBox
-from PySide6.QtCore import Slot, QUrl
-from PySide6.QtGui import QDesktopServices
-import os
+from PySide6.QtCore import Slot
 from typing import TYPE_CHECKING
 
 if TYPE_CHECKING:
@@ -80,11 +78,7 @@ class MenuActionHandler:
             folder_path = os.path.dirname(csv_path)
             self.main_window.helper.open_folder_in_file_explorer(folder_path)
         else:
-            QMessageBox.information(
-                self.main_window,
-                "Missing Output Path",
-                "Could not open output directory, please set a valid output path first."
-            )
+            self.main_window.ui.text_edit_program_output.setText("Missing output path: Could not open output directory, please set a valid output path first.")
     
     @Slot()
     def on_open_csv_conversion_input_directory(self):
@@ -95,11 +89,7 @@ class MenuActionHandler:
             folder_path = os.path.dirname(csv_path)
             self.main_window.helper.open_folder_in_file_explorer(folder_path)
         else:
-            QMessageBox.information(
-                self.main_window,
-                "Missing Input Path",
-                "Could not open CSV conversion input directory, please set a valid input path first."
-            )
+            self.main_window.ui.text_edit_program_output.setText("Missing input path: Could not open CSV conversion input directory, please set a valid input path first.")
     
     @Slot()
     def on_open_paths_manager(self):

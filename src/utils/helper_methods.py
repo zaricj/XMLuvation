@@ -1,13 +1,17 @@
 from PySide6.QtWidgets import QMessageBox, QFileDialog, QLineEdit
 from PySide6.QtGui import QDesktopServices
 from PySide6.QtCore import QUrl
+from typing import TYPE_CHECKING
 import os
 
+if TYPE_CHECKING:
+    from main import MainWindow
 
 class HelperMethods:
-    def __init__(self, main_window):
+    def __init__(self, main_window: "MainWindow" ):
         """Accepts a reference to the main window so dialogs have a valid parent."""
         self.main_window = main_window
+        self.ui = self.main_window.ui
         
     def open_folder_in_file_explorer(self, folder_path: str):
         """Helper method to open folder in file explorer."""
@@ -18,11 +22,7 @@ class HelperMethods:
                 message = f"An exception of type {type(ex).__name__} occurred. Arguments: {ex.args!r}"
                 QMessageBox.critical(self.main_window, "An exception occurred", message)
         else:
-            QMessageBox.information(
-                self.main_window,
-                "Invalid or Missing Path",
-                f"Could not open directory: {folder_path}"
-            )
+            self.main_window.ui.text_edit_program_output.setText(f"Invalid or missing path: Could not open directory: {folder_path}")
 
     def open_file_directly(self, file_path: str):
         """Helper method to open file in default application."""
@@ -33,11 +33,7 @@ class HelperMethods:
                 message = f"An exception of type {type(ex).__name__} occurred. Arguments: {ex.args!r}"
                 QMessageBox.critical(self.main_window, "An exception occurred", message)
         else:
-            QMessageBox.information(
-                self.main_window,
-                "Invalid or Missing Path",
-                f"Could not open file: {file_path}"
-            )
+            self.main_window.ui.text_edit_program_output.setText(f"Invalid or missing path: Could not open file: {file_path}")
 
     def browse_folder_helper(self, dialog_message: str, line_widget: QLineEdit):
         """Helper for folder browsing dialogs."""
