@@ -73,7 +73,7 @@ Classes are named according to their actual role:
 
 ```
 src/
-├── controllers/           # UI event controllers
+├── controllers/           # UI event controllers and state management
 │   ├── signal_handlers.py        # Delegation facade
 │   ├── menu_action_handler.py
 │   ├── button_event_handler.py
@@ -81,10 +81,15 @@ src/
 │   ├── context_menu_handler.py
 │   ├── keyboard_shortcut_handler.py
 │   ├── signal_connector.py
-│   ├── state_controller.py       # State management controllers
+│   ├── modules_controller.py      # Backward compatibility facade (31 lines)
+│   ├── combobox_state_handler.py  # Combobox state management (177 lines)
+│   ├── xml_output_search_handler.py  # XML output search (48 lines)
+│   ├── xpath_handlers.py          # XPath-related handlers (245 lines)
 │   └── helper_methods.py
 ├── services/              # Business logic services
-│   └── ui_state_manager.py
+│   ├── ui_state_manager.py
+│   ├── csv_service_handlers.py    # CSV service orchestrators (172 lines)
+│   └── xml_service_handlers.py    # XML service orchestrators (39 lines)
 ├── modules/               # Background workers
 │   ├── xml_parser.py
 │   ├── xpath_search_and_csv_export.py
@@ -99,8 +104,28 @@ The refactoring maintains backward compatibility through the delegation pattern.
 
 ## Future Improvements
 
-1. Extract more service orchestrators from `state_controller.py`
+1. ~~Extract more service orchestrators from `state_controller.py`~~ ✅ **COMPLETED** (October 2025)
 2. Create a ServiceRegistry for dependency injection
 3. Add unit tests for each focused class
 4. Consider moving helper methods into appropriate services
 5. Implement proper logging throughout the application
+
+## Recent Updates (October 2025)
+
+### modules_controller.py Refactoring
+The large `modules_controller.py` file (658 lines with 10 handler classes) has been refactored into focused modules:
+
+**New Controller Files:**
+- `combobox_state_handler.py` - UI state management for comboboxes
+- `xml_output_search_handler.py` - XML output search functionality
+- `xpath_handlers.py` - Three XPath-related handlers grouped together
+
+**New Service Files:**
+- `csv_service_handlers.py` - Four CSV service orchestrators grouped together
+- `xml_service_handlers.py` - XML parsing service orchestrator
+
+**Backward Compatibility:**
+- `modules_controller.py` now serves as a 31-line facade that re-exports all classes
+- All existing imports continue to work without modification
+
+This completes the refactoring of service orchestrators and further improves the separation of concerns in the codebase.
