@@ -143,6 +143,9 @@ def process_single_xml_optimized(
             for match in matches:
                 formatted_value = processor.format_match_value(match)
                 if formatted_value:  # Only non-empty values
+                    # Flatten string if's multiline, so the csv row isn't "broken" for an excel conversion
+                    if "\n" in formatted_value or "\r" in formatted_value: # Handle multiline
+                        formatted_value = formatted_value.replace("\n", " ").replace("\r", " ")
                     values.append(formatted_value)
 
             all_results[header] = values
@@ -180,7 +183,7 @@ def process_single_xml_optimized(
                     elif row_index < len(values):
                         row[header] = values[row_index]
                     else:
-                        row[header] = ""
+                        row[header] = "Null"
                 else:
                     # Count headers
                     count_header = f"{header} Match Count"
@@ -366,7 +369,12 @@ class OptimizedCSVExportThread(QRunnable):
                 with open(self.output_path, 'w', newline='', encoding='utf-8', buffering=1_048_576) as csvfile:
                     headers = self._generate_csv_headers()
                     writer = csv.DictWriter(
-                        csvfile, fieldnames=headers, extrasaction='ignore', delimiter=',', quotechar='"', quoting=csv.QUOTE_MINIMAL)
+                                            csvfile,
+                                            fieldnames=headers,
+                                            extrasaction='ignore',
+                                            delimiter=',',
+                                            quotechar='"',
+                                            quoting=csv.QUOTE_MINIMAL)
                     writer.writeheader()
                     while not (writer_thread_stop.is_set() and result_queue.empty()):
                         try:
@@ -381,8 +389,7 @@ class OptimizedCSVExportThread(QRunnable):
             except Exception as e:
                 self.signals.error_occurred.emit("CSV Write Error", str(e))
 
-        writer_thread = Thread(target=writer_worker,
-                            daemon=True, name="CSVWriterThread")
+        writer_thread = Thread(target=writer_worker, daemon=True, name="CSVWriterThread")
         writer_thread.start()
 
         try:
