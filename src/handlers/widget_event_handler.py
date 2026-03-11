@@ -51,6 +51,8 @@ class WidgetEventHandler:
                     self.main_window.ui.statusbar_xml_files_count.setText(
                         f"Found {xml_files_count} XML Files"
                     )
+            else:
+                pass
         except Exception as ex:
             message = f"An exception of type {type(ex).__name__} occurred. Arguments: {ex.args!r}"
             self.main_window.ui.statusbar_xml_files_count.setText(
