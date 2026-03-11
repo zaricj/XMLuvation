@@ -70,7 +70,7 @@ class CSVConversionThread(QRunnable):
                     sniffer = csv.Sniffer()
                     # Limit delimiters to common ones and use quote handling to avoid confusion with quotes in text
                     delimiter = sniffer.sniff(
-                        sample, delimiters=',;\t|', quotechar='"').delimiter
+                        sample, delimiters=',;\t|').delimiter
                     self.signals.tab2_program_output_append.emit(
                         f"Detected delimiter: '{delimiter}'")
             except Exception as e:
@@ -81,7 +81,7 @@ class CSVConversionThread(QRunnable):
 
             # Load CSV
             df = pd.read_csv(self.csv_file_to_convert, delimiter=delimiter,
-                             encoding="utf-8", engine="pyarrow", quoting=csv.QUOTE_ALL)
+                            encoding="utf-8", engine="pyarrow", quoting=csv.QUOTE_ALL)
 
             # Get extensions
             _, input_ext = os.path.splitext(self.csv_file_to_convert)
