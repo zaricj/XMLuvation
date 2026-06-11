@@ -183,7 +183,7 @@ def process_single_xml_optimized(
                     elif row_index < len(values):
                         row[header] = values[row_index]
                     else:
-                        row[header] = "Null"
+                        row[header] = ""
                 else:
                     # Count headers
                     count_header = f"{header} Match Count"
