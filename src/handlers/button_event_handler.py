@@ -77,13 +77,10 @@ class ButtonEventHandler:
                 self.main_window, "Select XML File", "", "XML File (*.xml)"
             )
             if file_name:
+                self.main_window.ui.line_edit_xml_folder_path_input.clear()
                 self.main_window.ui.text_edit_program_output.clear()
+                self.main_window.ui.line_edit_xml_folder_path_input.setText(os.path.dirname(file_name))
                 self.parse_xml_file(file_name)
-                # Add the read XML files path to the XML path input field if it's not already set
-                if not self.main_window.ui.line_edit_xml_folder_path_input.text():
-                    self.main_window.ui.line_edit_xml_folder_path_input.setText(
-                        os.path.dirname(file_name)
-                    )
         except Exception as ex:
             message = f"An exception of type {type(ex).__name__} occurred. Arguments: {ex.args!r}"
             QMessageBox.critical(self.main_window, "Exception reading xml file", message)
