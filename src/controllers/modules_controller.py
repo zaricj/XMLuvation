@@ -233,25 +233,34 @@ class AddXPathExpressionToListHandler:
         self.xpath_filters = xpath_filters
         self.list_widget_xpath_expressions = list_widget_xpath_expressions
 
-    def smart_split(self, s: str) -> list[str]:
+    def smart_split(self, string: str) -> list[str]:
         result = []
         current = []
         inside_single_quote = False
         inside_double_quote = False
+        depth = 0  # Tracks nesting of () and []
 
-        for char in s:
+        for char in string:
+            # 1. Handle Quotes (same as before)
             if char == "'" and not inside_double_quote:
                 inside_single_quote = not inside_single_quote
             elif char == '"' and not inside_single_quote:
                 inside_double_quote = not inside_double_quote
 
-            if char == ',' and not inside_single_quote and not inside_double_quote:
+            # 2. Handle Nesting (only if we aren't inside quotes)
+            if not inside_single_quote and not inside_double_quote:
+                if char in "([":
+                    depth += 1
+                elif char in ")]":
+                    depth -= 1
+
+            # 3. Split logic: Only split if we are NOT in quotes AND depth is 0
+            if char == ',' and not inside_single_quote and not inside_double_quote and depth == 0:
                 result.append(''.join(current).strip())
                 current = []
             else:
                 current.append(char)
 
-        # Add the last part
         if current:
             result.append(''.join(current).strip())
 

@@ -65,12 +65,54 @@
                 "select count(*) from pingtable",
                 "Profil Aktiv"
             ]
+        },
+        "Deprecated Integration Units": {
+            "xpath_expression": [
+                "/datawizardprofile[active[text()='true']]/integrationsettings/realm/unit[text()='com.ebd.hub.datawizard.iu.JsonCreationUnit']",
+                "/datawizardprofile[active[text()='true']]/integrationsettings/realm/unit[text()='com.ebd.hub.datawizard.iu.SalesForceBulkIU']\n",
+                "/datawizardprofile[active[text()='true']]/integrationsettings/realm/unit[text()='com.ebd.hub.datawizard.iu.XMLTemplateParserUnit']\n"
+            ],
+            "csv_header": [
+                "JsonCreationUnit",
+                "SalesForceBulkIU",
+                "XMLTemplateParserUnit"
+            ]
+        },
+        "DataCapture Configs": {
+            "xpath_expression": [
+                "/datawizardprofile/integrationsettings/transactionparams/parameter[starts-with(@value, './conf')]/@value",
+                "/datawizardprofile/dataproperties/conf_preparser[starts-with(text(), './conf')]/text()",
+                "//filter/*[starts-with(@fieldconstant, './conf')]/ancestor::*[@name][1]/@name\n",
+                "//filter/*[starts-with(@fieldconstant, './conf')]/ancestor::*[@description][1]/@description\n",
+                "//filter/*[starts-with(@fieldconstant, './conf')]/@fieldconstant"
+            ],
+            "csv_header": [
+                "IU",
+                "Basisdaten Preparser",
+                "Feld oder Knoten",
+                "Funktion Name",
+                "Conf in Funktion Wert"
+            ]
+        },
+        "Lobster Profiles with Folder Group": {
+            "xpath_expression": [
+                "./datawizardprofile[@name]/@name",
+                "./datawizardprofile/id/text()",
+                "./datawizardprofile/active/text()",
+                "./datawizardprofile/path_of_group/text()"
+            ],
+            "csv_header": [
+                "Profilname",
+                "Profil ID",
+                "Ist Aktiv?",
+                "Group"
+            ]
         }
     },
     "custom_paths": {
-        "NESISNCP01": "C:\\Users\\ZaricJ\\Downloads\\Lobster Profile Export\\ProfileExportNCEcht",
-        "NESISNCT01": "C:\\Users\\ZaricJ\\Downloads\\Lobster Profile Export\\ProfileExportNCTest",
-        "NESIST02": "C:/Users/ZaricJ/Downloads/Lobster Profile Export/ProfileExportTest",
+        "NESISNCP01": "C:\\Users\\ZaricJ\\Downloads\\LOBSTER\\Lobster Profile Export\\ProfileExportNCEcht",
+        "NESISNCT01": "C:\\Users\\ZaricJ\\Downloads\\LOBSTER\\Lobster Profile Export\\ProfileExportNCTest",
+        "NESIST02": "C:\\Users\\ZaricJ\\Desktop\\LobsterXMLExport\\NESIST02_ProfileXMLExport_No_NonExistentProfiles",
         "NESIS002": "C:/Users/ZaricJ/Downloads/Lobster Profile Export/ProfileExportEcht"
     }
 }
