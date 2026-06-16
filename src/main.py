@@ -353,14 +353,14 @@ class MainWindow(QMainWindow, SignalHandlerMixin):
             action = QAction(theme_name.replace("_", " ").title(), self)
             # Use the theme key so selection persists; call helper to apply and save
             action.triggered.connect(
-                lambda checked, key=theme_name: self.set_theme_by_key(key)
+                lambda checked, key=theme_name: self._set_theme_by_key(key)
             )
             self.ui.theme_menu.addAction(action)
             # Add a separator between right after the light theme, should always be second after the default dark theme
             if theme_name.endswith("light_theme_default"):
                 self.ui.theme_menu.addSeparator()
 
-    def set_theme_by_key(self, theme_key: str, save: bool = True):
+    def _set_theme_by_key(self, theme_key: str, save: bool = True):
         """Apply a theme by its key from THEME_FILES and optionally save the choice.
 
         Args:
