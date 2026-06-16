@@ -18,7 +18,7 @@ from PySide6.QtGui import (QBrush, QColor, QConicalGradient, QCursor,
 from PySide6.QtWidgets import (QAbstractButton, QApplication, QCheckBox, QDialog,
     QDialogButtonBox, QHBoxLayout, QLabel, QSizePolicy,
     QVBoxLayout, QWidget)
-import gui.resources.qrc.xmluvation_resources_rc
+import refactor.assets.ui.xmluvation_resources_rc
 
 class Ui_ExitAppDialog(object):
     def setupUi(self, ExitAppDialog):

@@ -4,7 +4,7 @@ from PySide6.QtGui import QCloseEvent
 from pathlib import Path
 
 from handlers.config_handler import ConfigHandler
-from gui.widgets.CustomPathsManager_ui import Ui_CustomPathsManagerWidget
+from refactor.assets.ui.CustomPathsManager_ui import Ui_CustomPathsManagerWidget
 
 from typing import TYPE_CHECKING, Any, List, Dict
 if TYPE_CHECKING:

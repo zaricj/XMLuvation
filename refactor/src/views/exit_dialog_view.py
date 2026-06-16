@@ -1,11 +1,12 @@
-from gui.dialogs.ui.exit_dialog_box_ui import Ui_ExitAppDialog
+from refactor.assets.ui.exit_dialog_box_ui import Ui_ExitAppDialog
 from PySide6.QtWidgets import QDialog, QMessageBox
 from PySide6.QtCore import QFile, QIODevice, QTextStream
 from pathlib import Path
 from typing import TYPE_CHECKING, Dict
+
 if TYPE_CHECKING:
     from src.main import MainWindow
-    
+
 # Constants
 # Determine the path of the current file and resolve it to handle symlinks/etc.
 FILE_PATH = Path(__file__).resolve()
@@ -22,20 +23,23 @@ THEME_FILES: Dict[str, Path] = {
     "dark_theme_metallic_spaceship": SRC_ROOT_DIR / "gui" / "resources" / "styles" / "other" / "dark_theme_metallic_spaceship.qss",
 }
 
-class ExitDialog(QDialog):
+
+class ExitDialogView(QDialog):
     def __init__(self, main_window: "MainWindow"):
         super().__init__()
         self.main_window = main_window
         # Create and setup ui from .ui file
         self.ui = Ui_ExitAppDialog()
         self.ui.setupUi(self)
-        
+
         self.initialize_theme()
-        
+
     def initialize_theme(self):
         try:
             # Determine theme files
-            theme_path = THEME_FILES.get(self.main_window.current_theme, THEME_FILES.get("dark_theme_default"))
+            theme_path = THEME_FILES.get(
+                self.main_window.current_theme, THEME_FILES.get("dark_theme_default")
+            )
             file = QFile(str(theme_path))
             if file.open(QIODevice.ReadOnly | QIODevice.Text):
                 stream = QTextStream(file)
@@ -43,4 +47,6 @@ class ExitDialog(QDialog):
                 self.setStyleSheet(stylesheet)
                 file.close()
         except Exception as ex:
-            QMessageBox.critical(self, "Theme load error", f"Failed to load theme: {ex}")
+            QMessageBox.critical(
+                self, "Theme load error", f"Failed to load theme: {ex}"
+            )

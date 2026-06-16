@@ -4,27 +4,16 @@ import os
 from pathlib import Path
 from typing import List, Optional, Dict, Any, TYPE_CHECKING
 
-from PySide6.QtWidgets import (
-    QApplication,
-    QMainWindow,
-    QMessageBox,
-    QDialog)
+from PySide6.QtWidgets import QApplication, QMainWindow, QMessageBox, QDialog
 
 from PySide6.QtGui import QIcon, QCloseEvent, QGuiApplication, QAction
-from PySide6.QtCore import (
-    Qt,
-    QFile,
-    QTextStream,
-    QIODevice,
-    QSettings,
-    QThreadPool
-)
+from PySide6.QtCore import Qt, QFile, QTextStream, QIODevice, QSettings, QThreadPool
 
 if TYPE_CHECKING:
     from controllers.modules_controller import (
-        ComboboxStateHandler, 
+        ComboboxStateHandler,
         SearchXMLOutputTextHandler,
-        SearchAndExportToCSVHandler
+        SearchAndExportToCSVHandler,
     )
     from handlers.config_handler import ConfigHandler
 
@@ -32,7 +21,7 @@ from gui.main.XMLuvation_ui import Ui_MainWindow
 from handlers.signal_handlers import SignalHandlerMixin
 from utils.helper_methods import HelperMethods
 from services.ui_state_manager import UIStateManager
-from gui.dialogs.exit_dialog import ExitDialog
+from refactor.src.views.exit_dialog_view import ExitDialogView
 
 # ----------------------------
 # Constants
@@ -43,12 +32,40 @@ GUI_CONFIG_FILE_PATH: Path = GUI_CONFIG_DIRECTORY / "config.json"
 
 # Dictionary of all theme files in the directory under gui/resources/styles
 THEME_FILES: Dict[str, Path] = {
-    "dark_theme_default": CURRENT_DIR / "gui" / "resources" / "styles" / "dark_theme.qss",
-    "light_theme_default": CURRENT_DIR / "gui" / "resources" / "styles" / "light_theme.qss",
-    "dark_theme_yellow": CURRENT_DIR / "gui" / "resources" / "styles" / "other" / "dark_theme_yellow.qss",
-    "dark_theme_peach": CURRENT_DIR / "gui" / "resources" / "styles" / "other" / "dark_theme_peach.qss",
-    "dark_theme_qlementine": CURRENT_DIR / "gui" / "resources" / "styles" / "other" / "dark_theme_qlementine.qss",
-    "dark_theme_metallic_spaceship": CURRENT_DIR / "gui" / "resources" / "styles" / "other" / "dark_theme_metallic_spaceship.qss",
+    "dark_theme_default": CURRENT_DIR
+    / "gui"
+    / "resources"
+    / "styles"
+    / "dark_theme.qss",
+    "light_theme_default": CURRENT_DIR
+    / "gui"
+    / "resources"
+    / "styles"
+    / "light_theme.qss",
+    "dark_theme_yellow": CURRENT_DIR
+    / "gui"
+    / "resources"
+    / "styles"
+    / "other"
+    / "dark_theme_yellow.qss",
+    "dark_theme_peach": CURRENT_DIR
+    / "gui"
+    / "resources"
+    / "styles"
+    / "other"
+    / "dark_theme_peach.qss",
+    "dark_theme_qlementine": CURRENT_DIR
+    / "gui"
+    / "resources"
+    / "styles"
+    / "other"
+    / "dark_theme_qlementine.qss",
+    "dark_theme_metallic_spaceship": CURRENT_DIR
+    / "gui"
+    / "resources"
+    / "styles"
+    / "other"
+    / "dark_theme_metallic_spaceship.qss",
 }
 
 # Application icon path
@@ -56,7 +73,9 @@ ICON_PATH: Path = CURRENT_DIR / "gui" / "resources" / "icons" / "xml_256px.ico"
 
 # Theme icons for menubar
 DARK_THEME_QMENU_ICON: Path = CURRENT_DIR / "gui" / "resources" / "images" / "dark.png"
-LIGHT_THEME_QMENU_ICON: Path = CURRENT_DIR / "gui" / "resources" / "images" / "light.png"
+LIGHT_THEME_QMENU_ICON: Path = (
+    CURRENT_DIR / "gui" / "resources" / "images" / "light.png"
+)
 
 # Application versioning and metadata
 APP_VERSION: str = "v1.3.5"
@@ -93,11 +112,17 @@ def restore_window_state(window: QMainWindow, settings: QSettings):
     if not available.contains(win_geom, proper=False):
         window.resize(
             min(win_geom.width(), available.width()),
-            min(win_geom.height(), available.height())
+            min(win_geom.height(), available.height()),
         )
         window.move(
-            max(available.left(), min(win_geom.left(), available.right() - window.width())),
-            max(available.top(), min(win_geom.top(), available.bottom() - window.height()))
+            max(
+                available.left(),
+                min(win_geom.left(), available.right() - window.width()),
+            ),
+            max(
+                available.top(),
+                min(win_geom.top(), available.bottom() - window.height()),
+            ),
         )
 
 
@@ -108,7 +133,7 @@ class MainWindow(QMainWindow, SignalHandlerMixin):
     # type hints...
     _parsed_xml_data_ref: Dict[str, Any]
     _current_read_xml_file_ref: Optional[str]
-    _csv_exporter_handler_ref: Optional['SearchAndExportToCSVHandler']
+    _csv_exporter_handler_ref: Optional["SearchAndExportToCSVHandler"]
     active_workers: List[Any]
     recent_xpath_expressions: List[str]
 
@@ -116,13 +141,12 @@ class MainWindow(QMainWindow, SignalHandlerMixin):
     thread_pool: QThreadPool
     set_max_threads: int
 
-    cb_state_controller: 'ComboboxStateHandler'
-    xml_text_searcher: 'SearchXMLOutputTextHandler'
-    config_handler: 'ConfigHandler'
-    helper: 'HelperMethods'
+    cb_state_controller: "ComboboxStateHandler"
+    xml_text_searcher: "SearchXMLOutputTextHandler"
+    config_handler: "ConfigHandler"
+    helper: "HelperMethods"
 
     current_theme: str
-
 
     def __init__(self):
         super().__init__()
@@ -146,7 +170,7 @@ class MainWindow(QMainWindow, SignalHandlerMixin):
         from controllers.modules_controller import ComboboxStateHandler
         from controllers.modules_controller import SearchXMLOutputTextHandler
         from handlers.config_handler import ConfigHandler
-        
+
         self.cb_state_controller = ComboboxStateHandler(
             main_window=self,
             parsed_xml_data=self._parsed_xml_data_ref,
@@ -161,12 +185,11 @@ class MainWindow(QMainWindow, SignalHandlerMixin):
             line_edit_xml_output_find_text=self.ui.line_edit_xml_output_find_text,
             text_edit_xml_output=self.ui.text_edit_xml_output,
         )
-        
+
         # Initialize UI state manager
         self.ui_state_manager = UIStateManager(main_window=self)
-        
-        self.settings = QSettings("Jovan", "XMLuvation")
 
+        self.settings = QSettings("Jovan", "XMLuvation")
 
         self.thread_pool = QThreadPool()
         max_threads = self.thread_pool.maxThreadCount()
@@ -180,7 +203,9 @@ class MainWindow(QMainWindow, SignalHandlerMixin):
             config_file_name=GUI_CONFIG_FILE_PATH,
         )
 
-        self.ui.list_widget_main_xpath_expressions.setContextMenuPolicy(Qt.CustomContextMenu)
+        self.ui.list_widget_main_xpath_expressions.setContextMenuPolicy(
+            Qt.CustomContextMenu
+        )
         self.ui.text_edit_xml_output.setContextMenuPolicy(Qt.CustomContextMenu)
         self.ui.text_edit_program_output.setContextMenuPolicy(Qt.CustomContextMenu)
         self.ui.text_edit_csv_output.setContextMenuPolicy(Qt.CustomContextMenu)
@@ -190,7 +215,7 @@ class MainWindow(QMainWindow, SignalHandlerMixin):
 
         # Load saved settings (this will override current_theme if user saved one)
         self.load_app_settings()
-        
+
     def setup_application(self):
         self.connect_ui_events()
         self.connect_menu_bar_actions()
@@ -201,11 +226,13 @@ class MainWindow(QMainWindow, SignalHandlerMixin):
     def setup_widgets_and_visibility_states(self):
         # Use UIStateManager for initial setup
         self.ui_state_manager.setup_initial_widget_states()
-        
+
     def initialize_theme(self):
         try:
             # Determine theme files
-            theme_path = THEME_FILES.get(self.current_theme, THEME_FILES.get("dark_theme_default"))
+            theme_path = THEME_FILES.get(
+                self.current_theme, THEME_FILES.get("dark_theme_default")
+            )
             file = QFile(str(theme_path))
             if file.open(QIODevice.ReadOnly | QIODevice.Text):
                 stream = QTextStream(file)
@@ -213,40 +240,54 @@ class MainWindow(QMainWindow, SignalHandlerMixin):
                 self.setStyleSheet(stylesheet)
                 file.close()
         except Exception as ex:
-            QMessageBox.critical(self, "Theme load error", f"Failed to load theme: {ex}")
-            
+            QMessageBox.critical(
+                self, "Theme load error", f"Failed to load theme: {ex}"
+            )
+
     def initialize_theme_file(self, theme_file_path: Path):
         """Initialize theme from file."""
         try:
-            file = QFile(str(theme_file_path))  # Path gets transformed to string as QFile supports strings only
-            if not file.open(QIODevice.OpenModeFlag.ReadOnly | QIODevice.OpenModeFlag.Text):
+            file = QFile(
+                str(theme_file_path)
+            )  # Path gets transformed to string as QFile supports strings only
+            if not file.open(
+                QIODevice.OpenModeFlag.ReadOnly | QIODevice.OpenModeFlag.Text
+            ):
                 return
             stream = QTextStream(file)
             stylesheet = stream.readAll()
             self.setStyleSheet(stylesheet)
             file.close()
         except Exception as ex:
-            QMessageBox.critical(self, "Theme load error", f"Failed to load theme: {str(ex)}")
-            
+            QMessageBox.critical(
+                self, "Theme load error", f"Failed to load theme: {str(ex)}"
+            )
+
     # Helper method to save apps settings in a more DRY way
     def _save_app_settings(self):
         # Save the theme KEY (one of THEME_FILES). This is stable vs saving filenames.
         self.settings.setValue("app_theme", self.current_theme)
-        self.settings.setValue("group_matches", self.ui.checkbox_group_matches.isChecked())
-        self.settings.setValue("prompt_on_exit", self.ui.prompt_on_exit_action.isChecked())
-        self.settings.setValue("recent_xpath_expressions", self.recent_xpath_expressions)
-        save_window_state(self, self.settings) # Save windows location and state
+        self.settings.setValue(
+            "group_matches", self.ui.checkbox_group_matches.isChecked()
+        )
+        self.settings.setValue(
+            "prompt_on_exit", self.ui.prompt_on_exit_action.isChecked()
+        )
+        self.settings.setValue(
+            "recent_xpath_expressions", self.recent_xpath_expressions
+        )
+        save_window_state(self, self.settings)  # Save windows location and state
         # optional: force write to disk
         self.settings.sync()
-        
+
     def load_app_settings(self):
         """Load application settings from QSettings."""
         # Restore geometry safely
         restore_window_state(self, self.settings)
 
-        self.recent_xpath_expressions = self.settings.value(
-            "recent_xpath_expressions", type=list
-        ) or []
+        self.recent_xpath_expressions = (
+            self.settings.value("recent_xpath_expressions", type=list) or []
+        )
 
         self._update_recent_xpath_expressions_menu()
 
@@ -256,33 +297,29 @@ class MainWindow(QMainWindow, SignalHandlerMixin):
             self.current_theme = "dark_theme_default"
 
         self.group_matches_setting = self.settings.value(
-            "group_matches",
-            self.ui.checkbox_group_matches.isChecked(),
-            type=bool
+            "group_matches", self.ui.checkbox_group_matches.isChecked(), type=bool
         )
-        
+
         # Group matches checkbox
         self.ui.checkbox_group_matches.setChecked(self.group_matches_setting)
 
         # Prompt on exit setting load
-        prompt_value = self.settings.value("prompt_on_exit",
-                                        self.ui.prompt_on_exit_action.isChecked(),
-                                        type=bool)
-        
+        prompt_value = self.settings.value(
+            "prompt_on_exit", self.ui.prompt_on_exit_action.isChecked(), type=bool
+        )
+
         # Apply the setting unconditionally to the QAction
         self.ui.prompt_on_exit_action.setChecked(bool(prompt_value))
-        
+
         # Prompt on exit checkbox in menubar
         prompt_on_exit = self.settings.value(
-            "prompt_on_exit",
-            self.ui.prompt_on_exit_action.isChecked(),
-            type=bool
+            "prompt_on_exit", self.ui.prompt_on_exit_action.isChecked(), type=bool
         )
         self.ui.prompt_on_exit_action.setChecked(prompt_on_exit)
 
     def closeEvent(self, event: QCloseEvent):
         if self.ui.prompt_on_exit_action.isChecked():
-            exit_dialog = ExitDialog(self)
+            exit_dialog = ExitDialogView(self)
             if exit_dialog.exec() == QDialog.Rejected:
                 event.ignore()
                 return
@@ -305,7 +342,9 @@ class MainWindow(QMainWindow, SignalHandlerMixin):
         if expression not in self.recent_xpath_expressions:
             self.recent_xpath_expressions.insert(0, expression)
             self.recent_xpath_expressions = self.recent_xpath_expressions[:MAX_RECENT]
-            self.settings.setValue("recent_xpath_expressions", self.recent_xpath_expressions)
+            self.settings.setValue(
+                "recent_xpath_expressions", self.recent_xpath_expressions
+            )
             self._update_recent_xpath_expressions_menu()
 
     def _update_recent_xpath_expressions_menu(self):
@@ -322,14 +361,14 @@ class MainWindow(QMainWindow, SignalHandlerMixin):
     def _update_paths_menu(self):
         """Update the paths menu with custom paths."""
         self.ui.paths_menu.clear()
-        
+
         custom_paths = self.config_handler.get("custom_paths", {})
         for name, path in custom_paths.items():
             action = QAction(name, self)
             action.setStatusTip(f"Open {name}")
             action.triggered.connect(lambda checked, p=path: self._set_path_in_input(p))
             self.ui.paths_menu.addAction(action)
-    
+
     def _update_autofill_menu(self):
         """Update the autofill menu with custom pre-built xpaths and csv headers"""
         self.ui.menu_autofill.clear()
@@ -339,12 +378,11 @@ class MainWindow(QMainWindow, SignalHandlerMixin):
             action = QAction(key, self)
             action.triggered.connect(
                 lambda checked, v=value: self._set_autofill_xpaths_and_csv_headers(
-                    v.get("xpath_expression", []),
-                    v.get("csv_header", [])
+                    v.get("xpath_expression", []), v.get("csv_header", [])
                 )
             )
             self.ui.menu_autofill.addAction(action)
-            
+
     def _update_themes_menu(self):
         """Update the themes menu with available themes."""
         self.ui.theme_menu.clear()
@@ -378,13 +416,17 @@ class MainWindow(QMainWindow, SignalHandlerMixin):
             if save:
                 self._save_app_settings()
         except Exception as ex:
-            QMessageBox.critical(self, "Theme Error", f"Failed to set theme {theme_key}: {ex}")
-            
+            QMessageBox.critical(
+                self, "Theme Error", f"Failed to set theme {theme_key}: {ex}"
+            )
+
     def _set_path_in_input(self, path: str):
         """Set path in input field."""
         self.ui.line_edit_xml_folder_path_input.setText(path)
 
-    def _set_autofill_xpaths_and_csv_headers(self, xpaths: list[str], csv_headers: list[str]):
+    def _set_autofill_xpaths_and_csv_headers(
+        self, xpaths: list[str], csv_headers: list[str]
+    ):
         """Adds the values for xpaths expressions and csv headers to the main list widget and line edit widget.
 
         Args:
@@ -394,11 +436,12 @@ class MainWindow(QMainWindow, SignalHandlerMixin):
         # Clear all existing items in the list widget and csv header input
         self.ui.list_widget_main_xpath_expressions.clear()
         self.ui.line_edit_csv_headers_input.clear()
-        
+
         for xpath in xpaths:
             self.ui.list_widget_main_xpath_expressions.addItem(xpath)
         if csv_headers:
-            self.ui.line_edit_csv_headers_input.setText(', '.join(csv_headers))
+            self.ui.line_edit_csv_headers_input.setText(", ".join(csv_headers))
+
 
 # ----------------------------
 # Entrypoint
