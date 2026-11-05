@@ -32,7 +32,7 @@
    <string>Exit Application</string>
   </property>
   <property name="windowIcon">
-   <iconset resource="../../resources/qrc/xmluvation_resources.qrc">
+   <iconset resource="../qrc/xmluvation_resources.qrc">
     <normaloff>:/icons/xml_256px.ico</normaloff>:/icons/xml_256px.ico</iconset>
   </property>
   <property name="modal">
@@ -80,7 +80,7 @@
         <string/>
        </property>
        <property name="pixmap">
-        <pixmap resource="../../resources/qrc/xmluvation_resources.qrc">:/images/question-circle_48x48.png</pixmap>
+        <pixmap resource="../qrc/xmluvation_resources.qrc">:/images/question-circle_48x48.png</pixmap>
        </property>
       </widget>
      </item>
@@ -138,7 +138,7 @@
   </layout>
  </widget>
  <resources>
-  <include location="../../resources/qrc/xmluvation_resources.qrc"/>
+  <include location="../qrc/xmluvation_resources.qrc"/>
  </resources>
  <connections>
   <connection>

@@ -1,0 +1,1486 @@
+{
+ "build": [
+  {
+   "tag": "",
+   "tag_value": "",
+   "attribute": "",
+   "attribute_value": "",
+   "operator": "equals",
+   "expected": ""
+  },
+  {
+   "tag": "",
+   "tag_value": "",
+   "attribute": "",
+   "attribute_value": "",
+   "operator": "contains",
+   "expected": ""
+  },
+  {
+   "tag": "",
+   "tag_value": "",
+   "attribute": "",
+   "attribute_value": "",
+   "operator": "starts_with",
+   "expected": ""
+  },
+  {
+   "tag": "",
+   "tag_value": "",
+   "attribute": "",
+   "attribute_value": "",
+   "operator": "greater",
+   "expected": ""
+  },
+  {
+   "tag": "",
+   "tag_value": "",
+   "attribute": "",
+   "attribute_value": "",
+   "operator": "smaller",
+   "expected": ""
+  },
+  {
+   "tag": "",
+   "tag_value": "",
+   "attribute": "",
+   "attribute_value": "512",
+   "operator": "equals",
+   "expected": ""
+  },
+  {
+   "tag": "",
+   "tag_value": "",
+   "attribute": "",
+   "attribute_value": "512",
+   "operator": "contains",
+   "expected": ""
+  },
+  {
+   "tag": "",
+   "tag_value": "",
+   "attribute": "",
+   "attribute_value": "512",
+   "operator": "starts_with",
+   "expected": ""
+  },
+  {
+   "tag": "",
+   "tag_value": "",
+   "attribute": "",
+   "attribute_value": "512",
+   "operator": "greater",
+   "expected": ""
+  },
+  {
+   "tag": "",
+   "tag_value": "",
+   "attribute": "",
+   "attribute_value": "512",
+   "operator": "smaller",
+   "expected": ""
+  },
+  {
+   "tag": "",
+   "tag_value": "",
+   "attribute": "",
+   "attribute_value": "x",
+   "operator": "equals",
+   "expected": ""
+  },
+  {
+   "tag": "",
+   "tag_value": "",
+   "attribute": "",
+   "attribute_value": "x",
+   "operator": "contains",
+   "expected": ""
+  },
+  {
+   "tag": "",
+   "tag_value": "",
+   "attribute": "",
+   "attribute_value": "x",
+   "operator": "starts_with",
+   "expected": ""
+  },
+  {
+   "tag": "",
+   "tag_value": "",
+   "attribute": "",
+   "attribute_value": "x",
+   "operator": "greater",
+   "expected": ""
+  },
+  {
+   "tag": "",
+   "tag_value": "",
+   "attribute": "",
+   "attribute_value": "x",
+   "operator": "smaller",
+   "expected": ""
+  },
+  {
+   "tag": "",
+   "tag_value": "",
+   "attribute": "id",
+   "attribute_value": "",
+   "operator": "equals",
+   "expected": ""
+  },
+  {
+   "tag": "",
+   "tag_value": "",
+   "attribute": "id",
+   "attribute_value": "",
+   "operator": "contains",
+   "expected": ""
+  },
+  {
+   "tag": "",
+   "tag_value": "",
+   "attribute": "id",
+   "attribute_value": "",
+   "operator": "starts_with",
+   "expected": ""
+  },
+  {
+   "tag": "",
+   "tag_value": "",
+   "attribute": "id",
+   "attribute_value": "",
+   "operator": "greater",
+   "expected": ""
+  },
+  {
+   "tag": "",
+   "tag_value": "",
+   "attribute": "id",
+   "attribute_value": "",
+   "operator": "smaller",
+   "expected": ""
+  },
+  {
+   "tag": "",
+   "tag_value": "",
+   "attribute": "id",
+   "attribute_value": "512",
+   "operator": "equals",
+   "expected": ""
+  },
+  {
+   "tag": "",
+   "tag_value": "",
+   "attribute": "id",
+   "attribute_value": "512",
+   "operator": "contains",
+   "expected": ""
+  },
+  {
+   "tag": "",
+   "tag_value": "",
+   "attribute": "id",
+   "attribute_value": "512",
+   "operator": "starts_with",
+   "expected": ""
+  },
+  {
+   "tag": "",
+   "tag_value": "",
+   "attribute": "id",
+   "attribute_value": "512",
+   "operator": "greater",
+   "expected": ""
+  },
+  {
+   "tag": "",
+   "tag_value": "",
+   "attribute": "id",
+   "attribute_value": "512",
+   "operator": "smaller",
+   "expected": ""
+  },
+  {
+   "tag": "",
+   "tag_value": "",
+   "attribute": "id",
+   "attribute_value": "x",
+   "operator": "equals",
+   "expected": ""
+  },
+  {
+   "tag": "",
+   "tag_value": "",
+   "attribute": "id",
+   "attribute_value": "x",
+   "operator": "contains",
+   "expected": ""
+  },
+  {
+   "tag": "",
+   "tag_value": "",
+   "attribute": "id",
+   "attribute_value": "x",
+   "operator": "starts_with",
+   "expected": ""
+  },
+  {
+   "tag": "",
+   "tag_value": "",
+   "attribute": "id",
+   "attribute_value": "x",
+   "operator": "greater",
+   "expected": ""
+  },
+  {
+   "tag": "",
+   "tag_value": "",
+   "attribute": "id",
+   "attribute_value": "x",
+   "operator": "smaller",
+   "expected": ""
+  },
+  {
+   "tag": "",
+   "tag_value": "abc",
+   "attribute": "",
+   "attribute_value": "",
+   "operator": "equals",
+   "expected": ""
+  },
+  {
+   "tag": "",
+   "tag_value": "abc",
+   "attribute": "",
+   "attribute_value": "",
+   "operator": "contains",
+   "expected": ""
+  },
+  {
+   "tag": "",
+   "tag_value": "abc",
+   "attribute": "",
+   "attribute_value": "",
+   "operator": "starts_with",
+   "expected": ""
+  },
+  {
+   "tag": "",
+   "tag_value": "abc",
+   "attribute": "",
+   "attribute_value": "",
+   "operator": "greater",
+   "expected": ""
+  },
+  {
+   "tag": "",
+   "tag_value": "abc",
+   "attribute": "",
+   "attribute_value": "",
+   "operator": "smaller",
+   "expected": ""
+  },
+  {
+   "tag": "",
+   "tag_value": "abc",
+   "attribute": "",
+   "attribute_value": "512",
+   "operator": "equals",
+   "expected": ""
+  },
+  {
+   "tag": "",
+   "tag_value": "abc",
+   "attribute": "",
+   "attribute_value": "512",
+   "operator": "contains",
+   "expected": ""
+  },
+  {
+   "tag": "",
+   "tag_value": "abc",
+   "attribute": "",
+   "attribute_value": "512",
+   "operator": "starts_with",
+   "expected": ""
+  },
+  {
+   "tag": "",
+   "tag_value": "abc",
+   "attribute": "",
+   "attribute_value": "512",
+   "operator": "greater",
+   "expected": ""
+  },
+  {
+   "tag": "",
+   "tag_value": "abc",
+   "attribute": "",
+   "attribute_value": "512",
+   "operator": "smaller",
+   "expected": ""
+  },
+  {
+   "tag": "",
+   "tag_value": "abc",
+   "attribute": "",
+   "attribute_value": "x",
+   "operator": "equals",
+   "expected": ""
+  },
+  {
+   "tag": "",
+   "tag_value": "abc",
+   "attribute": "",
+   "attribute_value": "x",
+   "operator": "contains",
+   "expected": ""
+  },
+  {
+   "tag": "",
+   "tag_value": "abc",
+   "attribute": "",
+   "attribute_value": "x",
+   "operator": "starts_with",
+   "expected": ""
+  },
+  {
+   "tag": "",
+   "tag_value": "abc",
+   "attribute": "",
+   "attribute_value": "x",
+   "operator": "greater",
+   "expected": ""
+  },
+  {
+   "tag": "",
+   "tag_value": "abc",
+   "attribute": "",
+   "attribute_value": "x",
+   "operator": "smaller",
+   "expected": ""
+  },
+  {
+   "tag": "",
+   "tag_value": "abc",
+   "attribute": "id",
+   "attribute_value": "",
+   "operator": "equals",
+   "expected": ""
+  },
+  {
+   "tag": "",
+   "tag_value": "abc",
+   "attribute": "id",
+   "attribute_value": "",
+   "operator": "contains",
+   "expected": ""
+  },
+  {
+   "tag": "",
+   "tag_value": "abc",
+   "attribute": "id",
+   "attribute_value": "",
+   "operator": "starts_with",
+   "expected": ""
+  },
+  {
+   "tag": "",
+   "tag_value": "abc",
+   "attribute": "id",
+   "attribute_value": "",
+   "operator": "greater",
+   "expected": ""
+  },
+  {
+   "tag": "",
+   "tag_value": "abc",
+   "attribute": "id",
+   "attribute_value": "",
+   "operator": "smaller",
+   "expected": ""
+  },
+  {
+   "tag": "",
+   "tag_value": "abc",
+   "attribute": "id",
+   "attribute_value": "512",
+   "operator": "equals",
+   "expected": ""
+  },
+  {
+   "tag": "",
+   "tag_value": "abc",
+   "attribute": "id",
+   "attribute_value": "512",
+   "operator": "contains",
+   "expected": ""
+  },
+  {
+   "tag": "",
+   "tag_value": "abc",
+   "attribute": "id",
+   "attribute_value": "512",
+   "operator": "starts_with",
+   "expected": ""
+  },
+  {
+   "tag": "",
+   "tag_value": "abc",
+   "attribute": "id",
+   "attribute_value": "512",
+   "operator": "greater",
+   "expected": ""
+  },
+  {
+   "tag": "",
+   "tag_value": "abc",
+   "attribute": "id",
+   "attribute_value": "512",
+   "operator": "smaller",
+   "expected": ""
+  },
+  {
+   "tag": "",
+   "tag_value": "abc",
+   "attribute": "id",
+   "attribute_value": "x",
+   "operator": "equals",
+   "expected": ""
+  },
+  {
+   "tag": "",
+   "tag_value": "abc",
+   "attribute": "id",
+   "attribute_value": "x",
+   "operator": "contains",
+   "expected": ""
+  },
+  {
+   "tag": "",
+   "tag_value": "abc",
+   "attribute": "id",
+   "attribute_value": "x",
+   "operator": "starts_with",
+   "expected": ""
+  },
+  {
+   "tag": "",
+   "tag_value": "abc",
+   "attribute": "id",
+   "attribute_value": "x",
+   "operator": "greater",
+   "expected": ""
+  },
+  {
+   "tag": "",
+   "tag_value": "abc",
+   "attribute": "id",
+   "attribute_value": "x",
+   "operator": "smaller",
+   "expected": ""
+  },
+  {
+   "tag": "",
+   "tag_value": "5",
+   "attribute": "",
+   "attribute_value": "",
+   "operator": "equals",
+   "expected": ""
+  },
+  {
+   "tag": "",
+   "tag_value": "5",
+   "attribute": "",
+   "attribute_value": "",
+   "operator": "contains",
+   "expected": ""
+  },
+  {
+   "tag": "",
+   "tag_value": "5",
+   "attribute": "",
+   "attribute_value": "",
+   "operator": "starts_with",
+   "expected": ""
+  },
+  {
+   "tag": "",
+   "tag_value": "5",
+   "attribute": "",
+   "attribute_value": "",
+   "operator": "greater",
+   "expected": ""
+  },
+  {
+   "tag": "",
+   "tag_value": "5",
+   "attribute": "",
+   "attribute_value": "",
+   "operator": "smaller",
+   "expected": ""
+  },
+  {
+   "tag": "",
+   "tag_value": "5",
+   "attribute": "",
+   "attribute_value": "512",
+   "operator": "equals",
+   "expected": ""
+  },
+  {
+   "tag": "",
+   "tag_value": "5",
+   "attribute": "",
+   "attribute_value": "512",
+   "operator": "contains",
+   "expected": ""
+  },
+  {
+   "tag": "",
+   "tag_value": "5",
+   "attribute": "",
+   "attribute_value": "512",
+   "operator": "starts_with",
+   "expected": ""
+  },
+  {
+   "tag": "",
+   "tag_value": "5",
+   "attribute": "",
+   "attribute_value": "512",
+   "operator": "greater",
+   "expected": ""
+  },
+  {
+   "tag": "",
+   "tag_value": "5",
+   "attribute": "",
+   "attribute_value": "512",
+   "operator": "smaller",
+   "expected": ""
+  },
+  {
+   "tag": "",
+   "tag_value": "5",
+   "attribute": "",
+   "attribute_value": "x",
+   "operator": "equals",
+   "expected": ""
+  },
+  {
+   "tag": "",
+   "tag_value": "5",
+   "attribute": "",
+   "attribute_value": "x",
+   "operator": "contains",
+   "expected": ""
+  },
+  {
+   "tag": "",
+   "tag_value": "5",
+   "attribute": "",
+   "attribute_value": "x",
+   "operator": "starts_with",
+   "expected": ""
+  },
+  {
+   "tag": "",
+   "tag_value": "5",
+   "attribute": "",
+   "attribute_value": "x",
+   "operator": "greater",
+   "expected": ""
+  },
+  {
+   "tag": "",
+   "tag_value": "5",
+   "attribute": "",
+   "attribute_value": "x",
+   "operator": "smaller",
+   "expected": ""
+  },
+  {
+   "tag": "",
+   "tag_value": "5",
+   "attribute": "id",
+   "attribute_value": "",
+   "operator": "equals",
+   "expected": ""
+  },
+  {
+   "tag": "",
+   "tag_value": "5",
+   "attribute": "id",
+   "attribute_value": "",
+   "operator": "contains",
+   "expected": ""
+  },
+  {
+   "tag": "",
+   "tag_value": "5",
+   "attribute": "id",
+   "attribute_value": "",
+   "operator": "starts_with",
+   "expected": ""
+  },
+  {
+   "tag": "",
+   "tag_value": "5",
+   "attribute": "id",
+   "attribute_value": "",
+   "operator": "greater",
+   "expected": ""
+  },
+  {
+   "tag": "",
+   "tag_value": "5",
+   "attribute": "id",
+   "attribute_value": "",
+   "operator": "smaller",
+   "expected": ""
+  },
+  {
+   "tag": "",
+   "tag_value": "5",
+   "attribute": "id",
+   "attribute_value": "512",
+   "operator": "equals",
+   "expected": ""
+  },
+  {
+   "tag": "",
+   "tag_value": "5",
+   "attribute": "id",
+   "attribute_value": "512",
+   "operator": "contains",
+   "expected": ""
+  },
+  {
+   "tag": "",
+   "tag_value": "5",
+   "attribute": "id",
+   "attribute_value": "512",
+   "operator": "starts_with",
+   "expected": ""
+  },
+  {
+   "tag": "",
+   "tag_value": "5",
+   "attribute": "id",
+   "attribute_value": "512",
+   "operator": "greater",
+   "expected": ""
+  },
+  {
+   "tag": "",
+   "tag_value": "5",
+   "attribute": "id",
+   "attribute_value": "512",
+   "operator": "smaller",
+   "expected": ""
+  },
+  {
+   "tag": "",
+   "tag_value": "5",
+   "attribute": "id",
+   "attribute_value": "x",
+   "operator": "equals",
+   "expected": ""
+  },
+  {
+   "tag": "",
+   "tag_value": "5",
+   "attribute": "id",
+   "attribute_value": "x",
+   "operator": "contains",
+   "expected": ""
+  },
+  {
+   "tag": "",
+   "tag_value": "5",
+   "attribute": "id",
+   "attribute_value": "x",
+   "operator": "starts_with",
+   "expected": ""
+  },
+  {
+   "tag": "",
+   "tag_value": "5",
+   "attribute": "id",
+   "attribute_value": "x",
+   "operator": "greater",
+   "expected": ""
+  },
+  {
+   "tag": "",
+   "tag_value": "5",
+   "attribute": "id",
+   "attribute_value": "x",
+   "operator": "smaller",
+   "expected": ""
+  },
+  {
+   "tag": "field",
+   "tag_value": "",
+   "attribute": "",
+   "attribute_value": "",
+   "operator": "equals",
+   "expected": "//field/text()"
+  },
+  {
+   "tag": "field",
+   "tag_value": "",
+   "attribute": "",
+   "attribute_value": "",
+   "operator": "contains",
+   "expected": "//field/text()"
+  },
+  {
+   "tag": "field",
+   "tag_value": "",
+   "attribute": "",
+   "attribute_value": "",
+   "operator": "starts_with",
+   "expected": "//field/text()"
+  },
+  {
+   "tag": "field",
+   "tag_value": "",
+   "attribute": "",
+   "attribute_value": "",
+   "operator": "greater",
+   "expected": "//field/text()"
+  },
+  {
+   "tag": "field",
+   "tag_value": "",
+   "attribute": "",
+   "attribute_value": "",
+   "operator": "smaller",
+   "expected": "//field/text()"
+  },
+  {
+   "tag": "field",
+   "tag_value": "",
+   "attribute": "",
+   "attribute_value": "512",
+   "operator": "equals",
+   "expected": "//field/text()"
+  },
+  {
+   "tag": "field",
+   "tag_value": "",
+   "attribute": "",
+   "attribute_value": "512",
+   "operator": "contains",
+   "expected": "//field/text()"
+  },
+  {
+   "tag": "field",
+   "tag_value": "",
+   "attribute": "",
+   "attribute_value": "512",
+   "operator": "starts_with",
+   "expected": "//field/text()"
+  },
+  {
+   "tag": "field",
+   "tag_value": "",
+   "attribute": "",
+   "attribute_value": "512",
+   "operator": "greater",
+   "expected": "//field/text()"
+  },
+  {
+   "tag": "field",
+   "tag_value": "",
+   "attribute": "",
+   "attribute_value": "512",
+   "operator": "smaller",
+   "expected": "//field/text()"
+  },
+  {
+   "tag": "field",
+   "tag_value": "",
+   "attribute": "",
+   "attribute_value": "x",
+   "operator": "equals",
+   "expected": "//field/text()"
+  },
+  {
+   "tag": "field",
+   "tag_value": "",
+   "attribute": "",
+   "attribute_value": "x",
+   "operator": "contains",
+   "expected": "//field/text()"
+  },
+  {
+   "tag": "field",
+   "tag_value": "",
+   "attribute": "",
+   "attribute_value": "x",
+   "operator": "starts_with",
+   "expected": "//field/text()"
+  },
+  {
+   "tag": "field",
+   "tag_value": "",
+   "attribute": "",
+   "attribute_value": "x",
+   "operator": "greater",
+   "expected": "//field/text()"
+  },
+  {
+   "tag": "field",
+   "tag_value": "",
+   "attribute": "",
+   "attribute_value": "x",
+   "operator": "smaller",
+   "expected": "//field/text()"
+  },
+  {
+   "tag": "field",
+   "tag_value": "",
+   "attribute": "id",
+   "attribute_value": "",
+   "operator": "equals",
+   "expected": "//field[@id]/@id"
+  },
+  {
+   "tag": "field",
+   "tag_value": "",
+   "attribute": "id",
+   "attribute_value": "",
+   "operator": "contains",
+   "expected": "//field[@id]/@id"
+  },
+  {
+   "tag": "field",
+   "tag_value": "",
+   "attribute": "id",
+   "attribute_value": "",
+   "operator": "starts_with",
+   "expected": "//field[@id]/@id"
+  },
+  {
+   "tag": "field",
+   "tag_value": "",
+   "attribute": "id",
+   "attribute_value": "",
+   "operator": "greater",
+   "expected": "//field[@id]/@id"
+  },
+  {
+   "tag": "field",
+   "tag_value": "",
+   "attribute": "id",
+   "attribute_value": "",
+   "operator": "smaller",
+   "expected": "//field[@id]/@id"
+  },
+  {
+   "tag": "field",
+   "tag_value": "",
+   "attribute": "id",
+   "attribute_value": "512",
+   "operator": "equals",
+   "expected": "//field[@id='512']"
+  },
+  {
+   "tag": "field",
+   "tag_value": "",
+   "attribute": "id",
+   "attribute_value": "512",
+   "operator": "contains",
+   "expected": "//field[contains(@id, '512')]"
+  },
+  {
+   "tag": "field",
+   "tag_value": "",
+   "attribute": "id",
+   "attribute_value": "512",
+   "operator": "starts_with",
+   "expected": "//field[starts-with(@id, '512')]"
+  },
+  {
+   "tag": "field",
+   "tag_value": "",
+   "attribute": "id",
+   "attribute_value": "512",
+   "operator": "greater",
+   "expected": "//field[@id > 512]"
+  },
+  {
+   "tag": "field",
+   "tag_value": "",
+   "attribute": "id",
+   "attribute_value": "512",
+   "operator": "smaller",
+   "expected": "//field[@id < 512]"
+  },
+  {
+   "tag": "field",
+   "tag_value": "",
+   "attribute": "id",
+   "attribute_value": "x",
+   "operator": "equals",
+   "expected": "//field[@id='x']"
+  },
+  {
+   "tag": "field",
+   "tag_value": "",
+   "attribute": "id",
+   "attribute_value": "x",
+   "operator": "contains",
+   "expected": "//field[contains(@id, 'x')]"
+  },
+  {
+   "tag": "field",
+   "tag_value": "",
+   "attribute": "id",
+   "attribute_value": "x",
+   "operator": "starts_with",
+   "expected": "//field[starts-with(@id, 'x')]"
+  },
+  {
+   "tag": "field",
+   "tag_value": "",
+   "attribute": "id",
+   "attribute_value": "x",
+   "operator": "greater",
+   "expected": "//field[@id > x]"
+  },
+  {
+   "tag": "field",
+   "tag_value": "",
+   "attribute": "id",
+   "attribute_value": "x",
+   "operator": "smaller",
+   "expected": "//field[@id < x]"
+  },
+  {
+   "tag": "field",
+   "tag_value": "abc",
+   "attribute": "",
+   "attribute_value": "",
+   "operator": "equals",
+   "expected": "//field[text()='abc']"
+  },
+  {
+   "tag": "field",
+   "tag_value": "abc",
+   "attribute": "",
+   "attribute_value": "",
+   "operator": "contains",
+   "expected": "//field[contains(text(), 'abc')]"
+  },
+  {
+   "tag": "field",
+   "tag_value": "abc",
+   "attribute": "",
+   "attribute_value": "",
+   "operator": "starts_with",
+   "expected": "//field[starts-with(text(), 'abc')]"
+  },
+  {
+   "tag": "field",
+   "tag_value": "abc",
+   "attribute": "",
+   "attribute_value": "",
+   "operator": "greater",
+   "expected": "//field[text() > abc]"
+  },
+  {
+   "tag": "field",
+   "tag_value": "abc",
+   "attribute": "",
+   "attribute_value": "",
+   "operator": "smaller",
+   "expected": "//field[text() < abc]"
+  },
+  {
+   "tag": "field",
+   "tag_value": "abc",
+   "attribute": "",
+   "attribute_value": "512",
+   "operator": "equals",
+   "expected": "//field[text()='abc']"
+  },
+  {
+   "tag": "field",
+   "tag_value": "abc",
+   "attribute": "",
+   "attribute_value": "512",
+   "operator": "contains",
+   "expected": "//field[contains(text(), 'abc')]"
+  },
+  {
+   "tag": "field",
+   "tag_value": "abc",
+   "attribute": "",
+   "attribute_value": "512",
+   "operator": "starts_with",
+   "expected": "//field[starts-with(text(), 'abc')]"
+  },
+  {
+   "tag": "field",
+   "tag_value": "abc",
+   "attribute": "",
+   "attribute_value": "512",
+   "operator": "greater",
+   "expected": "//field[text() > abc]"
+  },
+  {
+   "tag": "field",
+   "tag_value": "abc",
+   "attribute": "",
+   "attribute_value": "512",
+   "operator": "smaller",
+   "expected": "//field[text() < abc]"
+  },
+  {
+   "tag": "field",
+   "tag_value": "abc",
+   "attribute": "",
+   "attribute_value": "x",
+   "operator": "equals",
+   "expected": "//field[text()='abc']"
+  },
+  {
+   "tag": "field",
+   "tag_value": "abc",
+   "attribute": "",
+   "attribute_value": "x",
+   "operator": "contains",
+   "expected": "//field[contains(text(), 'abc')]"
+  },
+  {
+   "tag": "field",
+   "tag_value": "abc",
+   "attribute": "",
+   "attribute_value": "x",
+   "operator": "starts_with",
+   "expected": "//field[starts-with(text(), 'abc')]"
+  },
+  {
+   "tag": "field",
+   "tag_value": "abc",
+   "attribute": "",
+   "attribute_value": "x",
+   "operator": "greater",
+   "expected": "//field[text() > abc]"
+  },
+  {
+   "tag": "field",
+   "tag_value": "abc",
+   "attribute": "",
+   "attribute_value": "x",
+   "operator": "smaller",
+   "expected": "//field[text() < abc]"
+  },
+  {
+   "tag": "field",
+   "tag_value": "abc",
+   "attribute": "id",
+   "attribute_value": "",
+   "operator": "equals",
+   "expected": "//field[text()='abc' and @id]"
+  },
+  {
+   "tag": "field",
+   "tag_value": "abc",
+   "attribute": "id",
+   "attribute_value": "",
+   "operator": "contains",
+   "expected": "//field[contains(text(), 'abc') and @id]"
+  },
+  {
+   "tag": "field",
+   "tag_value": "abc",
+   "attribute": "id",
+   "attribute_value": "",
+   "operator": "starts_with",
+   "expected": "//field[starts-with(text(), 'abc') and @id]"
+  },
+  {
+   "tag": "field",
+   "tag_value": "abc",
+   "attribute": "id",
+   "attribute_value": "",
+   "operator": "greater",
+   "expected": "//field[text() > abc and @id]"
+  },
+  {
+   "tag": "field",
+   "tag_value": "abc",
+   "attribute": "id",
+   "attribute_value": "",
+   "operator": "smaller",
+   "expected": "//field[text() < abc and @id]"
+  },
+  {
+   "tag": "field",
+   "tag_value": "abc",
+   "attribute": "id",
+   "attribute_value": "512",
+   "operator": "equals",
+   "expected": "//field[text()='abc' and @id='512']"
+  },
+  {
+   "tag": "field",
+   "tag_value": "abc",
+   "attribute": "id",
+   "attribute_value": "512",
+   "operator": "contains",
+   "expected": "//field[contains(text(), 'abc') and contains(@id, '512')]"
+  },
+  {
+   "tag": "field",
+   "tag_value": "abc",
+   "attribute": "id",
+   "attribute_value": "512",
+   "operator": "starts_with",
+   "expected": "//field[starts-with(text(), 'abc') and starts-with(@id, '512')]"
+  },
+  {
+   "tag": "field",
+   "tag_value": "abc",
+   "attribute": "id",
+   "attribute_value": "512",
+   "operator": "greater",
+   "expected": "//field[text() > abc and @id > 512]"
+  },
+  {
+   "tag": "field",
+   "tag_value": "abc",
+   "attribute": "id",
+   "attribute_value": "512",
+   "operator": "smaller",
+   "expected": "//field[text() < abc and @id < 512]"
+  },
+  {
+   "tag": "field",
+   "tag_value": "abc",
+   "attribute": "id",
+   "attribute_value": "x",
+   "operator": "equals",
+   "expected": "//field[text()='abc' and @id='x']"
+  },
+  {
+   "tag": "field",
+   "tag_value": "abc",
+   "attribute": "id",
+   "attribute_value": "x",
+   "operator": "contains",
+   "expected": "//field[contains(text(), 'abc') and contains(@id, 'x')]"
+  },
+  {
+   "tag": "field",
+   "tag_value": "abc",
+   "attribute": "id",
+   "attribute_value": "x",
+   "operator": "starts_with",
+   "expected": "//field[starts-with(text(), 'abc') and starts-with(@id, 'x')]"
+  },
+  {
+   "tag": "field",
+   "tag_value": "abc",
+   "attribute": "id",
+   "attribute_value": "x",
+   "operator": "greater",
+   "expected": "//field[text() > abc and @id > x]"
+  },
+  {
+   "tag": "field",
+   "tag_value": "abc",
+   "attribute": "id",
+   "attribute_value": "x",
+   "operator": "smaller",
+   "expected": "//field[text() < abc and @id < x]"
+  },
+  {
+   "tag": "field",
+   "tag_value": "5",
+   "attribute": "",
+   "attribute_value": "",
+   "operator": "equals",
+   "expected": "//field[text()='5']"
+  },
+  {
+   "tag": "field",
+   "tag_value": "5",
+   "attribute": "",
+   "attribute_value": "",
+   "operator": "contains",
+   "expected": "//field[contains(text(), '5')]"
+  },
+  {
+   "tag": "field",
+   "tag_value": "5",
+   "attribute": "",
+   "attribute_value": "",
+   "operator": "starts_with",
+   "expected": "//field[starts-with(text(), '5')]"
+  },
+  {
+   "tag": "field",
+   "tag_value": "5",
+   "attribute": "",
+   "attribute_value": "",
+   "operator": "greater",
+   "expected": "//field[text() > 5]"
+  },
+  {
+   "tag": "field",
+   "tag_value": "5",
+   "attribute": "",
+   "attribute_value": "",
+   "operator": "smaller",
+   "expected": "//field[text() < 5]"
+  },
+  {
+   "tag": "field",
+   "tag_value": "5",
+   "attribute": "",
+   "attribute_value": "512",
+   "operator": "equals",
+   "expected": "//field[text()='5']"
+  },
+  {
+   "tag": "field",
+   "tag_value": "5",
+   "attribute": "",
+   "attribute_value": "512",
+   "operator": "contains",
+   "expected": "//field[contains(text(), '5')]"
+  },
+  {
+   "tag": "field",
+   "tag_value": "5",
+   "attribute": "",
+   "attribute_value": "512",
+   "operator": "starts_with",
+   "expected": "//field[starts-with(text(), '5')]"
+  },
+  {
+   "tag": "field",
+   "tag_value": "5",
+   "attribute": "",
+   "attribute_value": "512",
+   "operator": "greater",
+   "expected": "//field[text() > 5]"
+  },
+  {
+   "tag": "field",
+   "tag_value": "5",
+   "attribute": "",
+   "attribute_value": "512",
+   "operator": "smaller",
+   "expected": "//field[text() < 5]"
+  },
+  {
+   "tag": "field",
+   "tag_value": "5",
+   "attribute": "",
+   "attribute_value": "x",
+   "operator": "equals",
+   "expected": "//field[text()='5']"
+  },
+  {
+   "tag": "field",
+   "tag_value": "5",
+   "attribute": "",
+   "attribute_value": "x",
+   "operator": "contains",
+   "expected": "//field[contains(text(), '5')]"
+  },
+  {
+   "tag": "field",
+   "tag_value": "5",
+   "attribute": "",
+   "attribute_value": "x",
+   "operator": "starts_with",
+   "expected": "//field[starts-with(text(), '5')]"
+  },
+  {
+   "tag": "field",
+   "tag_value": "5",
+   "attribute": "",
+   "attribute_value": "x",
+   "operator": "greater",
+   "expected": "//field[text() > 5]"
+  },
+  {
+   "tag": "field",
+   "tag_value": "5",
+   "attribute": "",
+   "attribute_value": "x",
+   "operator": "smaller",
+   "expected": "//field[text() < 5]"
+  },
+  {
+   "tag": "field",
+   "tag_value": "5",
+   "attribute": "id",
+   "attribute_value": "",
+   "operator": "equals",
+   "expected": "//field[text()='5' and @id]"
+  },
+  {
+   "tag": "field",
+   "tag_value": "5",
+   "attribute": "id",
+   "attribute_value": "",
+   "operator": "contains",
+   "expected": "//field[contains(text(), '5') and @id]"
+  },
+  {
+   "tag": "field",
+   "tag_value": "5",
+   "attribute": "id",
+   "attribute_value": "",
+   "operator": "starts_with",
+   "expected": "//field[starts-with(text(), '5') and @id]"
+  },
+  {
+   "tag": "field",
+   "tag_value": "5",
+   "attribute": "id",
+   "attribute_value": "",
+   "operator": "greater",
+   "expected": "//field[text() > 5 and @id]"
+  },
+  {
+   "tag": "field",
+   "tag_value": "5",
+   "attribute": "id",
+   "attribute_value": "",
+   "operator": "smaller",
+   "expected": "//field[text() < 5 and @id]"
+  },
+  {
+   "tag": "field",
+   "tag_value": "5",
+   "attribute": "id",
+   "attribute_value": "512",
+   "operator": "equals",
+   "expected": "//field[text()='5' and @id='512']"
+  },
+  {
+   "tag": "field",
+   "tag_value": "5",
+   "attribute": "id",
+   "attribute_value": "512",
+   "operator": "contains",
+   "expected": "//field[contains(text(), '5') and contains(@id, '512')]"
+  },
+  {
+   "tag": "field",
+   "tag_value": "5",
+   "attribute": "id",
+   "attribute_value": "512",
+   "operator": "starts_with",
+   "expected": "//field[starts-with(text(), '5') and starts-with(@id, '512')]"
+  },
+  {
+   "tag": "field",
+   "tag_value": "5",
+   "attribute": "id",
+   "attribute_value": "512",
+   "operator": "greater",
+   "expected": "//field[text() > 5 and @id > 512]"
+  },
+  {
+   "tag": "field",
+   "tag_value": "5",
+   "attribute": "id",
+   "attribute_value": "512",
+   "operator": "smaller",
+   "expected": "//field[text() < 5 and @id < 512]"
+  },
+  {
+   "tag": "field",
+   "tag_value": "5",
+   "attribute": "id",
+   "attribute_value": "x",
+   "operator": "equals",
+   "expected": "//field[text()='5' and @id='x']"
+  },
+  {
+   "tag": "field",
+   "tag_value": "5",
+   "attribute": "id",
+   "attribute_value": "x",
+   "operator": "contains",
+   "expected": "//field[contains(text(), '5') and contains(@id, 'x')]"
+  },
+  {
+   "tag": "field",
+   "tag_value": "5",
+   "attribute": "id",
+   "attribute_value": "x",
+   "operator": "starts_with",
+   "expected": "//field[starts-with(text(), '5') and starts-with(@id, 'x')]"
+  },
+  {
+   "tag": "field",
+   "tag_value": "5",
+   "attribute": "id",
+   "attribute_value": "x",
+   "operator": "greater",
+   "expected": "//field[text() > 5 and @id > x]"
+  },
+  {
+   "tag": "field",
+   "tag_value": "5",
+   "attribute": "id",
+   "attribute_value": "x",
+   "operator": "smaller",
+   "expected": "//field[text() < 5 and @id < x]"
+  }
+ ],
+ "split": [
+  {
+   "input": "//a, //b",
+   "expected": [
+    "//a",
+    "//b"
+   ]
+  },
+  {
+   "input": "//a[@x='1,2'], //b",
+   "expected": [
+    "//a[@x='1,2']",
+    "//b"
+   ]
+  },
+  {
+   "input": "concat(//a, //b)",
+   "expected": [
+    "concat(//a, //b)"
+   ]
+  },
+  {
+   "input": "//a[contains(., \"q,w\")],//c",
+   "expected": [
+    "//a[contains(., \"q,w\")]",
+    "//c"
+   ]
+  },
+  {
+   "input": " //a ,, //b ",
+   "expected": [
+    "//a",
+    "//b"
+   ]
+  },
+  {
+   "input": "//a",
+   "expected": [
+    "//a"
+   ]
+  }
+ ]
+}

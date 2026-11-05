@@ -26,7 +26,7 @@
    <string>XMLuvation</string>
   </property>
   <property name="windowIcon">
-   <iconset resource="../resources/qrc/xmluvation_resources.qrc">
+   <iconset resource="../qrc/xmluvation_resources.qrc">
     <normaloff>:/icons/xml_256px.ico</normaloff>:/icons/xml_256px.ico</iconset>
   </property>
   <property name="autoFillBackground">
@@ -1438,7 +1438,7 @@
                 <number>6</number>
                </property>
                <item>
-                <widget class="QTextEdit" name="text_edit_xml_output">
+                <widget class="QPlainTextEdit" name="text_edit_xml_output">
                  <property name="sizePolicy">
                   <sizepolicy hsizetype="Expanding" vsizetype="Expanding">
                    <horstretch>0</horstretch>
@@ -2833,7 +2833,7 @@ Supported output file types: Excel, Markdown, HTML and JSON</string>
   </action>
  </widget>
  <resources>
-  <include location="../resources/qrc/xmluvation_resources.qrc"/>
+  <include location="../qrc/xmluvation_resources.qrc"/>
  </resources>
  <connections>
   <connection>

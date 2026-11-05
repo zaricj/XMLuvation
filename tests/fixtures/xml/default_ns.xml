@@ -1,0 +1,5 @@
+<?xml version="1.0"?>
+<catalog xmlns="urn:books" xmlns:x="urn:extra">
+  <book id="bk1"><title>Alpha</title><x:note>n1</x:note></book>
+  <book id="bk2"><title>Beta</title></book>
+</catalog>

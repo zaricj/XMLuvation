@@ -17,7 +17,7 @@
    <string>PreBuilt XPaths Manager Widget</string>
   </property>
   <property name="windowIcon">
-   <iconset resource="../resources/qrc/xmluvation_resources.qrc">
+   <iconset resource="../qrc/xmluvation_resources.qrc">
     <normaloff>:/icons/xml_256px.ico</normaloff>:/icons/xml_256px.ico</iconset>
   </property>
   <property name="toolTip">
@@ -372,7 +372,7 @@
   </layout>
  </widget>
  <resources>
-  <include location="../resources/qrc/xmluvation_resources.qrc"/>
+  <include location="../qrc/xmluvation_resources.qrc"/>
  </resources>
  <connections/>
 </ui>

@@ -20,5 +20,11 @@
     <file>../images/Geis_no_bg.png</file>
     <file>../images/Geis_no_bg_60x60.png</file>
     <file>../images/light.png</file>
+    <file>../styles/dark_theme.qss</file>
+    <file>../styles/light_theme.qss</file>
+    <file>../styles/other/dark_theme_yellow.qss</file>
+    <file>../styles/other/dark_theme_peach.qss</file>
+    <file>../styles/other/dark_theme_qlementine.qss</file>
+    <file>../styles/other/dark_theme_metallic_spaceship.qss</file>
   </qresource>
 </RCC>

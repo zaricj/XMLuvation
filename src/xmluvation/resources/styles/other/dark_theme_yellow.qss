@@ -49,7 +49,7 @@ QPushButton:disabled {
 
 QLineEdit,
 QComboBox,
-QTextEdit {
+QTextEdit, QPlainTextEdit {
 	background-color: #313338;
 	border: 1px solid #4a4a4a;
 	padding: 2px 3px;

@@ -5,15 +5,22 @@
     "version": "0.2.0",
     "configurations": [
         {
-            "name": "Python Debugger: main.py",
+            "name": "XMLuvation (python -m xmluvation)",
             "type": "debugpy",
             "request": "launch",
-            "cwd":"${workspaceFolder}/src",
-            "program": "main.py",
+            "module": "xmluvation",
+            "cwd": "${workspaceFolder}",
+            "console": "integratedTerminal"
+        },
+        {
+            "name": "pytest",
+            "type": "debugpy",
+            "request": "launch",
+            "module": "pytest",
+            "args": ["-q"],
+            "cwd": "${workspaceFolder}",
             "console": "integratedTerminal",
-            "env": {
-                "PYTHONPATH": "${workspaceFolder}/src"
-            }
+            "env": { "QT_QPA_PLATFORM": "offscreen" }
         }
     ]
 }
