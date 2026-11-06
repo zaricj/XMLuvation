@@ -1,0 +1,5 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<datawizardprofile name="Profile_Delta">
+  <id>8</id>
+  <active>true
+  <dataproperties><node name="Half"><field name="FX"><filter id="513" description="Recovered"/></field></node>

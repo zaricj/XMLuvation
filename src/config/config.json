@@ -107,12 +107,50 @@
                 "Ist Aktiv?",
                 "Group"
             ]
+        },
+        "All AutoNumber Macros": {
+            "xpath_expression": [
+                "//filter[@id='-1440836145' or @id='-1757359960']/@description",
+                "//filter[@id='-1440836145' or @id='-1757359960']/a/@fieldconstant",
+                "//filter[@id='-1440836145' or @id='-1757359960']/b/@fieldconstant",
+                "//filter[@id='-1440836145' or @id='-1757359960']/c/@fieldconstant",
+                "//filter[@id='-1440836145' or @id='-1757359960']/d/@fieldconstant"
+            ],
+            "csv_header": [
+                "filter[@id='-1440836145' or @id='-1757359960'] @description",
+                "a @fieldconstant",
+                "b @fieldconstant",
+                "c @fieldconstant",
+                "d @fieldconstant"
+            ]
+        },
+        "GetAutoNumberSystemWide": {
+            "xpath_expression": [
+                "//filter[@id='145' or @id='128']/@description",
+                "//filter[@id='145' or @id='128']/a/@type\n",
+                "//filter[@id='145' or @id='128']/a/@fieldconstant\n",
+                "//filter[@id='145' or @id='128']/b/@fieldconstant\n",
+                "//filter[@id='145']/c/@fieldconstant\n",
+                "//filter[@id='145']/d/@fieldconstant\n",
+                "//filter[@id='128' or @id='145']/ancestor::field[1]/@name\n",
+                "//filter[@id='128' or @id='145']/ancestor::node[1]/@name\n",
+                "//active/text()\n"
+            ],
+            "csv_header": [
+                "Funktion Name",
+                "Funktion Wert Typ",
+                "Parameter Wert a",
+                "Parameter Wert b",
+                "Parameter Wert c",
+                "Parameter Wert d",
+                "Feld Name",
+                "Knoten Name",
+                "Profil Aktiv?"
+            ]
         }
     },
     "custom_paths": {
-        "NESISNCP01": "C:\\Users\\ZaricJ\\Downloads\\LOBSTER\\Lobster Profile Export\\ProfileExportNCEcht",
-        "NESISNCT01": "C:\\Users\\ZaricJ\\Downloads\\LOBSTER\\Lobster Profile Export\\ProfileExportNCTest",
-        "NESIST02": "C:\\Users\\ZaricJ\\Desktop\\LobsterXMLExport\\NESIST02_ProfileXMLExport_No_NonExistentProfiles",
-        "NESIS002": "C:/Users/ZaricJ/Downloads/Lobster Profile Export/ProfileExportEcht"
+        "NESIST02": "C:\\Users\\ZaricJ\\Documents\\LobsterXMLExport\\TEST_NeuProfileXMLExport",
+        "NESIS002": "C:\\Users\\ZaricJ\\Documents\\LobsterXMLExport\\PROD_NeuProfileXMLExport"
     }
 }

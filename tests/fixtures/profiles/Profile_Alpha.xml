@@ -1,0 +1,35 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!-- Lobster-like profile export -->
+<datawizardprofile name="Profile_Alpha">
+  <id>101</id>
+  <active>true</active>
+  <path_of_group>Group/Alpha</path_of_group>
+  <integrationsettings>
+    <transactionparams>
+      <parameter name="p1" value="./conf/alpha.properties"/>
+      <parameter name="p2" value="static"/>
+    </transactionparams>
+  </integrationsettings>
+  <dataproperties>
+    <conf_preparser>./conf/pre.xml</conf_preparser>
+    <structuredefinition>
+      <outputtree>
+        <node name="N1">
+          <field name="F1"><filter id="512" description="Upper filter"><a fieldconstant="./conf/x.txt"/></filter></field>
+          <field name="F2"/>
+          <field name="F3"><filter id="10" description="Low filter"/></field>
+          <node name="N1a"><field name="F4"><filter id="700" description="Deep"/></field></node>
+        </node>
+        <node name="N2"><filter id="600" description="Node filter"/></node>
+      </outputtree>
+    </structuredefinition>
+  </dataproperties>
+  <responsesettings>
+    <responseunits>
+      <unit_file name="U1"><description>First unit</description></unit_file>
+      <unit_file name="U2"/>
+      <unit_file name="U3"><description>Third
+unit</description></unit_file>
+    </responseunits>
+  </responsesettings>
+</datawizardprofile>

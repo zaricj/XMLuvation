@@ -1,0 +1,8 @@
+Filename,Fields with filter Match Count,Descriptions
+Profile_Alpha,3,Upper filter
+Profile_Alpha,,Low filter
+Profile_Alpha,,Deep
+Profile_Alpha,,Node filter
+Profile_Beta,2,Prüfung & Test
+Profile_Beta,,"Say ""hi"""
+Profile_Delta_Broken,1,Recovered

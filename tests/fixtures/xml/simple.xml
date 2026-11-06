@@ -1,0 +1,8 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<library>
+  <!-- comment -->
+  <book id="b1" lang="en"><title>XML Basics</title><author>Smith</author></book>
+  <book id="b2" lang="de"><title>Größe</title><author>Müller</author></book>
+  <book id="b3"><title>Mixed <b>bold</b> tail</title></book>
+  <empty/>
+</library>
