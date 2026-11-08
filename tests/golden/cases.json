@@ -1,0 +1,55 @@
+{
+    "export": {
+        "all_filters": {
+            "xpaths": [
+                "//field/filter/@id",
+                "//field/filter/@description",
+                "//field[filter]/@name",
+                "//node[filter]/@name"
+            ],
+            "headers": ["Funktion ID", "Funktion Beschreibung", "Feld Name", "Knoten Name"]
+        },
+        "anchored_units": {
+            "xpaths": [
+                "/datawizardprofile/responsesettings/responseunits/unit_file/@name",
+                "/datawizardprofile/responsesettings/responseunits/unit_file/description/text()"
+            ],
+            "headers": ["Unit", "Description"]
+        },
+        "profile_overview": {
+            "xpaths": [
+                "./datawizardprofile[@name]/@name",
+                "./datawizardprofile/id/text()",
+                "./datawizardprofile/active/text()",
+                "./datawizardprofile/path_of_group/text()"
+            ],
+            "headers": ["Profilname", "Profil ID", "Ist Aktiv?", "Group"]
+        },
+        "element_counts": {
+            "xpaths": [
+                "//field[filter]",
+                "//filter/@description"
+            ],
+            "headers": ["Fields with filter", "Descriptions"]
+        },
+        "conf_usage": {
+            "xpaths": [
+                "/datawizardprofile/integrationsettings/transactionparams/parameter[starts-with(@value, './conf')]/@value",
+                "/datawizardprofile/dataproperties/conf_preparser[starts-with(text(), './conf')]/text()",
+                "//filter/*[starts-with(@fieldconstant, './conf')]/ancestor::*[@name][1]/@name",
+                "//filter/*[starts-with(@fieldconstant, './conf')]/@fieldconstant"
+            ],
+            "headers": ["IU", "Preparser", "Feld oder Knoten", "Conf Wert"]
+        }
+    },
+    "anchor": {
+        "units": [
+            "/datawizardprofile/responsesettings/responseunits/unit_file/@name",
+            "/datawizardprofile/responsesettings/responseunits/unit_file/description/text()"
+        ],
+        "with_predicate": ["//a[@x]/@y", "//a/@z"],
+        "single": ["/a/b/@c"],
+        "no_common": ["/a/@x", "/b/@y"],
+        "relative_dot": ["./r/x/text()", "./r/y/@z"]
+    }
+}

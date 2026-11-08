@@ -1,0 +1,19 @@
+{
+  "units": [
+    "/datawizardprofile/responsesettings/responseunits/unit_file",
+    {
+      "/datawizardprofile/responsesettings/responseunits/unit_file/@name": "@name",
+      "/datawizardprofile/responsesettings/responseunits/unit_file/description/text()": "description/text()"
+    }
+  ],
+  "with_predicate": null,
+  "single": null,
+  "no_common": null,
+  "relative_dot": [
+    "./r",
+    {
+      "./r/x/text()": "x/text()",
+      "./r/y/@z": "y/@z"
+    }
+  ]
+}

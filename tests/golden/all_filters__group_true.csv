@@ -1,0 +1,4 @@
+Filename,Funktion ID,Funktion Beschreibung,Feld Name,Knoten Name
+Profile_Alpha,512; 10; 700,Upper filter; Low filter; Deep,F1; F3; F4,N2
+Profile_Beta,999; 512,"Prüfung & Test; Say ""hi""",Feld_ä; Feld_b,
+Profile_Delta_Broken,513,Recovered,FX,

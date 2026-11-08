@@ -1,0 +1,22 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<?processing instruction?>
+<datawizardprofile name="Profil_Beta_Ümlaut">
+  <id>0042</id>
+  <active>false</active>
+  <path_of_group>Gruppe/Größe</path_of_group>
+  <dataproperties>
+    <structuredefinition>
+      <outputtree>
+        <node name="Wurzel">
+          <field name="Feld_ä"><filter id="999" description="Prüfung &amp; Test"><a fieldconstant="O'Brien"/></filter></field>
+          <field name="Feld_b"><filter id="512" description='Say "hi"'/></field>
+        </node>
+      </outputtree>
+    </structuredefinition>
+  </dataproperties>
+  <responsesettings>
+    <responseunits>
+      <unit_file name="B1"><description>Only one</description></unit_file>
+    </responseunits>
+  </responsesettings>
+</datawizardprofile>
