@@ -4,6 +4,8 @@ from __future__ import annotations
 
 import codecs
 import csv
+import io
+import itertools
 import os
 import tempfile
 from collections.abc import Callable, Iterator, Sequence
@@ -22,22 +24,65 @@ _DECODE_CHUNK = 1 << 20
 TABLE_CHUNK_ROWS = 100_000
 
 
+_SNIFF_SAMPLE_CHARS = 64 * 1024
+_SNIFF_MAX_RECORDS = 50
+
+DELIMITER_NAMES = {",": "comma", ";": "semicolon", "\t": "tab", "|": "pipe"}
+
+
+def describe_delimiter(delimiter: str) -> str:
+    """Readable form for messages, e.g. ``'\\t' (tab)``."""
+    name = DELIMITER_NAMES.get(delimiter)
+    shown = "\\t" if delimiter == "\t" else delimiter
+    return f"'{shown}' ({name})" if name else f"'{shown}'"
+
+
+def _field_counts(sample: str, delimiter: str, truncated: bool) -> list[int]:
+    """Fields per record when ``sample`` is parsed quote-aware with ``delimiter``."""
+    try:
+        counts = [
+            len(row)
+            for row in itertools.islice(
+                csv.reader(io.StringIO(sample), delimiter=delimiter), _SNIFF_MAX_RECORDS + 1
+            )
+            if row
+        ]
+    except csv.Error:
+        return []
+    if truncated and len(counts) > 1:
+        counts.pop()  # the last record may be cut off mid-way
+    return counts[:_SNIFF_MAX_RECORDS]
+
+
 def detect_delimiter(path: Path) -> str:
-    """Sniff the delimiter from the first 4 KiB, falling back to the most frequent candidate."""
+    """Detect the delimiter from the start of the file.
+
+    Each candidate is tried with a quote-aware parse: the winner splits the header into
+    at least two columns and gives the most records with the header's column count.
+    This keeps delimiters inside quoted cells (``||`` in SQL text, multi-line values)
+    from winning, which line-based sniffing (``csv.Sniffer``) gets wrong. The sniffer
+    only breaks ties.
+    """
     with path.open(newline="", encoding="utf-8-sig", errors="replace") as handle:
-        sample = handle.read(4096)
+        sample = handle.read(_SNIFF_SAMPLE_CHARS)
+        truncated = bool(handle.read(1))
     if not sample.strip():
         raise ValidationError("The selected CSV file is empty.", title="Delimiter Detection Error")
     try:
-        return csv.Sniffer().sniff(sample, delimiters="".join(CANDIDATE_DELIMITERS)).delimiter
+        sniffed = csv.Sniffer().sniff(sample, delimiters="".join(CANDIDATE_DELIMITERS)).delimiter
     except csv.Error:
-        lines = [line for line in sample.splitlines() if line.strip()][:10]
-        ranked: list[tuple[int, int, str]] = []
-        for delimiter in CANDIDATE_DELIMITERS:
-            counts = [c for c in (line.count(delimiter) for line in lines) if c > 0]
-            if counts:
-                ranked.append((len(counts), sum(counts), delimiter))
-        return max(ranked)[2] if ranked else ","
+        sniffed = None
+
+    ranked: list[tuple[float, bool, int, str]] = []
+    for delimiter in CANDIDATE_DELIMITERS:
+        counts = _field_counts(sample, delimiter, truncated)
+        if not counts or counts[0] < 2:
+            continue
+        consistency = sum(1 for c in counts if c == counts[0]) / len(counts)
+        ranked.append((consistency, delimiter == sniffed, counts[0], delimiter))
+    if ranked:
+        return max(ranked)[3]
+    return sniffed or ","
 
 
 def _has_bom(path: Path) -> bool:

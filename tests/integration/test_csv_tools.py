@@ -7,7 +7,12 @@ from pathlib import Path
 import pytest
 
 from xmluvation.application.cancellation import NullReporter
-from xmluvation.application.csv_tools import convert_csv, drop_csv_column, read_csv_headers
+from xmluvation.application.csv_tools import (
+    convert_csv,
+    drop_csv_column,
+    parse_delimiter,
+    read_csv_headers,
+)
 from xmluvation.domain.errors import ValidationError
 from xmluvation.infrastructure.csv_io import detect_delimiter
 from xmluvation.infrastructure.tabular_export import excel_table_name
@@ -91,3 +96,42 @@ def test_table_load_reads_text_in_chunks_and_can_be_cancelled(tmp_path: Path, mo
     token.cancel()
     with pytest.raises(Cancelled):
         load_csv_table(path, token)
+
+
+def test_detect_ignores_delimiters_inside_quoted_multiline_sql(tmp_path: Path) -> None:
+    # csv.Sniffer picks "|" here: every SQL line has "||" and no comma.
+    sql = "SELECT a||b||c\n  FROM tab t\n WHERE t.x = 1 || 2\n   AND y = 3"
+    text = "ID,Statement\n" + "".join(f'{i},"{sql}"\n' for i in range(30))
+    assert detect_delimiter(_write(tmp_path / "sql.csv", text)) == ","
+
+
+def test_detect_semicolon_with_decimal_commas(tmp_path: Path) -> None:
+    assert detect_delimiter(_write(tmp_path / "d.csv", "a;b\n1,5;2,25\n3,0;4,1\n")) == ";"
+
+
+def test_detect_single_column_defaults_to_comma(tmp_path: Path) -> None:
+    assert detect_delimiter(_write(tmp_path / "one.csv", "Name\nA\nB\n")) == ","
+
+
+@pytest.mark.parametrize(
+    ("text", "expected"),
+    [(",", ","), (" ; ", ";"), ("|", "|"), ("Tab", "\t"), ("\\t", "\t"), ("\t", "\t")],
+)
+def test_parse_delimiter(text: str, expected: str) -> None:
+    assert parse_delimiter(text) == expected
+
+
+@pytest.mark.parametrize("text", ["", ",,", '"', "abc"])
+def test_parse_delimiter_rejects_invalid(text: str) -> None:
+    with pytest.raises(ValidationError, match="not a valid delimiter"):
+        parse_delimiter(text)
+
+
+def test_convert_with_manual_delimiter_overrides_detection(tmp_path: Path) -> None:
+    src = _write(tmp_path / "m.csv", 'A|B\n"x,y"|1\n"z,w"|2\n')
+    result = convert_csv(str(src), "JSON", False, NullReporter(), delimiter_text="|")
+    assert result.delimiter == "|"
+    assert json.loads(result.output.read_text(encoding="utf-8")) == [
+        {"A": "x,y", "B": 1},
+        {"A": "z,w", "B": 2},
+    ]

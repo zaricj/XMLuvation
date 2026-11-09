@@ -301,6 +301,12 @@ QPushButton[role="flat"]:hover {
     background-color: rgba(59, 91, 219, 0.12);
 }
 
+QPushButton[role="flat"]:disabled {
+    background: transparent;
+    border-color: transparent;
+    color: #a0a6b1;
+}
+
 /* ---------------------------------------------------------------- inputs */
 
 QLineEdit, QComboBox, QSpinBox {
@@ -325,7 +331,7 @@ QLineEdit:read-only {
     color: #5c6370;
 }
 
-QLineEdit:disabled, QComboBox:disabled {
+QLineEdit:disabled, QComboBox:disabled, QSpinBox:disabled {
     background-color: #eef0f3;
     color: #a0a6b1;
     border-color: #dde1e8;

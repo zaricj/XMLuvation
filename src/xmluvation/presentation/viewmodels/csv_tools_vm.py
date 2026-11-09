@@ -30,10 +30,17 @@ class CsvToolsViewModel(ViewModel):
 
     # -- conversion ---------------------------------------------------------------------
 
-    def convert(self, csv_path: str, output_type: str, write_index: bool) -> None:
+    def convert(
+        self,
+        csv_path: str,
+        output_type: str,
+        write_index: bool,
+        delimiter: str | None = None,
+    ) -> None:
+        """``delimiter`` (as typed by the user) overrides detection; ``None`` detects it."""
         self.conversion_running_changed.emit(True)
         self._runner.start(
-            lambda ctx: convert_csv(csv_path, output_type, write_index, ctx),
+            lambda ctx: convert_csv(csv_path, output_type, write_index, ctx, delimiter),
             on_success=self._converted,
             on_error=lambda e: self.report_error(e, "Conversion Error"),
             on_message=self.log_appended.emit,

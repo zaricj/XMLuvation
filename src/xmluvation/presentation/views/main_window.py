@@ -45,7 +45,9 @@ from ..viewmodels.presets_vm import PresetsViewModel
 from ..viewmodels.settings_vm import MAX_PREVIEW_LIMIT_MB, SettingsViewModel
 from ..viewmodels.table_viewer_vm import TableViewerViewModel
 from ..viewmodels.xml_inspector_vm import XmlInspectorViewModel
+from ..viewmodels.xml_tools_vm import XmlToolsViewModel
 from ..viewmodels.xpath_workspace_vm import XPathWorkspaceViewModel
+from ..widgets.code_icon import code_icon
 from ..widgets.steady_icon import steady_icon
 from ..widgets.table_icon import table_icon
 from .common import (
@@ -61,12 +63,13 @@ from .csv_transforms_view import CsvTransformsView
 from .exit_dialog import ExitDialog
 from .paths_manager import CustomPathsManager
 from .presets_manager import PreBuiltXPathsManager
+from .xml_tools_view import XmlToolsView
 
 XPATH_HELP_URL = "https://www.w3schools.com/xml/xpath_syntax.asp"
 
 # Sidebar pages (order of list_widget_navigation / stacked_pages) and the output tab each uses.
-PAGE_EXTRACT, PAGE_CSV_TOOLS, PAGE_TABLE = range(3)
-_OUTPUT_TAB_FOR_PAGE = {PAGE_EXTRACT: 0, PAGE_CSV_TOOLS: 1}
+PAGE_EXTRACT, PAGE_XML_TOOLS, PAGE_CSV_TOOLS, PAGE_TABLE = range(4)
+_OUTPUT_TAB_FOR_PAGE = {PAGE_EXTRACT: 0, PAGE_CSV_TOOLS: 1, PAGE_XML_TOOLS: 2}
 
 _GROUP_ON_HELP = """
         | Header 1 | Header 2      |
@@ -102,6 +105,7 @@ class MainViewModels:
     export: ExportViewModel
     csv_tools: CsvToolsViewModel
     transforms: CsvTransformsViewModel
+    xml_tools: XmlToolsViewModel
     table: TableViewerViewModel
     presets: PresetsViewModel
     new_presets_vm: Callable[[], PresetsViewModel]
@@ -158,6 +162,7 @@ class MainWindow(QMainWindow):
             ui.text_edit_xml_output,
             ui.text_edit_program_output,
             ui.text_edit_csv_output,
+            ui.text_edit_xml_tools_output,
         ):
             widget.setContextMenuPolicy(Qt.ContextMenuPolicy.CustomContextMenu)
         ui.table_csv_data.setModel(self.vms.table.model)
@@ -176,11 +181,12 @@ class MainWindow(QMainWindow):
         # icons are wrapped so they keep their color on the selected item, like this one.
         navigation = ui.list_widget_navigation
         navigation.item(PAGE_TABLE).setIcon(table_icon())
+        navigation.item(PAGE_XML_TOOLS).setIcon(code_icon())
         for page in (PAGE_EXTRACT, PAGE_CSV_TOOLS):
             item = navigation.item(page)
             item.setIcon(steady_icon(item.icon()))
         ui.list_widget_navigation.currentRowChanged.connect(self._show_page)
-        for page in (PAGE_EXTRACT, PAGE_CSV_TOOLS, PAGE_TABLE):
+        for page in (PAGE_EXTRACT, PAGE_XML_TOOLS, PAGE_CSV_TOOLS, PAGE_TABLE):
             shortcut = QShortcut(QKeySequence(f"Ctrl+{page + 1}"), self)
             shortcut.activated.connect(lambda p=page: ui.list_widget_navigation.setCurrentRow(p))
         output_toggle = ui.dock_output.toggleViewAction()
@@ -202,6 +208,7 @@ class MainWindow(QMainWindow):
     def _clear_output(self) -> None:
         self.ui.text_edit_program_output.clear()
         self.ui.text_edit_csv_output.clear()
+        self.ui.text_edit_xml_tools_output.clear()
 
     def _apply_settings(self) -> None:
         settings = self.vms.settings
@@ -451,7 +458,13 @@ class MainWindow(QMainWindow):
                 ui.line_edit_csv_conversion_path_input.text(),
                 ui.combobox_csv_conversion_output_type.currentText(),
                 ui.checkbox_write_index_column.isChecked(),
+                ui.combobox_csv_conversion_delimiter.currentText()
+                if ui.checkbox_csv_conversion_manual_delimiter.isChecked()
+                else None,
             )
+        )
+        ui.checkbox_csv_conversion_manual_delimiter.toggled.connect(
+            ui.combobox_csv_conversion_delimiter.setEnabled
         )
         ui.button_csv_conversion_open_file.clicked.connect(self._open_converted_file)
         ui.button_csv_conversion_show_folder.clicked.connect(
@@ -505,6 +518,9 @@ class MainWindow(QMainWindow):
             signal.connect(self._update_table_rows)
         self._update_table_rows()
         self._csv_transforms = CsvTransformsView(self, self.vms.transforms, self._view_in_table)
+        self._xml_tools = XmlToolsView(self, self.vms.xml_tools, self._view_in_table)
+        self.vms.xml_tools.log_appended.connect(ui.text_edit_xml_tools_output.append)
+        self.vms.xml_tools.log_replaced.connect(ui.text_edit_xml_tools_output.setText)
 
     def _open_converted_file(self) -> None:
         path = self.ui.line_edit_csv_conversion_open_file_path.text()
@@ -723,6 +739,9 @@ class MainWindow(QMainWindow):
         ui.text_edit_csv_output.customContextMenuRequested.connect(
             lambda pos: self._text_menu(ui.text_edit_csv_output, pos)
         )
+        ui.text_edit_xml_tools_output.customContextMenuRequested.connect(
+            lambda pos: self._text_menu(ui.text_edit_xml_tools_output, pos)
+        )
 
     def _run_menu(
         self, widget: QWidget, pos: QPoint, entries: list[tuple[str, Callable[[], object]] | None]
@@ -787,6 +806,7 @@ class MainWindow(QMainWindow):
             vms.export,
             vms.csv_tools,
             vms.transforms,
+            vms.xml_tools,
             vms.table,
             vms.presets,
         )

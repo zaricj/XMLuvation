@@ -2,6 +2,14 @@
 <ui version="4.0">
  <class>MainWindow</class>
  <widget class="QMainWindow" name="MainWindow">
+  <property name="geometry">
+   <rect>
+    <x>0</x>
+    <y>0</y>
+    <width>1369</width>
+    <height>952</height>
+   </rect>
+  </property>
   <property name="windowTitle">
    <string>XMLuvation</string>
   </property>
@@ -93,7 +101,7 @@
          <property name="sizeType">
           <enum>QSizePolicy::Policy::Fixed</enum>
          </property>
-         <property name="sizeHint">
+         <property name="sizeHint" stdset="0">
           <size>
            <width>0</width>
            <height>16</height>
@@ -103,16 +111,16 @@
        </item>
        <item>
         <widget class="QListWidget" name="list_widget_navigation">
-         <property name="frameShape">
-          <enum>QFrame::Shape::NoFrame</enum>
-         </property>
          <property name="focusPolicy">
           <enum>Qt::FocusPolicy::StrongFocus</enum>
          </property>
-         <property name="horizontalScrollBarPolicy">
-          <enum>Qt::ScrollBarPolicy::ScrollBarAlwaysOff</enum>
+         <property name="frameShape">
+          <enum>QFrame::Shape::NoFrame</enum>
          </property>
          <property name="verticalScrollBarPolicy">
+          <enum>Qt::ScrollBarPolicy::ScrollBarAlwaysOff</enum>
+         </property>
+         <property name="horizontalScrollBarPolicy">
           <enum>Qt::ScrollBarPolicy::ScrollBarAlwaysOff</enum>
          </property>
          <property name="iconSize">
@@ -135,7 +143,12 @@
            <string>Extract</string>
           </property>
           <property name="icon">
-           <iconset theme="QIcon::ThemeIcon::EditFind" />
+           <iconset theme="QIcon::ThemeIcon::EditFind"/>
+          </property>
+         </item>
+         <item>
+          <property name="text">
+           <string>XML tools</string>
           </property>
          </item>
          <item>
@@ -143,7 +156,7 @@
            <string>CSV tools</string>
           </property>
           <property name="icon">
-           <iconset theme="QIcon::ThemeIcon::DocumentProperties" />
+           <iconset theme="QIcon::ThemeIcon::DocumentProperties"/>
           </property>
          </item>
          <item>
@@ -156,7 +169,7 @@
        <item>
         <widget class="QLabel" name="label_sidebar_shortcuts">
          <property name="text">
-          <string>Ctrl+1–3 switch pages
+          <string>Ctrl+1–4 switch pages
 Ctrl+J toggles output</string>
          </property>
          <property name="wordWrap">
@@ -223,26 +236,34 @@ Ctrl+J toggles output</string>
           <property name="orientation">
            <enum>Qt::Orientation::Horizontal</enum>
           </property>
-          <property name="childrenCollapsible">
-           <bool>false</bool>
-          </property>
           <property name="handleWidth">
            <number>12</number>
+          </property>
+          <property name="childrenCollapsible">
+           <bool>false</bool>
           </property>
           <widget class="QScrollArea" name="scroll_extract">
            <property name="frameShape">
             <enum>QFrame::Shape::NoFrame</enum>
            </property>
-           <property name="widgetResizable">
-            <bool>true</bool>
-           </property>
            <property name="horizontalScrollBarPolicy">
             <enum>Qt::ScrollBarPolicy::ScrollBarAlwaysOff</enum>
+           </property>
+           <property name="widgetResizable">
+            <bool>true</bool>
            </property>
            <property name="role" stdset="0">
             <string>transparent</string>
            </property>
            <widget class="QWidget" name="scroll_extract_contents">
+            <property name="geometry">
+             <rect>
+              <x>0</x>
+              <y>0</y>
+              <width>701</width>
+              <height>914</height>
+             </rect>
+            </property>
             <property name="role" stdset="0">
              <string>transparent</string>
             </property>
@@ -325,67 +346,25 @@ Ctrl+J toggles output</string>
                   </item>
                   <item>
                    <widget class="QPushButton" name="button_browse_xml_folder">
-                    <property name="text">
-                     <string>Browse…</string>
-                    </property>
                     <property name="toolTip">
                      <string>Browse for the folder containing your XML files.</string>
+                    </property>
+                    <property name="text">
+                     <string>Browse…</string>
                     </property>
                    </widget>
                   </item>
                  </layout>
                 </item>
                 <item>
-                 <layout class="QHBoxLayout" name="layout_source_status">
-                  <property name="spacing">
-                   <number>8</number>
+                 <widget class="QLabel" name="statusbar_xml_files_count">
+                  <property name="text">
+                   <string/>
                   </property>
-                  <property name="leftMargin">
-                   <number>0</number>
+                  <property name="role" stdset="0">
+                   <string>status</string>
                   </property>
-                  <property name="topMargin">
-                   <number>0</number>
-                  </property>
-                  <property name="rightMargin">
-                   <number>0</number>
-                  </property>
-                  <property name="bottomMargin">
-                   <number>0</number>
-                  </property>
-                  <item>
-                   <widget class="QLabel" name="statusbar_xml_files_count">
-                    <property name="text">
-                     <string />
-                    </property>
-                    <property name="role" stdset="0">
-                     <string>status</string>
-                    </property>
-                   </widget>
-                  </item>
-                  <item>
-                   <spacer name="spacer_2">
-                    <property name="orientation">
-                     <enum>Qt::Orientation::Horizontal</enum>
-                    </property>
-                    <property name="sizeHint">
-                     <size>
-                      <width>40</width>
-                      <height>20</height>
-                     </size>
-                    </property>
-                   </spacer>
-                  </item>
-                  <item>
-                   <widget class="QPushButton" name="button_read_xml">
-                    <property name="text">
-                     <string>Inspect XML file…</string>
-                    </property>
-                    <property name="toolTip">
-                     <string>Open one XML file to fill the XPath builder lists and show its content in the preview.</string>
-                    </property>
-                   </widget>
-                  </item>
-                 </layout>
+                 </widget>
                 </item>
                </layout>
               </widget>
@@ -439,12 +418,6 @@ Ctrl+J toggles output</string>
                 </item>
                 <item>
                  <layout class="QGridLayout" name="layout_builder_grid" columnstretch="0,1,0,1">
-                  <property name="horizontalSpacing">
-                   <number>10</number>
-                  </property>
-                  <property name="verticalSpacing">
-                   <number>10</number>
-                  </property>
                   <property name="leftMargin">
                    <number>0</number>
                   </property>
@@ -456,6 +429,9 @@ Ctrl+J toggles output</string>
                   </property>
                   <property name="bottomMargin">
                    <number>4</number>
+                  </property>
+                  <property name="spacing">
+                   <number>10</number>
                   </property>
                   <item row="0" column="0">
                    <widget class="QLabel" name="label_tag_names">
@@ -469,14 +445,14 @@ Ctrl+J toggles output</string>
                   </item>
                   <item row="0" column="1">
                    <widget class="QComboBox" name="combobox_tag_names">
-                    <property name="placeholderText">
-                     <string>Select a tag</string>
-                    </property>
                     <property name="sizeAdjustPolicy">
                      <enum>QComboBox::SizeAdjustPolicy::AdjustToMinimumContentsLengthWithIcon</enum>
                     </property>
                     <property name="minimumContentsLength">
                      <number>12</number>
+                    </property>
+                    <property name="placeholderText">
+                     <string>Select a tag</string>
                     </property>
                    </widget>
                   </item>
@@ -492,14 +468,14 @@ Ctrl+J toggles output</string>
                   </item>
                   <item row="0" column="3">
                    <widget class="QComboBox" name="combobox_tag_values">
-                    <property name="placeholderText">
-                     <string>Any value</string>
-                    </property>
                     <property name="sizeAdjustPolicy">
                      <enum>QComboBox::SizeAdjustPolicy::AdjustToMinimumContentsLengthWithIcon</enum>
                     </property>
                     <property name="minimumContentsLength">
                      <number>12</number>
+                    </property>
+                    <property name="placeholderText">
+                     <string>Any value</string>
                     </property>
                    </widget>
                   </item>
@@ -515,14 +491,14 @@ Ctrl+J toggles output</string>
                   </item>
                   <item row="1" column="1">
                    <widget class="QComboBox" name="combobox_attribute_names">
-                    <property name="placeholderText">
-                     <string>No attribute</string>
-                    </property>
                     <property name="sizeAdjustPolicy">
                      <enum>QComboBox::SizeAdjustPolicy::AdjustToMinimumContentsLengthWithIcon</enum>
                     </property>
                     <property name="minimumContentsLength">
                      <number>12</number>
+                    </property>
+                    <property name="placeholderText">
+                     <string>No attribute</string>
                     </property>
                    </widget>
                   </item>
@@ -538,14 +514,14 @@ Ctrl+J toggles output</string>
                   </item>
                   <item row="1" column="3">
                    <widget class="QComboBox" name="combobox_attribute_values">
-                    <property name="placeholderText">
-                     <string>Any value</string>
-                    </property>
                     <property name="sizeAdjustPolicy">
                      <enum>QComboBox::SizeAdjustPolicy::AdjustToMinimumContentsLengthWithIcon</enum>
                     </property>
                     <property name="minimumContentsLength">
                      <number>12</number>
+                    </property>
+                    <property name="placeholderText">
+                     <string>Any value</string>
                     </property>
                    </widget>
                   </item>
@@ -619,7 +595,7 @@ Ctrl+J toggles output</string>
                       <property name="orientation">
                        <enum>Qt::Orientation::Horizontal</enum>
                       </property>
-                      <property name="sizeHint">
+                      <property name="sizeHint" stdset="0">
                        <size>
                         <width>40</width>
                         <height>20</height>
@@ -660,21 +636,21 @@ Ctrl+J toggles output</string>
                   </item>
                   <item>
                    <widget class="QPushButton" name="button_build_xpath">
-                    <property name="text">
-                     <string>Build</string>
-                    </property>
                     <property name="toolTip">
                      <string>Create an XPath expression from the selected tag, attribute and match.</string>
+                    </property>
+                    <property name="text">
+                     <string>Build</string>
                     </property>
                    </widget>
                   </item>
                   <item>
                    <widget class="QPushButton" name="button_add_xpath_to_list">
-                    <property name="text">
-                     <string>Add to list</string>
-                    </property>
                     <property name="toolTip">
                      <string>Add the expression (comma-separated for several) to the list below.</string>
+                    </property>
+                    <property name="text">
+                     <string>Add to list</string>
                     </property>
                     <property name="role" stdset="0">
                      <string>accent</string>
@@ -791,6 +767,12 @@ Ctrl+J toggles output</string>
                 </item>
                 <item>
                  <layout class="QFormLayout" name="layout_export_form">
+                  <property name="fieldGrowthPolicy">
+                   <enum>QFormLayout::FieldGrowthPolicy::ExpandingFieldsGrow</enum>
+                  </property>
+                  <property name="labelAlignment">
+                   <set>Qt::AlignmentFlag::AlignLeading|Qt::AlignmentFlag::AlignLeft|Qt::AlignmentFlag::AlignVCenter</set>
+                  </property>
                   <property name="horizontalSpacing">
                    <number>10</number>
                   </property>
@@ -808,12 +790,6 @@ Ctrl+J toggles output</string>
                   </property>
                   <property name="bottomMargin">
                    <number>4</number>
-                  </property>
-                  <property name="labelAlignment">
-                   <set>Qt::AlignmentFlag::AlignLeading|Qt::AlignmentFlag::AlignVCenter</set>
-                  </property>
-                  <property name="fieldGrowthPolicy">
-                   <enum>QFormLayout::FieldGrowthPolicy::ExpandingFieldsGrow</enum>
                   </property>
                   <item row="0" column="0">
                    <widget class="QLabel" name="label_csv_headers_info">
@@ -874,11 +850,11 @@ Ctrl+J toggles output</string>
                     </item>
                     <item>
                      <widget class="QPushButton" name="button_browse_csv">
-                      <property name="text">
-                       <string>Browse…</string>
-                      </property>
                       <property name="toolTip">
                        <string>Choose the folder and file name for the CSV result.</string>
+                      </property>
+                      <property name="text">
+                       <string>Browse…</string>
                       </property>
                      </widget>
                     </item>
@@ -913,11 +889,11 @@ Ctrl+J toggles output</string>
                     </property>
                     <item>
                      <widget class="QCheckBox" name="checkbox_group_matches">
+                      <property name="toolTip">
+                       <string>Join all matches of an expression with &quot;; &quot;. When off, each match gets its own row.</string>
+                      </property>
                       <property name="text">
                        <string>Group matches into one row per file</string>
-                      </property>
-                      <property name="toolTip">
-                       <string>Join all matches of an expression with "; ". When off, each match gets its own row.</string>
                       </property>
                      </widget>
                     </item>
@@ -926,7 +902,7 @@ Ctrl+J toggles output</string>
                       <property name="orientation">
                        <enum>Qt::Orientation::Horizontal</enum>
                       </property>
-                      <property name="sizeHint">
+                      <property name="sizeHint" stdset="0">
                        <size>
                         <width>40</width>
                         <height>20</height>
@@ -937,7 +913,7 @@ Ctrl+J toggles output</string>
                     <item>
                      <widget class="QLabel" name="button_pass_csv_to_converter">
                       <property name="text">
-                       <string>&lt;a href="#convert"&gt;Send result to CSV tools →&lt;/a&gt;</string>
+                       <string>&lt;a href=&quot;#convert&quot;&gt;Send result to CSV tools →&lt;/a&gt;</string>
                       </property>
                       <property name="textFormat">
                        <enum>Qt::TextFormat::RichText</enum>
@@ -971,7 +947,7 @@ Ctrl+J toggles output</string>
                   <item>
                    <widget class="QLabel" name="label_file_processing">
                     <property name="text">
-                     <string />
+                     <string/>
                     </property>
                     <property name="role" stdset="0">
                      <string>status</string>
@@ -980,17 +956,17 @@ Ctrl+J toggles output</string>
                   </item>
                   <item>
                    <widget class="QProgressBar" name="progressbar_main">
-                    <property name="value">
-                     <number>0</number>
-                    </property>
-                    <property name="textVisible">
-                     <bool>false</bool>
-                    </property>
                     <property name="maximumSize">
                      <size>
                       <width>16777215</width>
                       <height>8</height>
                      </size>
+                    </property>
+                    <property name="value">
+                     <number>0</number>
+                    </property>
+                    <property name="textVisible">
+                     <bool>false</bool>
                     </property>
                    </widget>
                   </item>
@@ -999,7 +975,7 @@ Ctrl+J toggles output</string>
                     <property name="orientation">
                      <enum>Qt::Orientation::Horizontal</enum>
                     </property>
-                    <property name="sizeHint">
+                    <property name="sizeHint" stdset="0">
                      <size>
                       <width>40</width>
                       <height>20</height>
@@ -1009,21 +985,21 @@ Ctrl+J toggles output</string>
                   </item>
                   <item>
                    <widget class="QPushButton" name="button_abort_csv_export">
-                    <property name="text">
-                     <string>Cancel</string>
-                    </property>
                     <property name="toolTip">
                      <string>Stop the running export. Rows written so far are kept.</string>
+                    </property>
+                    <property name="text">
+                     <string>Cancel</string>
                     </property>
                    </widget>
                   </item>
                   <item>
                    <widget class="QPushButton" name="button_start_csv_export">
-                    <property name="text">
-                     <string>Run export</string>
-                    </property>
                     <property name="toolTip">
                      <string>Search all XML files in the folder and write the matches to the CSV file.</string>
+                    </property>
+                    <property name="text">
+                     <string>Run export</string>
                     </property>
                     <property name="default">
                      <bool>true</bool>
@@ -1043,7 +1019,7 @@ Ctrl+J toggles output</string>
                <property name="orientation">
                 <enum>Qt::Orientation::Vertical</enum>
                </property>
-               <property name="sizeHint">
+               <property name="sizeHint" stdset="0">
                 <size>
                  <width>20</width>
                  <height>40</height>
@@ -1109,7 +1085,7 @@ Ctrl+J toggles output</string>
                 <property name="orientation">
                  <enum>Qt::Orientation::Horizontal</enum>
                 </property>
-                <property name="sizeHint">
+                <property name="sizeHint" stdset="0">
                  <size>
                   <width>40</width>
                   <height>20</height>
@@ -1134,17 +1110,27 @@ Ctrl+J toggles output</string>
             </item>
             <item>
              <widget class="QPlainTextEdit" name="text_edit_xml_output">
-              <property name="readOnly">
-               <bool>true</bool>
-              </property>
               <property name="lineWrapMode">
                <enum>QPlainTextEdit::LineWrapMode::NoWrap</enum>
+              </property>
+              <property name="readOnly">
+               <bool>true</bool>
               </property>
               <property name="placeholderText">
                <string>Inspect an XML file to see its content here.</string>
               </property>
               <property name="role" stdset="0">
                <string>code</string>
+              </property>
+             </widget>
+            </item>
+            <item>
+             <widget class="QPushButton" name="button_read_xml">
+              <property name="toolTip">
+               <string>Open one XML file to fill the XPath builder lists and show its content in the preview.</string>
+              </property>
+              <property name="text">
+               <string>Inspect XML file…</string>
               </property>
              </widget>
             </item>
@@ -1177,25 +1163,965 @@ Ctrl+J toggles output</string>
               </item>
               <item>
                <widget class="QPushButton" name="button_find_previous">
-                <property name="text">
-                 <string>↑</string>
-                </property>
                 <property name="toolTip">
                  <string>Find previous match (Shift+Enter)</string>
+                </property>
+                <property name="text">
+                 <string>↑</string>
                 </property>
                </widget>
               </item>
               <item>
                <widget class="QPushButton" name="button_find_next">
-                <property name="text">
-                 <string>↓</string>
-                </property>
                 <property name="toolTip">
                  <string>Find next match (Enter)</string>
+                </property>
+                <property name="text">
+                 <string>↓</string>
                 </property>
                </widget>
               </item>
              </layout>
+            </item>
+           </layout>
+          </widget>
+         </widget>
+        </item>
+       </layout>
+      </widget>
+      <widget class="QWidget" name="page_xml_tools">
+       <property name="role" stdset="0">
+        <string>page</string>
+       </property>
+       <layout class="QVBoxLayout" name="layout_page_xml_tools" stretch="0,0,1">
+        <property name="spacing">
+         <number>12</number>
+        </property>
+        <property name="leftMargin">
+         <number>28</number>
+        </property>
+        <property name="topMargin">
+         <number>24</number>
+        </property>
+        <property name="rightMargin">
+         <number>28</number>
+        </property>
+        <property name="bottomMargin">
+         <number>20</number>
+        </property>
+        <item>
+         <widget class="QLabel" name="label_page_xml_tools_title">
+          <property name="text">
+           <string>XML tools</string>
+          </property>
+          <property name="role" stdset="0">
+           <string>page-title</string>
+          </property>
+         </widget>
+        </item>
+        <item>
+         <widget class="QLabel" name="label_page_xml_tools_hint">
+          <property name="text">
+           <string>Validate XML files against a schema and compare two versions of a document.</string>
+          </property>
+          <property name="wordWrap">
+           <bool>true</bool>
+          </property>
+          <property name="role" stdset="0">
+           <string>hint</string>
+          </property>
+         </widget>
+        </item>
+        <item>
+         <widget class="QTabWidget" name="tab_widget_xml_tools">
+          <property name="currentIndex">
+           <number>0</number>
+          </property>
+          <property name="usesScrollButtons">
+           <bool>true</bool>
+          </property>
+          <property name="documentMode">
+           <bool>true</bool>
+          </property>
+          <property name="role" stdset="0">
+           <string>segmented</string>
+          </property>
+          <widget class="QWidget" name="tab_xml_validate">
+           <property name="role" stdset="0">
+            <string>transparent</string>
+           </property>
+           <attribute name="title">
+            <string>Validate</string>
+           </attribute>
+           <layout class="QVBoxLayout" name="layout_tab_xml_validate">
+            <property name="spacing">
+             <number>0</number>
+            </property>
+            <property name="leftMargin">
+             <number>0</number>
+            </property>
+            <property name="topMargin">
+             <number>16</number>
+            </property>
+            <property name="rightMargin">
+             <number>0</number>
+            </property>
+            <property name="bottomMargin">
+             <number>0</number>
+            </property>
+            <item>
+             <widget class="QScrollArea" name="scroll_tab_xml_validate">
+              <property name="frameShape">
+               <enum>QFrame::Shape::NoFrame</enum>
+              </property>
+              <property name="horizontalScrollBarPolicy">
+               <enum>Qt::ScrollBarPolicy::ScrollBarAlwaysOff</enum>
+              </property>
+              <property name="widgetResizable">
+               <bool>true</bool>
+              </property>
+              <property name="role" stdset="0">
+               <string>transparent</string>
+              </property>
+              <widget class="QWidget" name="scroll_tab_xml_validate_contents">
+               <property name="role" stdset="0">
+                <string>transparent</string>
+               </property>
+               <layout class="QVBoxLayout" name="layout_scroll_tab_xml_validate_contents">
+                <property name="spacing">
+                 <number>14</number>
+                </property>
+                <property name="leftMargin">
+                 <number>0</number>
+                </property>
+                <property name="topMargin">
+                 <number>0</number>
+                </property>
+                <property name="rightMargin">
+                 <number>10</number>
+                </property>
+                <property name="bottomMargin">
+                 <number>0</number>
+                </property>
+                <item>
+                 <widget class="QFrame" name="card_validate">
+                  <property name="maximumSize">
+                   <size>
+                    <width>860</width>
+                    <height>16777215</height>
+                   </size>
+                  </property>
+                  <property name="frameShape">
+                   <enum>QFrame::Shape::StyledPanel</enum>
+                  </property>
+                  <property name="role" stdset="0">
+                   <string>card</string>
+                  </property>
+                  <layout class="QVBoxLayout" name="layout_card_validate">
+                   <property name="spacing">
+                    <number>10</number>
+                   </property>
+                   <property name="leftMargin">
+                    <number>18</number>
+                   </property>
+                   <property name="topMargin">
+                    <number>16</number>
+                   </property>
+                   <property name="rightMargin">
+                    <number>18</number>
+                   </property>
+                   <property name="bottomMargin">
+                    <number>18</number>
+                   </property>
+                   <item>
+                    <widget class="QLabel" name="label_card_validate_title">
+                     <property name="text">
+                      <string>Validate against an XSD schema</string>
+                     </property>
+                     <property name="role" stdset="0">
+                      <string>card-title</string>
+                     </property>
+                    </widget>
+                   </item>
+                   <item>
+                    <widget class="QLabel" name="label_card_validate_hint">
+                     <property name="text">
+                      <string>Checks XML files against an XSD 1.0 schema. Choose one XML file or a folder: every .xml file directly in it is checked. Problems are listed with line, column and XPath in a report CSV saved next to the XML files.</string>
+                     </property>
+                     <property name="wordWrap">
+                      <bool>true</bool>
+                     </property>
+                     <property name="role" stdset="0">
+                      <string>hint</string>
+                     </property>
+                    </widget>
+                   </item>
+                   <item>
+                    <layout class="QFormLayout" name="layout_validate_form">
+                     <property name="fieldGrowthPolicy">
+                      <enum>QFormLayout::FieldGrowthPolicy::ExpandingFieldsGrow</enum>
+                     </property>
+                     <property name="horizontalSpacing">
+                      <number>10</number>
+                     </property>
+                     <property name="verticalSpacing">
+                      <number>10</number>
+                     </property>
+                     <property name="leftMargin">
+                      <number>0</number>
+                     </property>
+                     <property name="topMargin">
+                      <number>4</number>
+                     </property>
+                     <property name="rightMargin">
+                      <number>0</number>
+                     </property>
+                     <property name="bottomMargin">
+                      <number>4</number>
+                     </property>
+                     <item row="0" column="0">
+                      <widget class="QLabel" name="label_validate_schema">
+                       <property name="text">
+                        <string>Schema</string>
+                       </property>
+                       <property name="role" stdset="0">
+                        <string>field-label</string>
+                       </property>
+                      </widget>
+                     </item>
+                     <item row="0" column="1">
+                      <layout class="QHBoxLayout" name="layout_validate_schema">
+                       <property name="spacing">
+                        <number>8</number>
+                       </property>
+                       <property name="leftMargin">
+                        <number>0</number>
+                       </property>
+                       <property name="topMargin">
+                        <number>0</number>
+                       </property>
+                       <property name="rightMargin">
+                        <number>0</number>
+                       </property>
+                       <property name="bottomMargin">
+                        <number>0</number>
+                       </property>
+                       <item>
+                        <widget class="QLineEdit" name="line_edit_validate_schema_path">
+                         <property name="placeholderText">
+                          <string>XSD file, e.g. profile.xsd</string>
+                         </property>
+                         <property name="clearButtonEnabled">
+                          <bool>true</bool>
+                         </property>
+                        </widget>
+                       </item>
+                       <item>
+                        <widget class="QPushButton" name="button_validate_browse_schema">
+                         <property name="toolTip">
+                          <string>Choose the XSD schema file.</string>
+                         </property>
+                         <property name="text">
+                          <string>Browse…</string>
+                         </property>
+                        </widget>
+                       </item>
+                      </layout>
+                     </item>
+                     <item row="1" column="0">
+                      <widget class="QLabel" name="label_validate_xml">
+                       <property name="text">
+                        <string>XML</string>
+                       </property>
+                       <property name="role" stdset="0">
+                        <string>field-label</string>
+                       </property>
+                      </widget>
+                     </item>
+                     <item row="1" column="1">
+                      <layout class="QHBoxLayout" name="layout_validate_xml">
+                       <property name="spacing">
+                        <number>8</number>
+                       </property>
+                       <property name="leftMargin">
+                        <number>0</number>
+                       </property>
+                       <property name="topMargin">
+                        <number>0</number>
+                       </property>
+                       <property name="rightMargin">
+                        <number>0</number>
+                       </property>
+                       <property name="bottomMargin">
+                        <number>0</number>
+                       </property>
+                       <item>
+                        <widget class="QLineEdit" name="line_edit_validate_xml_path">
+                         <property name="placeholderText">
+                          <string>XML file, or a folder with XML files</string>
+                         </property>
+                         <property name="clearButtonEnabled">
+                          <bool>true</bool>
+                         </property>
+                        </widget>
+                       </item>
+                       <item>
+                        <widget class="QPushButton" name="button_validate_browse_file">
+                         <property name="toolTip">
+                          <string>Choose one XML file.</string>
+                         </property>
+                         <property name="text">
+                          <string>File…</string>
+                         </property>
+                        </widget>
+                       </item>
+                       <item>
+                        <widget class="QPushButton" name="button_validate_browse_folder">
+                         <property name="toolTip">
+                          <string>Choose a folder: every .xml file directly in it is checked.</string>
+                         </property>
+                         <property name="text">
+                          <string>Folder…</string>
+                         </property>
+                        </widget>
+                       </item>
+                      </layout>
+                     </item>
+                    </layout>
+                   </item>
+                   <item>
+                    <layout class="QHBoxLayout" name="layout_validate_actions" stretch="1,0,0,0">
+                     <property name="spacing">
+                      <number>12</number>
+                     </property>
+                     <property name="leftMargin">
+                      <number>0</number>
+                     </property>
+                     <property name="topMargin">
+                      <number>0</number>
+                     </property>
+                     <property name="rightMargin">
+                      <number>0</number>
+                     </property>
+                     <property name="bottomMargin">
+                      <number>0</number>
+                     </property>
+                     <item>
+                      <widget class="BusyBar" name="busy_bar_validate" native="true">
+                       <property name="minimumSize">
+                        <size>
+                         <width>120</width>
+                         <height>6</height>
+                        </size>
+                       </property>
+                       <property name="maximumSize">
+                        <size>
+                         <width>16777215</width>
+                         <height>6</height>
+                        </size>
+                       </property>
+                      </widget>
+                     </item>
+                     <item>
+                      <widget class="QLabel" name="label_validate_progress">
+                       <property name="text">
+                        <string/>
+                       </property>
+                       <property name="role" stdset="0">
+                        <string>status</string>
+                       </property>
+                      </widget>
+                     </item>
+                     <item>
+                      <widget class="QPushButton" name="button_validate_cancel">
+                       <property name="toolTip">
+                        <string>Stop validating.</string>
+                       </property>
+                       <property name="text">
+                        <string>Cancel</string>
+                       </property>
+                      </widget>
+                     </item>
+                     <item>
+                      <widget class="QPushButton" name="button_validate_start">
+                       <property name="minimumSize">
+                        <size>
+                         <width>120</width>
+                         <height>0</height>
+                        </size>
+                       </property>
+                       <property name="toolTip">
+                        <string>Validate the XML file(s) against the schema.</string>
+                       </property>
+                       <property name="text">
+                        <string>Validate</string>
+                       </property>
+                       <property name="role" stdset="0">
+                        <string>primary</string>
+                       </property>
+                      </widget>
+                     </item>
+                    </layout>
+                   </item>
+                   <item>
+                    <widget class="QFrame" name="frame_validate_result">
+                     <property name="frameShape">
+                      <enum>QFrame::Shape::StyledPanel</enum>
+                     </property>
+                     <property name="role" stdset="0">
+                      <string>result</string>
+                     </property>
+                     <layout class="QVBoxLayout" name="layout_validate_result">
+                      <property name="spacing">
+                       <number>6</number>
+                      </property>
+                      <property name="leftMargin">
+                       <number>14</number>
+                      </property>
+                      <property name="topMargin">
+                       <number>8</number>
+                      </property>
+                      <property name="rightMargin">
+                       <number>8</number>
+                      </property>
+                      <property name="bottomMargin">
+                       <number>8</number>
+                      </property>
+                      <item>
+                       <widget class="QLabel" name="label_validate_summary">
+                        <property name="text">
+                         <string/>
+                        </property>
+                        <property name="wordWrap">
+                         <bool>true</bool>
+                        </property>
+                       </widget>
+                      </item>
+                      <item>
+                       <layout class="QHBoxLayout" name="layout_validate_result_path">
+                        <property name="spacing">
+                         <number>10</number>
+                        </property>
+                        <property name="leftMargin">
+                         <number>0</number>
+                        </property>
+                        <property name="topMargin">
+                         <number>0</number>
+                        </property>
+                        <property name="rightMargin">
+                         <number>0</number>
+                        </property>
+                        <property name="bottomMargin">
+                         <number>0</number>
+                        </property>
+                        <item>
+                         <widget class="QLabel" name="label_validate_result">
+                          <property name="text">
+                           <string>Report</string>
+                          </property>
+                          <property name="role" stdset="0">
+                           <string>result-title</string>
+                          </property>
+                         </widget>
+                        </item>
+                        <item>
+                         <widget class="QLineEdit" name="line_edit_validate_result_path">
+                          <property name="frame">
+                           <bool>false</bool>
+                          </property>
+                          <property name="readOnly">
+                           <bool>true</bool>
+                          </property>
+                         </widget>
+                        </item>
+                        <item>
+                         <widget class="QPushButton" name="button_validate_view_report">
+                          <property name="toolTip">
+                           <string>Open the report in the table viewer.</string>
+                          </property>
+                          <property name="text">
+                           <string>View in table</string>
+                          </property>
+                          <property name="role" stdset="0">
+                           <string>accent</string>
+                          </property>
+                         </widget>
+                        </item>
+                        <item>
+                         <widget class="QPushButton" name="button_validate_open_report">
+                          <property name="toolTip">
+                           <string>Open the report file.</string>
+                          </property>
+                          <property name="text">
+                           <string>Open</string>
+                          </property>
+                         </widget>
+                        </item>
+                       </layout>
+                      </item>
+                     </layout>
+                    </widget>
+                   </item>
+                  </layout>
+                 </widget>
+                </item>
+                <item>
+                 <spacer name="spacer_xml_101">
+                  <property name="orientation">
+                   <enum>Qt::Orientation::Vertical</enum>
+                  </property>
+                  <property name="sizeHint" stdset="0">
+                   <size>
+                    <width>20</width>
+                    <height>40</height>
+                   </size>
+                  </property>
+                 </spacer>
+                </item>
+               </layout>
+              </widget>
+             </widget>
+            </item>
+           </layout>
+          </widget>
+          <widget class="QWidget" name="tab_xml_compare">
+           <property name="role" stdset="0">
+            <string>transparent</string>
+           </property>
+           <attribute name="title">
+            <string>Compare</string>
+           </attribute>
+           <layout class="QVBoxLayout" name="layout_tab_xml_compare">
+            <property name="spacing">
+             <number>0</number>
+            </property>
+            <property name="leftMargin">
+             <number>0</number>
+            </property>
+            <property name="topMargin">
+             <number>16</number>
+            </property>
+            <property name="rightMargin">
+             <number>0</number>
+            </property>
+            <property name="bottomMargin">
+             <number>0</number>
+            </property>
+            <item>
+             <widget class="QScrollArea" name="scroll_tab_xml_compare">
+              <property name="frameShape">
+               <enum>QFrame::Shape::NoFrame</enum>
+              </property>
+              <property name="horizontalScrollBarPolicy">
+               <enum>Qt::ScrollBarPolicy::ScrollBarAlwaysOff</enum>
+              </property>
+              <property name="widgetResizable">
+               <bool>true</bool>
+              </property>
+              <property name="role" stdset="0">
+               <string>transparent</string>
+              </property>
+              <widget class="QWidget" name="scroll_tab_xml_compare_contents">
+               <property name="role" stdset="0">
+                <string>transparent</string>
+               </property>
+               <layout class="QVBoxLayout" name="layout_scroll_tab_xml_compare_contents">
+                <property name="spacing">
+                 <number>14</number>
+                </property>
+                <property name="leftMargin">
+                 <number>0</number>
+                </property>
+                <property name="topMargin">
+                 <number>0</number>
+                </property>
+                <property name="rightMargin">
+                 <number>10</number>
+                </property>
+                <property name="bottomMargin">
+                 <number>0</number>
+                </property>
+                <item>
+                 <widget class="QFrame" name="card_xml_compare">
+                  <property name="maximumSize">
+                   <size>
+                    <width>860</width>
+                    <height>16777215</height>
+                   </size>
+                  </property>
+                  <property name="frameShape">
+                   <enum>QFrame::Shape::StyledPanel</enum>
+                  </property>
+                  <property name="role" stdset="0">
+                   <string>card</string>
+                  </property>
+                  <layout class="QVBoxLayout" name="layout_card_xml_compare">
+                   <property name="spacing">
+                    <number>10</number>
+                   </property>
+                   <property name="leftMargin">
+                    <number>18</number>
+                   </property>
+                   <property name="topMargin">
+                    <number>16</number>
+                   </property>
+                   <property name="rightMargin">
+                    <number>18</number>
+                   </property>
+                   <property name="bottomMargin">
+                    <number>18</number>
+                   </property>
+                   <item>
+                    <widget class="QLabel" name="label_card_xml_compare_title">
+                     <property name="text">
+                      <string>Compare two XML files</string>
+                     </property>
+                     <property name="role" stdset="0">
+                      <string>card-title</string>
+                     </property>
+                    </widget>
+                   </item>
+                   <item>
+                    <widget class="QLabel" name="label_card_xml_compare_hint">
+                     <property name="text">
+                      <string>Compares elements, attributes and text and lists every addition, removal and change with its XPath and line numbers in a report CSV saved next to the new file. Comments and attribute order are ignored.</string>
+                     </property>
+                     <property name="wordWrap">
+                      <bool>true</bool>
+                     </property>
+                     <property name="role" stdset="0">
+                      <string>hint</string>
+                     </property>
+                    </widget>
+                   </item>
+                   <item>
+                    <layout class="QFormLayout" name="layout_xml_compare_form">
+                     <property name="fieldGrowthPolicy">
+                      <enum>QFormLayout::FieldGrowthPolicy::ExpandingFieldsGrow</enum>
+                     </property>
+                     <property name="horizontalSpacing">
+                      <number>10</number>
+                     </property>
+                     <property name="verticalSpacing">
+                      <number>10</number>
+                     </property>
+                     <property name="leftMargin">
+                      <number>0</number>
+                     </property>
+                     <property name="topMargin">
+                      <number>4</number>
+                     </property>
+                     <property name="rightMargin">
+                      <number>0</number>
+                     </property>
+                     <property name="bottomMargin">
+                      <number>4</number>
+                     </property>
+                     <item row="0" column="0">
+                      <widget class="QLabel" name="label_xml_compare_old">
+                       <property name="text">
+                        <string>Old file</string>
+                       </property>
+                       <property name="role" stdset="0">
+                        <string>field-label</string>
+                       </property>
+                      </widget>
+                     </item>
+                     <item row="0" column="1">
+                      <layout class="QHBoxLayout" name="layout_xml_compare_old">
+                       <property name="spacing">
+                        <number>8</number>
+                       </property>
+                       <property name="leftMargin">
+                        <number>0</number>
+                       </property>
+                       <property name="topMargin">
+                        <number>0</number>
+                       </property>
+                       <property name="rightMargin">
+                        <number>0</number>
+                       </property>
+                       <property name="bottomMargin">
+                        <number>0</number>
+                       </property>
+                       <item>
+                        <widget class="QLineEdit" name="line_edit_xml_compare_old_path">
+                         <property name="placeholderText">
+                          <string>Earlier version, e.g. the profile before a change</string>
+                         </property>
+                         <property name="clearButtonEnabled">
+                          <bool>true</bool>
+                         </property>
+                        </widget>
+                       </item>
+                       <item>
+                        <widget class="QPushButton" name="button_xml_compare_old_browse">
+                         <property name="toolTip">
+                          <string>Choose the XML file.</string>
+                         </property>
+                         <property name="text">
+                          <string>Browse…</string>
+                         </property>
+                        </widget>
+                       </item>
+                      </layout>
+                     </item>
+                     <item row="1" column="0">
+                      <widget class="QLabel" name="label_xml_compare_new">
+                       <property name="text">
+                        <string>New file</string>
+                       </property>
+                       <property name="role" stdset="0">
+                        <string>field-label</string>
+                       </property>
+                      </widget>
+                     </item>
+                     <item row="1" column="1">
+                      <layout class="QHBoxLayout" name="layout_xml_compare_new">
+                       <property name="spacing">
+                        <number>8</number>
+                       </property>
+                       <property name="leftMargin">
+                        <number>0</number>
+                       </property>
+                       <property name="topMargin">
+                        <number>0</number>
+                       </property>
+                       <property name="rightMargin">
+                        <number>0</number>
+                       </property>
+                       <property name="bottomMargin">
+                        <number>0</number>
+                       </property>
+                       <item>
+                        <widget class="QLineEdit" name="line_edit_xml_compare_new_path">
+                         <property name="placeholderText">
+                          <string>Later version to compare against the old file</string>
+                         </property>
+                         <property name="clearButtonEnabled">
+                          <bool>true</bool>
+                         </property>
+                        </widget>
+                       </item>
+                       <item>
+                        <widget class="QPushButton" name="button_xml_compare_new_browse">
+                         <property name="toolTip">
+                          <string>Choose the XML file.</string>
+                         </property>
+                         <property name="text">
+                          <string>Browse…</string>
+                         </property>
+                        </widget>
+                       </item>
+                      </layout>
+                     </item>
+                     <item row="2" column="0">
+                      <widget class="QLabel" name="label_xml_compare_options">
+                       <property name="text">
+                        <string>Options</string>
+                       </property>
+                       <property name="role" stdset="0">
+                        <string>field-label</string>
+                       </property>
+                      </widget>
+                     </item>
+                     <item row="2" column="1">
+                      <widget class="QCheckBox" name="checkbox_xml_compare_ignore_whitespace">
+                       <property name="toolTip">
+                        <string>Treat text that differs only in spaces, line breaks or indentation as equal.</string>
+                       </property>
+                       <property name="text">
+                        <string>Ignore whitespace and indentation in text</string>
+                       </property>
+                       <property name="checked">
+                        <bool>true</bool>
+                       </property>
+                      </widget>
+                     </item>
+                    </layout>
+                   </item>
+                   <item>
+                    <layout class="QHBoxLayout" name="layout_xml_compare_actions" stretch="1,0,0">
+                     <property name="spacing">
+                      <number>12</number>
+                     </property>
+                     <property name="leftMargin">
+                      <number>0</number>
+                     </property>
+                     <property name="topMargin">
+                      <number>0</number>
+                     </property>
+                     <property name="rightMargin">
+                      <number>0</number>
+                     </property>
+                     <property name="bottomMargin">
+                      <number>0</number>
+                     </property>
+                     <item>
+                      <widget class="BusyBar" name="busy_bar_xml_compare" native="true">
+                       <property name="minimumSize">
+                        <size>
+                         <width>120</width>
+                         <height>6</height>
+                        </size>
+                       </property>
+                       <property name="maximumSize">
+                        <size>
+                         <width>16777215</width>
+                         <height>6</height>
+                        </size>
+                       </property>
+                      </widget>
+                     </item>
+                     <item>
+                      <widget class="QPushButton" name="button_xml_compare_cancel">
+                       <property name="toolTip">
+                        <string>Stop comparing.</string>
+                       </property>
+                       <property name="text">
+                        <string>Cancel</string>
+                       </property>
+                      </widget>
+                     </item>
+                     <item>
+                      <widget class="QPushButton" name="button_xml_compare_start">
+                       <property name="minimumSize">
+                        <size>
+                         <width>120</width>
+                         <height>0</height>
+                        </size>
+                       </property>
+                       <property name="toolTip">
+                        <string>Compare the files and write a difference report.</string>
+                       </property>
+                       <property name="text">
+                        <string>Compare</string>
+                       </property>
+                       <property name="role" stdset="0">
+                        <string>primary</string>
+                       </property>
+                      </widget>
+                     </item>
+                    </layout>
+                   </item>
+                   <item>
+                    <widget class="QFrame" name="frame_xml_compare_result">
+                     <property name="frameShape">
+                      <enum>QFrame::Shape::StyledPanel</enum>
+                     </property>
+                     <property name="role" stdset="0">
+                      <string>result</string>
+                     </property>
+                     <layout class="QVBoxLayout" name="layout_xml_compare_result">
+                      <property name="spacing">
+                       <number>6</number>
+                      </property>
+                      <property name="leftMargin">
+                       <number>14</number>
+                      </property>
+                      <property name="topMargin">
+                       <number>8</number>
+                      </property>
+                      <property name="rightMargin">
+                       <number>8</number>
+                      </property>
+                      <property name="bottomMargin">
+                       <number>8</number>
+                      </property>
+                      <item>
+                       <widget class="QLabel" name="label_xml_compare_summary">
+                        <property name="text">
+                         <string/>
+                        </property>
+                        <property name="wordWrap">
+                         <bool>true</bool>
+                        </property>
+                       </widget>
+                      </item>
+                      <item>
+                       <layout class="QHBoxLayout" name="layout_xml_compare_result_path">
+                        <property name="spacing">
+                         <number>10</number>
+                        </property>
+                        <property name="leftMargin">
+                         <number>0</number>
+                        </property>
+                        <property name="topMargin">
+                         <number>0</number>
+                        </property>
+                        <property name="rightMargin">
+                         <number>0</number>
+                        </property>
+                        <property name="bottomMargin">
+                         <number>0</number>
+                        </property>
+                        <item>
+                         <widget class="QLabel" name="label_xml_compare_result">
+                          <property name="text">
+                           <string>Report</string>
+                          </property>
+                          <property name="role" stdset="0">
+                           <string>result-title</string>
+                          </property>
+                         </widget>
+                        </item>
+                        <item>
+                         <widget class="QLineEdit" name="line_edit_xml_compare_result_path">
+                          <property name="frame">
+                           <bool>false</bool>
+                          </property>
+                          <property name="readOnly">
+                           <bool>true</bool>
+                          </property>
+                         </widget>
+                        </item>
+                        <item>
+                         <widget class="QPushButton" name="button_xml_compare_view_report">
+                          <property name="toolTip">
+                           <string>Open the report in the table viewer.</string>
+                          </property>
+                          <property name="text">
+                           <string>View in table</string>
+                          </property>
+                          <property name="role" stdset="0">
+                           <string>accent</string>
+                          </property>
+                         </widget>
+                        </item>
+                        <item>
+                         <widget class="QPushButton" name="button_xml_compare_open_report">
+                          <property name="toolTip">
+                           <string>Open the report file.</string>
+                          </property>
+                          <property name="text">
+                           <string>Open</string>
+                          </property>
+                         </widget>
+                        </item>
+                       </layout>
+                      </item>
+                     </layout>
+                    </widget>
+                   </item>
+                  </layout>
+                 </widget>
+                </item>
+                <item>
+                 <spacer name="spacer_xml_102">
+                  <property name="orientation">
+                   <enum>Qt::Orientation::Vertical</enum>
+                  </property>
+                  <property name="sizeHint" stdset="0">
+                   <size>
+                    <width>20</width>
+                    <height>40</height>
+                   </size>
+                  </property>
+                 </spacer>
+                </item>
+               </layout>
+              </widget>
+             </widget>
             </item>
            </layout>
           </widget>
@@ -1248,13 +2174,13 @@ Ctrl+J toggles output</string>
         </item>
         <item>
          <widget class="QTabWidget" name="tab_widget_csv_tools">
-          <property name="documentMode">
-           <bool>true</bool>
-          </property>
           <property name="currentIndex">
            <number>0</number>
           </property>
           <property name="usesScrollButtons">
+           <bool>true</bool>
+          </property>
+          <property name="documentMode">
            <bool>true</bool>
           </property>
           <property name="role" stdset="0">
@@ -1288,16 +2214,24 @@ Ctrl+J toggles output</string>
               <property name="frameShape">
                <enum>QFrame::Shape::NoFrame</enum>
               </property>
-              <property name="widgetResizable">
-               <bool>true</bool>
-              </property>
               <property name="horizontalScrollBarPolicy">
                <enum>Qt::ScrollBarPolicy::ScrollBarAlwaysOff</enum>
+              </property>
+              <property name="widgetResizable">
+               <bool>true</bool>
               </property>
               <property name="role" stdset="0">
                <string>transparent</string>
               </property>
               <widget class="QWidget" name="scroll_tab_tool_convert_contents">
+               <property name="geometry">
+                <rect>
+                 <x>0</x>
+                 <y>0</y>
+                 <width>439</width>
+                 <height>368</height>
+                </rect>
+               </property>
                <property name="role" stdset="0">
                 <string>transparent</string>
                </property>
@@ -1319,14 +2253,14 @@ Ctrl+J toggles output</string>
                 </property>
                 <item>
                  <widget class="QFrame" name="groupbox_csv_conversion">
-                  <property name="frameShape">
-                   <enum>QFrame::Shape::StyledPanel</enum>
-                  </property>
                   <property name="maximumSize">
                    <size>
                     <width>860</width>
                     <height>16777215</height>
                    </size>
+                  </property>
+                  <property name="frameShape">
+                   <enum>QFrame::Shape::StyledPanel</enum>
                   </property>
                   <property name="role" stdset="0">
                    <string>card</string>
@@ -1372,6 +2306,9 @@ Ctrl+J toggles output</string>
                    </item>
                    <item>
                     <layout class="QFormLayout" name="layout_conversion_form">
+                     <property name="fieldGrowthPolicy">
+                      <enum>QFormLayout::FieldGrowthPolicy::ExpandingFieldsGrow</enum>
+                     </property>
                      <property name="horizontalSpacing">
                       <number>10</number>
                      </property>
@@ -1389,9 +2326,6 @@ Ctrl+J toggles output</string>
                      </property>
                      <property name="bottomMargin">
                       <number>4</number>
-                     </property>
-                     <property name="fieldGrowthPolicy">
-                      <enum>QFormLayout::FieldGrowthPolicy::ExpandingFieldsGrow</enum>
                      </property>
                      <item row="0" column="0">
                       <widget class="QLabel" name="label_conversion_input">
@@ -1432,11 +2366,11 @@ Ctrl+J toggles output</string>
                        </item>
                        <item>
                         <widget class="QPushButton" name="button_browse_csv_conversion_path_input">
-                         <property name="text">
-                          <string>Browse…</string>
-                         </property>
                          <property name="toolTip">
                           <string>Choose the CSV file to convert.</string>
+                         </property>
+                         <property name="text">
+                          <string>Browse…</string>
                          </property>
                         </widget>
                        </item>
@@ -1501,11 +2435,11 @@ Ctrl+J toggles output</string>
                        </item>
                        <item>
                         <widget class="QCheckBox" name="checkbox_write_index_column">
-                         <property name="text">
-                          <string>Write index column</string>
-                         </property>
                          <property name="toolTip">
                           <string>Add an index column starting at 1 (Excel, HTML and Markdown).</string>
+                         </property>
+                         <property name="text">
+                          <string>Write index column</string>
                          </property>
                         </widget>
                        </item>
@@ -1514,7 +2448,101 @@ Ctrl+J toggles output</string>
                          <property name="orientation">
                           <enum>Qt::Orientation::Horizontal</enum>
                          </property>
-                         <property name="sizeHint">
+                         <property name="sizeHint" stdset="0">
+                          <size>
+                           <width>40</width>
+                           <height>20</height>
+                          </size>
+                         </property>
+                        </spacer>
+                       </item>
+                      </layout>
+                     </item>
+                     <item row="2" column="0">
+                      <widget class="QLabel" name="label_csv_conversion_delimiter">
+                       <property name="text">
+                        <string>Delimiter</string>
+                       </property>
+                       <property name="role" stdset="0">
+                        <string>field-label</string>
+                       </property>
+                      </widget>
+                     </item>
+                     <item row="2" column="1">
+                      <layout class="QHBoxLayout" name="layout_conversion_delimiter">
+                       <property name="spacing">
+                        <number>16</number>
+                       </property>
+                       <property name="leftMargin">
+                        <number>0</number>
+                       </property>
+                       <property name="topMargin">
+                        <number>0</number>
+                       </property>
+                       <property name="rightMargin">
+                        <number>0</number>
+                       </property>
+                       <property name="bottomMargin">
+                        <number>0</number>
+                       </property>
+                       <item>
+                        <widget class="QCheckBox" name="checkbox_csv_conversion_manual_delimiter">
+                         <property name="toolTip">
+                          <string>The delimiter is detected automatically. Tick this if it was detected wrong and choose or type it yourself.</string>
+                         </property>
+                         <property name="text">
+                          <string>Set manually</string>
+                         </property>
+                        </widget>
+                       </item>
+                       <item>
+                        <widget class="QComboBox" name="combobox_csv_conversion_delimiter">
+                         <property name="enabled">
+                          <bool>false</bool>
+                         </property>
+                         <property name="minimumSize">
+                          <size>
+                           <width>160</width>
+                           <height>0</height>
+                          </size>
+                         </property>
+                         <property name="toolTip">
+                          <string>One character, e.g. , ; or |. Type Tab for a tab.</string>
+                         </property>
+                         <property name="editable">
+                          <bool>true</bool>
+                         </property>
+                         <property name="insertPolicy">
+                          <enum>QComboBox::InsertPolicy::NoInsert</enum>
+                         </property>
+                         <item>
+                          <property name="text">
+                           <string>,</string>
+                          </property>
+                         </item>
+                         <item>
+                          <property name="text">
+                           <string>;</string>
+                          </property>
+                         </item>
+                         <item>
+                          <property name="text">
+                           <string>|</string>
+                          </property>
+                         </item>
+                         <item>
+                          <property name="text">
+                           <string>Tab</string>
+                          </property>
+                         </item>
+                        </widget>
+                       </item>
+                       <item>
+                        <spacer name="spacer_20">
+                         <property name="orientation">
+                          <enum>Qt::Orientation::Horizontal</enum>
+                         </property>
+                         <property name="sizeHint" stdset="0">
                           <size>
                            <width>40</width>
                            <height>20</height>
@@ -1544,7 +2572,7 @@ Ctrl+J toggles output</string>
                       <number>0</number>
                      </property>
                      <item>
-                      <widget class="BusyBar" name="busy_bar_conversion">
+                      <widget class="BusyBar" name="busy_bar_conversion" native="true">
                        <property name="minimumSize">
                         <size>
                          <width>120</width>
@@ -1561,17 +2589,17 @@ Ctrl+J toggles output</string>
                      </item>
                      <item>
                       <widget class="QPushButton" name="button_csv_conversion_convert">
-                       <property name="text">
-                        <string>Convert</string>
-                       </property>
-                       <property name="toolTip">
-                        <string>Convert the CSV file to the selected format.</string>
-                       </property>
                        <property name="minimumSize">
                         <size>
                          <width>120</width>
                          <height>0</height>
                         </size>
+                       </property>
+                       <property name="toolTip">
+                        <string>Convert the CSV file to the selected format.</string>
+                       </property>
+                       <property name="text">
+                        <string>Convert</string>
                        </property>
                        <property name="role" stdset="0">
                         <string>primary</string>
@@ -1633,37 +2661,37 @@ Ctrl+J toggles output</string>
                         </item>
                         <item>
                          <widget class="QLineEdit" name="line_edit_csv_conversion_open_file_path">
-                          <property name="placeholderText">
-                           <string />
-                          </property>
-                          <property name="clearButtonEnabled">
+                          <property name="frame">
                            <bool>false</bool>
                           </property>
                           <property name="readOnly">
                            <bool>true</bool>
                           </property>
-                          <property name="frame">
+                          <property name="placeholderText">
+                           <string/>
+                          </property>
+                          <property name="clearButtonEnabled">
                            <bool>false</bool>
                           </property>
                          </widget>
                         </item>
                         <item>
                          <widget class="QPushButton" name="button_csv_conversion_open_file">
-                          <property name="text">
-                           <string>Open</string>
-                          </property>
                           <property name="toolTip">
                            <string>Open the converted file.</string>
+                          </property>
+                          <property name="text">
+                           <string>Open</string>
                           </property>
                          </widget>
                         </item>
                         <item>
                          <widget class="QPushButton" name="button_csv_conversion_show_folder">
-                          <property name="text">
-                           <string>Show in folder</string>
-                          </property>
                           <property name="toolTip">
                            <string>Open the folder that contains the converted file.</string>
+                          </property>
+                          <property name="text">
+                           <string>Show in folder</string>
                           </property>
                           <property name="role" stdset="0">
                            <string>flat</string>
@@ -1683,7 +2711,7 @@ Ctrl+J toggles output</string>
                   <property name="orientation">
                    <enum>Qt::Orientation::Vertical</enum>
                   </property>
-                  <property name="sizeHint">
+                  <property name="sizeHint" stdset="0">
                    <size>
                     <width>20</width>
                     <height>40</height>
@@ -1725,16 +2753,24 @@ Ctrl+J toggles output</string>
               <property name="frameShape">
                <enum>QFrame::Shape::NoFrame</enum>
               </property>
-              <property name="widgetResizable">
-               <bool>true</bool>
-              </property>
               <property name="horizontalScrollBarPolicy">
                <enum>Qt::ScrollBarPolicy::ScrollBarAlwaysOff</enum>
+              </property>
+              <property name="widgetResizable">
+               <bool>true</bool>
               </property>
               <property name="role" stdset="0">
                <string>transparent</string>
               </property>
               <widget class="QWidget" name="scroll_tab_tool_split_contents">
+               <property name="geometry">
+                <rect>
+                 <x>0</x>
+                 <y>0</y>
+                 <width>497</width>
+                 <height>368</height>
+                </rect>
+               </property>
                <property name="role" stdset="0">
                 <string>transparent</string>
                </property>
@@ -1756,14 +2792,14 @@ Ctrl+J toggles output</string>
                 </property>
                 <item>
                  <widget class="QFrame" name="card_split">
-                  <property name="frameShape">
-                   <enum>QFrame::Shape::StyledPanel</enum>
-                  </property>
                   <property name="maximumSize">
                    <size>
                     <width>860</width>
                     <height>16777215</height>
                    </size>
+                  </property>
+                  <property name="frameShape">
+                   <enum>QFrame::Shape::StyledPanel</enum>
                   </property>
                   <property name="role" stdset="0">
                    <string>card</string>
@@ -1809,6 +2845,9 @@ Ctrl+J toggles output</string>
                    </item>
                    <item>
                     <layout class="QFormLayout" name="layout_split_form">
+                     <property name="fieldGrowthPolicy">
+                      <enum>QFormLayout::FieldGrowthPolicy::ExpandingFieldsGrow</enum>
+                     </property>
                      <property name="horizontalSpacing">
                       <number>10</number>
                      </property>
@@ -1826,9 +2865,6 @@ Ctrl+J toggles output</string>
                      </property>
                      <property name="bottomMargin">
                       <number>4</number>
-                     </property>
-                     <property name="fieldGrowthPolicy">
-                      <enum>QFormLayout::FieldGrowthPolicy::ExpandingFieldsGrow</enum>
                      </property>
                      <item row="0" column="0">
                       <widget class="QLabel" name="label_split_csv">
@@ -1869,11 +2905,11 @@ Ctrl+J toggles output</string>
                        </item>
                        <item>
                         <widget class="QPushButton" name="button_split_browse_csv_file_path">
-                         <property name="text">
-                          <string>Browse…</string>
-                         </property>
                          <property name="toolTip">
                           <string>Choose the CSV file.</string>
+                         </property>
+                         <property name="text">
+                          <string>Browse…</string>
                          </property>
                         </widget>
                        </item>
@@ -1925,37 +2961,22 @@ Ctrl+J toggles output</string>
                          </property>
                          <item>
                           <widget class="QRadioButton" name="radio_split_by_rows">
-                           <property name="text">
-                            <string>Rows per file</string>
-                           </property>
-                           <property name="checked">
-                            <bool>true</bool>
-                           </property>
                            <property name="minimumSize">
                             <size>
                              <width>130</width>
                              <height>0</height>
                             </size>
                            </property>
+                           <property name="text">
+                            <string>Rows per file</string>
+                           </property>
+                           <property name="checked">
+                            <bool>true</bool>
+                           </property>
                           </widget>
                          </item>
                          <item>
                           <widget class="QSpinBox" name="spin_box_split_rows">
-                           <property name="minimum">
-                            <number>1</number>
-                           </property>
-                           <property name="maximum">
-                            <number>100000000</number>
-                           </property>
-                           <property name="value">
-                            <number>1048575</number>
-                           </property>
-                           <property name="groupSeparatorShown">
-                            <bool>true</bool>
-                           </property>
-                           <property name="buttonSymbols">
-                            <enum>QAbstractSpinBox::ButtonSymbols::NoButtons</enum>
-                           </property>
                            <property name="minimumSize">
                             <size>
                              <width>150</width>
@@ -1965,15 +2986,30 @@ Ctrl+J toggles output</string>
                            <property name="toolTip">
                             <string>1,048,575 data rows fill exactly one Excel sheet.</string>
                            </property>
+                           <property name="buttonSymbols">
+                            <enum>QAbstractSpinBox::ButtonSymbols::NoButtons</enum>
+                           </property>
+                           <property name="minimum">
+                            <number>1</number>
+                           </property>
+                           <property name="maximum">
+                            <number>100000000</number>
+                           </property>
+                           <property name="value">
+                            <number>1048575</number>
+                           </property>
+                           <property name="groupSeparatorShown" stdset="0">
+                            <bool>true</bool>
+                           </property>
                           </widget>
                          </item>
                          <item>
                           <widget class="QPushButton" name="button_split_excel_rows">
-                           <property name="text">
-                            <string>Excel limit</string>
-                           </property>
                            <property name="toolTip">
                             <string>Use 1,048,575 rows per file, the most one Excel sheet can hold.</string>
+                           </property>
+                           <property name="text">
+                            <string>Excel limit</string>
                            </property>
                            <property name="role" stdset="0">
                             <string>flat</string>
@@ -1985,7 +3021,7 @@ Ctrl+J toggles output</string>
                            <property name="orientation">
                             <enum>Qt::Orientation::Horizontal</enum>
                            </property>
-                           <property name="sizeHint">
+                           <property name="sizeHint" stdset="0">
                             <size>
                              <width>40</width>
                              <height>20</height>
@@ -2014,27 +3050,27 @@ Ctrl+J toggles output</string>
                          </property>
                          <item>
                           <widget class="QRadioButton" name="radio_split_by_column">
-                           <property name="text">
-                            <string>Column value</string>
-                           </property>
                            <property name="minimumSize">
                             <size>
                              <width>130</width>
                              <height>0</height>
                             </size>
                            </property>
+                           <property name="text">
+                            <string>Column value</string>
+                           </property>
                           </widget>
                          </item>
                          <item>
                           <widget class="QComboBox" name="combobox_split_column">
-                           <property name="placeholderText">
-                            <string>Select a CSV file first</string>
-                           </property>
                            <property name="minimumSize">
                             <size>
                              <width>220</width>
                              <height>0</height>
                             </size>
+                           </property>
+                           <property name="placeholderText">
+                            <string>Select a CSV file first</string>
                            </property>
                           </widget>
                          </item>
@@ -2043,7 +3079,7 @@ Ctrl+J toggles output</string>
                            <property name="orientation">
                             <enum>Qt::Orientation::Horizontal</enum>
                            </property>
-                           <property name="sizeHint">
+                           <property name="sizeHint" stdset="0">
                             <size>
                              <width>40</width>
                              <height>20</height>
@@ -2075,7 +3111,7 @@ Ctrl+J toggles output</string>
                       <number>0</number>
                      </property>
                      <item>
-                      <widget class="BusyBar" name="busy_bar_split">
+                      <widget class="BusyBar" name="busy_bar_split" native="true">
                        <property name="minimumSize">
                         <size>
                          <width>120</width>
@@ -2092,27 +3128,27 @@ Ctrl+J toggles output</string>
                      </item>
                      <item>
                       <widget class="QPushButton" name="button_split_cancel">
-                       <property name="text">
-                        <string>Cancel</string>
-                       </property>
                        <property name="toolTip">
                         <string>Stop splitting. Files written so far are removed.</string>
+                       </property>
+                       <property name="text">
+                        <string>Cancel</string>
                        </property>
                       </widget>
                      </item>
                      <item>
                       <widget class="QPushButton" name="button_split_start">
-                       <property name="text">
-                        <string>Split</string>
-                       </property>
-                       <property name="toolTip">
-                        <string>Split the CSV file into several files.</string>
-                       </property>
                        <property name="minimumSize">
                         <size>
                          <width>120</width>
                          <height>0</height>
                         </size>
+                       </property>
+                       <property name="toolTip">
+                        <string>Split the CSV file into several files.</string>
+                       </property>
+                       <property name="text">
+                        <string>Split</string>
                        </property>
                        <property name="role" stdset="0">
                         <string>primary</string>
@@ -2174,27 +3210,27 @@ Ctrl+J toggles output</string>
                         </item>
                         <item>
                          <widget class="QLineEdit" name="line_edit_split_result_path">
-                          <property name="placeholderText">
-                           <string />
-                          </property>
-                          <property name="clearButtonEnabled">
+                          <property name="frame">
                            <bool>false</bool>
                           </property>
                           <property name="readOnly">
                            <bool>true</bool>
                           </property>
-                          <property name="frame">
+                          <property name="placeholderText">
+                           <string/>
+                          </property>
+                          <property name="clearButtonEnabled">
                            <bool>false</bool>
                           </property>
                          </widget>
                         </item>
                         <item>
                          <widget class="QPushButton" name="button_split_show_folder">
-                          <property name="text">
-                           <string>Show folder</string>
-                          </property>
                           <property name="toolTip">
                            <string>Open the folder with the parts.</string>
+                          </property>
+                          <property name="text">
+                           <string>Show folder</string>
                           </property>
                          </widget>
                         </item>
@@ -2211,7 +3247,7 @@ Ctrl+J toggles output</string>
                   <property name="orientation">
                    <enum>Qt::Orientation::Vertical</enum>
                   </property>
-                  <property name="sizeHint">
+                  <property name="sizeHint" stdset="0">
                    <size>
                     <width>20</width>
                     <height>40</height>
@@ -2253,16 +3289,24 @@ Ctrl+J toggles output</string>
               <property name="frameShape">
                <enum>QFrame::Shape::NoFrame</enum>
               </property>
-              <property name="widgetResizable">
-               <bool>true</bool>
-              </property>
               <property name="horizontalScrollBarPolicy">
                <enum>Qt::ScrollBarPolicy::ScrollBarAlwaysOff</enum>
+              </property>
+              <property name="widgetResizable">
+               <bool>true</bool>
               </property>
               <property name="role" stdset="0">
                <string>transparent</string>
               </property>
               <widget class="QWidget" name="scroll_tab_tool_compare_contents">
+               <property name="geometry">
+                <rect>
+                 <x>0</x>
+                 <y>0</y>
+                 <width>438</width>
+                 <height>424</height>
+                </rect>
+               </property>
                <property name="role" stdset="0">
                 <string>transparent</string>
                </property>
@@ -2284,14 +3328,14 @@ Ctrl+J toggles output</string>
                 </property>
                 <item>
                  <widget class="QFrame" name="card_compare">
-                  <property name="frameShape">
-                   <enum>QFrame::Shape::StyledPanel</enum>
-                  </property>
                   <property name="maximumSize">
                    <size>
                     <width>860</width>
                     <height>16777215</height>
                    </size>
+                  </property>
+                  <property name="frameShape">
+                   <enum>QFrame::Shape::StyledPanel</enum>
                   </property>
                   <property name="role" stdset="0">
                    <string>card</string>
@@ -2337,6 +3381,9 @@ Ctrl+J toggles output</string>
                    </item>
                    <item>
                     <layout class="QFormLayout" name="layout_compare_form">
+                     <property name="fieldGrowthPolicy">
+                      <enum>QFormLayout::FieldGrowthPolicy::ExpandingFieldsGrow</enum>
+                     </property>
                      <property name="horizontalSpacing">
                       <number>10</number>
                      </property>
@@ -2354,9 +3401,6 @@ Ctrl+J toggles output</string>
                      </property>
                      <property name="bottomMargin">
                       <number>4</number>
-                     </property>
-                     <property name="fieldGrowthPolicy">
-                      <enum>QFormLayout::FieldGrowthPolicy::ExpandingFieldsGrow</enum>
                      </property>
                      <item row="0" column="0">
                       <widget class="QLabel" name="label_compare_old">
@@ -2397,11 +3441,11 @@ Ctrl+J toggles output</string>
                        </item>
                        <item>
                         <widget class="QPushButton" name="button_compare_old_browse_csv_file_path">
-                         <property name="text">
-                          <string>Browse…</string>
-                         </property>
                          <property name="toolTip">
                           <string>Choose the CSV file.</string>
+                         </property>
+                         <property name="text">
+                          <string>Browse…</string>
                          </property>
                         </widget>
                        </item>
@@ -2446,11 +3490,11 @@ Ctrl+J toggles output</string>
                        </item>
                        <item>
                         <widget class="QPushButton" name="button_compare_new_browse_csv_file_path">
-                         <property name="text">
-                          <string>Browse…</string>
-                         </property>
                          <property name="toolTip">
                           <string>Choose the CSV file.</string>
+                         </property>
+                         <property name="text">
+                          <string>Browse…</string>
                          </property>
                         </widget>
                        </item>
@@ -2485,9 +3529,6 @@ Ctrl+J toggles output</string>
                        </property>
                        <item>
                         <widget class="QComboBox" name="combobox_compare_key">
-                         <property name="placeholderText">
-                          <string>Select the old file first</string>
-                         </property>
                          <property name="minimumSize">
                           <size>
                            <width>220</width>
@@ -2497,6 +3538,9 @@ Ctrl+J toggles output</string>
                          <property name="toolTip">
                           <string>A column that identifies a row in both files, e.g. a name or ID.</string>
                          </property>
+                         <property name="placeholderText">
+                          <string>Select the old file first</string>
+                         </property>
                         </widget>
                        </item>
                        <item>
@@ -2504,7 +3548,7 @@ Ctrl+J toggles output</string>
                          <property name="orientation">
                           <enum>Qt::Orientation::Horizontal</enum>
                          </property>
-                         <property name="sizeHint">
+                         <property name="sizeHint" stdset="0">
                           <size>
                            <width>40</width>
                            <height>20</height>
@@ -2551,7 +3595,7 @@ Ctrl+J toggles output</string>
                       <number>0</number>
                      </property>
                      <item>
-                      <widget class="BusyBar" name="busy_bar_compare">
+                      <widget class="BusyBar" name="busy_bar_compare" native="true">
                        <property name="minimumSize">
                         <size>
                          <width>120</width>
@@ -2568,27 +3612,27 @@ Ctrl+J toggles output</string>
                      </item>
                      <item>
                       <widget class="QPushButton" name="button_compare_cancel">
-                       <property name="text">
-                        <string>Cancel</string>
-                       </property>
                        <property name="toolTip">
                         <string>Stop comparing.</string>
+                       </property>
+                       <property name="text">
+                        <string>Cancel</string>
                        </property>
                       </widget>
                      </item>
                      <item>
                       <widget class="QPushButton" name="button_compare_start">
-                       <property name="text">
-                        <string>Compare</string>
-                       </property>
-                       <property name="toolTip">
-                        <string>Compare the files and write a difference report.</string>
-                       </property>
                        <property name="minimumSize">
                         <size>
                          <width>120</width>
                          <height>0</height>
                         </size>
+                       </property>
+                       <property name="toolTip">
+                        <string>Compare the files and write a difference report.</string>
+                       </property>
+                       <property name="text">
+                        <string>Compare</string>
                        </property>
                        <property name="role" stdset="0">
                         <string>primary</string>
@@ -2624,7 +3668,7 @@ Ctrl+J toggles output</string>
                       <item>
                        <widget class="QLabel" name="label_compare_summary">
                         <property name="text">
-                         <string />
+                         <string/>
                         </property>
                         <property name="wordWrap">
                          <bool>true</bool>
@@ -2660,27 +3704,27 @@ Ctrl+J toggles output</string>
                         </item>
                         <item>
                          <widget class="QLineEdit" name="line_edit_compare_result_path">
-                          <property name="placeholderText">
-                           <string />
-                          </property>
-                          <property name="clearButtonEnabled">
+                          <property name="frame">
                            <bool>false</bool>
                           </property>
                           <property name="readOnly">
                            <bool>true</bool>
                           </property>
-                          <property name="frame">
+                          <property name="placeholderText">
+                           <string/>
+                          </property>
+                          <property name="clearButtonEnabled">
                            <bool>false</bool>
                           </property>
                          </widget>
                         </item>
                         <item>
                          <widget class="QPushButton" name="button_compare_view_report">
-                          <property name="text">
-                           <string>View in table</string>
-                          </property>
                           <property name="toolTip">
                            <string>Open the report in the table viewer.</string>
+                          </property>
+                          <property name="text">
+                           <string>View in table</string>
                           </property>
                           <property name="role" stdset="0">
                            <string>accent</string>
@@ -2689,11 +3733,11 @@ Ctrl+J toggles output</string>
                         </item>
                         <item>
                          <widget class="QPushButton" name="button_compare_open_report">
-                          <property name="text">
-                           <string>Open</string>
-                          </property>
                           <property name="toolTip">
                            <string>Open the report file.</string>
+                          </property>
+                          <property name="text">
+                           <string>Open</string>
                           </property>
                          </widget>
                         </item>
@@ -2710,7 +3754,7 @@ Ctrl+J toggles output</string>
                   <property name="orientation">
                    <enum>Qt::Orientation::Vertical</enum>
                   </property>
-                  <property name="sizeHint">
+                  <property name="sizeHint" stdset="0">
                    <size>
                     <width>20</width>
                     <height>40</height>
@@ -2752,16 +3796,24 @@ Ctrl+J toggles output</string>
               <property name="frameShape">
                <enum>QFrame::Shape::NoFrame</enum>
               </property>
-              <property name="widgetResizable">
-               <bool>true</bool>
-              </property>
               <property name="horizontalScrollBarPolicy">
                <enum>Qt::ScrollBarPolicy::ScrollBarAlwaysOff</enum>
+              </property>
+              <property name="widgetResizable">
+               <bool>true</bool>
               </property>
               <property name="role" stdset="0">
                <string>transparent</string>
               </property>
               <widget class="QWidget" name="scroll_tab_tool_columns_contents">
+               <property name="geometry">
+                <rect>
+                 <x>0</x>
+                 <y>0</y>
+                 <width>354</width>
+                 <height>620</height>
+                </rect>
+               </property>
                <property name="role" stdset="0">
                 <string>transparent</string>
                </property>
@@ -2783,14 +3835,14 @@ Ctrl+J toggles output</string>
                 </property>
                 <item>
                  <widget class="QFrame" name="card_columns">
-                  <property name="frameShape">
-                   <enum>QFrame::Shape::StyledPanel</enum>
-                  </property>
                   <property name="maximumSize">
                    <size>
                     <width>860</width>
                     <height>16777215</height>
                    </size>
+                  </property>
+                  <property name="frameShape">
+                   <enum>QFrame::Shape::StyledPanel</enum>
                   </property>
                   <property name="role" stdset="0">
                    <string>card</string>
@@ -2836,6 +3888,9 @@ Ctrl+J toggles output</string>
                    </item>
                    <item>
                     <layout class="QFormLayout" name="layout_columns_form">
+                     <property name="fieldGrowthPolicy">
+                      <enum>QFormLayout::FieldGrowthPolicy::ExpandingFieldsGrow</enum>
+                     </property>
                      <property name="horizontalSpacing">
                       <number>10</number>
                      </property>
@@ -2853,9 +3908,6 @@ Ctrl+J toggles output</string>
                      </property>
                      <property name="bottomMargin">
                       <number>4</number>
-                     </property>
-                     <property name="fieldGrowthPolicy">
-                      <enum>QFormLayout::FieldGrowthPolicy::ExpandingFieldsGrow</enum>
                      </property>
                      <item row="0" column="0">
                       <widget class="QLabel" name="label_columns_csv">
@@ -2896,11 +3948,11 @@ Ctrl+J toggles output</string>
                        </item>
                        <item>
                         <widget class="QPushButton" name="button_columns_browse_csv_file_path">
-                         <property name="text">
-                          <string>Browse…</string>
-                         </property>
                          <property name="toolTip">
                           <string>Choose the CSV file.</string>
+                         </property>
+                         <property name="text">
+                          <string>Browse…</string>
                          </property>
                         </widget>
                        </item>
@@ -2933,8 +3985,8 @@ Ctrl+J toggles output</string>
                          <height>240</height>
                         </size>
                        </property>
-                       <property name="alternatingRowColors">
-                        <bool>true</bool>
+                       <property name="editTriggers">
+                        <set>QAbstractItemView::EditTrigger::DoubleClicked|QAbstractItemView::EditTrigger::EditKeyPressed</set>
                        </property>
                        <property name="dragDropMode">
                         <enum>QAbstractItemView::DragDropMode::InternalMove</enum>
@@ -2942,8 +3994,8 @@ Ctrl+J toggles output</string>
                        <property name="defaultDropAction">
                         <enum>Qt::DropAction::MoveAction</enum>
                        </property>
-                       <property name="editTriggers">
-                        <set>QAbstractItemView::EditTrigger::DoubleClicked|QAbstractItemView::EditTrigger::EditKeyPressed</set>
+                       <property name="alternatingRowColors">
+                        <bool>true</bool>
                        </property>
                        <property name="selectionMode">
                         <enum>QAbstractItemView::SelectionMode::SingleSelection</enum>
@@ -2969,21 +4021,21 @@ Ctrl+J toggles output</string>
                        </property>
                        <item>
                         <widget class="QPushButton" name="button_columns_up">
-                         <property name="text">
-                          <string>Move up</string>
-                         </property>
                          <property name="toolTip">
                           <string>Move the selected column up (Ctrl+Up).</string>
+                         </property>
+                         <property name="text">
+                          <string>Move up</string>
                          </property>
                         </widget>
                        </item>
                        <item>
                         <widget class="QPushButton" name="button_columns_down">
-                         <property name="text">
-                          <string>Move down</string>
-                         </property>
                          <property name="toolTip">
                           <string>Move the selected column down (Ctrl+Down).</string>
+                         </property>
+                         <property name="text">
+                          <string>Move down</string>
                          </property>
                         </widget>
                        </item>
@@ -2995,7 +4047,7 @@ Ctrl+J toggles output</string>
                          <property name="sizeType">
                           <enum>QSizePolicy::Policy::Fixed</enum>
                          </property>
-                         <property name="sizeHint">
+                         <property name="sizeHint" stdset="0">
                           <size>
                            <width>0</width>
                            <height>12</height>
@@ -3005,21 +4057,21 @@ Ctrl+J toggles output</string>
                        </item>
                        <item>
                         <widget class="QPushButton" name="button_columns_all">
-                         <property name="text">
-                          <string>Keep all</string>
-                         </property>
                          <property name="toolTip">
                           <string>Tick every column.</string>
+                         </property>
+                         <property name="text">
+                          <string>Keep all</string>
                          </property>
                         </widget>
                        </item>
                        <item>
                         <widget class="QPushButton" name="button_columns_none">
-                         <property name="text">
-                          <string>Keep none</string>
-                         </property>
                          <property name="toolTip">
                           <string>Untick every column.</string>
+                         </property>
+                         <property name="text">
+                          <string>Keep none</string>
                          </property>
                         </widget>
                        </item>
@@ -3028,7 +4080,7 @@ Ctrl+J toggles output</string>
                          <property name="orientation">
                           <enum>Qt::Orientation::Vertical</enum>
                          </property>
-                         <property name="sizeHint">
+                         <property name="sizeHint" stdset="0">
                           <size>
                            <width>20</width>
                            <height>40</height>
@@ -3038,11 +4090,11 @@ Ctrl+J toggles output</string>
                        </item>
                        <item>
                         <widget class="QPushButton" name="button_columns_reset">
-                         <property name="text">
-                          <string>Reset</string>
-                         </property>
                          <property name="toolTip">
                           <string>Restore the file's original columns, order and names.</string>
+                         </property>
+                         <property name="text">
+                          <string>Reset</string>
                          </property>
                          <property name="role" stdset="0">
                           <string>flat</string>
@@ -3056,7 +4108,7 @@ Ctrl+J toggles output</string>
                    <item>
                     <widget class="QLabel" name="label_columns_status">
                      <property name="text">
-                      <string />
+                      <string/>
                      </property>
                      <property name="wordWrap">
                       <bool>true</bool>
@@ -3068,11 +4120,11 @@ Ctrl+J toggles output</string>
                    </item>
                    <item>
                     <widget class="QCheckBox" name="checkbox_columns_overwrite">
-                     <property name="text">
-                      <string>Overwrite the original file</string>
-                     </property>
                      <property name="toolTip">
                       <string>When off, the result is saved as &lt;name&gt;_edited.csv next to the original.</string>
+                     </property>
+                     <property name="text">
+                      <string>Overwrite the original file</string>
                      </property>
                     </widget>
                    </item>
@@ -3094,7 +4146,7 @@ Ctrl+J toggles output</string>
                       <number>0</number>
                      </property>
                      <item>
-                      <widget class="BusyBar" name="busy_bar_columns">
+                      <widget class="BusyBar" name="busy_bar_columns" native="true">
                        <property name="minimumSize">
                         <size>
                          <width>120</width>
@@ -3111,17 +4163,17 @@ Ctrl+J toggles output</string>
                      </item>
                      <item>
                       <widget class="QPushButton" name="button_columns_save">
-                       <property name="text">
-                        <string>Save</string>
-                       </property>
-                       <property name="toolTip">
-                        <string>Write the CSV file with the columns above.</string>
-                       </property>
                        <property name="minimumSize">
                         <size>
                          <width>120</width>
                          <height>0</height>
                         </size>
+                       </property>
+                       <property name="toolTip">
+                        <string>Write the CSV file with the columns above.</string>
+                       </property>
+                       <property name="text">
+                        <string>Save</string>
                        </property>
                        <property name="role" stdset="0">
                         <string>primary</string>
@@ -3183,37 +4235,37 @@ Ctrl+J toggles output</string>
                         </item>
                         <item>
                          <widget class="QLineEdit" name="line_edit_columns_result_path">
-                          <property name="placeholderText">
-                           <string />
-                          </property>
-                          <property name="clearButtonEnabled">
+                          <property name="frame">
                            <bool>false</bool>
                           </property>
                           <property name="readOnly">
                            <bool>true</bool>
                           </property>
-                          <property name="frame">
+                          <property name="placeholderText">
+                           <string/>
+                          </property>
+                          <property name="clearButtonEnabled">
                            <bool>false</bool>
                           </property>
                          </widget>
                         </item>
                         <item>
                          <widget class="QPushButton" name="button_columns_open_result">
-                          <property name="text">
-                           <string>Open</string>
-                          </property>
                           <property name="toolTip">
                            <string>Open the saved file.</string>
+                          </property>
+                          <property name="text">
+                           <string>Open</string>
                           </property>
                          </widget>
                         </item>
                         <item>
                          <widget class="QPushButton" name="button_columns_show_folder">
-                          <property name="text">
-                           <string>Show in folder</string>
-                          </property>
                           <property name="toolTip">
                            <string>Open the folder that contains the saved file.</string>
+                          </property>
+                          <property name="text">
+                           <string>Show in folder</string>
                           </property>
                           <property name="role" stdset="0">
                            <string>flat</string>
@@ -3233,7 +4285,7 @@ Ctrl+J toggles output</string>
                   <property name="orientation">
                    <enum>Qt::Orientation::Vertical</enum>
                   </property>
-                  <property name="sizeHint">
+                  <property name="sizeHint" stdset="0">
                    <size>
                     <width>20</width>
                     <height>40</height>
@@ -3275,16 +4327,24 @@ Ctrl+J toggles output</string>
               <property name="frameShape">
                <enum>QFrame::Shape::NoFrame</enum>
               </property>
-              <property name="widgetResizable">
-               <bool>true</bool>
-              </property>
               <property name="horizontalScrollBarPolicy">
                <enum>Qt::ScrollBarPolicy::ScrollBarAlwaysOff</enum>
+              </property>
+              <property name="widgetResizable">
+               <bool>true</bool>
               </property>
               <property name="role" stdset="0">
                <string>transparent</string>
               </property>
               <widget class="QWidget" name="scroll_tab_tool_cleanup_contents">
+               <property name="geometry">
+                <rect>
+                 <x>0</x>
+                 <y>0</y>
+                 <width>338</width>
+                 <height>288</height>
+                </rect>
+               </property>
                <property name="role" stdset="0">
                 <string>transparent</string>
                </property>
@@ -3306,14 +4366,14 @@ Ctrl+J toggles output</string>
                 </property>
                 <item>
                  <widget class="QFrame" name="groupbox_lobster_profiles_cleanup">
-                  <property name="frameShape">
-                   <enum>QFrame::Shape::StyledPanel</enum>
-                  </property>
                   <property name="maximumSize">
                    <size>
                     <width>860</width>
                     <height>16777215</height>
                    </size>
+                  </property>
+                  <property name="frameShape">
+                   <enum>QFrame::Shape::StyledPanel</enum>
                   </property>
                   <property name="role" stdset="0">
                    <string>card</string>
@@ -3359,6 +4419,9 @@ Ctrl+J toggles output</string>
                    </item>
                    <item>
                     <layout class="QFormLayout" name="layout_cleanup_form">
+                     <property name="fieldGrowthPolicy">
+                      <enum>QFormLayout::FieldGrowthPolicy::ExpandingFieldsGrow</enum>
+                     </property>
                      <property name="horizontalSpacing">
                       <number>10</number>
                      </property>
@@ -3376,9 +4439,6 @@ Ctrl+J toggles output</string>
                      </property>
                      <property name="bottomMargin">
                       <number>4</number>
-                     </property>
-                     <property name="fieldGrowthPolicy">
-                      <enum>QFormLayout::FieldGrowthPolicy::ExpandingFieldsGrow</enum>
                      </property>
                      <item row="0" column="0">
                       <widget class="QLabel" name="label_cleanup_csv">
@@ -3419,11 +4479,11 @@ Ctrl+J toggles output</string>
                        </item>
                        <item>
                         <widget class="QPushButton" name="button_profile_cleanup_browse_csv_file_path">
-                         <property name="text">
-                          <string>Browse…</string>
-                         </property>
                          <property name="toolTip">
                           <string>Choose the exported profile CSV file.</string>
+                         </property>
+                         <property name="text">
+                          <string>Browse…</string>
                          </property>
                         </widget>
                        </item>
@@ -3468,11 +4528,11 @@ Ctrl+J toggles output</string>
                        </item>
                        <item>
                         <widget class="QPushButton" name="button_profile_cleanup_browse_folder_path">
-                         <property name="text">
-                          <string>Browse…</string>
-                         </property>
                          <property name="toolTip">
                           <string>Choose the folder that contains the XML files.</string>
+                         </property>
+                         <property name="text">
+                          <string>Browse…</string>
                          </property>
                         </widget>
                        </item>
@@ -3498,7 +4558,7 @@ Ctrl+J toggles output</string>
                       <number>0</number>
                      </property>
                      <item>
-                      <widget class="BusyBar" name="busy_bar_cleanup">
+                      <widget class="BusyBar" name="busy_bar_cleanup" native="true">
                        <property name="minimumSize">
                         <size>
                          <width>120</width>
@@ -3515,11 +4575,11 @@ Ctrl+J toggles output</string>
                      </item>
                      <item>
                       <widget class="QPushButton" name="button_profile_cleanup_cleanup_start">
-                       <property name="text">
-                        <string>Delete unlisted XML files…</string>
-                       </property>
                        <property name="toolTip">
                         <string>Show which XML files are not listed in the CSV and delete them after you confirm.</string>
+                       </property>
+                       <property name="text">
+                        <string>Delete unlisted XML files…</string>
                        </property>
                        <property name="role" stdset="0">
                         <string>danger</string>
@@ -3536,7 +4596,7 @@ Ctrl+J toggles output</string>
                   <property name="orientation">
                    <enum>Qt::Orientation::Vertical</enum>
                   </property>
-                  <property name="sizeHint">
+                  <property name="sizeHint" stdset="0">
                    <size>
                     <width>20</width>
                     <height>40</height>
@@ -3578,16 +4638,24 @@ Ctrl+J toggles output</string>
               <property name="frameShape">
                <enum>QFrame::Shape::NoFrame</enum>
               </property>
-              <property name="widgetResizable">
-               <bool>true</bool>
-              </property>
               <property name="horizontalScrollBarPolicy">
                <enum>Qt::ScrollBarPolicy::ScrollBarAlwaysOff</enum>
+              </property>
+              <property name="widgetResizable">
+               <bool>true</bool>
               </property>
               <property name="role" stdset="0">
                <string>transparent</string>
               </property>
               <widget class="QWidget" name="scroll_tab_tool_hex_contents">
+               <property name="geometry">
+                <rect>
+                 <x>0</x>
+                 <y>0</y>
+                 <width>177</width>
+                 <height>288</height>
+                </rect>
+               </property>
                <property name="role" stdset="0">
                 <string>transparent</string>
                </property>
@@ -3609,14 +4677,14 @@ Ctrl+J toggles output</string>
                 </property>
                 <item>
                  <widget class="QFrame" name="groupbox_hexadecimal_to_decimal">
-                  <property name="frameShape">
-                   <enum>QFrame::Shape::StyledPanel</enum>
-                  </property>
                   <property name="maximumSize">
                    <size>
                     <width>860</width>
                     <height>16777215</height>
                    </size>
+                  </property>
+                  <property name="frameShape">
+                   <enum>QFrame::Shape::StyledPanel</enum>
                   </property>
                   <property name="role" stdset="0">
                    <string>card</string>
@@ -3662,6 +4730,9 @@ Ctrl+J toggles output</string>
                    </item>
                    <item>
                     <layout class="QFormLayout" name="layout_hex_form">
+                     <property name="fieldGrowthPolicy">
+                      <enum>QFormLayout::FieldGrowthPolicy::ExpandingFieldsGrow</enum>
+                     </property>
                      <property name="horizontalSpacing">
                       <number>10</number>
                      </property>
@@ -3679,9 +4750,6 @@ Ctrl+J toggles output</string>
                      </property>
                      <property name="bottomMargin">
                       <number>4</number>
-                     </property>
-                     <property name="fieldGrowthPolicy">
-                      <enum>QFormLayout::FieldGrowthPolicy::ExpandingFieldsGrow</enum>
                      </property>
                      <item row="0" column="0">
                       <widget class="QLabel" name="label_from_hexadecimal">
@@ -3715,14 +4783,14 @@ Ctrl+J toggles output</string>
                      </item>
                      <item row="1" column="1">
                       <widget class="QLineEdit" name="line_edit_decimal">
+                       <property name="readOnly">
+                        <bool>true</bool>
+                       </property>
                        <property name="placeholderText">
                         <string>Result appears as you type</string>
                        </property>
                        <property name="clearButtonEnabled">
                         <bool>false</bool>
-                       </property>
-                       <property name="readOnly">
-                        <bool>true</bool>
                        </property>
                       </widget>
                      </item>
@@ -3731,7 +4799,7 @@ Ctrl+J toggles output</string>
                    <item>
                     <widget class="QLabel" name="label_hex_error">
                      <property name="text">
-                      <string />
+                      <string/>
                      </property>
                      <property name="role" stdset="0">
                       <string>error</string>
@@ -3746,7 +4814,7 @@ Ctrl+J toggles output</string>
                   <property name="orientation">
                    <enum>Qt::Orientation::Vertical</enum>
                   </property>
-                  <property name="sizeHint">
+                  <property name="sizeHint" stdset="0">
                    <size>
                     <width>20</width>
                     <height>40</height>
@@ -3837,7 +4905,7 @@ Ctrl+J toggles output</string>
           <item>
            <widget class="QLabel" name="label_table_rows">
             <property name="text">
-             <string />
+             <string/>
             </property>
             <property name="role" stdset="0">
              <string>status</string>
@@ -3846,11 +4914,11 @@ Ctrl+J toggles output</string>
           </item>
           <item>
            <widget class="QPushButton" name="button_load_csv">
-            <property name="text">
-             <string>Open CSV…</string>
-            </property>
             <property name="toolTip">
              <string>Open a CSV file in the table viewer.</string>
+            </property>
+            <property name="text">
+             <string>Open CSV…</string>
             </property>
             <property name="role" stdset="0">
              <string>accent</string>
@@ -3859,11 +4927,11 @@ Ctrl+J toggles output</string>
           </item>
           <item>
            <widget class="QPushButton" name="button_clear_table">
-            <property name="text">
-             <string>Close</string>
-            </property>
             <property name="toolTip">
              <string>Close the table and free its memory.</string>
+            </property>
+            <property name="text">
+             <string>Close</string>
             </property>
            </widget>
           </item>
@@ -3877,6 +4945,12 @@ Ctrl+J toggles output</string>
           <property name="selectionBehavior">
            <enum>QAbstractItemView::SelectionBehavior::SelectRows</enum>
           </property>
+          <property name="verticalScrollMode">
+           <enum>QAbstractItemView::ScrollMode::ScrollPerPixel</enum>
+          </property>
+          <property name="horizontalScrollMode">
+           <enum>QAbstractItemView::ScrollMode::ScrollPerPixel</enum>
+          </property>
           <property name="sortingEnabled">
            <bool>true</bool>
           </property>
@@ -3885,12 +4959,6 @@ Ctrl+J toggles output</string>
           </property>
           <property name="cornerButtonEnabled">
            <bool>false</bool>
-          </property>
-          <property name="horizontalScrollMode">
-           <enum>QAbstractItemView::ScrollMode::ScrollPerPixel</enum>
-          </property>
-          <property name="verticalScrollMode">
-           <enum>QAbstractItemView::ScrollMode::ScrollPerPixel</enum>
           </property>
           <attribute name="horizontalHeaderStretchLastSection">
            <bool>true</bool>
@@ -3904,6 +4972,14 @@ Ctrl+J toggles output</string>
    </layout>
   </widget>
   <widget class="QMenuBar" name="menu_bar">
+   <property name="geometry">
+    <rect>
+     <x>0</x>
+     <y>0</y>
+     <width>1369</width>
+     <height>33</height>
+    </rect>
+   </property>
    <widget class="QMenu" name="file_menu">
     <property name="title">
      <string>&amp;File</string>
@@ -3913,16 +4989,16 @@ Ctrl+J toggles output</string>
       <string>Recent expressions</string>
      </property>
     </widget>
-    <addaction name="open_input_action" />
-    <addaction name="open_output_action" />
-    <addaction name="open_csv_conversion_input_action" />
-    <addaction name="separator" />
-    <addaction name="recent_xpath_expressions_menu" />
-    <addaction name="clear_recent_xpath_expressions_action" />
-    <addaction name="separator" />
-    <addaction name="prompt_on_exit_action" />
-    <addaction name="separator" />
-    <addaction name="exit_action" />
+    <addaction name="open_input_action"/>
+    <addaction name="open_output_action"/>
+    <addaction name="open_csv_conversion_input_action"/>
+    <addaction name="separator"/>
+    <addaction name="recent_xpath_expressions_menu"/>
+    <addaction name="clear_recent_xpath_expressions_action"/>
+    <addaction name="separator"/>
+    <addaction name="prompt_on_exit_action"/>
+    <addaction name="separator"/>
+    <addaction name="exit_action"/>
    </widget>
    <widget class="QMenu" name="paths_menu">
     <property name="title">
@@ -3948,23 +5024,23 @@ Ctrl+J toggles output</string>
       <string>Theme</string>
      </property>
     </widget>
-    <addaction name="open_paths_manager" />
-    <addaction name="open_pre_built_xpaths_manager_action" />
-    <addaction name="separator" />
-    <addaction name="theme_menu" />
+    <addaction name="open_paths_manager"/>
+    <addaction name="open_pre_built_xpaths_manager_action"/>
+    <addaction name="separator"/>
+    <addaction name="theme_menu"/>
    </widget>
    <widget class="QMenu" name="help_menu">
     <property name="title">
      <string>&amp;Help</string>
     </property>
-    <addaction name="xpath_help_action" />
+    <addaction name="xpath_help_action"/>
    </widget>
-   <addaction name="file_menu" />
-   <addaction name="paths_menu" />
-   <addaction name="menu_autofill" />
-   <addaction name="view_menu" />
-   <addaction name="settings_menu" />
-   <addaction name="help_menu" />
+   <addaction name="file_menu"/>
+   <addaction name="paths_menu"/>
+   <addaction name="menu_autofill"/>
+   <addaction name="view_menu"/>
+   <addaction name="settings_menu"/>
+   <addaction name="help_menu"/>
   </widget>
   <widget class="QStatusBar" name="statusbar">
    <property name="sizeGripEnabled">
@@ -4006,11 +5082,11 @@ Ctrl+J toggles output</string>
      </property>
      <item>
       <widget class="QTabWidget" name="tab_widget_output">
-       <property name="documentMode">
-        <bool>true</bool>
-       </property>
        <property name="currentIndex">
         <number>0</number>
+       </property>
+       <property name="documentMode">
+        <bool>true</bool>
        </property>
        <widget class="QWidget" name="tab_output_extract">
         <attribute name="title">
@@ -4082,6 +5158,41 @@ Ctrl+J toggles output</string>
          </item>
         </layout>
        </widget>
+       <widget class="QWidget" name="tab_output_xml">
+        <attribute name="title">
+         <string>XML tools</string>
+        </attribute>
+        <layout class="QVBoxLayout" name="layout_tab_output_xml">
+         <property name="spacing">
+          <number>0</number>
+         </property>
+         <property name="leftMargin">
+          <number>0</number>
+         </property>
+         <property name="topMargin">
+          <number>0</number>
+         </property>
+         <property name="rightMargin">
+          <number>0</number>
+         </property>
+         <property name="bottomMargin">
+          <number>0</number>
+         </property>
+         <item>
+          <widget class="QTextEdit" name="text_edit_xml_tools_output">
+           <property name="readOnly">
+            <bool>true</bool>
+           </property>
+           <property name="placeholderText">
+            <string>Messages from the XML tools appear here.</string>
+           </property>
+           <property name="role" stdset="0">
+            <string>log</string>
+           </property>
+          </widget>
+         </item>
+        </layout>
+       </widget>
       </widget>
      </item>
     </layout>
@@ -4089,7 +5200,7 @@ Ctrl+J toggles output</string>
   </widget>
   <action name="open_input_action">
    <property name="icon">
-    <iconset theme="QIcon::ThemeIcon::FolderOpen" />
+    <iconset theme="QIcon::ThemeIcon::FolderOpen"/>
    </property>
    <property name="text">
     <string>Open XML folder</string>
@@ -4097,7 +5208,7 @@ Ctrl+J toggles output</string>
   </action>
   <action name="open_output_action">
    <property name="icon">
-    <iconset theme="QIcon::ThemeIcon::FolderOpen" />
+    <iconset theme="QIcon::ThemeIcon::FolderOpen"/>
    </property>
    <property name="text">
     <string>Open CSV output folder</string>
@@ -4105,7 +5216,7 @@ Ctrl+J toggles output</string>
   </action>
   <action name="open_csv_conversion_input_action">
    <property name="icon">
-    <iconset theme="QIcon::ThemeIcon::FolderOpen" />
+    <iconset theme="QIcon::ThemeIcon::FolderOpen"/>
    </property>
    <property name="text">
     <string>Open CSV conversion folder</string>
@@ -4113,7 +5224,7 @@ Ctrl+J toggles output</string>
   </action>
   <action name="clear_recent_xpath_expressions_action">
    <property name="icon">
-    <iconset theme="QIcon::ThemeIcon::EditClear" />
+    <iconset theme="QIcon::ThemeIcon::EditClear"/>
    </property>
    <property name="text">
     <string>Clear recent expressions</string>
@@ -4132,7 +5243,7 @@ Ctrl+J toggles output</string>
   </action>
   <action name="exit_action">
    <property name="icon">
-    <iconset theme="QIcon::ThemeIcon::ApplicationExit" />
+    <iconset theme="QIcon::ThemeIcon::ApplicationExit"/>
    </property>
    <property name="text">
     <string>Exit</string>
@@ -4153,7 +5264,7 @@ Ctrl+J toggles output</string>
   </action>
   <action name="xpath_help_action">
    <property name="icon">
-    <iconset theme="QIcon::ThemeIcon::HelpAbout" />
+    <iconset theme="QIcon::ThemeIcon::HelpAbout"/>
    </property>
    <property name="text">
     <string>XPath syntax reference</string>
@@ -4171,7 +5282,7 @@ Ctrl+J toggles output</string>
   </customwidget>
  </customwidgets>
  <resources>
-  <include location="../qrc/xmluvation_resources.qrc" />
+  <include location="../qrc/xmluvation_resources.qrc"/>
  </resources>
- <connections />
+ <connections/>
 </ui>

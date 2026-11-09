@@ -31,9 +31,28 @@ def _existing_csv(path_text: str, *, title: str, message: str) -> Path:
     return path
 
 
+def parse_delimiter(text: str) -> str:
+    r"""A user-entered delimiter: one character, or ``Tab`` / ``\t`` for a tab."""
+    if text == "\t" or text.strip().casefold() in {"tab", r"\t"}:
+        return "\t"
+    value = text if text == " " else text.strip()
+    if len(value) != 1 or value in {'"', "\r", "\n"}:
+        raise ValidationError(
+            f"'{text}' is not a valid delimiter.\n"
+            "Enter a single character such as , ; or |, or 'Tab' for a tab.",
+            title="Invalid Delimiter",
+        )
+    return value
+
+
 def convert_csv(
-    path_text: str, output_type: str, write_index: bool, reporter: ProgressReporter
+    path_text: str,
+    output_type: str,
+    write_index: bool,
+    reporter: ProgressReporter,
+    delimiter_text: str | None = None,
 ) -> ConversionResult:
+    """Convert a CSV file; ``delimiter_text`` overrides delimiter detection when given."""
     source = _existing_csv(
         path_text,
         title="CSV Input File Error",
@@ -49,8 +68,12 @@ def convert_csv(
     except ValueError as exc:
         raise ValidationError(f"Unsupported output type: {output_type}") from exc
 
-    delimiter = csv_io.detect_delimiter(source)
-    reporter.message(f"Detected delimiter: '{delimiter}'")
+    if delimiter_text is not None:
+        delimiter = parse_delimiter(delimiter_text)
+        reporter.message(f"Using delimiter: {csv_io.describe_delimiter(delimiter)}")
+    else:
+        delimiter = csv_io.detect_delimiter(source)
+        reporter.message(f"Detected delimiter: {csv_io.describe_delimiter(delimiter)}")
     df = csv_io.load_dataframe(source, delimiter)
     try:
         if df.empty and len(df.columns) == 0:

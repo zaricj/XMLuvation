@@ -8,6 +8,7 @@ from PySide6.QtCore import QSettings
 from PySide6.QtWidgets import QApplication, QPlainTextEdit
 
 from xmluvation.infrastructure.settings_store import SettingsStore
+from xmluvation.presentation.views.main_window import PAGE_TABLE, PAGE_XML_TOOLS
 
 
 def test_window_builds_with_theme_and_initial_state(window) -> None:
@@ -122,4 +123,37 @@ def test_compare_report_opens_in_table_viewer(qtbot, window, tmp_path: Path) -> 
     assert "1 added, 1 changed rows (1 cells)" in ui.label_compare_summary.text()
     ui.button_compare_view_report.click()
     qtbot.waitUntil(lambda: window.vms.table.model.rowCount() == 2, timeout=5000)
-    assert ui.stacked_pages.currentIndex() == 2
+    assert ui.stacked_pages.currentIndex() == PAGE_TABLE
+
+
+def test_xml_tools_page_validates_and_compares(qtbot, window, tmp_path: Path) -> None:
+    xsd = tmp_path / "s.xsd"
+    xsd.write_text(
+        '<xs:schema xmlns:xs="http://www.w3.org/2001/XMLSchema">'
+        '<xs:element name="n" type="xs:int"/></xs:schema>',
+        encoding="utf-8",
+    )
+    old, new = tmp_path / "old.xml", tmp_path / "new.xml"
+    old.write_text("<n>1</n>", encoding="utf-8")
+    new.write_text("<n>x</n>", encoding="utf-8")
+    ui = window.ui
+    ui.list_widget_navigation.setCurrentRow(PAGE_XML_TOOLS)
+    assert ui.stacked_pages.currentWidget() is ui.page_xml_tools
+    assert ui.tab_widget_output.currentWidget() is ui.tab_output_xml
+
+    ui.line_edit_validate_schema_path.setText(str(xsd))
+    ui.line_edit_validate_xml_path.setText(str(old))
+    ui.button_validate_start.click()
+    qtbot.waitUntil(lambda: not ui.frame_validate_result.isHidden(), timeout=5000)
+    assert ui.label_validate_summary.text().startswith("Valid")
+    assert ui.button_validate_view_report.isHidden()  # nothing to report
+
+    ui.line_edit_xml_compare_old_path.setText(str(old))
+    ui.line_edit_xml_compare_new_path.setText(str(new))
+    ui.button_xml_compare_start.click()
+    qtbot.waitUntil(lambda: not ui.frame_xml_compare_result.isHidden(), timeout=5000)
+    assert "1 difference(s): 1 changed" in ui.label_xml_compare_summary.text()
+    assert "Report saved" in ui.text_edit_xml_tools_output.toPlainText()
+    ui.button_xml_compare_view_report.click()
+    qtbot.waitUntil(lambda: window.vms.table.model.rowCount() == 1, timeout=5000)
+    assert ui.stacked_pages.currentIndex() == PAGE_TABLE

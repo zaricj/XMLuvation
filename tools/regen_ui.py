@@ -25,7 +25,7 @@ UI_FILES = {
     "XMLuvation.ui": "main_window_ui.py",
     "CustomPathsManager.ui": "custom_paths_manager_ui.py",
     "PreBuiltXPathsManager.ui": "prebuilt_xpaths_manager_ui.py",
-    "exit_dialog_box.ui": "exit_dialog_ui.py",
+    "ExitDialogBox.ui": "exit_dialog_ui.py",
 }
 
 

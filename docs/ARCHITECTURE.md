@@ -96,8 +96,8 @@ tools/regen_ui.py              regenerate presentation/generated after editing .
 ## UI structure and themes
 
 * The main window is a sidebar (`list_widget_navigation`) driving `stacked_pages`
-  (Extract, CSV tools, Table viewer), with a bottom `dock_output` holding the two logs.
-  Ctrl+1–3 switch pages; Ctrl+J toggles the output dock.
+  (Extract, XML tools, CSV tools, Table viewer), with a bottom `dock_output` holding one
+  log per tool page. Ctrl+1–4 switch pages; Ctrl+J toggles the output dock.
 * Sections are `QFrame` cards. Widgets carry a dynamic `role` property (`card`,
   `card-title`, `hint`, `field-label`, `primary`, `accent`, `danger`, `flat`, `nav`, …)
   that the style sheets select on, so the `.ui` files contain no inline styles or fonts.
@@ -109,7 +109,20 @@ tools/regen_ui.py              regenerate presentation/generated after editing .
   unless asked to (`application/output_paths.py`); Split removes its new folder if it
   fails or is cancelled. `presentation/views/csv_transforms_view.py` binds Split,
   Compare and Columns; `HeaderReader` loads a file's column names in the background.
-* The CSV tools page is a segmented `QTabWidget` with one card per tool. Each tool's
+* XML tools (`application/xml_tools.py`, bound by `presentation/views/xml_tools_view.py`):
+  * Validate checks one file, or every `*.xml` directly in a folder, against an XSD 1.0
+    schema (`infrastructure/xml_validation.py`, libxml2). Local `xs:include`/`xs:import`
+    files are resolved relative to the schema; the network is never used. Up to 1,000
+    problems per file go to `<schema>_validation.csv` next to the XML files.
+  * Compare (`infrastructure/xml_diff.py`) fingerprints every subtree bottom-up, aligns
+    child lists by fingerprint and then by tag (`difflib`, with common start/end trimmed
+    and positional pairing for very long sibling lists), and lists added, removed and
+    changed elements, attributes and text with a readable XPath and line numbers in
+    `<new>_vs_<old>_xmldiff.csv`. Comments and processing instructions are ignored;
+    whitespace in text is normalized unless the option is turned off. The report stops
+    at 100,000 differences.
+  * Both reports open in the table viewer ("View in table").
+* The CSV and XML tools pages are segmented `QTabWidget`s with one card per tool. Each tool's
   action row holds a `BusyBar` (`presentation/widgets/busy_bar.py`, a promoted widget
   in the `.ui`): an indeterminate striped bar that keeps its place in the layout, paints
   nothing while idle, and takes its colors from `qproperty-trackColor`/`stripeColor`.

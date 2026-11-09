@@ -22,6 +22,7 @@ from ..presentation.viewmodels.presets_vm import PresetsViewModel
 from ..presentation.viewmodels.settings_vm import SettingsViewModel
 from ..presentation.viewmodels.table_viewer_vm import TableViewerViewModel
 from ..presentation.viewmodels.xml_inspector_vm import XmlInspectorViewModel
+from ..presentation.viewmodels.xml_tools_vm import XmlToolsViewModel
 from ..presentation.viewmodels.xpath_workspace_vm import XPathWorkspaceViewModel
 from ..presentation.views.main_window import MainViewModels, MainWindow
 from . import paths
@@ -78,6 +79,7 @@ def build_main_window(
         export=ExportViewModel(runner),
         csv_tools=CsvToolsViewModel(runner),
         transforms=CsvTransformsViewModel(runner),
+        xml_tools=XmlToolsViewModel(runner),
         table=TableViewerViewModel(runner),
         presets=PresetsViewModel(service),
         new_presets_vm=lambda: PresetsViewModel(service),

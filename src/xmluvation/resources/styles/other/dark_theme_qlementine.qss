@@ -492,6 +492,12 @@ QSpinBox:focus, QDoubleSpinBox:focus {
     border: 1px solid #5b9bd5;
 }
 
+QSpinBox:disabled, QDoubleSpinBox:disabled {
+    background-color: #1e1e1e;
+    color: #6e6e6e;
+    border: 1px solid #2d2d30;
+}
+
 QSpinBox::up-button, QDoubleSpinBox::up-button {
     background-color: transparent;
     border: none;
