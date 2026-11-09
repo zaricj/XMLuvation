@@ -3,7 +3,7 @@
 ################################################################################
 ## Form generated from reading UI file 'PreBuiltXPathsManager.ui'
 ##
-## Created by: Qt User Interface Compiler version 6.12.0
+## Created by: Qt User Interface Compiler version 6.11.1
 ##
 ## WARNING! All changes made in this file will be lost when recompiling UI file!
 ################################################################################
@@ -15,9 +15,9 @@ from PySide6.QtGui import (QBrush, QColor, QConicalGradient, QCursor,
     QFont, QFontDatabase, QGradient, QIcon,
     QImage, QKeySequence, QLinearGradient, QPainter,
     QPalette, QPixmap, QRadialGradient, QTransform)
-from PySide6.QtWidgets import (QApplication, QComboBox, QFrame, QGroupBox,
-    QHBoxLayout, QLabel, QLineEdit, QListWidget,
-    QListWidgetItem, QPushButton, QSizePolicy, QVBoxLayout,
+from PySide6.QtWidgets import (QApplication, QComboBox, QFrame, QHBoxLayout,
+    QLabel, QLineEdit, QListWidget, QListWidgetItem,
+    QPushButton, QSizePolicy, QSpacerItem, QVBoxLayout,
     QWidget)
 from . import xmluvation_resources_rc
 
@@ -25,265 +25,246 @@ class Ui_PreBuiltXPathsManagerWidget(object):
     def setupUi(self, PreBuiltXPathsManagerWidget):
         if not PreBuiltXPathsManagerWidget.objectName():
             PreBuiltXPathsManagerWidget.setObjectName(u"PreBuiltXPathsManagerWidget")
-        PreBuiltXPathsManagerWidget.setWindowModality(Qt.WindowModality.WindowModal)
-        PreBuiltXPathsManagerWidget.resize(1201, 669)
         icon = QIcon()
         icon.addFile(u":/icons/xml_256px.ico", QSize(), QIcon.Mode.Normal, QIcon.State.Off)
         PreBuiltXPathsManagerWidget.setWindowIcon(icon)
-        self.verticalLayout = QVBoxLayout(PreBuiltXPathsManagerWidget)
-        self.verticalLayout.setObjectName(u"verticalLayout")
-        self.MainHorLayout = QHBoxLayout()
-        self.MainHorLayout.setObjectName(u"MainHorLayout")
-        self.LeftSide = QVBoxLayout()
-        self.LeftSide.setObjectName(u"LeftSide")
-        self.groupBox_pre_built_xpaths_main = QGroupBox(PreBuiltXPathsManagerWidget)
-        self.groupBox_pre_built_xpaths_main.setObjectName(u"groupBox_pre_built_xpaths_main")
-        self.verticalLayout_2 = QVBoxLayout(self.groupBox_pre_built_xpaths_main)
-        self.verticalLayout_2.setObjectName(u"verticalLayout_2")
-        self.label_9 = QLabel(self.groupBox_pre_built_xpaths_main)
-        self.label_9.setObjectName(u"label_9")
+        PreBuiltXPathsManagerWidget.setMinimumSize(QSize(900, 0))
+        self.layout_PreBuiltXPathsManagerWidget = QVBoxLayout(PreBuiltXPathsManagerWidget)
+        self.layout_PreBuiltXPathsManagerWidget.setSpacing(14)
+        self.layout_PreBuiltXPathsManagerWidget.setObjectName(u"layout_PreBuiltXPathsManagerWidget")
+        self.layout_PreBuiltXPathsManagerWidget.setContentsMargins(24, 22, 24, 22)
+        self.label_presets_title = QLabel(PreBuiltXPathsManagerWidget)
+        self.label_presets_title.setObjectName(u"label_presets_title")
 
-        self.verticalLayout_2.addWidget(self.label_9)
+        self.layout_PreBuiltXPathsManagerWidget.addWidget(self.label_presets_title)
 
-        self.horizontalLayout = QHBoxLayout()
-        self.horizontalLayout.setObjectName(u"horizontalLayout")
-        self.lable_pre_built_xpaths = QLabel(self.groupBox_pre_built_xpaths_main)
-        self.lable_pre_built_xpaths.setObjectName(u"lable_pre_built_xpaths")
+        self.label_presets_hint = QLabel(PreBuiltXPathsManagerWidget)
+        self.label_presets_hint.setObjectName(u"label_presets_hint")
+        self.label_presets_hint.setWordWrap(True)
 
-        self.horizontalLayout.addWidget(self.lable_pre_built_xpaths)
+        self.layout_PreBuiltXPathsManagerWidget.addWidget(self.label_presets_hint)
 
-        self.combobox_xpath_configs = QComboBox(self.groupBox_pre_built_xpaths_main)
-        self.combobox_xpath_configs.setObjectName(u"combobox_xpath_configs")
-        sizePolicy = QSizePolicy(QSizePolicy.Policy.Expanding, QSizePolicy.Policy.Fixed)
-        sizePolicy.setHorizontalStretch(0)
-        sizePolicy.setVerticalStretch(0)
-        sizePolicy.setHeightForWidth(self.combobox_xpath_configs.sizePolicy().hasHeightForWidth())
-        self.combobox_xpath_configs.setSizePolicy(sizePolicy)
-        self.combobox_xpath_configs.setEditable(True)
-
-        self.horizontalLayout.addWidget(self.combobox_xpath_configs)
-
-        self.button_load_config = QPushButton(self.groupBox_pre_built_xpaths_main)
-        self.button_load_config.setObjectName(u"button_load_config")
-
-        self.horizontalLayout.addWidget(self.button_load_config)
-
-        self.button_delete_config = QPushButton(self.groupBox_pre_built_xpaths_main)
-        self.button_delete_config.setObjectName(u"button_delete_config")
-
-        self.horizontalLayout.addWidget(self.button_delete_config)
-
-
-        self.verticalLayout_2.addLayout(self.horizontalLayout)
-
-        self.frame_3 = QFrame(self.groupBox_pre_built_xpaths_main)
-        self.frame_3.setObjectName(u"frame_3")
-        self.frame_3.setFrameShape(QFrame.Shape.StyledPanel)
-        self.frame_3.setFrameShadow(QFrame.Shadow.Raised)
-        self.verticalLayout_8 = QVBoxLayout(self.frame_3)
-        self.verticalLayout_8.setObjectName(u"verticalLayout_8")
-        self.label_7 = QLabel(self.frame_3)
-        self.label_7.setObjectName(u"label_7")
-        font = QFont()
-        font.setBold(True)
-        self.label_7.setFont(font)
-
-        self.verticalLayout_8.addWidget(self.label_7)
-
-        self.list_widget_edit_xpath_expressions = QListWidget(self.frame_3)
-        self.list_widget_edit_xpath_expressions.setObjectName(u"list_widget_edit_xpath_expressions")
-        self.list_widget_edit_xpath_expressions.setFocusPolicy(Qt.FocusPolicy.ClickFocus)
-
-        self.verticalLayout_8.addWidget(self.list_widget_edit_xpath_expressions)
-
-
-        self.verticalLayout_2.addWidget(self.frame_3)
-
-        self.line_3 = QFrame(self.groupBox_pre_built_xpaths_main)
-        self.line_3.setObjectName(u"line_3")
-        self.line_3.setFrameShape(QFrame.Shape.HLine)
-        self.line_3.setFrameShadow(QFrame.Shadow.Sunken)
-
-        self.verticalLayout_2.addWidget(self.line_3)
-
-        self.frame_4 = QFrame(self.groupBox_pre_built_xpaths_main)
-        self.frame_4.setObjectName(u"frame_4")
-        self.frame_4.setFrameShape(QFrame.Shape.StyledPanel)
-        self.frame_4.setFrameShadow(QFrame.Shadow.Raised)
-        self.verticalLayout_4 = QVBoxLayout(self.frame_4)
-        self.verticalLayout_4.setObjectName(u"verticalLayout_4")
-        self.label_8 = QLabel(self.frame_4)
-        self.label_8.setObjectName(u"label_8")
-        self.label_8.setFont(font)
-
-        self.verticalLayout_4.addWidget(self.label_8)
-
-        self.list_widget_edit_csv_headers = QListWidget(self.frame_4)
-        self.list_widget_edit_csv_headers.setObjectName(u"list_widget_edit_csv_headers")
-        self.list_widget_edit_csv_headers.setFocusPolicy(Qt.FocusPolicy.ClickFocus)
-
-        self.verticalLayout_4.addWidget(self.list_widget_edit_csv_headers)
-
-
-        self.verticalLayout_2.addWidget(self.frame_4)
-
-        self.horizontalLayout_6 = QHBoxLayout()
-        self.horizontalLayout_6.setObjectName(u"horizontalLayout_6")
-        self.button_save_changes = QPushButton(self.groupBox_pre_built_xpaths_main)
-        self.button_save_changes.setObjectName(u"button_save_changes")
-        sizePolicy.setHeightForWidth(self.button_save_changes.sizePolicy().hasHeightForWidth())
-        self.button_save_changes.setSizePolicy(sizePolicy)
-
-        self.horizontalLayout_6.addWidget(self.button_save_changes)
-
-        self.button_open_config_directory = QPushButton(self.groupBox_pre_built_xpaths_main)
-        self.button_open_config_directory.setObjectName(u"button_open_config_directory")
-        sizePolicy.setHeightForWidth(self.button_open_config_directory.sizePolicy().hasHeightForWidth())
-        self.button_open_config_directory.setSizePolicy(sizePolicy)
-
-        self.horizontalLayout_6.addWidget(self.button_open_config_directory)
-
-
-        self.verticalLayout_2.addLayout(self.horizontalLayout_6)
-
-
-        self.LeftSide.addWidget(self.groupBox_pre_built_xpaths_main)
-
-
-        self.MainHorLayout.addLayout(self.LeftSide)
-
-        self.RightSide = QVBoxLayout()
-        self.RightSide.setObjectName(u"RightSide")
-        self.groupBox = QGroupBox(PreBuiltXPathsManagerWidget)
+        self.layout_presets_cards = QHBoxLayout()
+        self.layout_presets_cards.setSpacing(14)
+        self.layout_presets_cards.setObjectName(u"layout_presets_cards")
+        self.layout_presets_cards.setContentsMargins(0, 0, 0, 0)
+        self.groupBox = QFrame(PreBuiltXPathsManagerWidget)
         self.groupBox.setObjectName(u"groupBox")
-        self.verticalLayout_7 = QVBoxLayout(self.groupBox)
-        self.verticalLayout_7.setObjectName(u"verticalLayout_7")
+        self.groupBox.setFrameShape(QFrame.Shape.StyledPanel)
+        self.layout_groupBox = QVBoxLayout(self.groupBox)
+        self.layout_groupBox.setSpacing(10)
+        self.layout_groupBox.setObjectName(u"layout_groupBox")
+        self.layout_groupBox.setContentsMargins(18, 16, 18, 18)
+        self.label_groupBox_title = QLabel(self.groupBox)
+        self.label_groupBox_title.setObjectName(u"label_groupBox_title")
+
+        self.layout_groupBox.addWidget(self.label_groupBox_title)
+
         self.label = QLabel(self.groupBox)
         self.label.setObjectName(u"label")
-        self.label.setAlignment(Qt.AlignmentFlag.AlignLeading|Qt.AlignmentFlag.AlignLeft|Qt.AlignmentFlag.AlignVCenter)
+        self.label.setWordWrap(True)
 
-        self.verticalLayout_7.addWidget(self.label)
+        self.layout_groupBox.addWidget(self.label)
 
-        self.frame = QFrame(self.groupBox)
-        self.frame.setObjectName(u"frame")
-        self.frame.setFrameShape(QFrame.Shape.StyledPanel)
-        self.frame.setFrameShadow(QFrame.Shadow.Raised)
-        self.verticalLayout_3 = QVBoxLayout(self.frame)
-        self.verticalLayout_3.setObjectName(u"verticalLayout_3")
-        self.horizontalLayout_3 = QHBoxLayout()
-        self.horizontalLayout_3.setObjectName(u"horizontalLayout_3")
-        self.line_edit_xpath_expression = QLineEdit(self.frame)
+        self.label_new_expressions = QLabel(self.groupBox)
+        self.label_new_expressions.setObjectName(u"label_new_expressions")
+
+        self.layout_groupBox.addWidget(self.label_new_expressions)
+
+        self.layout_new_expression = QHBoxLayout()
+        self.layout_new_expression.setSpacing(8)
+        self.layout_new_expression.setObjectName(u"layout_new_expression")
+        self.layout_new_expression.setContentsMargins(0, 0, 0, 0)
+        self.line_edit_xpath_expression = QLineEdit(self.groupBox)
         self.line_edit_xpath_expression.setObjectName(u"line_edit_xpath_expression")
+        self.line_edit_xpath_expression.setClearButtonEnabled(True)
 
-        self.horizontalLayout_3.addWidget(self.line_edit_xpath_expression)
+        self.layout_new_expression.addWidget(self.line_edit_xpath_expression)
 
-        self.button_add_xpath_to_list = QPushButton(self.frame)
+        self.button_add_xpath_to_list = QPushButton(self.groupBox)
         self.button_add_xpath_to_list.setObjectName(u"button_add_xpath_to_list")
-        icon1 = QIcon(QIcon.fromTheme(QIcon.ThemeIcon.ListAdd))
-        self.button_add_xpath_to_list.setIcon(icon1)
 
-        self.horizontalLayout_3.addWidget(self.button_add_xpath_to_list)
+        self.layout_new_expression.addWidget(self.button_add_xpath_to_list)
 
 
-        self.verticalLayout_3.addLayout(self.horizontalLayout_3)
+        self.layout_groupBox.addLayout(self.layout_new_expression)
 
-        self.list_widget_xpath_expressions = QListWidget(self.frame)
+        self.list_widget_xpath_expressions = QListWidget(self.groupBox)
         self.list_widget_xpath_expressions.setObjectName(u"list_widget_xpath_expressions")
-        self.list_widget_xpath_expressions.setFocusPolicy(Qt.FocusPolicy.ClickFocus)
+        self.list_widget_xpath_expressions.setAlternatingRowColors(True)
+        self.list_widget_xpath_expressions.setMinimumSize(QSize(0, 110))
 
-        self.verticalLayout_3.addWidget(self.list_widget_xpath_expressions)
+        self.layout_groupBox.addWidget(self.list_widget_xpath_expressions)
 
+        self.label_new_headers = QLabel(self.groupBox)
+        self.label_new_headers.setObjectName(u"label_new_headers")
 
-        self.verticalLayout_7.addWidget(self.frame)
+        self.layout_groupBox.addWidget(self.label_new_headers)
 
-        self.line_2 = QFrame(self.groupBox)
-        self.line_2.setObjectName(u"line_2")
-        self.line_2.setFrameShape(QFrame.Shape.HLine)
-        self.line_2.setFrameShadow(QFrame.Shadow.Sunken)
-
-        self.verticalLayout_7.addWidget(self.line_2)
-
-        self.frame_2 = QFrame(self.groupBox)
-        self.frame_2.setObjectName(u"frame_2")
-        self.frame_2.setFrameShape(QFrame.Shape.StyledPanel)
-        self.frame_2.setFrameShadow(QFrame.Shadow.Raised)
-        self.verticalLayout_6 = QVBoxLayout(self.frame_2)
-        self.verticalLayout_6.setObjectName(u"verticalLayout_6")
-        self.horizontalLayout_4 = QHBoxLayout()
-        self.horizontalLayout_4.setObjectName(u"horizontalLayout_4")
-        self.line_edit_csv_header = QLineEdit(self.frame_2)
+        self.layout_new_header = QHBoxLayout()
+        self.layout_new_header.setSpacing(8)
+        self.layout_new_header.setObjectName(u"layout_new_header")
+        self.layout_new_header.setContentsMargins(0, 0, 0, 0)
+        self.line_edit_csv_header = QLineEdit(self.groupBox)
         self.line_edit_csv_header.setObjectName(u"line_edit_csv_header")
+        self.line_edit_csv_header.setClearButtonEnabled(True)
 
-        self.horizontalLayout_4.addWidget(self.line_edit_csv_header)
+        self.layout_new_header.addWidget(self.line_edit_csv_header)
 
-        self.button_add_csv_header_to_list = QPushButton(self.frame_2)
+        self.button_add_csv_header_to_list = QPushButton(self.groupBox)
         self.button_add_csv_header_to_list.setObjectName(u"button_add_csv_header_to_list")
-        self.button_add_csv_header_to_list.setIcon(icon1)
 
-        self.horizontalLayout_4.addWidget(self.button_add_csv_header_to_list)
+        self.layout_new_header.addWidget(self.button_add_csv_header_to_list)
 
 
-        self.verticalLayout_6.addLayout(self.horizontalLayout_4)
+        self.layout_groupBox.addLayout(self.layout_new_header)
 
-        self.list_widget_csv_headers = QListWidget(self.frame_2)
+        self.list_widget_csv_headers = QListWidget(self.groupBox)
         self.list_widget_csv_headers.setObjectName(u"list_widget_csv_headers")
-        self.list_widget_csv_headers.setFocusPolicy(Qt.FocusPolicy.ClickFocus)
+        self.list_widget_csv_headers.setAlternatingRowColors(True)
+        self.list_widget_csv_headers.setMinimumSize(QSize(0, 110))
 
-        self.verticalLayout_6.addWidget(self.list_widget_csv_headers)
+        self.layout_groupBox.addWidget(self.list_widget_csv_headers)
 
-
-        self.verticalLayout_7.addWidget(self.frame_2)
-
-        self.horizontalLayout_5 = QHBoxLayout()
-        self.horizontalLayout_5.setObjectName(u"horizontalLayout_5")
-        self.label_4 = QLabel(self.groupBox)
-        self.label_4.setObjectName(u"label_4")
-
-        self.horizontalLayout_5.addWidget(self.label_4)
-
+        self.layout_new_save = QHBoxLayout()
+        self.layout_new_save.setSpacing(8)
+        self.layout_new_save.setObjectName(u"layout_new_save")
+        self.layout_new_save.setContentsMargins(0, 0, 0, 0)
         self.line_edit_config_name = QLineEdit(self.groupBox)
         self.line_edit_config_name.setObjectName(u"line_edit_config_name")
+        self.line_edit_config_name.setClearButtonEnabled(True)
 
-        self.horizontalLayout_5.addWidget(self.line_edit_config_name)
+        self.layout_new_save.addWidget(self.line_edit_config_name)
 
         self.button_save_config = QPushButton(self.groupBox)
         self.button_save_config.setObjectName(u"button_save_config")
 
-        self.horizontalLayout_5.addWidget(self.button_save_config)
+        self.layout_new_save.addWidget(self.button_save_config)
 
 
-        self.verticalLayout_7.addLayout(self.horizontalLayout_5)
+        self.layout_groupBox.addLayout(self.layout_new_save)
 
 
-        self.RightSide.addWidget(self.groupBox)
+        self.layout_presets_cards.addWidget(self.groupBox)
+
+        self.groupBox_pre_built_xpaths_main = QFrame(PreBuiltXPathsManagerWidget)
+        self.groupBox_pre_built_xpaths_main.setObjectName(u"groupBox_pre_built_xpaths_main")
+        self.groupBox_pre_built_xpaths_main.setFrameShape(QFrame.Shape.StyledPanel)
+        self.layout_groupBox_pre_built_xpaths_main = QVBoxLayout(self.groupBox_pre_built_xpaths_main)
+        self.layout_groupBox_pre_built_xpaths_main.setSpacing(10)
+        self.layout_groupBox_pre_built_xpaths_main.setObjectName(u"layout_groupBox_pre_built_xpaths_main")
+        self.layout_groupBox_pre_built_xpaths_main.setContentsMargins(18, 16, 18, 18)
+        self.label_groupBox_pre_built_xpaths_main_title = QLabel(self.groupBox_pre_built_xpaths_main)
+        self.label_groupBox_pre_built_xpaths_main_title.setObjectName(u"label_groupBox_pre_built_xpaths_main_title")
+
+        self.layout_groupBox_pre_built_xpaths_main.addWidget(self.label_groupBox_pre_built_xpaths_main_title)
+
+        self.label_9 = QLabel(self.groupBox_pre_built_xpaths_main)
+        self.label_9.setObjectName(u"label_9")
+        self.label_9.setWordWrap(True)
+
+        self.layout_groupBox_pre_built_xpaths_main.addWidget(self.label_9)
+
+        self.layout_edit_select = QHBoxLayout()
+        self.layout_edit_select.setSpacing(8)
+        self.layout_edit_select.setObjectName(u"layout_edit_select")
+        self.layout_edit_select.setContentsMargins(0, 0, 0, 0)
+        self.combobox_xpath_configs = QComboBox(self.groupBox_pre_built_xpaths_main)
+        self.combobox_xpath_configs.setObjectName(u"combobox_xpath_configs")
+
+        self.layout_edit_select.addWidget(self.combobox_xpath_configs)
+
+        self.button_load_config = QPushButton(self.groupBox_pre_built_xpaths_main)
+        self.button_load_config.setObjectName(u"button_load_config")
+
+        self.layout_edit_select.addWidget(self.button_load_config)
+
+        self.button_delete_config = QPushButton(self.groupBox_pre_built_xpaths_main)
+        self.button_delete_config.setObjectName(u"button_delete_config")
+
+        self.layout_edit_select.addWidget(self.button_delete_config)
+
+        self.layout_edit_select.setStretch(0, 1)
+
+        self.layout_groupBox_pre_built_xpaths_main.addLayout(self.layout_edit_select)
+
+        self.label_7 = QLabel(self.groupBox_pre_built_xpaths_main)
+        self.label_7.setObjectName(u"label_7")
+
+        self.layout_groupBox_pre_built_xpaths_main.addWidget(self.label_7)
+
+        self.list_widget_edit_xpath_expressions = QListWidget(self.groupBox_pre_built_xpaths_main)
+        self.list_widget_edit_xpath_expressions.setObjectName(u"list_widget_edit_xpath_expressions")
+        self.list_widget_edit_xpath_expressions.setAlternatingRowColors(True)
+        self.list_widget_edit_xpath_expressions.setMinimumSize(QSize(0, 110))
+
+        self.layout_groupBox_pre_built_xpaths_main.addWidget(self.list_widget_edit_xpath_expressions)
+
+        self.label_8 = QLabel(self.groupBox_pre_built_xpaths_main)
+        self.label_8.setObjectName(u"label_8")
+
+        self.layout_groupBox_pre_built_xpaths_main.addWidget(self.label_8)
+
+        self.list_widget_edit_csv_headers = QListWidget(self.groupBox_pre_built_xpaths_main)
+        self.list_widget_edit_csv_headers.setObjectName(u"list_widget_edit_csv_headers")
+        self.list_widget_edit_csv_headers.setAlternatingRowColors(True)
+        self.list_widget_edit_csv_headers.setMinimumSize(QSize(0, 110))
+
+        self.layout_groupBox_pre_built_xpaths_main.addWidget(self.list_widget_edit_csv_headers)
+
+        self.layout_edit_actions = QHBoxLayout()
+        self.layout_edit_actions.setSpacing(8)
+        self.layout_edit_actions.setObjectName(u"layout_edit_actions")
+        self.layout_edit_actions.setContentsMargins(0, 0, 0, 0)
+        self.button_open_config_directory = QPushButton(self.groupBox_pre_built_xpaths_main)
+        self.button_open_config_directory.setObjectName(u"button_open_config_directory")
+
+        self.layout_edit_actions.addWidget(self.button_open_config_directory)
+
+        self.spacer_3 = QSpacerItem(40, 20, QSizePolicy.Policy.Expanding, QSizePolicy.Policy.Minimum)
+
+        self.layout_edit_actions.addItem(self.spacer_3)
+
+        self.button_save_changes = QPushButton(self.groupBox_pre_built_xpaths_main)
+        self.button_save_changes.setObjectName(u"button_save_changes")
+
+        self.layout_edit_actions.addWidget(self.button_save_changes)
 
 
-        self.MainHorLayout.addLayout(self.RightSide)
+        self.layout_groupBox_pre_built_xpaths_main.addLayout(self.layout_edit_actions)
 
 
-        self.verticalLayout.addLayout(self.MainHorLayout)
+        self.layout_presets_cards.addWidget(self.groupBox_pre_built_xpaths_main)
 
-        self.horizontalLayout_2 = QHBoxLayout()
-        self.horizontalLayout_2.setObjectName(u"horizontalLayout_2")
+
+        self.layout_PreBuiltXPathsManagerWidget.addLayout(self.layout_presets_cards)
+
+        self.layout_presets_footer = QHBoxLayout()
+        self.layout_presets_footer.setSpacing(8)
+        self.layout_presets_footer.setObjectName(u"layout_presets_footer")
+        self.layout_presets_footer.setContentsMargins(0, 0, 0, 0)
+        self.label_remove_hint = QLabel(PreBuiltXPathsManagerWidget)
+        self.label_remove_hint.setObjectName(u"label_remove_hint")
+        self.label_remove_hint.setWordWrap(True)
+
+        self.layout_presets_footer.addWidget(self.label_remove_hint)
+
+        self.spacer_4 = QSpacerItem(40, 20, QSizePolicy.Policy.Expanding, QSizePolicy.Policy.Minimum)
+
+        self.layout_presets_footer.addItem(self.spacer_4)
+
         self.button_remove_selected = QPushButton(PreBuiltXPathsManagerWidget)
         self.button_remove_selected.setObjectName(u"button_remove_selected")
 
-        self.horizontalLayout_2.addWidget(self.button_remove_selected)
+        self.layout_presets_footer.addWidget(self.button_remove_selected)
 
         self.button_remove_all = QPushButton(PreBuiltXPathsManagerWidget)
         self.button_remove_all.setObjectName(u"button_remove_all")
 
-        self.horizontalLayout_2.addWidget(self.button_remove_all)
+        self.layout_presets_footer.addWidget(self.button_remove_all)
 
 
-        self.verticalLayout.addLayout(self.horizontalLayout_2)
-
-        self.line = QFrame(PreBuiltXPathsManagerWidget)
-        self.line.setObjectName(u"line")
-        self.line.setFrameShape(QFrame.Shape.HLine)
-        self.line.setFrameShadow(QFrame.Shadow.Sunken)
-
-        self.verticalLayout.addWidget(self.line)
+        self.layout_PreBuiltXPathsManagerWidget.addLayout(self.layout_presets_footer)
 
 
         self.retranslateUi(PreBuiltXPathsManagerWidget)
@@ -292,53 +273,72 @@ class Ui_PreBuiltXPathsManagerWidget(object):
     # setupUi
 
     def retranslateUi(self, PreBuiltXPathsManagerWidget):
-        PreBuiltXPathsManagerWidget.setWindowTitle(QCoreApplication.translate("PreBuiltXPathsManagerWidget", u"PreBuilt XPaths Manager Widget", None))
+        PreBuiltXPathsManagerWidget.setWindowTitle(QCoreApplication.translate("PreBuiltXPathsManagerWidget", u"XPath presets", None))
+        PreBuiltXPathsManagerWidget.setProperty(u"role", QCoreApplication.translate("PreBuiltXPathsManagerWidget", u"page", None))
+        self.label_presets_title.setText(QCoreApplication.translate("PreBuiltXPathsManagerWidget", u"XPath presets", None))
+        self.label_presets_title.setProperty(u"role", QCoreApplication.translate("PreBuiltXPathsManagerWidget", u"page-title", None))
+        self.label_presets_hint.setText(QCoreApplication.translate("PreBuiltXPathsManagerWidget", u"Reusable sets of expressions and headers, available from the Presets menu.", None))
+        self.label_presets_hint.setProperty(u"role", QCoreApplication.translate("PreBuiltXPathsManagerWidget", u"hint", None))
+        self.groupBox.setProperty(u"role", QCoreApplication.translate("PreBuiltXPathsManagerWidget", u"card", None))
+        self.label_groupBox_title.setText(QCoreApplication.translate("PreBuiltXPathsManagerWidget", u"New preset", None))
+        self.label_groupBox_title.setProperty(u"role", QCoreApplication.translate("PreBuiltXPathsManagerWidget", u"card-title", None))
+        self.label.setText(QCoreApplication.translate("PreBuiltXPathsManagerWidget", u"Expressions and headers are paired in order: the first header names the first expression's column.", None))
+        self.label.setProperty(u"role", QCoreApplication.translate("PreBuiltXPathsManagerWidget", u"hint", None))
+        self.label_new_expressions.setText(QCoreApplication.translate("PreBuiltXPathsManagerWidget", u"XPath expressions", None))
+        self.label_new_expressions.setProperty(u"role", QCoreApplication.translate("PreBuiltXPathsManagerWidget", u"field-label", None))
+        self.line_edit_xpath_expression.setPlaceholderText(QCoreApplication.translate("PreBuiltXPathsManagerWidget", u"XPath expression", None))
+        self.button_add_xpath_to_list.setText(QCoreApplication.translate("PreBuiltXPathsManagerWidget", u"Add", None))
 #if QT_CONFIG(tooltip)
-        PreBuiltXPathsManagerWidget.setToolTip(QCoreApplication.translate("PreBuiltXPathsManagerWidget", u"Removes the all items in the focused listbox.", None))
+        self.button_add_xpath_to_list.setToolTip(QCoreApplication.translate("PreBuiltXPathsManagerWidget", u"Add the expression to the list below.", None))
 #endif // QT_CONFIG(tooltip)
-        self.groupBox_pre_built_xpaths_main.setTitle(QCoreApplication.translate("PreBuiltXPathsManagerWidget", u"Edit Pre-built XPaths", None))
-        self.label_9.setText(QCoreApplication.translate("PreBuiltXPathsManagerWidget", u"Here you can edit the custom pre-built configuration for the autofill:", None))
-        self.lable_pre_built_xpaths.setText(QCoreApplication.translate("PreBuiltXPathsManagerWidget", u"Select Config:", None))
+        self.label_new_headers.setText(QCoreApplication.translate("PreBuiltXPathsManagerWidget", u"CSV headers", None))
+        self.label_new_headers.setProperty(u"role", QCoreApplication.translate("PreBuiltXPathsManagerWidget", u"field-label", None))
+        self.line_edit_csv_header.setPlaceholderText(QCoreApplication.translate("PreBuiltXPathsManagerWidget", u"Header (comma-separated for several)", None))
+        self.button_add_csv_header_to_list.setText(QCoreApplication.translate("PreBuiltXPathsManagerWidget", u"Add", None))
 #if QT_CONFIG(tooltip)
-        self.button_load_config.setToolTip(QCoreApplication.translate("PreBuiltXPathsManagerWidget", u"Load the selected configuration and fill the two listboxes.", None))
+        self.button_add_csv_header_to_list.setToolTip(QCoreApplication.translate("PreBuiltXPathsManagerWidget", u"Add the header(s) to the list below.", None))
 #endif // QT_CONFIG(tooltip)
+        self.line_edit_config_name.setPlaceholderText(QCoreApplication.translate("PreBuiltXPathsManagerWidget", u"Preset name", None))
+        self.button_save_config.setText(QCoreApplication.translate("PreBuiltXPathsManagerWidget", u"Save preset", None))
+#if QT_CONFIG(tooltip)
+        self.button_save_config.setToolTip(QCoreApplication.translate("PreBuiltXPathsManagerWidget", u"Save the expressions and headers above as a new preset.", None))
+#endif // QT_CONFIG(tooltip)
+        self.button_save_config.setProperty(u"role", QCoreApplication.translate("PreBuiltXPathsManagerWidget", u"primary", None))
+        self.groupBox_pre_built_xpaths_main.setProperty(u"role", QCoreApplication.translate("PreBuiltXPathsManagerWidget", u"card", None))
+        self.label_groupBox_pre_built_xpaths_main_title.setText(QCoreApplication.translate("PreBuiltXPathsManagerWidget", u"Edit preset", None))
+        self.label_groupBox_pre_built_xpaths_main_title.setProperty(u"role", QCoreApplication.translate("PreBuiltXPathsManagerWidget", u"card-title", None))
+        self.label_9.setText(QCoreApplication.translate("PreBuiltXPathsManagerWidget", u"Load a preset to change or reorder its expressions and headers.", None))
+        self.label_9.setProperty(u"role", QCoreApplication.translate("PreBuiltXPathsManagerWidget", u"hint", None))
+        self.combobox_xpath_configs.setPlaceholderText(QCoreApplication.translate("PreBuiltXPathsManagerWidget", u"No presets", None))
         self.button_load_config.setText(QCoreApplication.translate("PreBuiltXPathsManagerWidget", u"Load", None))
 #if QT_CONFIG(tooltip)
-        self.button_delete_config.setToolTip(QCoreApplication.translate("PreBuiltXPathsManagerWidget", u"Deletes the selected configurtion all it's values.", None))
+        self.button_load_config.setToolTip(QCoreApplication.translate("PreBuiltXPathsManagerWidget", u"Load the selected preset into the lists below.", None))
 #endif // QT_CONFIG(tooltip)
         self.button_delete_config.setText(QCoreApplication.translate("PreBuiltXPathsManagerWidget", u"Delete", None))
-        self.label_7.setText(QCoreApplication.translate("PreBuiltXPathsManagerWidget", u"Edit XPath Expressions:", None))
-        self.label_8.setText(QCoreApplication.translate("PreBuiltXPathsManagerWidget", u"Edit CSV Headers:", None))
 #if QT_CONFIG(tooltip)
-        self.button_save_changes.setToolTip(QCoreApplication.translate("PreBuiltXPathsManagerWidget", u"Save changes that you made to the two listboxes.", None))
+        self.button_delete_config.setToolTip(QCoreApplication.translate("PreBuiltXPathsManagerWidget", u"Delete the selected preset.", None))
 #endif // QT_CONFIG(tooltip)
-        self.button_save_changes.setText(QCoreApplication.translate("PreBuiltXPathsManagerWidget", u"Save Changes", None))
-        self.button_open_config_directory.setText(QCoreApplication.translate("PreBuiltXPathsManagerWidget", u"Open Config Directory", None))
-        self.groupBox.setTitle(QCoreApplication.translate("PreBuiltXPathsManagerWidget", u"Create pre-built XPaths", None))
-        self.label.setText(QCoreApplication.translate("PreBuiltXPathsManagerWidget", u"Here you can create your own pre-built autofill configuration:", None))
-        self.line_edit_xpath_expression.setPlaceholderText(QCoreApplication.translate("PreBuiltXPathsManagerWidget", u"Enter a Xpath Expression here...", None))
+        self.button_delete_config.setProperty(u"role", QCoreApplication.translate("PreBuiltXPathsManagerWidget", u"danger", None))
+        self.label_7.setText(QCoreApplication.translate("PreBuiltXPathsManagerWidget", u"XPath expressions", None))
+        self.label_7.setProperty(u"role", QCoreApplication.translate("PreBuiltXPathsManagerWidget", u"field-label", None))
+        self.label_8.setText(QCoreApplication.translate("PreBuiltXPathsManagerWidget", u"CSV headers", None))
+        self.label_8.setProperty(u"role", QCoreApplication.translate("PreBuiltXPathsManagerWidget", u"field-label", None))
+        self.button_open_config_directory.setText(QCoreApplication.translate("PreBuiltXPathsManagerWidget", u"Open config folder", None))
+        self.button_open_config_directory.setProperty(u"role", QCoreApplication.translate("PreBuiltXPathsManagerWidget", u"flat", None))
+        self.button_save_changes.setText(QCoreApplication.translate("PreBuiltXPathsManagerWidget", u"Save changes", None))
 #if QT_CONFIG(tooltip)
-        self.button_add_xpath_to_list.setToolTip(QCoreApplication.translate("PreBuiltXPathsManagerWidget", u"Add entered XPath Expression to it's listbox.", None))
+        self.button_save_changes.setToolTip(QCoreApplication.translate("PreBuiltXPathsManagerWidget", u"Save the edited lists to the loaded preset.", None))
 #endif // QT_CONFIG(tooltip)
-        self.button_add_xpath_to_list.setText("")
-        self.line_edit_csv_header.setPlaceholderText(QCoreApplication.translate("PreBuiltXPathsManagerWidget", u"Enter header name here (can be comma-separated)...", None))
+        self.button_save_changes.setProperty(u"role", QCoreApplication.translate("PreBuiltXPathsManagerWidget", u"primary", None))
+        self.label_remove_hint.setText(QCoreApplication.translate("PreBuiltXPathsManagerWidget", u"Remove actions apply to the list you clicked last.", None))
+        self.label_remove_hint.setProperty(u"role", QCoreApplication.translate("PreBuiltXPathsManagerWidget", u"hint", None))
+        self.button_remove_selected.setText(QCoreApplication.translate("PreBuiltXPathsManagerWidget", u"Remove selected", None))
 #if QT_CONFIG(tooltip)
-        self.button_add_csv_header_to_list.setToolTip(QCoreApplication.translate("PreBuiltXPathsManagerWidget", u"Add entered CSV Header to it's listbox.", None))
+        self.button_remove_selected.setToolTip(QCoreApplication.translate("PreBuiltXPathsManagerWidget", u"Remove the selected entry from the list you clicked last.", None))
 #endif // QT_CONFIG(tooltip)
-        self.button_add_csv_header_to_list.setText("")
-        self.label_4.setText(QCoreApplication.translate("PreBuiltXPathsManagerWidget", u"Pre-bult name:", None))
-        self.line_edit_config_name.setPlaceholderText(QCoreApplication.translate("PreBuiltXPathsManagerWidget", u"Enter a name for the configuration...", None))
+        self.button_remove_all.setText(QCoreApplication.translate("PreBuiltXPathsManagerWidget", u"Remove all", None))
 #if QT_CONFIG(tooltip)
-        self.button_save_config.setToolTip(QCoreApplication.translate("PreBuiltXPathsManagerWidget", u"Save your configurtion with all items that are in the two listboxes.", None))
+        self.button_remove_all.setToolTip(QCoreApplication.translate("PreBuiltXPathsManagerWidget", u"Remove every entry from the list you clicked last.", None))
 #endif // QT_CONFIG(tooltip)
-        self.button_save_config.setText(QCoreApplication.translate("PreBuiltXPathsManagerWidget", u"Save Config", None))
-#if QT_CONFIG(tooltip)
-        self.button_remove_selected.setToolTip(QCoreApplication.translate("PreBuiltXPathsManagerWidget", u"Removes the currently selected item in the focused listbox.", None))
-#endif // QT_CONFIG(tooltip)
-        self.button_remove_selected.setText(QCoreApplication.translate("PreBuiltXPathsManagerWidget", u"Remove Selected Value", None))
-#if QT_CONFIG(tooltip)
-        self.button_remove_all.setToolTip(QCoreApplication.translate("PreBuiltXPathsManagerWidget", u"Removes all items in the focused listbox.", None))
-#endif // QT_CONFIG(tooltip)
-        self.button_remove_all.setText(QCoreApplication.translate("PreBuiltXPathsManagerWidget", u"Remove All Values", None))
     # retranslateUi
 

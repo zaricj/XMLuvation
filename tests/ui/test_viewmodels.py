@@ -8,7 +8,9 @@ from pathlib import Path
 from xmluvation.domain.models import BuildCriteria, Operator, XPathPreset
 from xmluvation.infrastructure.settings_store import SettingsStore
 from xmluvation.presentation.viewmodels.csv_tools_vm import CsvToolsViewModel
+from xmluvation.presentation.viewmodels.csv_transforms_vm import CsvTransformsViewModel
 from xmluvation.presentation.viewmodels.export_vm import ExportViewModel
+from xmluvation.presentation.viewmodels.header_reader import HeaderReader
 from xmluvation.presentation.viewmodels.table_viewer_vm import TableViewerViewModel
 from xmluvation.presentation.viewmodels.xml_inspector_vm import XmlInspectorViewModel
 from xmluvation.presentation.viewmodels.xpath_workspace_vm import XPathWorkspaceViewModel
@@ -182,13 +184,44 @@ def test_cleanup_requires_confirmation(qtbot, runner, profiles_dir: Path, tmp_pa
 def test_csv_headers_are_replaced_not_accumulated(qtbot, runner, tmp_path: Path) -> None:
     csv_file = tmp_path / "h.csv"
     csv_file.write_text("A,B\n1,2\n", encoding="utf-8")
-    vm = CsvToolsViewModel(runner)
-    headers = _collect(vm.headers_changed)
-    vm.csv_path_changed(str(csv_file))
+    reader = HeaderReader(runner)
+    headers = _collect(reader.headers_changed)
+    reader.set_path(str(csv_file))
     qtbot.waitUntil(lambda: bool(headers), timeout=5000)
-    vm.csv_path_changed(str(csv_file))
+    reader.set_path(str(csv_file))
     qtbot.waitUntil(lambda: len(headers) == 2, timeout=5000)
-    assert headers == [["A", "B"], ["A", "B"]]
+    assert headers == [["A", "B"], ["A", "B"]] and reader.headers == ["A", "B"]
+    reader.set_path("")
+    assert headers[-1] == [] and reader.headers == []
+
+
+def test_csv_transforms_vm_split_compare_and_columns(qtbot, runner, tmp_path: Path) -> None:
+    old = tmp_path / "old.csv"
+    old.write_text("ID,Name\n1,a\n2,b\n", encoding="utf-8")
+    new = tmp_path / "new.csv"
+    new.write_text("ID,Name\n1,a\n2,c\n", encoding="utf-8")
+    vm = CsvTransformsViewModel(runner)
+    splits, compares, saved = (
+        _collect(vm.split_finished),
+        _collect(vm.compare_finished),
+        _collect(vm.columns_saved),
+    )
+
+    vm.split(str(old), False, 1, "")
+    qtbot.waitUntil(lambda: bool(splits), timeout=5000)
+    assert len(splits[0].files) == 2
+
+    vm.compare(str(old), str(new), "ID", False)
+    qtbot.waitUntil(lambda: bool(compares), timeout=5000)
+    assert compares[0].changed_cells == 1
+
+    headers = _collect(vm.column_headers.headers_changed)
+    vm.column_headers.set_path(str(new))
+    qtbot.waitUntil(lambda: bool(headers), timeout=5000)
+    vm.save_columns(str(new), [(1, "Label")], overwrite=True)
+    qtbot.waitUntil(lambda: bool(saved) and len(headers) == 2, timeout=5000)
+    assert new.read_bytes() == b"Label\r\na\r\nc\r\n"
+    assert headers[-1] == ["Label"]  # overwriting reloads the column list
 
 
 def test_table_filter_matches_any_column_case_insensitive(qtbot, runner, tmp_path: Path) -> None:
@@ -200,8 +233,10 @@ def test_table_filter_matches_any_column_case_insensitive(qtbot, runner, tmp_pat
     qtbot.waitUntil(lambda: bool(loaded), timeout=5000)
     assert vm.model.rowCount() == 3
     vm.set_filter("berlin")
-    assert vm.model.rowCount() == 2
+    qtbot.waitUntil(lambda: vm.model.rowCount() == 2, timeout=5000)
     vm.set_filter("bob")
-    assert vm.model.rowCount() == 1
+    qtbot.waitUntil(lambda: vm.model.rowCount() == 1, timeout=5000)
+    vm.set_filter("")
+    qtbot.waitUntil(lambda: vm.model.rowCount() == 3, timeout=5000)
     vm.clear()
     assert vm.model.rowCount() == 0 and loaded[-1] is False

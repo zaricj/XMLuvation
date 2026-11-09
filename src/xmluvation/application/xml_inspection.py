@@ -2,16 +2,29 @@
 
 from __future__ import annotations
 
+import gc
 from pathlib import Path
 
 from ..domain.models import XmlIndex
 from ..infrastructure import xml_engine
+from .cancellation import CancellationToken
 
 BYTES_PER_MB = 1024 * 1024
+MAX_DISTINCT_VALUES = xml_engine.MAX_DISTINCT_VALUES
 
 
-def inspect_xml_file(path: Path, preview_limit_mb: int) -> XmlIndex:
-    return xml_engine.inspect_file(path, max(1, preview_limit_mb) * BYTES_PER_MB)
+def inspect_xml_file(
+    path: Path, preview_limit_mb: int, token: CancellationToken | None = None
+) -> XmlIndex:
+    """Index one file. Raises ``XmlParseError``, or ``Cancelled`` if ``token`` is cancelled."""
+    check = token.raise_if_cancelled if token is not None else None
+    try:
+        return xml_engine.inspect_file(path, max(1, preview_limit_mb) * BYTES_PER_MB, check)
+    except BaseException:
+        # A failed or cancelled parse can leave a large partial tree behind; free it now
+        # instead of whenever the cyclic collector next runs.
+        gc.collect()
+        raise
 
 
 def validate_xpath(expression: str) -> None:

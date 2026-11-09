@@ -138,3 +138,38 @@ def test_validation_rejects_missing_folder(tmp_path: Path) -> None:
 def test_validation_rejects_invalid_xpath(tmp_path: Path) -> None:
     with pytest.raises(InvalidXPathError):
         make_spec(str(tmp_path), ["//a[@"], "A", str(tmp_path / "o.csv"), False)
+
+
+def test_inflight_byte_budget_limits_concurrency(tmp_path: Path, monkeypatch) -> None:
+    import threading
+
+    from xmluvation.application import export_xpath_csv
+
+    folder = tmp_path / "xml"
+    folder.mkdir()
+    for n in range(6):
+        (folder / f"f{n}.xml").write_text(f'<r><a id="{n}"/></r>', encoding="utf-8")
+    monkeypatch.setattr(export_xpath_csv, "INFLIGHT_BYTES_BUDGET", 1)  # one file at a time
+    active = peak = 0
+    lock = threading.Lock()
+    original = export_xpath_csv._process
+
+    def tracking(*args):  # noqa: ANN002, ANN202
+        nonlocal active, peak
+        with lock:
+            active += 1
+            peak = max(peak, active)
+        try:
+            return original(*args)
+        finally:
+            with lock:
+                active -= 1
+
+    monkeypatch.setattr(export_xpath_csv, "_process", tracking)
+    out = tmp_path / "o.csv"
+    result = run_export(
+        _spec(folder, out, ["//a/@id"], ["ID"], False), NullReporter(), CancellationToken()
+    )
+    assert peak == 1
+    assert result.rows_written == 6
+    assert out.read_text(encoding="utf-8").splitlines()[1:] == [f"f{n},{n}" for n in range(6)]

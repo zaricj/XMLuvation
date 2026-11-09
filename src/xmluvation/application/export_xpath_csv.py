@@ -3,6 +3,7 @@
 from __future__ import annotations
 
 import csv
+import gc
 import logging
 import os
 import time
@@ -27,6 +28,12 @@ from .cancellation import CancellationToken, ProgressReporter
 log = logging.getLogger(__name__)
 
 MAX_WORKERS = 32
+INFLIGHT_BYTES_BUDGET = 256 * 1024 * 1024
+"""Upper bound on the summed size of XML files being parsed or waiting to be written.
+
+XPath evaluation needs each file's full lxml tree, which takes roughly 10-20x the file
+size in RAM. Many small files still run ``2 x workers`` at a time; a multi-gigabyte
+file is admitted alone, so peak memory follows the largest file, not the worker count."""
 
 
 def default_worker_count() -> int:
@@ -91,6 +98,13 @@ def make_spec(
     )
 
 
+def _file_size(path: Path) -> int:
+    try:
+        return path.stat().st_size
+    except OSError:
+        return 0  # the parser will report the problem
+
+
 def _process(path: Path, spec: ExportSpec, cache: XPathCache) -> FileOutcome:
     return evaluate_file(path, spec.xpaths, spec.headers, spec.group_matches, cache)
 
@@ -126,24 +140,31 @@ def run_export(
     except OSError as exc:
         raise OutputFileError(f"Cannot write {spec.output}: {exc}") from exc
 
+    sizes = [_file_size(path) for path in files]
     cache = XPathCache()
     window = spec.max_workers * 2
     with handle, ThreadPoolExecutor(spec.max_workers, thread_name_prefix="XMLProcessor") as pool:
         writer = csv.DictWriter(handle, fieldnames=columns, extrasaction="ignore")
         writer.writeheader()
-        pending: deque[tuple[Path, Future[FileOutcome]]] = deque()
+        pending: deque[tuple[Path, int, Future[FileOutcome]]] = deque()
+        inflight_bytes = 0
         next_index = 0
         try:
             while pending or next_index < len(files):
                 while not token.cancelled and next_index < len(files) and len(pending) < window:
-                    path = files[next_index]
-                    pending.append((path, pool.submit(_process, path, spec, cache)))
+                    path, size = files[next_index], sizes[next_index]
+                    if pending and inflight_bytes + size > INFLIGHT_BYTES_BUDGET:
+                        break  # wait for earlier files to free their trees
+                    pending.append((path, size, pool.submit(_process, path, spec, cache)))
+                    inflight_bytes += size
                     next_index += 1
                 if token.cancelled:
                     result.cancelled = True
                     break
-                path, future = pending.popleft()
+                path, size, future = pending.popleft()
                 _collect(path, future, writer, result)
+                inflight_bytes -= size
+                del future  # drop the outcome's rows before the next file is admitted
                 reporter.progress(
                     result.processed_files,
                     result.total_files,
@@ -152,8 +173,10 @@ def run_export(
         except OSError as exc:
             raise OutputFileError(f"Writing {spec.output} failed: {exc}") from exc
         finally:
-            for _, future in pending:
-                future.cancel()
+            for _, _, pending_future in pending:
+                pending_future.cancel()
+    pending.clear()
+    gc.collect()  # release parser buffers and per-thread XPath caches promptly
     result.elapsed_seconds = time.perf_counter() - started
     return result
 

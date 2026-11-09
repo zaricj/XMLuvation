@@ -73,3 +73,21 @@ def test_detect_semicolon(tmp_path: Path) -> None:
 )
 def test_excel_table_name(sheet: str, expected: str) -> None:
     assert excel_table_name(sheet) == expected
+
+
+def test_table_load_reads_text_in_chunks_and_can_be_cancelled(tmp_path: Path, monkeypatch) -> None:
+    from xmluvation.application.cancellation import CancellationToken
+    from xmluvation.application.csv_tools import load_csv_table
+    from xmluvation.domain.errors import Cancelled
+    from xmluvation.infrastructure import csv_io
+
+    monkeypatch.setattr(csv_io, "TABLE_CHUNK_ROWS", 2)
+    path = tmp_path / "t.csv"
+    path.write_text("id;v\n001;\n002;x\n003;NA\n", encoding="utf-8")
+    df = load_csv_table(path)
+    assert df["id"].tolist() == ["001", "002", "003"]  # text, leading zeros kept
+    assert df["v"].tolist() == ["", "x", "NA"]  # no NaN conversion
+    token = CancellationToken()
+    token.cancel()
+    with pytest.raises(Cancelled):
+        load_csv_table(path, token)

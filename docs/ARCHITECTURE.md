@@ -57,8 +57,11 @@ tools/regen_ui.py              regenerate presentation/generated after editing .
   on a `QThreadPool` thread and gets a `TaskContext` (progress, messages, cancellation
   token). Callbacks are delivered on the GUI thread through queued signals of a QObject
   owned by the runner. Worker code never touches widgets.
-* The export use case runs a bounded `ThreadPoolExecutor` (at most `2 × workers` files in
-  flight) and writes rows itself, in file-name order. There is no writer thread or queue.
+* The export use case runs a bounded `ThreadPoolExecutor` and writes rows itself, in
+  file-name order. There is no writer thread or queue. Files in flight are limited to
+  `2 × workers` **and** to `INFLIGHT_BYTES_BUDGET` (256 MiB) of source XML, so a
+  multi-gigabyte file is parsed alone instead of next to 31 others.
+* Table loading and filtering, and XML inspection, take the task's cancellation token.
 * Closing the window cancels all tasks and waits up to 5 s (`TaskRunner.shutdown`).
 
 ## XML handling
@@ -67,10 +70,52 @@ tools/regen_ui.py              regenerate presentation/generated after editing .
 * Export uses `recover=True, huge_tree=True` (as in 1.3.x). Unparsable files are listed in
   the export summary instead of being skipped silently.
 * XPaths are compiled once per worker thread with `smart_strings=False`.
+* Export parses each file completely: arbitrary XPath 1.0 (ancestors, siblings,
+  `count()`, predicates) needs the whole tree, so `iterparse` is not an option there.
+  The tree is released before rows are assembled, and `gc.collect()` runs at the end of
+  every export, after failed or cancelled inspections and table loads, and when a table
+  is closed.
 * "Read XML" pretty-prints files up to the **XML Preview Size Limit** (Settings menu,
   default 20 MB). Larger files are indexed with `iterparse` (low memory) and only the
   beginning of the raw text is shown. Measured on a 22 MB file: about 440 MB peak working
-  set for the full parse vs. about 49 MB streaming.
+  set for the full parse vs. about 49 MB streaming. Streaming uses `huge_tree=True`, checks
+  for cancellation every 10,000 events, and keeps at most `MAX_DISTINCT_VALUES` (1,000)
+  values per tag and attribute for the builder's comboboxes (`XmlIndex.values_capped`).
+
+## Table viewer
+
+* `presentation/models/table_model.py` holds the CSV as one numpy array of `str` per
+  column (`TableData`, built on the worker thread). The CSV is read as text in 100,000-row
+  chunks, which are collected in a list and concatenated once.
+* `TableModel` exposes rows to the view in batches of 2,000 (`canFetchMore`/`fetchMore`).
+  Sorting (stable, as text) and filtering (any column, case-insensitive, literal) are
+  vectorized and produce a row permutation; there is no `QSortFilterProxyModel`.
+  Filtering runs on a worker thread, debounced by 200 ms, and superseded results are
+  dropped.
+
+## UI structure and themes
+
+* The main window is a sidebar (`list_widget_navigation`) driving `stacked_pages`
+  (Extract, CSV tools, Table viewer), with a bottom `dock_output` holding the two logs.
+  Ctrl+1–3 switch pages; Ctrl+J toggles the output dock.
+* Sections are `QFrame` cards. Widgets carry a dynamic `role` property (`card`,
+  `card-title`, `hint`, `field-label`, `primary`, `accent`, `danger`, `flat`, `nav`, …)
+  that the style sheets select on, so the `.ui` files contain no inline styles or fonts.
+* CSV tools: Convert, Split (`application/csv_split.py`), Compare
+  (`application/csv_compare.py`), Columns (`save_column_edits` in `csv_tools.py`),
+  Profile clean-up and Hex → decimal. Split and Columns stream rows through
+  `csv_io.csv_rows` and keep each cell's exact text plus the delimiter, encoding and BOM;
+  Compare loads both files as text with pandas. No tool overwrites an existing file
+  unless asked to (`application/output_paths.py`); Split removes its new folder if it
+  fails or is cancelled. `presentation/views/csv_transforms_view.py` binds Split,
+  Compare and Columns; `HeaderReader` loads a file's column names in the background.
+* The CSV tools page is a segmented `QTabWidget` with one card per tool. Each tool's
+  action row holds a `BusyBar` (`presentation/widgets/busy_bar.py`, a promoted widget
+  in the `.ui`): an indeterminate striped bar that keeps its place in the layout, paints
+  nothing while idle, and takes its colors from `qproperty-trackColor`/`stripeColor`.
+* `dark_theme.qss` and `light_theme.qss` share one structure and differ only in color
+  values; change both together. The themes under `styles/other/` predate the roles and
+  only style generic widgets.
 * XPath 1.0 only (lxml). Namespaced documents are not handled specially yet: tags appear
   in Clark notation `{uri}name` and expressions are evaluated without a namespace map.
 
@@ -83,4 +128,5 @@ $env:QT_QPA_PLATFORM="offscreen"; uv run pytest -q
 uv run ruff check src tests tools; uv run ruff format --check src tests tools
 uv run mypy                               # strict, domain + application
 uv run python tools/regen_ui.py           # after editing .ui or .qrc files
+.\building\Nuitka_build.ps1               # standalone build -> dist\XMLuvation-<version>\ (-OneFile, -Zip, -CheckOnly)
 ```

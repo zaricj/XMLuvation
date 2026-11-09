@@ -3,7 +3,7 @@
 ################################################################################
 ## Form generated from reading UI file 'exit_dialog_box.ui'
 ##
-## Created by: Qt User Interface Compiler version 6.12.0
+## Created by: Qt User Interface Compiler version 6.11.1
 ##
 ## WARNING! All changes made in this file will be lost when recompiling UI file!
 ################################################################################
@@ -17,74 +17,64 @@ from PySide6.QtGui import (QBrush, QColor, QConicalGradient, QCursor,
     QPalette, QPixmap, QRadialGradient, QTransform)
 from PySide6.QtWidgets import (QAbstractButton, QApplication, QCheckBox, QDialog,
     QDialogButtonBox, QHBoxLayout, QLabel, QSizePolicy,
-    QVBoxLayout, QWidget)
+    QSpacerItem, QVBoxLayout, QWidget)
 from . import xmluvation_resources_rc
 
 class Ui_ExitAppDialog(object):
     def setupUi(self, ExitAppDialog):
         if not ExitAppDialog.objectName():
             ExitAppDialog.setObjectName(u"ExitAppDialog")
-        ExitAppDialog.setWindowModality(Qt.WindowModality.NonModal)
-        ExitAppDialog.setEnabled(True)
-        ExitAppDialog.resize(330, 120)
-        ExitAppDialog.setMinimumSize(QSize(330, 120))
-        ExitAppDialog.setMaximumSize(QSize(330, 120))
         icon = QIcon()
         icon.addFile(u":/icons/xml_256px.ico", QSize(), QIcon.Mode.Normal, QIcon.State.Off)
         ExitAppDialog.setWindowIcon(icon)
+        ExitAppDialog.setMinimumSize(QSize(380, 0))
         ExitAppDialog.setModal(True)
-        self.verticalLayout = QVBoxLayout(ExitAppDialog)
-        self.verticalLayout.setSpacing(3)
-        self.verticalLayout.setObjectName(u"verticalLayout")
-        self.verticalLayout.setContentsMargins(3, 3, 3, 3)
-        self.horizontalLayout_2 = QHBoxLayout()
-        self.horizontalLayout_2.setObjectName(u"horizontalLayout_2")
-        self.horizontalLayout_2.setContentsMargins(0, -1, -1, 6)
+        self.layout_ExitAppDialog = QVBoxLayout(ExitAppDialog)
+        self.layout_ExitAppDialog.setSpacing(14)
+        self.layout_ExitAppDialog.setObjectName(u"layout_ExitAppDialog")
+        self.layout_ExitAppDialog.setContentsMargins(24, 22, 24, 22)
+        self.layout_exit_message = QHBoxLayout()
+        self.layout_exit_message.setSpacing(14)
+        self.layout_exit_message.setObjectName(u"layout_exit_message")
+        self.layout_exit_message.setContentsMargins(0, 0, 0, 0)
         self.image = QLabel(ExitAppDialog)
         self.image.setObjectName(u"image")
-        sizePolicy = QSizePolicy(QSizePolicy.Policy.Fixed, QSizePolicy.Policy.Preferred)
-        sizePolicy.setHorizontalStretch(0)
-        sizePolicy.setVerticalStretch(0)
-        sizePolicy.setHeightForWidth(self.image.sizePolicy().hasHeightForWidth())
-        self.image.setSizePolicy(sizePolicy)
-        self.image.setMinimumSize(QSize(32, 32))
         self.image.setPixmap(QPixmap(u":/images/question-circle_48x48.png"))
+        self.image.setMaximumSize(QSize(40, 40))
+        self.image.setScaledContents(True)
 
-        self.horizontalLayout_2.addWidget(self.image)
+        self.layout_exit_message.addWidget(self.image)
 
         self.label = QLabel(ExitAppDialog)
         self.label.setObjectName(u"label")
-        sizePolicy1 = QSizePolicy(QSizePolicy.Policy.Preferred, QSizePolicy.Policy.Preferred)
-        sizePolicy1.setHorizontalStretch(0)
-        sizePolicy1.setVerticalStretch(0)
-        sizePolicy1.setHeightForWidth(self.label.sizePolicy().hasHeightForWidth())
-        self.label.setSizePolicy(sizePolicy1)
-        self.label.setAlignment(Qt.AlignmentFlag.AlignCenter)
+        self.label.setWordWrap(True)
 
-        self.horizontalLayout_2.addWidget(self.label)
+        self.layout_exit_message.addWidget(self.label)
 
 
-        self.verticalLayout.addLayout(self.horizontalLayout_2)
+        self.layout_ExitAppDialog.addLayout(self.layout_exit_message)
 
-        self.horizontalLayout = QHBoxLayout()
-        self.horizontalLayout.setObjectName(u"horizontalLayout")
-        self.horizontalLayout.setContentsMargins(9, -1, -1, 6)
+        self.layout_exit_buttons = QHBoxLayout()
+        self.layout_exit_buttons.setSpacing(8)
+        self.layout_exit_buttons.setObjectName(u"layout_exit_buttons")
+        self.layout_exit_buttons.setContentsMargins(0, 0, 0, 0)
         self.check_box_dont_ask_again = QCheckBox(ExitAppDialog)
         self.check_box_dont_ask_again.setObjectName(u"check_box_dont_ask_again")
-        self.check_box_dont_ask_again.setLayoutDirection(Qt.LayoutDirection.LeftToRight)
 
-        self.horizontalLayout.addWidget(self.check_box_dont_ask_again)
+        self.layout_exit_buttons.addWidget(self.check_box_dont_ask_again)
+
+        self.spacer_5 = QSpacerItem(40, 20, QSizePolicy.Policy.Expanding, QSizePolicy.Policy.Minimum)
+
+        self.layout_exit_buttons.addItem(self.spacer_5)
 
         self.button_box = QDialogButtonBox(ExitAppDialog)
         self.button_box.setObjectName(u"button_box")
-        self.button_box.setOrientation(Qt.Orientation.Horizontal)
         self.button_box.setStandardButtons(QDialogButtonBox.StandardButton.No|QDialogButtonBox.StandardButton.Yes)
-        self.button_box.setCenterButtons(False)
 
-        self.horizontalLayout.addWidget(self.button_box)
+        self.layout_exit_buttons.addWidget(self.button_box)
 
 
-        self.verticalLayout.addLayout(self.horizontalLayout)
+        self.layout_ExitAppDialog.addLayout(self.layout_exit_buttons)
 
 
         self.retranslateUi(ExitAppDialog)
@@ -95,9 +85,10 @@ class Ui_ExitAppDialog(object):
     # setupUi
 
     def retranslateUi(self, ExitAppDialog):
-        ExitAppDialog.setWindowTitle(QCoreApplication.translate("ExitAppDialog", u"Exit Application", None))
+        ExitAppDialog.setWindowTitle(QCoreApplication.translate("ExitAppDialog", u"Exit XMLuvation", None))
+        ExitAppDialog.setProperty(u"role", QCoreApplication.translate("ExitAppDialog", u"page", None))
         self.image.setText("")
-        self.label.setText(QCoreApplication.translate("ExitAppDialog", u"Are you sure you want to exit the application?", None))
-        self.check_box_dont_ask_again.setText(QCoreApplication.translate("ExitAppDialog", u"Don't ask me again", None))
+        self.label.setText(QCoreApplication.translate("ExitAppDialog", u"Exit XMLuvation? Running tasks will be cancelled.", None))
+        self.check_box_dont_ask_again.setText(QCoreApplication.translate("ExitAppDialog", u"Don't ask again", None))
     # retranslateUi
 

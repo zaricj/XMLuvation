@@ -15,7 +15,6 @@ from PySide6.QtGui import (
     QDesktopServices,
     QGuiApplication,
     QKeySequence,
-    QMovie,
     QShortcut,
     QTextDocument,
 )
@@ -35,16 +34,20 @@ from PySide6.QtWidgets import (
 
 from ...application.profile_cleanup import CleanupPlan
 from ...domain.models import BuildCriteria, Operator, XmlIndex
+from ...domain.numbers import parse_hex
 from ..generated.main_window_ui import Ui_MainWindow
 from ..tasks import TaskRunner
-from ..themes import THEMES, load_stylesheet, theme_label
+from ..themes import THEMES, apply_icon_palette, load_stylesheet, theme_label
 from ..viewmodels.csv_tools_vm import CsvToolsViewModel
+from ..viewmodels.csv_transforms_vm import CsvTransformsViewModel
 from ..viewmodels.export_vm import ExportViewModel
 from ..viewmodels.presets_vm import PresetsViewModel
 from ..viewmodels.settings_vm import MAX_PREVIEW_LIMIT_MB, SettingsViewModel
 from ..viewmodels.table_viewer_vm import TableViewerViewModel
 from ..viewmodels.xml_inspector_vm import XmlInspectorViewModel
 from ..viewmodels.xpath_workspace_vm import XPathWorkspaceViewModel
+from ..widgets.steady_icon import steady_icon
+from ..widgets.table_icon import table_icon
 from .common import (
     ask_yes_no,
     browse_folder_into,
@@ -54,12 +57,16 @@ from .common import (
     connect_notifications,
     open_path,
 )
+from .csv_transforms_view import CsvTransformsView
 from .exit_dialog import ExitDialog
 from .paths_manager import CustomPathsManager
 from .presets_manager import PreBuiltXPathsManager
 
 XPATH_HELP_URL = "https://www.w3schools.com/xml/xpath_syntax.asp"
-LOADING_GIF = ":/gifs/loading_circle_small.gif"
+
+# Sidebar pages (order of list_widget_navigation / stacked_pages) and the output tab each uses.
+PAGE_EXTRACT, PAGE_CSV_TOOLS, PAGE_TABLE = range(3)
+_OUTPUT_TAB_FOR_PAGE = {PAGE_EXTRACT: 0, PAGE_CSV_TOOLS: 1}
 
 _GROUP_ON_HELP = """
         | Header 1 | Header 2      |
@@ -94,6 +101,7 @@ class MainViewModels:
     inspector: XmlInspectorViewModel
     export: ExportViewModel
     csv_tools: CsvToolsViewModel
+    transforms: CsvTransformsViewModel
     table: TableViewerViewModel
     presets: PresetsViewModel
     new_presets_vm: Callable[[], PresetsViewModel]
@@ -115,10 +123,10 @@ class MainWindow(QMainWindow):
         self.ui = Ui_MainWindow()
         self.ui.setupUi(self)
         self.setWindowTitle(title)
-        self._movie: QMovie | None = None
         self._managers: dict[str, QWidget] = {}
 
         self._setup_widgets()
+        self._setup_navigation()
         self._bind_xpath_builder()
         self._bind_export()
         self._bind_csv_tab()
@@ -143,7 +151,8 @@ class MainWindow(QMainWindow):
             widget.hide()
         ui.button_clear_table.setDisabled(True)
         ui.line_edit_filter_table.setDisabled(True)
-        ui.label_loading_gif.setVisible(False)
+        ui.frame_conversion_result.hide()
+        ui.label_hex_error.hide()
         for widget in (
             ui.list_widget_main_xpath_expressions,
             ui.text_edit_xml_output,
@@ -152,8 +161,47 @@ class MainWindow(QMainWindow):
         ):
             widget.setContextMenuPolicy(Qt.ContextMenuPolicy.CustomContextMenu)
         ui.table_csv_data.setModel(self.vms.table.model)
+        ui.table_csv_data.verticalHeader().setDefaultSectionSize(28)
+        ui.table_csv_data.horizontalHeader().setHighlightSections(False)
         self._find_shortcut = QShortcut(QKeySequence(Qt.Modifier.CTRL | Qt.Key.Key_F), self)
         self._find_shortcut.activated.connect(self._toggle_find)
+        ui.line_edit_xml_output_find_text.returnPressed.connect(self._find_from_keyboard)
+        ui.splitter_extract.setStretchFactor(0, 3)
+        ui.splitter_extract.setStretchFactor(1, 2)
+        self.resizeDocks([ui.dock_output], [170], Qt.Orientation.Vertical)
+
+    def _setup_navigation(self) -> None:
+        ui = self.ui
+        # No Windows theme icon looks like a table, so this one is drawn in code. The theme
+        # icons are wrapped so they keep their color on the selected item, like this one.
+        navigation = ui.list_widget_navigation
+        navigation.item(PAGE_TABLE).setIcon(table_icon())
+        for page in (PAGE_EXTRACT, PAGE_CSV_TOOLS):
+            item = navigation.item(page)
+            item.setIcon(steady_icon(item.icon()))
+        ui.list_widget_navigation.currentRowChanged.connect(self._show_page)
+        for page in (PAGE_EXTRACT, PAGE_CSV_TOOLS, PAGE_TABLE):
+            shortcut = QShortcut(QKeySequence(f"Ctrl+{page + 1}"), self)
+            shortcut.activated.connect(lambda p=page: ui.list_widget_navigation.setCurrentRow(p))
+        output_toggle = ui.dock_output.toggleViewAction()
+        output_toggle.setText("Output panel")
+        output_toggle.setShortcut(QKeySequence("Ctrl+J"))
+        ui.view_menu.addAction(output_toggle)
+        clear_output = ui.view_menu.addAction("Clear output")
+        clear_output.triggered.connect(self._clear_output)
+        ui.list_widget_navigation.setCurrentRow(PAGE_EXTRACT)
+
+    def _show_page(self, page: int) -> None:
+        if page < 0:
+            return
+        self.ui.stacked_pages.setCurrentIndex(page)
+        tab = _OUTPUT_TAB_FOR_PAGE.get(page)
+        if tab is not None:
+            self.ui.tab_widget_output.setCurrentIndex(tab)
+
+    def _clear_output(self) -> None:
+        self.ui.text_edit_program_output.clear()
+        self.ui.text_edit_csv_output.clear()
 
     def _apply_settings(self) -> None:
         settings = self.vms.settings
@@ -171,6 +219,7 @@ class MainWindow(QMainWindow):
             return
         app = QApplication.instance()
         if isinstance(app, QApplication):
+            apply_icon_palette(app, key)
             app.setStyleSheet(stylesheet)
 
     # ------------------------------------------------------------------ XPath builder
@@ -295,6 +344,10 @@ class MainWindow(QMainWindow):
         else:
             ui.line_edit_xml_output_find_text.clear()
 
+    def _find_from_keyboard(self) -> None:
+        modifiers = QGuiApplication.keyboardModifiers()
+        self._find(backward=bool(modifiers & Qt.KeyboardModifier.ShiftModifier))
+
     def _find(self, backward: bool) -> None:
         text = self.ui.line_edit_xml_output_find_text.text()
         if not text:
@@ -382,8 +435,7 @@ class MainWindow(QMainWindow):
             )
             return
         ui.line_edit_csv_conversion_path_input.setText(ui.line_edit_csv_output_path.text())
-        if ui.tabWidget.currentIndex() == 0:
-            ui.tabWidget.setCurrentIndex(1)
+        ui.list_widget_navigation.setCurrentRow(PAGE_CSV_TOOLS)
 
     # ------------------------------------------------------------------ CSV tab
 
@@ -402,6 +454,11 @@ class MainWindow(QMainWindow):
             )
         )
         ui.button_csv_conversion_open_file.clicked.connect(self._open_converted_file)
+        ui.button_csv_conversion_show_folder.clicked.connect(
+            lambda: self._open_folder(
+                os.path.dirname(ui.line_edit_csv_conversion_open_file_path.text())
+            )
+        )
         ui.checkbox_write_index_column.toggled.connect(
             lambda on: ui.text_edit_csv_output.setText(_INDEX_ON_HELP if on else _INDEX_OFF_HELP)
         )
@@ -426,30 +483,28 @@ class MainWindow(QMainWindow):
                 ui.line_edit_profile_cleanup_folder_path.text(),
             )
         )
-        ui.line_edit_profile_cleanup_csv_file_path.textChanged.connect(csv_vm.csv_path_changed)
-        ui.button_drop_csv_header.clicked.connect(
-            lambda: csv_vm.drop_column(
-                ui.line_edit_profile_cleanup_csv_file_path.text(),
-                ui.combobox_csv_headers.currentText(),
-                ui.combobox_csv_headers.currentIndex(),
-            )
-        )
-        ui.button_convert_hexadecimal_to_decimal.clicked.connect(self._hex_to_decimal)
+        ui.line_edit_hexadecimal.textChanged.connect(self._hex_to_decimal)
         ui.button_load_csv.clicked.connect(self._load_table)
         ui.button_clear_table.clicked.connect(self._clear_table)
         ui.line_edit_filter_table.textChanged.connect(table.set_filter)
 
-        csv_vm.log_appended.connect(ui.text_edit_csv_output.append)
-        csv_vm.log_replaced.connect(ui.text_edit_csv_output.setText)
-        csv_vm.busy_changed.connect(self._set_loading_animation)
-        csv_vm.converted_file_changed.connect(ui.line_edit_csv_conversion_open_file_path.setText)
-        csv_vm.headers_changed.connect(self._show_csv_headers)
-        csv_vm.column_dropped.connect(ui.combobox_csv_headers.removeItem)
+        for vm in (csv_vm, self.vms.transforms):
+            vm.log_appended.connect(ui.text_edit_csv_output.append)
+            vm.log_replaced.connect(ui.text_edit_csv_output.setText)
+        csv_vm.conversion_running_changed.connect(self._set_converting)
+        csv_vm.converted_file_changed.connect(self._show_converted_file)
         csv_vm.cleanup_confirmation_requested.connect(self._confirm_cleanup)
-        csv_vm.cleanup_running_changed.connect(ui.button_profile_cleanup_cleanup_start.setDisabled)
+        csv_vm.cleanup_running_changed.connect(self._set_cleaning_up)
         table.has_table_changed.connect(self._table_state)
         table.loading_changed.connect(ui.button_load_csv.setDisabled)
-        self._show_csv_headers([])
+        table.loading_changed.connect(
+            lambda busy: self._set_table_status("Loading…") if busy else self._update_table_rows()
+        )
+        table.filtering_changed.connect(lambda _busy: self._update_table_rows())
+        for signal in (table.model.modelReset, table.model.layoutChanged):
+            signal.connect(self._update_table_rows)
+        self._update_table_rows()
+        self._csv_transforms = CsvTransformsView(self, self.vms.transforms, self._view_in_table)
 
     def _open_converted_file(self) -> None:
         path = self.ui.line_edit_csv_conversion_open_file_path.text()
@@ -458,10 +513,11 @@ class MainWindow(QMainWindow):
                 f"Invalid or missing path: Could not open file: {path}"
             )
 
-    def _show_csv_headers(self, headers: list[str]) -> None:
-        _refill(self.ui.combobox_csv_headers, headers)
-        self.ui.combobox_csv_headers.setDisabled(not headers)
-        self.ui.button_drop_csv_header.setDisabled(not headers)
+    def _view_in_table(self, path: str) -> None:
+        """Open a CSV file (e.g. a compare report) in the table viewer page."""
+        self.ui.line_edit_filter_table.clear()
+        self.vms.table.load(path)
+        self.ui.list_widget_navigation.setCurrentRow(PAGE_TABLE)
 
     def _confirm_cleanup(self, plan: CleanupPlan) -> None:
         names = "\n".join(p.name for p in plan.delete[:15])
@@ -475,31 +531,36 @@ class MainWindow(QMainWindow):
         )
         self.vms.csv_tools.confirm_cleanup(plan, confirmed)
 
-    def _set_loading_animation(self, busy: bool) -> None:
-        label = self.ui.label_loading_gif
-        if busy:
-            if self._movie is None:
-                self._movie = QMovie(LOADING_GIF, parent=self)
-            label.setMovie(self._movie)
-            self._movie.start()
-            label.setVisible(True)
-        else:
-            if self._movie is not None:
-                self._movie.stop()
-            label.clear()
-            label.setVisible(False)
+    # Each tool shows its own busy bar and disables its own action while it runs.
 
-    def _hex_to_decimal(self) -> None:
-        hex_value = self.ui.line_edit_hexadecimal.text().strip()
-        if not hex_value:
-            QMessageBox.warning(self, "Empty Input", "Please enter a hexadecimal value.")
-            return
+    def _set_converting(self, running: bool) -> None:
+        ui = self.ui
+        ui.busy_bar_conversion.set_running(running)
+        ui.button_csv_conversion_convert.setDisabled(running)
+        ui.button_browse_csv_conversion_path_input.setDisabled(running)
+        if running:
+            ui.frame_conversion_result.hide()
+
+    def _show_converted_file(self, path: str) -> None:
+        self.ui.line_edit_csv_conversion_open_file_path.setText(path)
+        self.ui.line_edit_csv_conversion_open_file_path.setCursorPosition(0)
+        self.ui.frame_conversion_result.setVisible(bool(path))
+
+    def _set_cleaning_up(self, running: bool) -> None:
+        self.ui.busy_bar_cleanup.set_running(running)
+        self.ui.button_profile_cleanup_cleanup_start.setDisabled(running)
+
+    def _hex_to_decimal(self, text: str) -> None:
+        ui = self.ui
         try:
-            self.ui.line_edit_decimal.setText(str(int(hex_value, 16)))
+            value = parse_hex(text)
         except ValueError:
-            QMessageBox.warning(
-                self, "Invalid Hexadecimal", "Please enter a valid hexadecimal value."
-            )
+            ui.line_edit_decimal.clear()
+            ui.label_hex_error.setText("Not a hexadecimal number: use the digits 0–9 and A–F.")
+            ui.label_hex_error.show()
+            return
+        ui.label_hex_error.hide()
+        ui.line_edit_decimal.setText("" if value is None else str(value))
 
     def _load_table(self) -> None:
         file_path = browse_open_file(self, "Select CSV file to display", "CSV File (*.csv)")
@@ -514,7 +575,21 @@ class MainWindow(QMainWindow):
         self.ui.button_clear_table.setDisabled(not has_table)
         self.ui.line_edit_filter_table.setDisabled(not has_table)
         if has_table:
-            self.ui.table_csv_data.resizeColumnsToContents()
+            self.ui.table_csv_data.resizeColumnsToContents()  # only fetched rows are measured
+        self._update_table_rows()
+
+    def _set_table_status(self, text: str) -> None:
+        self.ui.label_table_rows.setText(text)
+
+    def _update_table_rows(self) -> None:
+        model = self.vms.table.model
+        total = model.data_store.row_count
+        if total == 0 and model.columnCount() == 0:
+            self._set_table_status("")
+        elif model.total_rows == total:
+            self._set_table_status(f"{total:,} rows")
+        else:
+            self._set_table_status(f"{model.total_rows:,} of {total:,} rows")
 
     # ------------------------------------------------------------------ menus
 
@@ -711,6 +786,7 @@ class MainWindow(QMainWindow):
             vms.inspector,
             vms.export,
             vms.csv_tools,
+            vms.transforms,
             vms.table,
             vms.presets,
         )

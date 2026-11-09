@@ -71,3 +71,31 @@ def test_count_xml_files_is_case_insensitive(tmp_path: Path) -> None:
     assert count_xml_files(str(tmp_path)) == 2
     assert count_xml_files(str(tmp_path / "nope")) is None
     assert count_xml_files("") is None
+
+
+def test_distinct_values_are_capped(tmp_path: Path, monkeypatch) -> None:
+    from xmluvation.infrastructure import xml_engine
+
+    monkeypatch.setattr(xml_engine, "MAX_DISTINCT_VALUES", 3)
+    doc = tmp_path / "many.xml"
+    items = "".join(f'<i id="{n}">{n}</i>' for n in range(10))
+    doc.write_text(f"<r>{items}</r>", encoding="utf-8")
+    for limit in (10_000_000, 10):  # full parse and streaming
+        index = inspect_file(doc, limit)
+        assert len(index.tag_to_values["i"]) == 3
+        assert len(index.tag_attr_to_values[("i", "id")]) == 3
+        assert index.values_capped and index.element_count == 11
+
+
+def test_streaming_inspection_can_be_cancelled(tmp_path: Path, monkeypatch) -> None:
+    from xmluvation.application.cancellation import CancellationToken
+    from xmluvation.domain.errors import Cancelled
+    from xmluvation.infrastructure import xml_engine
+
+    monkeypatch.setattr(xml_engine, "_CANCEL_CHECK_EVERY", 5)
+    doc = tmp_path / "big.xml"
+    doc.write_text("<r>" + "<i/>" * 100 + "</r>", encoding="utf-8")
+    token = CancellationToken()
+    token.cancel()
+    with pytest.raises(Cancelled):
+        xml_engine.inspect_file(doc, 1, token.raise_if_cancelled)  # 1-byte limit: streaming

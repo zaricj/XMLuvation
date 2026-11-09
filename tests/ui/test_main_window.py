@@ -33,7 +33,7 @@ def test_table_filter_no_longer_crashes(qtbot, window, tmp_path: Path) -> None:
     window.vms.table.load(str(csv_file))
     qtbot.waitUntil(window.ui.line_edit_filter_table.isEnabled, timeout=5000)
     window.ui.line_edit_filter_table.setText("y")
-    assert window.ui.table_csv_data.model().rowCount() == 1
+    qtbot.waitUntil(lambda: window.ui.table_csv_data.model().rowCount() == 1, timeout=5000)
 
 
 def test_prompt_on_exit_is_saved_immediately(window, settings: SettingsStore) -> None:
@@ -83,3 +83,43 @@ def test_settings_persist_with_legacy_keys(tmp_path: Path) -> None:
     assert store.theme == "dark_theme_peach" and store.recent_xpath_expressions == ["//x"]
     store.xml_preview_limit_mb = 0
     assert store.xml_preview_limit_mb == 1
+
+
+def test_column_editor_reorders_renames_and_drops(qtbot, window, tmp_path: Path) -> None:
+    from PySide6.QtCore import Qt
+
+    csv_file = tmp_path / "c.csv"
+    csv_file.write_text("A,B,C\n1,2,3\n", encoding="utf-8")
+    ui = window.ui
+    ui.line_edit_columns_csv_file_path.setText(str(csv_file))
+    qtbot.waitUntil(lambda: ui.list_widget_columns.count() == 3, timeout=5000)
+    assert ui.label_columns_status.text() == "Keeping 3 of 3 columns."
+
+    ui.list_widget_columns.item(1).setCheckState(Qt.CheckState.Unchecked)  # drop B
+    ui.list_widget_columns.item(2).setText("Gamma")  # rename C
+    ui.list_widget_columns.setCurrentRow(2)
+    ui.button_columns_up.click()
+    ui.button_columns_up.click()  # C first
+    assert ui.label_columns_status.text() == "Keeping 2 of 3 columns, 1 renamed, order changed."
+
+    ui.button_columns_save.click()
+    qtbot.waitUntil(lambda: not ui.frame_columns_result.isHidden(), timeout=5000)
+    edited = tmp_path / "c_edited.csv"
+    assert ui.line_edit_columns_result_path.text() == str(edited)
+    assert edited.read_bytes() == b"Gamma,A\r\n3,1\r\n"
+
+
+def test_compare_report_opens_in_table_viewer(qtbot, window, tmp_path: Path) -> None:
+    old, new = tmp_path / "old.csv", tmp_path / "new.csv"
+    old.write_text("K,V\n1,a\n2,b\n", encoding="utf-8")
+    new.write_text("K,V\n1,a\n2,c\n3,d\n", encoding="utf-8")
+    ui = window.ui
+    ui.line_edit_compare_old_csv_file_path.setText(str(old))
+    ui.line_edit_compare_new_csv_file_path.setText(str(new))
+    qtbot.waitUntil(lambda: ui.combobox_compare_key.count() == 2, timeout=5000)
+    ui.button_compare_start.click()
+    qtbot.waitUntil(lambda: not ui.frame_compare_result.isHidden(), timeout=5000)
+    assert "1 added, 1 changed rows (1 cells)" in ui.label_compare_summary.text()
+    ui.button_compare_view_report.click()
+    qtbot.waitUntil(lambda: window.vms.table.model.rowCount() == 2, timeout=5000)
+    assert ui.stacked_pages.currentIndex() == 2

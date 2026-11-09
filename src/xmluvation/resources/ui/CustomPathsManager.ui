@@ -2,360 +2,468 @@
 <ui version="4.0">
  <class>CustomPathsManagerWidget</class>
  <widget class="QWidget" name="CustomPathsManagerWidget">
-  <property name="windowModality">
-   <enum>Qt::WindowModality::WindowModal</enum>
-  </property>
-  <property name="geometry">
-   <rect>
-    <x>0</x>
-    <y>0</y>
-    <width>620</width>
-    <height>361</height>
-   </rect>
-  </property>
   <property name="windowTitle">
-   <string>Custom Paths Manager</string>
+   <string>Custom paths</string>
   </property>
   <property name="windowIcon">
    <iconset resource="../qrc/xmluvation_resources.qrc">
     <normaloff>:/icons/xml_256px.ico</normaloff>:/icons/xml_256px.ico</iconset>
   </property>
-  <property name="styleSheet">
-   <string notr="true"/>
+  <property name="minimumSize">
+   <size>
+    <width>560</width>
+    <height>0</height>
+   </size>
   </property>
-  <layout class="QVBoxLayout" name="verticalLayout_2">
+  <property name="role" stdset="0">
+   <string>page</string>
+  </property>
+  <layout class="QVBoxLayout" name="layout_CustomPathsManagerWidget">
+   <property name="spacing">
+    <number>14</number>
+   </property>
+   <property name="leftMargin">
+    <number>24</number>
+   </property>
+   <property name="topMargin">
+    <number>22</number>
+   </property>
+   <property name="rightMargin">
+    <number>24</number>
+   </property>
+   <property name="bottomMargin">
+    <number>22</number>
+   </property>
    <item>
-    <layout class="QVBoxLayout" name="verticalLayout_4">
-     <item>
-      <widget class="QGroupBox" name="groupBox">
-       <property name="sizePolicy">
-        <sizepolicy hsizetype="Preferred" vsizetype="Preferred">
-         <horstretch>0</horstretch>
-         <verstretch>0</verstretch>
-        </sizepolicy>
-       </property>
-       <property name="title">
-        <string>Create custom paths</string>
-       </property>
-       <layout class="QVBoxLayout" name="verticalLayout">
-        <item>
-         <layout class="QHBoxLayout" name="horizontalLayout_7">
-          <item>
-           <widget class="QLabel" name="label">
-            <property name="sizePolicy">
-             <sizepolicy hsizetype="Maximum" vsizetype="Maximum">
-              <horstretch>0</horstretch>
-              <verstretch>0</verstretch>
-             </sizepolicy>
-            </property>
-            <property name="text">
-             <string>Description:</string>
-            </property>
-           </widget>
-          </item>
-          <item>
-           <widget class="QLabel" name="label_description_create_custom_path">
-            <property name="sizePolicy">
-             <sizepolicy hsizetype="Minimum" vsizetype="Maximum">
-              <horstretch>0</horstretch>
-              <verstretch>0</verstretch>
-             </sizepolicy>
-            </property>
-            <property name="layoutDirection">
-             <enum>Qt::LayoutDirection::LeftToRight</enum>
-            </property>
-            <property name="text">
-             <string>Here you can add and create custom path configurations.</string>
-            </property>
-            <property name="alignment">
-             <set>Qt::AlignmentFlag::AlignLeading|Qt::AlignmentFlag::AlignLeft|Qt::AlignmentFlag::AlignVCenter</set>
-            </property>
-           </widget>
-          </item>
-         </layout>
+    <widget class="QLabel" name="label_paths_title">
+     <property name="text">
+      <string>Custom paths</string>
+     </property>
+     <property name="role" stdset="0">
+      <string>page-title</string>
+     </property>
+    </widget>
+   </item>
+   <item>
+    <widget class="QLabel" name="label_paths_hint">
+     <property name="text">
+      <string>Folders you use often, available from the Paths menu.</string>
+     </property>
+     <property name="wordWrap">
+      <bool>true</bool>
+     </property>
+     <property name="role" stdset="0">
+      <string>hint</string>
+     </property>
+    </widget>
+   </item>
+   <item>
+    <widget class="QFrame" name="groupBox">
+     <property name="frameShape">
+      <enum>QFrame::Shape::StyledPanel</enum>
+     </property>
+     <property name="role" stdset="0">
+      <string>card</string>
+     </property>
+     <layout class="QVBoxLayout" name="layout_groupBox">
+      <property name="spacing">
+       <number>10</number>
+      </property>
+      <property name="leftMargin">
+       <number>18</number>
+      </property>
+      <property name="topMargin">
+       <number>16</number>
+      </property>
+      <property name="rightMargin">
+       <number>18</number>
+      </property>
+      <property name="bottomMargin">
+       <number>18</number>
+      </property>
+      <item>
+       <widget class="QLabel" name="label_groupBox_title">
+        <property name="text">
+         <string>New path</string>
+        </property>
+        <property name="role" stdset="0">
+         <string>card-title</string>
+        </property>
+       </widget>
+      </item>
+      <item>
+       <widget class="QLabel" name="label_description_create_custom_path">
+        <property name="text">
+         <string>Save a folder under a name; pick it later from the Paths menu.</string>
+        </property>
+        <property name="wordWrap">
+         <bool>true</bool>
+        </property>
+        <property name="role" stdset="0">
+         <string>hint</string>
+        </property>
+       </widget>
+      </item>
+      <item>
+       <layout class="QFormLayout" name="layout_create_form">
+        <property name="horizontalSpacing">
+         <number>10</number>
+        </property>
+        <property name="verticalSpacing">
+         <number>10</number>
+        </property>
+        <property name="leftMargin">
+         <number>0</number>
+        </property>
+        <property name="topMargin">
+         <number>4</number>
+        </property>
+        <property name="rightMargin">
+         <number>0</number>
+        </property>
+        <property name="bottomMargin">
+         <number>4</number>
+        </property>
+        <property name="fieldGrowthPolicy">
+         <enum>QFormLayout::FieldGrowthPolicy::ExpandingFieldsGrow</enum>
+        </property>
+        <item row="0" column="0">
+         <widget class="QLabel" name="label_path_name_2">
+          <property name="text">
+           <string>Name</string>
+          </property>
+          <property name="role" stdset="0">
+           <string>field-label</string>
+          </property>
+         </widget>
         </item>
-        <item>
-         <layout class="QHBoxLayout" name="horizontalLayout">
-          <item>
-           <widget class="QLabel" name="label_path_name_2">
-            <property name="text">
-             <string>Name:</string>
-            </property>
-           </widget>
-          </item>
-          <item>
-           <widget class="QLineEdit" name="line_edit_custom_path_name">
-            <property name="placeholderText">
-             <string>Enter a name for the new configuration...</string>
-            </property>
-           </widget>
-          </item>
-         </layout>
+        <item row="0" column="1">
+         <widget class="QLineEdit" name="line_edit_custom_path_name">
+          <property name="placeholderText">
+           <string>Shown in the Paths menu</string>
+          </property>
+          <property name="clearButtonEnabled">
+           <bool>true</bool>
+          </property>
+         </widget>
         </item>
-        <item>
-         <layout class="QHBoxLayout" name="horizontalLayout_2">
-          <item>
-           <widget class="QLabel" name="label_path_folder">
-            <property name="minimumSize">
-             <size>
-              <width>0</width>
-              <height>0</height>
-             </size>
-            </property>
-            <property name="text">
-             <string>Path:</string>
-            </property>
-           </widget>
-          </item>
+        <item row="1" column="0">
+         <widget class="QLabel" name="label_path_folder">
+          <property name="text">
+           <string>Folder</string>
+          </property>
+          <property name="role" stdset="0">
+           <string>field-label</string>
+          </property>
+         </widget>
+        </item>
+        <item row="1" column="1">
+         <layout class="QHBoxLayout" name="layout_create_folder">
+          <property name="spacing">
+           <number>8</number>
+          </property>
+          <property name="leftMargin">
+           <number>0</number>
+          </property>
+          <property name="topMargin">
+           <number>0</number>
+          </property>
+          <property name="rightMargin">
+           <number>0</number>
+          </property>
+          <property name="bottomMargin">
+           <number>0</number>
+          </property>
           <item>
            <widget class="QLineEdit" name="line_edit_custom_path_value">
             <property name="placeholderText">
-             <string>Enter a folder's path which will be saved to the configuration...</string>
+             <string>Folder to fill in as the XML source</string>
+            </property>
+            <property name="clearButtonEnabled">
+             <bool>true</bool>
             </property>
            </widget>
           </item>
           <item>
            <widget class="QPushButton" name="button_browse_path_folder">
             <property name="text">
-             <string>Browse</string>
-            </property>
-            <property name="icon">
-             <iconset theme="QIcon::ThemeIcon::FolderNew"/>
-            </property>
-           </widget>
-          </item>
-         </layout>
-        </item>
-        <item>
-         <layout class="QHBoxLayout" name="horizontalLayout_6">
-          <item>
-           <widget class="QPushButton" name="button_create_custom_path">
-            <property name="text">
-             <string>Save Configuration</string>
+             <string>Browse…</string>
             </property>
            </widget>
           </item>
          </layout>
         </item>
        </layout>
-      </widget>
-     </item>
-     <item>
-      <widget class="Line" name="line">
-       <property name="orientation">
-        <enum>Qt::Orientation::Horizontal</enum>
-       </property>
-      </widget>
-     </item>
-     <item>
-      <widget class="QGroupBox" name="groupBox_2">
-       <property name="sizePolicy">
-        <sizepolicy hsizetype="Preferred" vsizetype="Preferred">
-         <horstretch>0</horstretch>
-         <verstretch>0</verstretch>
-        </sizepolicy>
-       </property>
-       <property name="title">
-        <string>Edit custom paths</string>
-       </property>
-       <layout class="QVBoxLayout" name="verticalLayout_3">
+      </item>
+      <item>
+       <layout class="QHBoxLayout" name="layout_create_actions">
+        <property name="spacing">
+         <number>8</number>
+        </property>
+        <property name="leftMargin">
+         <number>0</number>
+        </property>
+        <property name="topMargin">
+         <number>0</number>
+        </property>
+        <property name="rightMargin">
+         <number>0</number>
+        </property>
+        <property name="bottomMargin">
+         <number>0</number>
+        </property>
         <item>
-         <layout class="QHBoxLayout" name="horizontalLayout_3">
-          <item>
-           <widget class="QLabel" name="label_desc">
-            <property name="sizePolicy">
-             <sizepolicy hsizetype="Maximum" vsizetype="Maximum">
-              <horstretch>0</horstretch>
-              <verstretch>0</verstretch>
-             </sizepolicy>
-            </property>
-            <property name="baseSize">
-             <size>
-              <width>0</width>
-              <height>0</height>
-             </size>
-            </property>
-            <property name="text">
-             <string>Description:</string>
-            </property>
-           </widget>
-          </item>
-          <item>
-           <widget class="QLabel" name="label_text_desc">
-            <property name="sizePolicy">
-             <sizepolicy hsizetype="Expanding" vsizetype="Maximum">
-              <horstretch>0</horstretch>
-              <verstretch>0</verstretch>
-             </sizepolicy>
-            </property>
-            <property name="text">
-             <string>Here you can load a custom path and change it's values or you can delete it.</string>
-            </property>
-            <property name="wordWrap">
-             <bool>true</bool>
-            </property>
-            <property name="margin">
-             <number>0</number>
-            </property>
-            <property name="indent">
-             <number>-1</number>
-            </property>
-           </widget>
-          </item>
-         </layout>
+         <spacer name="spacer_1">
+          <property name="orientation">
+           <enum>Qt::Orientation::Horizontal</enum>
+          </property>
+          <property name="sizeHint">
+           <size>
+            <width>40</width>
+            <height>20</height>
+           </size>
+          </property>
+         </spacer>
         </item>
         <item>
-         <layout class="QHBoxLayout" name="horizontalLayout_Buttons">
-          <item>
-           <widget class="QLabel" name="label_combobox_desc">
-            <property name="maximumSize">
-             <size>
-              <width>145</width>
-              <height>16777215</height>
-             </size>
-            </property>
-            <property name="text">
-             <string>Select custom path:</string>
-            </property>
-           </widget>
-          </item>
+         <widget class="QPushButton" name="button_create_custom_path">
+          <property name="text">
+           <string>Save path</string>
+          </property>
+          <property name="role" stdset="0">
+           <string>primary</string>
+          </property>
+         </widget>
+        </item>
+       </layout>
+      </item>
+     </layout>
+    </widget>
+   </item>
+   <item>
+    <widget class="QFrame" name="groupBox_2">
+     <property name="frameShape">
+      <enum>QFrame::Shape::StyledPanel</enum>
+     </property>
+     <property name="role" stdset="0">
+      <string>card</string>
+     </property>
+     <layout class="QVBoxLayout" name="layout_groupBox_2">
+      <property name="spacing">
+       <number>10</number>
+      </property>
+      <property name="leftMargin">
+       <number>18</number>
+      </property>
+      <property name="topMargin">
+       <number>16</number>
+      </property>
+      <property name="rightMargin">
+       <number>18</number>
+      </property>
+      <property name="bottomMargin">
+       <number>18</number>
+      </property>
+      <item>
+       <widget class="QLabel" name="label_groupBox_2_title">
+        <property name="text">
+         <string>Edit saved path</string>
+        </property>
+        <property name="role" stdset="0">
+         <string>card-title</string>
+        </property>
+       </widget>
+      </item>
+      <item>
+       <widget class="QLabel" name="label_text_desc">
+        <property name="text">
+         <string>Load a saved path to rename it, change its folder, or delete it.</string>
+        </property>
+        <property name="wordWrap">
+         <bool>true</bool>
+        </property>
+        <property name="role" stdset="0">
+         <string>hint</string>
+        </property>
+       </widget>
+      </item>
+      <item>
+       <layout class="QFormLayout" name="layout_edit_form">
+        <property name="horizontalSpacing">
+         <number>10</number>
+        </property>
+        <property name="verticalSpacing">
+         <number>10</number>
+        </property>
+        <property name="leftMargin">
+         <number>0</number>
+        </property>
+        <property name="topMargin">
+         <number>4</number>
+        </property>
+        <property name="rightMargin">
+         <number>0</number>
+        </property>
+        <property name="bottomMargin">
+         <number>4</number>
+        </property>
+        <property name="fieldGrowthPolicy">
+         <enum>QFormLayout::FieldGrowthPolicy::ExpandingFieldsGrow</enum>
+        </property>
+        <item row="0" column="0">
+         <widget class="QLabel" name="label_combobox_desc">
+          <property name="text">
+           <string>Saved path</string>
+          </property>
+          <property name="role" stdset="0">
+           <string>field-label</string>
+          </property>
+         </widget>
+        </item>
+        <item row="0" column="1">
+         <layout class="QHBoxLayout" name="layout_edit_select" stretch="1,0,0">
+          <property name="spacing">
+           <number>8</number>
+          </property>
+          <property name="leftMargin">
+           <number>0</number>
+          </property>
+          <property name="topMargin">
+           <number>0</number>
+          </property>
+          <property name="rightMargin">
+           <number>0</number>
+          </property>
+          <property name="bottomMargin">
+           <number>0</number>
+          </property>
           <item>
            <widget class="QComboBox" name="combobox_path_names">
-            <property name="sizePolicy">
-             <sizepolicy hsizetype="Expanding" vsizetype="Fixed">
-              <horstretch>0</horstretch>
-              <verstretch>0</verstretch>
-             </sizepolicy>
-            </property>
             <property name="placeholderText">
-             <string notr="true">Custom paths...</string>
+             <string>No saved paths</string>
             </property>
            </widget>
           </item>
           <item>
            <widget class="QPushButton" name="button_load_action">
-            <property name="maximumSize">
-             <size>
-              <width>100</width>
-              <height>16777215</height>
-             </size>
-            </property>
             <property name="text">
-             <string>Load Path</string>
+             <string>Load</string>
             </property>
            </widget>
           </item>
           <item>
            <widget class="QPushButton" name="button_delete_action">
-            <property name="maximumSize">
-             <size>
-              <width>100</width>
-              <height>16777215</height>
-             </size>
-            </property>
-            <property name="styleSheet">
-             <string notr="true"/>
-            </property>
             <property name="text">
-             <string>Delete Path</string>
+             <string>Delete</string>
+            </property>
+            <property name="role" stdset="0">
+             <string>danger</string>
             </property>
            </widget>
           </item>
          </layout>
         </item>
-        <item>
-         <layout class="QHBoxLayout" name="horizontalLayout_4">
-          <item>
-           <widget class="QLabel" name="label_path_name">
-            <property name="sizePolicy">
-             <sizepolicy hsizetype="Preferred" vsizetype="Preferred">
-              <horstretch>0</horstretch>
-              <verstretch>0</verstretch>
-             </sizepolicy>
-            </property>
-            <property name="text">
-             <string>Name:</string>
-            </property>
-           </widget>
-          </item>
-          <item>
-           <widget class="QLineEdit" name="line_edit_path_name">
-            <property name="placeholderText">
-             <string>Name of the configuration as shown in the autofill menubar...</string>
-            </property>
-           </widget>
-          </item>
-         </layout>
+        <item row="1" column="0">
+         <widget class="QLabel" name="label_path_name">
+          <property name="text">
+           <string>Name</string>
+          </property>
+          <property name="role" stdset="0">
+           <string>field-label</string>
+          </property>
+         </widget>
         </item>
-        <item>
-         <layout class="QHBoxLayout" name="horizontalLayout_5">
-          <item>
-           <widget class="QLabel" name="label_path_value">
-            <property name="sizePolicy">
-             <sizepolicy hsizetype="Preferred" vsizetype="Preferred">
-              <horstretch>0</horstretch>
-              <verstretch>0</verstretch>
-             </sizepolicy>
-            </property>
-            <property name="minimumSize">
-             <size>
-              <width>0</width>
-              <height>0</height>
-             </size>
-            </property>
-            <property name="text">
-             <string>Path:</string>
-            </property>
-           </widget>
-          </item>
-          <item>
-           <widget class="QLineEdit" name="line_edit_path_value">
-            <property name="placeholderText">
-             <string>Path of the folder that is saved to the configuration...</string>
-            </property>
-           </widget>
-          </item>
-         </layout>
+        <item row="1" column="1">
+         <widget class="QLineEdit" name="line_edit_path_name">
+          <property name="placeholderText">
+           <string>Name shown in the Paths menu</string>
+          </property>
+          <property name="clearButtonEnabled">
+           <bool>true</bool>
+          </property>
+         </widget>
         </item>
-        <item>
-         <layout class="QHBoxLayout" name="horizontalLayout_8">
-          <item>
-           <widget class="QPushButton" name="button_open_config_directory">
-            <property name="sizePolicy">
-             <sizepolicy hsizetype="Expanding" vsizetype="Fixed">
-              <horstretch>0</horstretch>
-              <verstretch>0</verstretch>
-             </sizepolicy>
-            </property>
-            <property name="text">
-             <string>Open Config Directory</string>
-            </property>
-           </widget>
-          </item>
-          <item>
-           <widget class="QPushButton" name="button_save_changes">
-            <property name="sizePolicy">
-             <sizepolicy hsizetype="Expanding" vsizetype="Fixed">
-              <horstretch>0</horstretch>
-              <verstretch>0</verstretch>
-             </sizepolicy>
-            </property>
-            <property name="text">
-             <string>Save Changes</string>
-            </property>
-           </widget>
-          </item>
-         </layout>
+        <item row="2" column="0">
+         <widget class="QLabel" name="label_path_value">
+          <property name="text">
+           <string>Folder</string>
+          </property>
+          <property name="role" stdset="0">
+           <string>field-label</string>
+          </property>
+         </widget>
+        </item>
+        <item row="2" column="1">
+         <widget class="QLineEdit" name="line_edit_path_value">
+          <property name="placeholderText">
+           <string>Saved folder</string>
+          </property>
+          <property name="clearButtonEnabled">
+           <bool>true</bool>
+          </property>
+         </widget>
         </item>
        </layout>
-      </widget>
-     </item>
-    </layout>
+      </item>
+      <item>
+       <layout class="QHBoxLayout" name="layout_edit_actions">
+        <property name="spacing">
+         <number>8</number>
+        </property>
+        <property name="leftMargin">
+         <number>0</number>
+        </property>
+        <property name="topMargin">
+         <number>0</number>
+        </property>
+        <property name="rightMargin">
+         <number>0</number>
+        </property>
+        <property name="bottomMargin">
+         <number>0</number>
+        </property>
+        <item>
+         <widget class="QPushButton" name="button_open_config_directory">
+          <property name="text">
+           <string>Open config folder</string>
+          </property>
+          <property name="role" stdset="0">
+           <string>flat</string>
+          </property>
+         </widget>
+        </item>
+        <item>
+         <spacer name="spacer_2">
+          <property name="orientation">
+           <enum>Qt::Orientation::Horizontal</enum>
+          </property>
+          <property name="sizeHint">
+           <size>
+            <width>40</width>
+            <height>20</height>
+           </size>
+          </property>
+         </spacer>
+        </item>
+        <item>
+         <widget class="QPushButton" name="button_save_changes">
+          <property name="text">
+           <string>Save changes</string>
+          </property>
+          <property name="role" stdset="0">
+           <string>primary</string>
+          </property>
+         </widget>
+        </item>
+       </layout>
+      </item>
+     </layout>
+    </widget>
    </item>
   </layout>
  </widget>
  <resources>
-  <include location="../qrc/xmluvation_resources.qrc"/>
+  <include location="../qrc/xmluvation_resources.qrc" />
  </resources>
- <connections/>
+ <connections />
 </ui>

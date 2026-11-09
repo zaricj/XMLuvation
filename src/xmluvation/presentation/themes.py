@@ -3,6 +3,7 @@
 from __future__ import annotations
 
 from PySide6.QtCore import QFile, QIODevice, QTextStream
+from PySide6.QtGui import QColor, QGuiApplication, QPalette
 
 # key (persisted in settings) -> resource path; order = theme menu order
 THEMES: dict[str, str] = {
@@ -13,6 +14,26 @@ THEMES: dict[str, str] = {
     "dark_theme_qlementine": ":/styles/other/dark_theme_qlementine.qss",
     "dark_theme_metallic_spaceship": ":/styles/other/dark_theme_metallic_spaceship.qss",
 }
+
+
+LIGHT_THEMES = frozenset({"light_theme_default"})
+
+# Icon colors (normal, disabled) per theme brightness. Qt's Windows theme icons and the
+# drawn table icon paint in the application palette's Text color, which style sheets do
+# not change, so it is set here; otherwise icons follow the Windows light/dark setting.
+_ICON_COLORS = {
+    False: ("#e6e8ec", "#6b717c"),  # dark themes: light icons
+    True: ("#1c2027", "#a0a6b1"),  # light themes: near-black icons
+}
+
+
+def apply_icon_palette(app: QGuiApplication, key: str) -> None:
+    normal, disabled = _ICON_COLORS[key in LIGHT_THEMES]
+    palette = app.palette()
+    for group in (QPalette.ColorGroup.Active, QPalette.ColorGroup.Inactive):
+        palette.setColor(group, QPalette.ColorRole.Text, QColor(normal))
+    palette.setColor(QPalette.ColorGroup.Disabled, QPalette.ColorRole.Text, QColor(disabled))
+    app.setPalette(palette)
 
 
 def theme_label(key: str) -> str:
