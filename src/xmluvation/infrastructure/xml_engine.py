@@ -14,7 +14,7 @@ from __future__ import annotations
 import logging
 import re
 import threading
-from collections.abc import Iterable, Sequence
+from collections.abc import Callable, Iterable, Sequence
 from dataclasses import dataclass, field
 from pathlib import Path
 from typing import Any
@@ -131,12 +131,28 @@ def evaluate_file(
 ) -> FileOutcome:
     """Evaluate all XPaths against one file and build its CSV rows.
 
-    XPaths are evaluated with the document's root element as context node.
+    XPaths are evaluated with the document's root element as context node. Arbitrary
+    XPath 1.0 (ancestors, siblings, ``count()``, predicates over later nodes) needs the
+    whole tree, so the file is parsed completely; memory is bounded by the export's
+    in-flight byte budget instead. The tree is released before rows are assembled.
     Raises :class:`XmlParseError` if the file cannot be parsed at all.
     """
-    root = parse_for_export(path)
     outcome = FileOutcome()
+    root = parse_for_export(path)
+    columns = _evaluate_columns(root, xpaths, headers, group_matches, cache, outcome)
+    del root  # values are plain str (smart_strings=False): the tree can be freed now
+    outcome.rows, outcome.total_matches = build_rows(path.stem, columns, group_matches)
+    return outcome
 
+
+def _evaluate_columns(
+    root: etree._Element,
+    xpaths: Sequence[str],
+    headers: Sequence[str],
+    group_matches: bool,
+    cache: XPathCache,
+    outcome: FileOutcome,
+) -> list[ColumnValues]:
     row_elements: list[Any] = []
     relative: dict[str, str] = {}
     if not group_matches:
@@ -164,9 +180,7 @@ def evaluate_file(
         else:
             matches = _evaluate(cache.get(xpath), root, xpath, outcome.errors)
             columns.append(ColumnValues(header, False, (), _match_count(matches, xpath, outcome)))
-
-    outcome.rows, outcome.total_matches = build_rows(path.stem, columns, group_matches)
-    return outcome
+    return columns
 
 
 def _as_list(result: Any) -> list[Any]:
@@ -197,6 +211,26 @@ def detect_declared_encoding(path: Path) -> str:
     return match.group(1).decode("ascii") if match else "utf-8"
 
 
+MAX_DISTINCT_VALUES = 1000
+"""Distinct values kept per tag and per (tag, attribute) for the builder's comboboxes.
+
+Without a cap, a multi-gigabyte file with unique IDs would keep every value in memory
+(and the combobox would freeze filling millions of items)."""
+
+_CANCEL_CHECK_EVERY = 10_000  # streaming events between cancellation checks
+
+
+def _add_capped(index: dict[Any, set[str]], key: Any, value: str) -> bool:
+    """Add ``value`` to ``index[key]``; return False if the set is full and it was new."""
+    values = index.get(key)
+    if values is None:
+        values = index[key] = set()
+    if len(values) < MAX_DISTINCT_VALUES or value in values:
+        values.add(value)
+        return True
+    return False
+
+
 class _IndexBuilder:
     def __init__(self) -> None:
         self.tags: set[str] = set()
@@ -205,6 +239,7 @@ class _IndexBuilder:
         self.tag_to_attributes: dict[str, set[str]] = {}
         self.tag_attr_to_values: dict[tuple[str, str], set[str]] = {}
         self.element_count = 0  # includes comments and processing instructions
+        self.values_capped = False
 
     def add(self, element: Any) -> None:
         self.element_count += 1
@@ -215,11 +250,12 @@ class _IndexBuilder:
         if tag.startswith("{"):
             self.namespaces.add(tag[1:].split("}", 1)[0])
         text = element.text
-        if text and text.strip():
-            self.tag_to_values.setdefault(tag, set()).add(text.strip())
+        if text and text.strip() and not _add_capped(self.tag_to_values, tag, text.strip()):
+            self.values_capped = True
         for attr, value in element.attrib.items():
             self.tag_to_attributes.setdefault(tag, set()).add(attr)
-            self.tag_attr_to_values.setdefault((tag, attr), set()).add(value)
+            if not _add_capped(self.tag_attr_to_values, (tag, attr), value):
+                self.values_capped = True
 
     def build(
         self, path: Path, root_tag: str, encoding: str, size: int, preview: str, truncated: bool
@@ -237,15 +273,20 @@ class _IndexBuilder:
             tag_attr_to_values={k: tuple(sorted(v)) for k, v in self.tag_attr_to_values.items()},
             preview_text=preview,
             preview_truncated=truncated,
+            values_capped=self.values_capped,
         )
 
 
-def inspect_file(path: Path, preview_limit_bytes: int) -> XmlIndex:
+def inspect_file(
+    path: Path, preview_limit_bytes: int, check_cancelled: Callable[[], None] | None = None
+) -> XmlIndex:
     """Index tags/attributes/values and produce a text preview.
 
     Files up to ``preview_limit_bytes`` are fully parsed and pretty-printed. Larger
-    files are indexed in streaming mode and the preview shows the beginning of the
-    raw text only. Raises :class:`XmlParseError`.
+    files are indexed in streaming mode (``iterparse``, elements cleared as soon as
+    they end) and the preview shows the beginning of the raw text only.
+    ``check_cancelled`` is called periodically while streaming and may raise.
+    Raises :class:`XmlParseError`.
     """
     size = path.stat().st_size
     encoding = detect_declared_encoding(path)
@@ -257,7 +298,7 @@ def inspect_file(path: Path, preview_limit_bytes: int) -> XmlIndex:
                 builder.add(element)
             preview = etree.tostring(root, encoding="unicode", pretty_print=True)
             return builder.build(path, root.tag, encoding, size, preview, False)
-        root_tag = _stream_index(path, builder)
+        root_tag = _stream_index(path, builder, check_cancelled)
     except (etree.XMLSyntaxError, OSError) as exc:
         raise XmlParseError(str(exc)) from exc
     return builder.build(
@@ -265,7 +306,9 @@ def inspect_file(path: Path, preview_limit_bytes: int) -> XmlIndex:
     )
 
 
-def _stream_index(path: Path, builder: _IndexBuilder) -> str:
+def _stream_index(
+    path: Path, builder: _IndexBuilder, check_cancelled: Callable[[], None] | None
+) -> str:
     root_tag = ""
     events: Iterable[tuple[str, Any]] = etree.iterparse(
         str(path),
@@ -273,19 +316,25 @@ def _stream_index(path: Path, builder: _IndexBuilder) -> str:
         resolve_entities="internal",
         no_network=True,
         load_dtd=False,
+        huge_tree=True,  # only one element's subtree is in memory at a time
     )
-    for event, element in events:
+    for count, (event, element) in enumerate(events, start=1):
+        if check_cancelled is not None and count % _CANCEL_CHECK_EVERY == 0:
+            check_cancelled()
         if event == "start":
             if not root_tag:
                 root_tag = element.tag
             continue
         builder.add(element)
         if event == "end":
+            # Free the finished element and every already-processed sibling, so the
+            # partial tree never grows beyond the current path from the root.
             element.clear(keep_tail=True)
             parent = element.getparent()
             if parent is not None:
                 while element.getprevious() is not None:
                     del parent[0]
+    del events
     return root_tag
 
 

@@ -25,3 +25,33 @@ def profile_file_name(entry: str) -> str:
     if not name.lower().endswith(".xml"):
         name += ".xml"
     return name
+
+
+_RESERVED = {"CON", "PRN", "AUX", "NUL"} | {f"{p}{n}" for p in ("COM", "LPT") for n in range(1, 10)}
+_UNSAFE = re.compile(r'[<>:"/\\|?*\x00-\x1f]')
+MAX_STEM_LENGTH = 80
+
+
+def safe_file_stem(value: str, empty: str = "(empty)") -> str:
+    """Turn a cell value into a Windows-safe file name stem (no extension)."""
+    stem = _UNSAFE.sub("_", value.strip())[:MAX_STEM_LENGTH].rstrip(". ")
+    if not stem:
+        return empty
+    if stem.split(".", 1)[0].upper() in _RESERVED:
+        stem = f"_{stem}"
+    return stem
+
+
+class UniqueStems:
+    """Hand out file name stems that stay unique on case-insensitive file systems."""
+
+    def __init__(self) -> None:
+        self._taken: set[str] = set()
+
+    def claim(self, stem: str) -> str:
+        candidate, number = stem, 2
+        while candidate.casefold() in self._taken:
+            candidate = f"{stem} ({number})"
+            number += 1
+        self._taken.add(candidate.casefold())
+        return candidate

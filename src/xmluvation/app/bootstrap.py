@@ -16,6 +16,7 @@ from ..infrastructure.config_store import ConfigStore
 from ..infrastructure.settings_store import SettingsStore
 from ..presentation.tasks import TaskRunner
 from ..presentation.viewmodels.csv_tools_vm import CsvToolsViewModel
+from ..presentation.viewmodels.csv_transforms_vm import CsvTransformsViewModel
 from ..presentation.viewmodels.export_vm import ExportViewModel
 from ..presentation.viewmodels.presets_vm import PresetsViewModel
 from ..presentation.viewmodels.settings_vm import SettingsViewModel
@@ -76,6 +77,7 @@ def build_main_window(
         inspector=XmlInspectorViewModel(runner, lambda: settings_vm.preview_limit_mb),
         export=ExportViewModel(runner),
         csv_tools=CsvToolsViewModel(runner),
+        transforms=CsvTransformsViewModel(runner),
         table=TableViewerViewModel(runner),
         presets=PresetsViewModel(service),
         new_presets_vm=lambda: PresetsViewModel(service),

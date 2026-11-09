@@ -7,7 +7,7 @@ from pathlib import Path
 
 from PySide6.QtCore import Signal
 
-from ...application.xml_inspection import inspect_xml_file
+from ...application.xml_inspection import MAX_DISTINCT_VALUES, inspect_xml_file
 from ...domain.models import XmlIndex
 from ..tasks import TaskRunner
 from .base import ViewModel
@@ -43,7 +43,7 @@ class XmlInspectorViewModel(ViewModel):
         limit = int(self._preview_limit_mb())
         self._set_loading(True)
         self._runner.start(
-            lambda _ctx: inspect_xml_file(path, limit),
+            lambda ctx: inspect_xml_file(path, limit, ctx.token),
             on_success=self._loaded,
             on_error=lambda e: self.report_error(e, "Exception on parsing xml file"),
             on_finished=lambda: self._set_loading(False),
@@ -69,6 +69,11 @@ class XmlInspectorViewModel(ViewModel):
                 f"Preview truncated: the file is {index.size_bytes / 1_048_576:.1f} MB, larger "
                 f"than the preview limit of {self._preview_limit_mb()} MB. Tag and attribute "
                 "lists cover the whole file. Change the limit under Settings."
+            )
+        if index.values_capped:
+            lines.append(
+                f"Value lists are limited to the first {MAX_DISTINCT_VALUES:,} distinct values "
+                "per tag/attribute to keep memory bounded."
             )
         self.log_appended.emit("\n".join(lines))
 

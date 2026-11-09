@@ -2,377 +2,565 @@
 <ui version="4.0">
  <class>PreBuiltXPathsManagerWidget</class>
  <widget class="QWidget" name="PreBuiltXPathsManagerWidget">
-  <property name="windowModality">
-   <enum>Qt::WindowModality::WindowModal</enum>
-  </property>
-  <property name="geometry">
-   <rect>
-    <x>0</x>
-    <y>0</y>
-    <width>1201</width>
-    <height>669</height>
-   </rect>
-  </property>
   <property name="windowTitle">
-   <string>PreBuilt XPaths Manager Widget</string>
+   <string>XPath presets</string>
   </property>
   <property name="windowIcon">
    <iconset resource="../qrc/xmluvation_resources.qrc">
     <normaloff>:/icons/xml_256px.ico</normaloff>:/icons/xml_256px.ico</iconset>
   </property>
-  <property name="toolTip">
-   <string>Removes the all items in the focused listbox.</string>
+  <property name="minimumSize">
+   <size>
+    <width>900</width>
+    <height>0</height>
+   </size>
   </property>
-  <layout class="QVBoxLayout" name="verticalLayout">
+  <property name="role" stdset="0">
+   <string>page</string>
+  </property>
+  <layout class="QVBoxLayout" name="layout_PreBuiltXPathsManagerWidget">
+   <property name="spacing">
+    <number>14</number>
+   </property>
+   <property name="leftMargin">
+    <number>24</number>
+   </property>
+   <property name="topMargin">
+    <number>22</number>
+   </property>
+   <property name="rightMargin">
+    <number>24</number>
+   </property>
+   <property name="bottomMargin">
+    <number>22</number>
+   </property>
    <item>
-    <layout class="QHBoxLayout" name="MainHorLayout">
+    <widget class="QLabel" name="label_presets_title">
+     <property name="text">
+      <string>XPath presets</string>
+     </property>
+     <property name="role" stdset="0">
+      <string>page-title</string>
+     </property>
+    </widget>
+   </item>
+   <item>
+    <widget class="QLabel" name="label_presets_hint">
+     <property name="text">
+      <string>Reusable sets of expressions and headers, available from the Presets menu.</string>
+     </property>
+     <property name="wordWrap">
+      <bool>true</bool>
+     </property>
+     <property name="role" stdset="0">
+      <string>hint</string>
+     </property>
+    </widget>
+   </item>
+   <item>
+    <layout class="QHBoxLayout" name="layout_presets_cards">
+     <property name="spacing">
+      <number>14</number>
+     </property>
+     <property name="leftMargin">
+      <number>0</number>
+     </property>
+     <property name="topMargin">
+      <number>0</number>
+     </property>
+     <property name="rightMargin">
+      <number>0</number>
+     </property>
+     <property name="bottomMargin">
+      <number>0</number>
+     </property>
      <item>
-      <layout class="QVBoxLayout" name="LeftSide">
-       <item>
-        <widget class="QGroupBox" name="groupBox_pre_built_xpaths_main">
-         <property name="title">
-          <string>Edit Pre-built XPaths</string>
-         </property>
-         <layout class="QVBoxLayout" name="verticalLayout_2">
+      <widget class="QFrame" name="groupBox">
+       <property name="frameShape">
+        <enum>QFrame::Shape::StyledPanel</enum>
+       </property>
+       <property name="role" stdset="0">
+        <string>card</string>
+       </property>
+       <layout class="QVBoxLayout" name="layout_groupBox">
+        <property name="spacing">
+         <number>10</number>
+        </property>
+        <property name="leftMargin">
+         <number>18</number>
+        </property>
+        <property name="topMargin">
+         <number>16</number>
+        </property>
+        <property name="rightMargin">
+         <number>18</number>
+        </property>
+        <property name="bottomMargin">
+         <number>18</number>
+        </property>
+        <item>
+         <widget class="QLabel" name="label_groupBox_title">
+          <property name="text">
+           <string>New preset</string>
+          </property>
+          <property name="role" stdset="0">
+           <string>card-title</string>
+          </property>
+         </widget>
+        </item>
+        <item>
+         <widget class="QLabel" name="label">
+          <property name="text">
+           <string>Expressions and headers are paired in order: the first header names the first expression's column.</string>
+          </property>
+          <property name="wordWrap">
+           <bool>true</bool>
+          </property>
+          <property name="role" stdset="0">
+           <string>hint</string>
+          </property>
+         </widget>
+        </item>
+        <item>
+         <widget class="QLabel" name="label_new_expressions">
+          <property name="text">
+           <string>XPath expressions</string>
+          </property>
+          <property name="role" stdset="0">
+           <string>field-label</string>
+          </property>
+         </widget>
+        </item>
+        <item>
+         <layout class="QHBoxLayout" name="layout_new_expression">
+          <property name="spacing">
+           <number>8</number>
+          </property>
+          <property name="leftMargin">
+           <number>0</number>
+          </property>
+          <property name="topMargin">
+           <number>0</number>
+          </property>
+          <property name="rightMargin">
+           <number>0</number>
+          </property>
+          <property name="bottomMargin">
+           <number>0</number>
+          </property>
           <item>
-           <widget class="QLabel" name="label_9">
+           <widget class="QLineEdit" name="line_edit_xpath_expression">
+            <property name="placeholderText">
+             <string>XPath expression</string>
+            </property>
+            <property name="clearButtonEnabled">
+             <bool>true</bool>
+            </property>
+           </widget>
+          </item>
+          <item>
+           <widget class="QPushButton" name="button_add_xpath_to_list">
             <property name="text">
-             <string>Here you can edit the custom pre-built configuration for the autofill:</string>
+             <string>Add</string>
+            </property>
+            <property name="toolTip">
+             <string>Add the expression to the list below.</string>
             </property>
            </widget>
-          </item>
-          <item>
-           <layout class="QHBoxLayout" name="horizontalLayout">
-            <item>
-             <widget class="QLabel" name="lable_pre_built_xpaths">
-              <property name="text">
-               <string>Select Config:</string>
-              </property>
-             </widget>
-            </item>
-            <item>
-             <widget class="QComboBox" name="combobox_xpath_configs">
-              <property name="sizePolicy">
-               <sizepolicy hsizetype="Expanding" vsizetype="Fixed">
-                <horstretch>0</horstretch>
-                <verstretch>0</verstretch>
-               </sizepolicy>
-              </property>
-              <property name="editable">
-               <bool>true</bool>
-              </property>
-             </widget>
-            </item>
-            <item>
-             <widget class="QPushButton" name="button_load_config">
-              <property name="toolTip">
-               <string>Load the selected configuration and fill the two listboxes.</string>
-              </property>
-              <property name="text">
-               <string>Load</string>
-              </property>
-             </widget>
-            </item>
-            <item>
-             <widget class="QPushButton" name="button_delete_config">
-              <property name="toolTip">
-               <string>Deletes the selected configurtion all it's values.</string>
-              </property>
-              <property name="text">
-               <string>Delete</string>
-              </property>
-             </widget>
-            </item>
-           </layout>
-          </item>
-          <item>
-           <widget class="QFrame" name="frame_3">
-            <property name="frameShape">
-             <enum>QFrame::Shape::StyledPanel</enum>
-            </property>
-            <property name="frameShadow">
-             <enum>QFrame::Shadow::Raised</enum>
-            </property>
-            <layout class="QVBoxLayout" name="verticalLayout_8">
-             <item>
-              <widget class="QLabel" name="label_7">
-               <property name="font">
-                <font>
-                 <bold>true</bold>
-                </font>
-               </property>
-               <property name="text">
-                <string>Edit XPath Expressions:</string>
-               </property>
-              </widget>
-             </item>
-             <item>
-              <widget class="QListWidget" name="list_widget_edit_xpath_expressions">
-               <property name="focusPolicy">
-                <enum>Qt::FocusPolicy::ClickFocus</enum>
-               </property>
-              </widget>
-             </item>
-            </layout>
-           </widget>
-          </item>
-          <item>
-           <widget class="Line" name="line_3">
-            <property name="orientation">
-             <enum>Qt::Orientation::Horizontal</enum>
-            </property>
-           </widget>
-          </item>
-          <item>
-           <widget class="QFrame" name="frame_4">
-            <property name="frameShape">
-             <enum>QFrame::Shape::StyledPanel</enum>
-            </property>
-            <property name="frameShadow">
-             <enum>QFrame::Shadow::Raised</enum>
-            </property>
-            <layout class="QVBoxLayout" name="verticalLayout_4">
-             <item>
-              <widget class="QLabel" name="label_8">
-               <property name="font">
-                <font>
-                 <bold>true</bold>
-                </font>
-               </property>
-               <property name="text">
-                <string>Edit CSV Headers:</string>
-               </property>
-              </widget>
-             </item>
-             <item>
-              <widget class="QListWidget" name="list_widget_edit_csv_headers">
-               <property name="focusPolicy">
-                <enum>Qt::FocusPolicy::ClickFocus</enum>
-               </property>
-              </widget>
-             </item>
-            </layout>
-           </widget>
-          </item>
-          <item>
-           <layout class="QHBoxLayout" name="horizontalLayout_6">
-            <item>
-             <widget class="QPushButton" name="button_save_changes">
-              <property name="sizePolicy">
-               <sizepolicy hsizetype="Expanding" vsizetype="Fixed">
-                <horstretch>0</horstretch>
-                <verstretch>0</verstretch>
-               </sizepolicy>
-              </property>
-              <property name="toolTip">
-               <string>Save changes that you made to the two listboxes.</string>
-              </property>
-              <property name="text">
-               <string>Save Changes</string>
-              </property>
-             </widget>
-            </item>
-            <item>
-             <widget class="QPushButton" name="button_open_config_directory">
-              <property name="sizePolicy">
-               <sizepolicy hsizetype="Expanding" vsizetype="Fixed">
-                <horstretch>0</horstretch>
-                <verstretch>0</verstretch>
-               </sizepolicy>
-              </property>
-              <property name="text">
-               <string>Open Config Directory</string>
-              </property>
-             </widget>
-            </item>
-           </layout>
           </item>
          </layout>
-        </widget>
-       </item>
-      </layout>
+        </item>
+        <item>
+         <widget class="QListWidget" name="list_widget_xpath_expressions">
+          <property name="alternatingRowColors">
+           <bool>true</bool>
+          </property>
+          <property name="minimumSize">
+           <size>
+            <width>0</width>
+            <height>110</height>
+           </size>
+          </property>
+         </widget>
+        </item>
+        <item>
+         <widget class="QLabel" name="label_new_headers">
+          <property name="text">
+           <string>CSV headers</string>
+          </property>
+          <property name="role" stdset="0">
+           <string>field-label</string>
+          </property>
+         </widget>
+        </item>
+        <item>
+         <layout class="QHBoxLayout" name="layout_new_header">
+          <property name="spacing">
+           <number>8</number>
+          </property>
+          <property name="leftMargin">
+           <number>0</number>
+          </property>
+          <property name="topMargin">
+           <number>0</number>
+          </property>
+          <property name="rightMargin">
+           <number>0</number>
+          </property>
+          <property name="bottomMargin">
+           <number>0</number>
+          </property>
+          <item>
+           <widget class="QLineEdit" name="line_edit_csv_header">
+            <property name="placeholderText">
+             <string>Header (comma-separated for several)</string>
+            </property>
+            <property name="clearButtonEnabled">
+             <bool>true</bool>
+            </property>
+           </widget>
+          </item>
+          <item>
+           <widget class="QPushButton" name="button_add_csv_header_to_list">
+            <property name="text">
+             <string>Add</string>
+            </property>
+            <property name="toolTip">
+             <string>Add the header(s) to the list below.</string>
+            </property>
+           </widget>
+          </item>
+         </layout>
+        </item>
+        <item>
+         <widget class="QListWidget" name="list_widget_csv_headers">
+          <property name="alternatingRowColors">
+           <bool>true</bool>
+          </property>
+          <property name="minimumSize">
+           <size>
+            <width>0</width>
+            <height>110</height>
+           </size>
+          </property>
+         </widget>
+        </item>
+        <item>
+         <layout class="QHBoxLayout" name="layout_new_save">
+          <property name="spacing">
+           <number>8</number>
+          </property>
+          <property name="leftMargin">
+           <number>0</number>
+          </property>
+          <property name="topMargin">
+           <number>0</number>
+          </property>
+          <property name="rightMargin">
+           <number>0</number>
+          </property>
+          <property name="bottomMargin">
+           <number>0</number>
+          </property>
+          <item>
+           <widget class="QLineEdit" name="line_edit_config_name">
+            <property name="placeholderText">
+             <string>Preset name</string>
+            </property>
+            <property name="clearButtonEnabled">
+             <bool>true</bool>
+            </property>
+           </widget>
+          </item>
+          <item>
+           <widget class="QPushButton" name="button_save_config">
+            <property name="text">
+             <string>Save preset</string>
+            </property>
+            <property name="toolTip">
+             <string>Save the expressions and headers above as a new preset.</string>
+            </property>
+            <property name="role" stdset="0">
+             <string>primary</string>
+            </property>
+           </widget>
+          </item>
+         </layout>
+        </item>
+       </layout>
+      </widget>
      </item>
      <item>
-      <layout class="QVBoxLayout" name="RightSide">
-       <item>
-        <widget class="QGroupBox" name="groupBox">
-         <property name="title">
-          <string>Create pre-built XPaths</string>
-         </property>
-         <layout class="QVBoxLayout" name="verticalLayout_7">
+      <widget class="QFrame" name="groupBox_pre_built_xpaths_main">
+       <property name="frameShape">
+        <enum>QFrame::Shape::StyledPanel</enum>
+       </property>
+       <property name="role" stdset="0">
+        <string>card</string>
+       </property>
+       <layout class="QVBoxLayout" name="layout_groupBox_pre_built_xpaths_main">
+        <property name="spacing">
+         <number>10</number>
+        </property>
+        <property name="leftMargin">
+         <number>18</number>
+        </property>
+        <property name="topMargin">
+         <number>16</number>
+        </property>
+        <property name="rightMargin">
+         <number>18</number>
+        </property>
+        <property name="bottomMargin">
+         <number>18</number>
+        </property>
+        <item>
+         <widget class="QLabel" name="label_groupBox_pre_built_xpaths_main_title">
+          <property name="text">
+           <string>Edit preset</string>
+          </property>
+          <property name="role" stdset="0">
+           <string>card-title</string>
+          </property>
+         </widget>
+        </item>
+        <item>
+         <widget class="QLabel" name="label_9">
+          <property name="text">
+           <string>Load a preset to change or reorder its expressions and headers.</string>
+          </property>
+          <property name="wordWrap">
+           <bool>true</bool>
+          </property>
+          <property name="role" stdset="0">
+           <string>hint</string>
+          </property>
+         </widget>
+        </item>
+        <item>
+         <layout class="QHBoxLayout" name="layout_edit_select" stretch="1,0,0">
+          <property name="spacing">
+           <number>8</number>
+          </property>
+          <property name="leftMargin">
+           <number>0</number>
+          </property>
+          <property name="topMargin">
+           <number>0</number>
+          </property>
+          <property name="rightMargin">
+           <number>0</number>
+          </property>
+          <property name="bottomMargin">
+           <number>0</number>
+          </property>
           <item>
-           <widget class="QLabel" name="label">
+           <widget class="QComboBox" name="combobox_xpath_configs">
+            <property name="placeholderText">
+             <string>No presets</string>
+            </property>
+           </widget>
+          </item>
+          <item>
+           <widget class="QPushButton" name="button_load_config">
             <property name="text">
-             <string>Here you can create your own pre-built autofill configuration:</string>
+             <string>Load</string>
             </property>
-            <property name="alignment">
-             <set>Qt::AlignmentFlag::AlignLeading|Qt::AlignmentFlag::AlignLeft|Qt::AlignmentFlag::AlignVCenter</set>
+            <property name="toolTip">
+             <string>Load the selected preset into the lists below.</string>
             </property>
            </widget>
           </item>
           <item>
-           <widget class="QFrame" name="frame">
-            <property name="frameShape">
-             <enum>QFrame::Shape::StyledPanel</enum>
+           <widget class="QPushButton" name="button_delete_config">
+            <property name="text">
+             <string>Delete</string>
             </property>
-            <property name="frameShadow">
-             <enum>QFrame::Shadow::Raised</enum>
+            <property name="toolTip">
+             <string>Delete the selected preset.</string>
             </property>
-            <layout class="QVBoxLayout" name="verticalLayout_3">
-             <item>
-              <layout class="QHBoxLayout" name="horizontalLayout_3">
-               <item>
-                <widget class="QLineEdit" name="line_edit_xpath_expression">
-                 <property name="placeholderText">
-                  <string>Enter a Xpath Expression here...</string>
-                 </property>
-                </widget>
-               </item>
-               <item>
-                <widget class="QPushButton" name="button_add_xpath_to_list">
-                 <property name="toolTip">
-                  <string>Add entered XPath Expression to it's listbox.</string>
-                 </property>
-                 <property name="text">
-                  <string/>
-                 </property>
-                 <property name="icon">
-                  <iconset theme="QIcon::ThemeIcon::ListAdd"/>
-                 </property>
-                </widget>
-               </item>
-              </layout>
-             </item>
-             <item>
-              <widget class="QListWidget" name="list_widget_xpath_expressions">
-               <property name="focusPolicy">
-                <enum>Qt::FocusPolicy::ClickFocus</enum>
-               </property>
-              </widget>
-             </item>
-            </layout>
+            <property name="role" stdset="0">
+             <string>danger</string>
+            </property>
+           </widget>
+          </item>
+         </layout>
+        </item>
+        <item>
+         <widget class="QLabel" name="label_7">
+          <property name="text">
+           <string>XPath expressions</string>
+          </property>
+          <property name="role" stdset="0">
+           <string>field-label</string>
+          </property>
+         </widget>
+        </item>
+        <item>
+         <widget class="QListWidget" name="list_widget_edit_xpath_expressions">
+          <property name="alternatingRowColors">
+           <bool>true</bool>
+          </property>
+          <property name="minimumSize">
+           <size>
+            <width>0</width>
+            <height>110</height>
+           </size>
+          </property>
+         </widget>
+        </item>
+        <item>
+         <widget class="QLabel" name="label_8">
+          <property name="text">
+           <string>CSV headers</string>
+          </property>
+          <property name="role" stdset="0">
+           <string>field-label</string>
+          </property>
+         </widget>
+        </item>
+        <item>
+         <widget class="QListWidget" name="list_widget_edit_csv_headers">
+          <property name="alternatingRowColors">
+           <bool>true</bool>
+          </property>
+          <property name="minimumSize">
+           <size>
+            <width>0</width>
+            <height>110</height>
+           </size>
+          </property>
+         </widget>
+        </item>
+        <item>
+         <layout class="QHBoxLayout" name="layout_edit_actions">
+          <property name="spacing">
+           <number>8</number>
+          </property>
+          <property name="leftMargin">
+           <number>0</number>
+          </property>
+          <property name="topMargin">
+           <number>0</number>
+          </property>
+          <property name="rightMargin">
+           <number>0</number>
+          </property>
+          <property name="bottomMargin">
+           <number>0</number>
+          </property>
+          <item>
+           <widget class="QPushButton" name="button_open_config_directory">
+            <property name="text">
+             <string>Open config folder</string>
+            </property>
+            <property name="role" stdset="0">
+             <string>flat</string>
+            </property>
            </widget>
           </item>
           <item>
-           <widget class="Line" name="line_2">
+           <spacer name="spacer_3">
             <property name="orientation">
              <enum>Qt::Orientation::Horizontal</enum>
             </property>
-           </widget>
+            <property name="sizeHint">
+             <size>
+              <width>40</width>
+              <height>20</height>
+             </size>
+            </property>
+           </spacer>
           </item>
           <item>
-           <widget class="QFrame" name="frame_2">
-            <property name="frameShape">
-             <enum>QFrame::Shape::StyledPanel</enum>
+           <widget class="QPushButton" name="button_save_changes">
+            <property name="text">
+             <string>Save changes</string>
             </property>
-            <property name="frameShadow">
-             <enum>QFrame::Shadow::Raised</enum>
+            <property name="toolTip">
+             <string>Save the edited lists to the loaded preset.</string>
             </property>
-            <layout class="QVBoxLayout" name="verticalLayout_6">
-             <item>
-              <layout class="QHBoxLayout" name="horizontalLayout_4">
-               <item>
-                <widget class="QLineEdit" name="line_edit_csv_header">
-                 <property name="placeholderText">
-                  <string>Enter header name here (can be comma-separated)...</string>
-                 </property>
-                </widget>
-               </item>
-               <item>
-                <widget class="QPushButton" name="button_add_csv_header_to_list">
-                 <property name="toolTip">
-                  <string>Add entered CSV Header to it's listbox.</string>
-                 </property>
-                 <property name="text">
-                  <string/>
-                 </property>
-                 <property name="icon">
-                  <iconset theme="QIcon::ThemeIcon::ListAdd"/>
-                 </property>
-                </widget>
-               </item>
-              </layout>
-             </item>
-             <item>
-              <widget class="QListWidget" name="list_widget_csv_headers">
-               <property name="focusPolicy">
-                <enum>Qt::FocusPolicy::ClickFocus</enum>
-               </property>
-              </widget>
-             </item>
-            </layout>
+            <property name="role" stdset="0">
+             <string>primary</string>
+            </property>
            </widget>
-          </item>
-          <item>
-           <layout class="QHBoxLayout" name="horizontalLayout_5">
-            <item>
-             <widget class="QLabel" name="label_4">
-              <property name="text">
-               <string>Pre-bult name:</string>
-              </property>
-             </widget>
-            </item>
-            <item>
-             <widget class="QLineEdit" name="line_edit_config_name">
-              <property name="placeholderText">
-               <string>Enter a name for the configuration...</string>
-              </property>
-             </widget>
-            </item>
-            <item>
-             <widget class="QPushButton" name="button_save_config">
-              <property name="toolTip">
-               <string>Save your configurtion with all items that are in the two listboxes.</string>
-              </property>
-              <property name="text">
-               <string>Save Config</string>
-              </property>
-             </widget>
-            </item>
-           </layout>
           </item>
          </layout>
-        </widget>
-       </item>
-      </layout>
+        </item>
+       </layout>
+      </widget>
      </item>
     </layout>
    </item>
    <item>
-    <layout class="QHBoxLayout" name="horizontalLayout_2">
+    <layout class="QHBoxLayout" name="layout_presets_footer">
+     <property name="spacing">
+      <number>8</number>
+     </property>
+     <property name="leftMargin">
+      <number>0</number>
+     </property>
+     <property name="topMargin">
+      <number>0</number>
+     </property>
+     <property name="rightMargin">
+      <number>0</number>
+     </property>
+     <property name="bottomMargin">
+      <number>0</number>
+     </property>
+     <item>
+      <widget class="QLabel" name="label_remove_hint">
+       <property name="text">
+        <string>Remove actions apply to the list you clicked last.</string>
+       </property>
+       <property name="wordWrap">
+        <bool>true</bool>
+       </property>
+       <property name="role" stdset="0">
+        <string>hint</string>
+       </property>
+      </widget>
+     </item>
+     <item>
+      <spacer name="spacer_4">
+       <property name="orientation">
+        <enum>Qt::Orientation::Horizontal</enum>
+       </property>
+       <property name="sizeHint">
+        <size>
+         <width>40</width>
+         <height>20</height>
+        </size>
+       </property>
+      </spacer>
+     </item>
      <item>
       <widget class="QPushButton" name="button_remove_selected">
-       <property name="toolTip">
-        <string>Removes the currently selected item in the focused listbox.</string>
-       </property>
        <property name="text">
-        <string>Remove Selected Value</string>
+        <string>Remove selected</string>
+       </property>
+       <property name="toolTip">
+        <string>Remove the selected entry from the list you clicked last.</string>
        </property>
       </widget>
      </item>
      <item>
       <widget class="QPushButton" name="button_remove_all">
-       <property name="toolTip">
-        <string>Removes all items in the focused listbox.</string>
-       </property>
        <property name="text">
-        <string>Remove All Values</string>
+        <string>Remove all</string>
+       </property>
+       <property name="toolTip">
+        <string>Remove every entry from the list you clicked last.</string>
        </property>
       </widget>
      </item>
     </layout>
    </item>
-   <item>
-    <widget class="Line" name="line">
-     <property name="orientation">
-      <enum>Qt::Orientation::Horizontal</enum>
-     </property>
-    </widget>
-   </item>
   </layout>
  </widget>
  <resources>
-  <include location="../qrc/xmluvation_resources.qrc"/>
+  <include location="../qrc/xmluvation_resources.qrc" />
  </resources>
- <connections/>
+ <connections />
 </ui>

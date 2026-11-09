@@ -2,11 +2,15 @@
 
 from __future__ import annotations
 
+import codecs
 import csv
 import os
 import tempfile
+from collections.abc import Callable, Iterator, Sequence
+from contextlib import contextmanager
+from dataclasses import dataclass
 from pathlib import Path
-from typing import Any
+from typing import Any, TextIO
 
 import pandas as pd
 
@@ -14,6 +18,8 @@ from ..domain.errors import CsvReadError, OutputFileError, ValidationError
 
 CANDIDATE_DELIMITERS = (",", ";", "\t", "|")
 _UTF8_BOM = b"\xef\xbb\xbf"
+_DECODE_CHUNK = 1 << 20
+TABLE_CHUNK_ROWS = 100_000
 
 
 def detect_delimiter(path: Path) -> str:
@@ -39,14 +45,26 @@ def _has_bom(path: Path) -> bool:
         return handle.read(3) == _UTF8_BOM
 
 
-def _read_rows(path: Path, delimiter: str) -> list[list[str]]:
-    for encoding in ("utf-8-sig", "latin-1"):
-        try:
-            with path.open(newline="", encoding=encoding) as handle:
-                return list(csv.reader(handle, delimiter=delimiter))
-        except UnicodeDecodeError:
-            continue
-    raise CsvReadError(f"Cannot decode {path.name} as UTF-8 or Latin-1.")
+def _text_encoding(path: Path) -> str:
+    """``utf-8-sig`` if the whole file decodes as UTF-8, else ``latin-1``.
+
+    Decodes incrementally in 1 MiB chunks, so memory stays constant for any file size.
+    """
+    decoder = codecs.getincrementaldecoder("utf-8-sig")()
+    try:
+        with path.open("rb") as handle:
+            while chunk := handle.read(_DECODE_CHUNK):
+                decoder.decode(chunk)
+        decoder.decode(b"", final=True)
+    except UnicodeDecodeError:
+        return "latin-1"
+    return "utf-8-sig"
+
+
+def _iter_rows(path: Path, delimiter: str) -> Iterator[list[str]]:
+    """Stream CSV rows (never holds more than one row in memory)."""
+    with path.open(newline="", encoding=_text_encoding(path)) as handle:
+        yield from csv.reader(handle, delimiter=delimiter)
 
 
 def read_headers(path: Path) -> list[str]:
@@ -63,16 +81,23 @@ def read_headers(path: Path) -> list[str]:
 
 def read_first_column(path: Path) -> list[str]:
     """Values of the first column, header row excluded, empty cells skipped."""
-    rows = _read_rows(path, detect_delimiter(path))
-    return [row[0].strip() for row in rows[1:] if row and row[0].strip()]
+    rows = _iter_rows(path, detect_delimiter(path))
+    next(rows, None)  # header
+    return [row[0].strip() for row in rows if row and row[0].strip()]
 
 
-def atomic_write_text(path: Path, write: Any, *, newline: str | None = "", encoding: str) -> None:
-    """Write via a temp file in the same directory, then replace ``path`` atomically."""
+@contextmanager
+def atomic_writer(path: Path, *, encoding: str, newline: str | None = "") -> Iterator[TextIO]:
+    """Yield a handle to a temp file next to ``path``; replace ``path`` with it on success.
+
+    The replacement happens when the ``with`` block ends, so a reader of ``path`` opened
+    inside the block is closed first (Windows cannot replace a file that is still open).
+    On any error the temp file is removed and ``path`` stays untouched.
+    """
     fd, tmp_name = tempfile.mkstemp(prefix=f".{path.name}.", suffix=".tmp", dir=path.parent)
     try:
         with os.fdopen(fd, "w", newline=newline, encoding=encoding) as handle:
-            write(handle)
+            yield handle
         os.replace(tmp_name, path)
     except PermissionError as exc:
         Path(tmp_name).unlink(missing_ok=True)
@@ -84,28 +109,102 @@ def atomic_write_text(path: Path, write: Any, *, newline: str | None = "", encod
         raise
 
 
-def drop_column(path: Path, index: int, expected_name: str) -> None:
-    """Remove one column and rewrite the file, keeping every other cell's text unchanged.
+def atomic_write_text(path: Path, write: Any, *, newline: str | None = "", encoding: str) -> None:
+    """Write via a temp file in the same directory, then replace ``path`` atomically."""
+    with atomic_writer(path, encoding=encoding, newline=newline) as handle:
+        write(handle)
 
-    The delimiter and a UTF-8 BOM are preserved. ``expected_name`` guards against the
-    file having changed since its headers were read.
+
+@dataclass(frozen=True, slots=True)
+class CsvFormat:
+    """How a CSV file is written, so derived files can be written the same way."""
+
+    delimiter: str
+    read_encoding: str  # "utf-8-sig" or "latin-1"
+    bom: bool
+
+    @property
+    def write_encoding(self) -> str:
+        if self.read_encoding == "latin-1":
+            return "latin-1"
+        return "utf-8-sig" if self.bom else "utf-8"
+
+
+def csv_format(path: Path) -> CsvFormat:
+    return CsvFormat(detect_delimiter(path), _text_encoding(path), _has_bom(path))
+
+
+@contextmanager
+def csv_rows(
+    path: Path, fmt: CsvFormat | None = None
+) -> Iterator[tuple[CsvFormat, Iterator[list[str]]]]:
+    """Stream the rows of a CSV file (header included) together with its format."""
+    fmt = fmt or csv_format(path)
+    with path.open(newline="", encoding=fmt.read_encoding) as handle:
+        yield fmt, csv.reader(handle, delimiter=fmt.delimiter)
+
+
+def csv_writer(handle: TextIO, fmt: CsvFormat) -> Any:
+    return csv.writer(handle, delimiter=fmt.delimiter, lineterminator="\r\n")
+
+
+def open_csv_for_writing(path: Path, fmt: CsvFormat, *, append: bool = False) -> TextIO:
+    """Open ``path`` for writing in ``fmt``'s encoding (a BOM is only written at offset 0)."""
+    return path.open("a" if append else "w", newline="", encoding=fmt.write_encoding)
+
+
+def rewrite_columns(
+    source: Path,
+    target: Path,
+    columns: Sequence[tuple[int, str]],
+    expected_header: Sequence[str],
+) -> int:
+    """Write ``source`` to ``target`` with only ``columns`` (source index, new header name).
+
+    Columns are written in the given order; every data cell keeps its exact text, and the
+    delimiter, encoding and BOM of the source are kept. ``target`` may be ``source``: the
+    file is replaced atomically. ``expected_header`` guards against the file having changed
+    since its header was read. Returns the number of data rows written.
     """
-    delimiter = detect_delimiter(path)
-    rows = _read_rows(path, delimiter)
-    if not rows:
-        raise CsvReadError("The CSV file is empty or malformed.", title="CSV Error")
-    header = [h.strip() for h in rows[0]]
+    indices = [index for index, _name in columns]
+    fmt = csv_format(source)
+    written = 0
+    with (
+        atomic_writer(target, encoding=fmt.write_encoding) as out,
+        csv_rows(source, fmt) as (_fmt, rows),  # closed before ``out`` replaces ``target``
+    ):
+        first = next(rows, None)
+        if not first:
+            raise CsvReadError("The CSV file is empty or malformed.", title="CSV Error")
+        header = [h.strip() for h in first]
+        if header != [h.strip() for h in expected_header]:
+            raise ValidationError(
+                "The CSV file's columns changed since it was opened. Load it again.",
+                title="CSV file changed",
+            )
+        if any(not 0 <= index < len(header) for index in indices):
+            raise ValidationError(
+                "Column does not exist in the CSV file.", title="Column Not Found"
+            )
+        writer = csv_writer(out, fmt)
+        writer.writerow([name for _index, name in columns])
+        for row in rows:
+            writer.writerow([row[i] if i < len(row) else "" for i in indices])
+            written += 1
+    return written
+
+
+def drop_column(path: Path, index: int, expected_name: str) -> None:
+    """Remove one column and rewrite the file in place (see :func:`rewrite_columns`)."""
+    header = read_headers(path)
     if not 0 <= index < len(header) or header[index] != expected_name.strip():
         raise ValidationError(
             f"Column '{expected_name}' does not exist in the CSV file.", title="Column Not Found"
         )
-    trimmed = [row[:index] + row[index + 1 :] for row in rows]
-    encoding = "utf-8-sig" if _has_bom(path) else "utf-8"
-
-    def write(handle: Any) -> None:
-        csv.writer(handle, delimiter=delimiter, lineterminator="\r\n").writerows(trimmed)
-
-    atomic_write_text(path, write, encoding=encoding)
+    with csv_rows(path) as (_fmt, rows):
+        raw_header = next(rows)
+    keep = [(i, raw_header[i]) for i in range(len(raw_header)) if i != index]
+    rewrite_columns(path, path, keep, header)
 
 
 def load_dataframe(path: Path, delimiter: str) -> pd.DataFrame:
@@ -127,6 +226,42 @@ def load_dataframe(path: Path, delimiter: str) -> pd.DataFrame:
     raise CsvReadError(f"Unable to read the CSV file with delimiter '{delimiter}': {last_error}")
 
 
-def load_table(path: Path) -> pd.DataFrame:
-    """Read a CSV for display in the table viewer (delimiter detected automatically)."""
-    return load_dataframe(path, detect_delimiter(path))
+def load_table(path: Path, check_cancelled: Callable[[], None] | None = None) -> pd.DataFrame:
+    """Read a CSV for display in the table viewer (delimiter detected automatically).
+
+    Every cell is read as text (no type inference, empty cells stay ``""``). The file is
+    read in chunks so ``check_cancelled`` can stop a long load; chunks are collected in a
+    list and concatenated once at the end (no repeated ``concat`` in the loop).
+    """
+    delimiter = detect_delimiter(path)
+    last_error: Exception | None = None
+    for encoding in ("utf-8-sig", "latin-1"):
+        for engine in ("c", "python"):
+            chunks: list[pd.DataFrame] = []
+            try:
+                with pd.read_csv(
+                    path,
+                    sep=delimiter,
+                    encoding=encoding,
+                    engine=engine,
+                    quotechar='"',
+                    skipinitialspace=True,
+                    dtype=str,
+                    keep_default_na=False,
+                    chunksize=TABLE_CHUNK_ROWS,
+                ) as reader:
+                    for chunk in reader:
+                        if check_cancelled is not None:
+                            check_cancelled()
+                        chunks.append(chunk)
+            except (UnicodeDecodeError, pd.errors.ParserError, ValueError) as exc:
+                last_error = exc
+                continue
+            except pd.errors.EmptyDataError:
+                return pd.DataFrame()
+            if not chunks:
+                return pd.DataFrame()
+            if len(chunks) == 1:
+                return chunks[0]
+            return pd.concat(chunks, ignore_index=True)
+    raise CsvReadError(f"Unable to read the CSV file with delimiter '{delimiter}': {last_error}")

@@ -98,6 +98,7 @@ class XmlIndex:
     tag_attr_to_values: dict[tuple[str, str], tuple[str, ...]]
     preview_text: str
     preview_truncated: bool
+    values_capped: bool = False  # some value lists hold only the first MAX_DISTINCT_VALUES
 
 
 @dataclass(frozen=True, slots=True)
