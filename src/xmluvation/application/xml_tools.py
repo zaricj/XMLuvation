@@ -17,7 +17,7 @@ from ..domain.xml_checks import Change, SchemaIssue
 from ..infrastructure import csv_io, xml_diff, xml_validation
 from ..infrastructure.xml_engine import list_xml_files
 from .cancellation import CancellationToken, ProgressReporter
-from .output_paths import unique_path
+from .output_paths import replace_report, unique_path
 
 VALIDATION_COLUMNS = ("File", "Line", "Column", "Level", "Message", "Path")
 DIFF_COLUMNS = ("Change", "Node", "Path", "Name", "Old value", "New value", "Old line", "New line")
@@ -200,10 +200,11 @@ def compare_xml(
         counts=Counter(f"{d.kind} {d.change}" for d in outcome.differences),
     )
     _attach_text_diff(result, ignore_whitespace, reporter, token)
+    token.raise_if_cancelled()
+    # The previous report of these two files is replaced (or removed if they now match).
+    report = replace_report(new_path.with_name(f"{new_path.stem}_vs_{old_path.stem}_xmldiff.csv"))
     if outcome.differences:
-        result.report = unique_path(
-            new_path.with_name(f"{new_path.stem}_vs_{old_path.stem}_xmldiff.csv")
-        )
+        result.report = report
         csv_io.write_report(
             result.report,
             DIFF_COLUMNS,

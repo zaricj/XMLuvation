@@ -20,7 +20,7 @@ from ..domain.errors import ValidationError
 from ..domain.text_diff import TextDiff
 from ..infrastructure import csv_diff, csv_io
 from .cancellation import CancellationToken, ProgressReporter
-from .output_paths import unique_path
+from .output_paths import replace_report
 
 # Larger files are compared and reported, but not shown side by side.
 MAX_TEXT_DIFF_BYTES = 16 * 1024 * 1024
@@ -129,10 +129,10 @@ def compare_csv(
             "side. The report lists every difference."
         )
     token.raise_if_cancelled()
+    # The previous report of these two files is replaced (or removed if they now match).
+    report = replace_report(new_path.with_name(f"{new_path.stem}_vs_{old_path.stem}_diff.csv"))
     if outcome.differences:
-        result.report = unique_path(
-            new_path.with_name(f"{new_path.stem}_vs_{old_path.stem}_diff.csv")
-        )
+        result.report = report
         csv_io.write_report(
             result.report, _report_columns(key), _report_rows(outcome.differences, key)
         )

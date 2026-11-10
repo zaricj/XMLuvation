@@ -201,9 +201,13 @@ def test_compare_loose_mode_and_duplicate_keys(tmp_path: Path) -> None:
     strict = compare_csv(str(old), str(new), "K", False, NullReporter(), CancellationToken())
     assert strict.changed_cells == 2 and strict.duplicate_keys == 2
     assert strict.report is not None and strict.report.name == "b_vs_a_diff.csv"
+    again = compare_csv(str(old), str(new), "K", False, NullReporter(), CancellationToken())
+    assert again.report == strict.report  # the earlier report is replaced, not kept
+    assert sorted(p.name for p in tmp_path.iterdir()) == ["a.csv", "b.csv", "b_vs_a_diff.csv"]
     loose = compare_csv(str(old), str(new), "K", True, NullReporter(), CancellationToken())
     assert loose.identical and loose.unchanged == 3
-    assert loose.report is None  # nothing to report
+    assert loose.report is None  # nothing to report, and the outdated report is removed
+    assert not strict.report.exists()
     assert summary_lines(loose)[0] == "No differences: 3 rows match."
 
 

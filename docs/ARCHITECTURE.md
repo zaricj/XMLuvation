@@ -111,6 +111,9 @@ tools/regen_ui.py              regenerate presentation/generated after editing .
   Profile clean-up and Hex → decimal. Split and Columns stream rows through
   `csv_io.csv_rows` and keep each cell's exact text plus the delimiter, encoding and BOM.
   No tool overwrites an existing file unless asked to (`application/output_paths.py`);
+  the exception is the report of a CSV or XML compare, which replaces the report of the
+  previous compare of the same two files (`replace_report`; it is removed when the files
+  no longer differ), so reports do not pile up. Copy a report elsewhere to keep it.
   Split removes its new folder if it fails or is cancelled.
   `presentation/views/csv_transforms_view.py` binds Split, Compare and Columns;
   `HeaderReader` loads a file's column names in the background.
