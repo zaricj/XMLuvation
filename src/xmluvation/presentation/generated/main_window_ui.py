@@ -23,10 +23,11 @@ from PySide6.QtWidgets import (QAbstractItemView, QAbstractSpinBox, QApplication
     QMenu, QMenuBar, QPlainTextEdit, QProgressBar,
     QPushButton, QRadioButton, QScrollArea, QSizePolicy,
     QSpacerItem, QSpinBox, QSplitter, QStackedWidget,
-    QStatusBar, QTabWidget, QTableView, QTextEdit,
-    QVBoxLayout, QWidget)
+    QStatusBar, QTabWidget, QTextEdit, QVBoxLayout,
+    QWidget)
 
 from xmluvation.presentation.widgets.busy_bar import BusyBar
+from xmluvation.presentation.widgets.data_table import DataTableView
 from xmluvation.presentation.widgets.diff_view import DiffView
 from . import xmluvation_resources_rc
 
@@ -2132,10 +2133,10 @@ class Ui_MainWindow(object):
 
         self.layout_page_table.addLayout(self.layout_table_toolbar)
 
-        self.table_csv_data = QTableView(self.page_table)
+        self.table_csv_data = DataTableView(self.page_table)
         self.table_csv_data.setObjectName(u"table_csv_data")
         self.table_csv_data.setAlternatingRowColors(True)
-        self.table_csv_data.setSelectionBehavior(QAbstractItemView.SelectionBehavior.SelectRows)
+        self.table_csv_data.setSelectionBehavior(QAbstractItemView.SelectionBehavior.SelectItems)
         self.table_csv_data.setVerticalScrollMode(QAbstractItemView.ScrollMode.ScrollPerPixel)
         self.table_csv_data.setHorizontalScrollMode(QAbstractItemView.ScrollMode.ScrollPerPixel)
         self.table_csv_data.setSortingEnabled(True)
@@ -2796,9 +2797,9 @@ class Ui_MainWindow(object):
         self.page_table.setProperty(u"role", QCoreApplication.translate("MainWindow", u"page", None))
         self.label_page_table_title.setText(QCoreApplication.translate("MainWindow", u"Table viewer", None))
         self.label_page_table_title.setProperty(u"role", QCoreApplication.translate("MainWindow", u"page-title", None))
-        self.label_page_table_hint.setText(QCoreApplication.translate("MainWindow", u"Open a CSV file to browse it. Rows load as you scroll; click a column header to sort.", None))
+        self.label_page_table_hint.setText(QCoreApplication.translate("MainWindow", u"Open a CSV, Excel, HTML, JSON or Markdown table, or drop one on the table. Rows load as you scroll. Click a column header to sort, drag it to reorder, right-click it for filters, statistics, duplicates and freezing. Ctrl+C copies the selected cells for Excel.", None))
         self.label_page_table_hint.setProperty(u"role", QCoreApplication.translate("MainWindow", u"hint", None))
-        self.line_edit_filter_table.setPlaceholderText(QCoreApplication.translate("MainWindow", u"Filter rows (matches any column, case-insensitive)", None))
+        self.line_edit_filter_table.setPlaceholderText(QCoreApplication.translate("MainWindow", u"Quick filter: rows where any column contains this text", None))
         self.label_table_rows.setText("")
         self.label_table_rows.setProperty(u"role", QCoreApplication.translate("MainWindow", u"status", None))
 #if QT_CONFIG(tooltip)

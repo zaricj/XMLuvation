@@ -4973,7 +4973,7 @@ Ctrl+J toggles output</string>
         <item>
          <widget class="QLabel" name="label_page_table_hint">
           <property name="text">
-           <string>Open a CSV file to browse it. Rows load as you scroll; click a column header to sort.</string>
+           <string>Open a CSV, Excel, HTML, JSON or Markdown table, or drop one on the table. Rows load as you scroll. Click a column header to sort, drag it to reorder, right-click it for filters, statistics, duplicates and freezing. Ctrl+C copies the selected cells for Excel.</string>
           </property>
           <property name="wordWrap">
            <bool>true</bool>
@@ -5003,7 +5003,7 @@ Ctrl+J toggles output</string>
           <item>
            <widget class="QLineEdit" name="line_edit_filter_table">
             <property name="placeholderText">
-             <string>Filter rows (matches any column, case-insensitive)</string>
+             <string>Quick filter: rows where any column contains this text</string>
             </property>
             <property name="clearButtonEnabled">
              <bool>true</bool>
@@ -5046,12 +5046,12 @@ Ctrl+J toggles output</string>
          </layout>
         </item>
         <item>
-         <widget class="QTableView" name="table_csv_data">
+         <widget class="DataTableView" name="table_csv_data">
           <property name="alternatingRowColors">
            <bool>true</bool>
           </property>
           <property name="selectionBehavior">
-           <enum>QAbstractItemView::SelectionBehavior::SelectRows</enum>
+           <enum>QAbstractItemView::SelectionBehavior::SelectItems</enum>
           </property>
           <property name="verticalScrollMode">
            <enum>QAbstractItemView::ScrollMode::ScrollPerPixel</enum>
@@ -5392,6 +5392,11 @@ Ctrl+J toggles output</string>
    <class>DiffView</class>
    <extends>QWidget</extends>
    <header>xmluvation.presentation.widgets.diff_view</header>
+  </customwidget>
+  <customwidget>
+   <class>DataTableView</class>
+   <extends>QTableView</extends>
+   <header>xmluvation.presentation.widgets.data_table</header>
   </customwidget>
  </customwidgets>
  <resources>

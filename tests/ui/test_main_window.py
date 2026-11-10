@@ -191,3 +191,62 @@ def test_xml_tools_page_validates_and_compares(qtbot, window, tmp_path: Path) ->
     assert ui.diff_view_xml_compare.position_text() == "Change 1 of 1"
     assert not hasattr(ui, "button_xml_compare_view_report")  # reports open externally
     assert ui.stacked_pages.currentIndex() != PAGE_TABLE
+
+
+def test_table_viewer_page_tools(qtbot, window, tmp_path: Path) -> None:
+    from PySide6.QtCore import QItemSelectionModel
+    from PySide6.QtGui import QGuiApplication
+
+    from xmluvation.presentation.views.main_window import PAGE_CSV_TOOLS
+
+    ui, page = window.ui, window._table_viewer
+    csv_file = tmp_path / "people.csv"
+    csv_file.write_text("ID,Name,City\n1,Anna,Berlin\n2,Bob,Ulm\n2,Carl,Bonn\n", encoding="utf-8")
+    assert not page.button_send.isEnabled() and not page.button_export.isEnabled()
+    ui.table_csv_data.files_dropped.emit([str(tmp_path / "notes.txt"), str(csv_file)])
+    qtbot.waitUntil(ui.line_edit_filter_table.isEnabled, timeout=5000)
+    assert ui.label_table_rows.text() == "people.csv: 3 rows"
+    assert page.button_send.isEnabled()
+
+    table = ui.table_csv_data
+    table.set_frozen_columns(1)
+    assert not table.frozen_view().isHidden()
+    assert not table.frozen_view().isColumnHidden(0) and table.frozen_view().isColumnHidden(1)
+    table.horizontalHeader().moveSection(2, 0)  # City first
+    assert page._visible_columns() == [2, 0, 1]
+    assert table.frozen_view().isColumnHidden(0) and not table.frozen_view().isColumnHidden(2)
+    page._set_hidden(1, True)
+    assert page._visible_columns() == [2, 0]
+
+    model = table.model()
+    selection = table.selectionModel()
+    flags = QItemSelectionModel.SelectionFlag.Select
+    for row in (0, 1):
+        for column in (0, 1, 2):
+            selection.select(model.index(row, column), flags)
+    page._copy(headers=True)
+    assert QGuiApplication.clipboard().text() == "City\tID\r\nBerlin\t1\r\nUlm\t2"
+
+    page.edit_go_to.setText("3")
+    page.edit_go_to.returnPressed.emit()
+    assert table.currentIndex().row() == 2
+    page.edit_go_to.setText("7")
+    page.edit_go_to.returnPressed.emit()
+    assert "no row 7" in page.label_message.text()
+
+    page._highlight_duplicates(0, True)
+    assert "2 rows have a duplicated" in page.label_message.text()
+
+    compare_old = next(a for a in page.menu_send.actions() if "old" in a.text())
+    compare_old.trigger()
+    assert ui.line_edit_compare_old_csv_file_path.text() == str(csv_file)
+    assert ui.stacked_pages.currentIndex() == PAGE_CSV_TOOLS
+    assert ui.tab_widget_csv_tools.currentWidget() is ui.tab_tool_compare
+
+    # A new file starts with all columns, in order, nothing frozen or highlighted.
+    js = tmp_path / "t.json"
+    js.write_text('[{"A": "1"}]', encoding="utf-8")
+    page.load(str(js))
+    qtbot.waitUntil(lambda: ui.label_table_rows.text() == "t.json: 1 rows", timeout=5000)
+    assert table.frozen_columns == 0 and window.vms.table.model.duplicate_column is None
+    assert not page.button_send.isEnabled()  # only CSV files go to the CSV tools

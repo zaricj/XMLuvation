@@ -80,7 +80,7 @@ def build_main_window(
         csv_tools=CsvToolsViewModel(runner),
         transforms=CsvTransformsViewModel(runner),
         xml_tools=XmlToolsViewModel(runner),
-        table=TableViewerViewModel(runner),
+        table=TableViewerViewModel(runner, settings),
         presets=PresetsViewModel(service),
         new_presets_vm=lambda: PresetsViewModel(service),
     )

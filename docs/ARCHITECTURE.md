@@ -92,6 +92,32 @@ tools/regen_ui.py              regenerate presentation/generated after editing .
   vectorized and produce a row permutation; there is no `QSortFilterProxyModel`.
   Filtering runs on a worker thread, debounced by 200 ms, and superseded results are
   dropped.
+* The page only reads tabular files: CSV, and through `infrastructure/tabular_import.py`
+  Excel, HTML, JSON and Markdown tables (`csv_tools.load_table_file`). Nothing else in
+  the application opens its results there. Files can be dropped on the table; the last
+  10 files are kept in `SettingsStore.recent_table_files`.
+* `presentation/models/table_ops.py` holds the pure, vectorized operations that run on
+  worker threads against the immutable `TableData`: `FilterSpec` (quick filter over any
+  column, optionally a regular expression or case-sensitive, plus any number of column
+  filters such as contains, equals, regex, is empty, is duplicated; all must match),
+  `column_stats` (empty, distinct and duplicated values, minimum and maximum as numbers
+  if every value is one, most frequent values; over the rows shown), `frame` (the rows and
+  columns shown, for "Export view" to CSV or Excel) and `tsv` (tab-separated text, quoted
+  as Excel expects, for Ctrl+C). An invalid regular expression is reported next to the
+  toolbar and the last valid result stays.
+* The row header shows the row's number in the file (1 = first data row), also after
+  sorting and filtering; "Go to row" uses the same numbers and fetches rows as needed.
+  "Highlight duplicate values" (header menu) colors one column's repeated values through
+  the model's `BackgroundRole`.
+* `presentation/widgets/data_table.py` (`DataTableView`, a promoted widget) adds frozen
+  leading columns: a second `QTableView` over the left edge that shares model and
+  selection and follows the main view's scrolling, widths, order and hidden columns (as in
+  Qt's "frozen column" example; it has no frame or theme border, so both viewports have
+  the same scroll range). Columns can be hidden, dragged to reorder and resized; the
+  header row never scrolls. The widget only signals copy requests, file drops and header
+  menus; `presentation/views/table_viewer_view.py` binds the page, builds the tool
+  controls that are not in the `.ui`, and resets filters and column changes when another
+  file is opened. "Send to" puts the open CSV file into Split, Compare or Columns.
 
 ## UI structure and themes
 

@@ -240,3 +240,77 @@ def test_table_filter_matches_any_column_case_insensitive(qtbot, runner, tmp_pat
     qtbot.waitUntil(lambda: vm.model.rowCount() == 3, timeout=5000)
     vm.clear()
     assert vm.model.rowCount() == 0 and loaded[-1] is False
+
+
+def _loaded_vm(qtbot, runner, path: Path, settings: SettingsStore | None = None):
+    vm = TableViewerViewModel(runner, settings)
+    loaded = _collect(vm.has_table_changed)
+    vm.load(str(path))
+    qtbot.waitUntil(lambda: bool(loaded), timeout=5000)
+    return vm
+
+
+def test_table_viewer_opens_other_formats_and_remembers_them(
+    qtbot, runner, settings: SettingsStore, tmp_path: Path
+) -> None:
+    md = tmp_path / "t.md"
+    md.write_text("| A | B |\n|---|---|\n| 1 | x |\n| 2 | y |\n", encoding="utf-8")
+    js = tmp_path / "t.json"
+    js.write_text('[{"A": "007", "B": "z"}]', encoding="utf-8")
+    vm = _loaded_vm(qtbot, runner, md, settings)
+    assert vm.model.data_store.headers == ("A", "B") and vm.model.total_rows == 2
+    assert not vm.is_csv
+    files = _collect(vm.file_changed)
+    vm.load(str(js))
+    qtbot.waitUntil(lambda: bool(files), timeout=5000)
+    assert vm.model.data(vm.model.index(0, 0)) == "007"  # cells stay text
+    assert settings.recent_table_files == [str(js), str(md)]
+    assert TableViewerViewModel(runner, settings).recent == [str(js), str(md)]
+    vm.clear_recent()
+    assert settings.recent_table_files == []
+
+
+def test_table_viewer_filters_with_regex_and_column_conditions(
+    qtbot, runner, tmp_path: Path
+) -> None:
+    from xmluvation.presentation.models.table_ops import ColumnFilter, FilterOp
+
+    csv_file = tmp_path / "t.csv"
+    csv_file.write_text("Name,City\nAnna,Berlin\nBob,\nbert,Bonn\n", encoding="utf-8")
+    vm = _loaded_vm(qtbot, runner, csv_file)
+    errors = _collect(vm.filter_error)
+    vm.set_filter_options(regex=True, case_sensitive=False)
+    vm.set_filter("(")
+    qtbot.waitUntil(lambda: bool(errors) and bool(errors[-1]), timeout=5000)
+    assert "Invalid regular expression" in errors[-1] and vm.model.total_rows == 3
+    vm.set_filter("^bo")  # Bob, and bert from Bonn
+    qtbot.waitUntil(lambda: vm.model.total_rows == 2, timeout=5000)
+    assert errors[-1] == ""
+    vm.set_column_filters([ColumnFilter(1, FilterOp.NOT_EMPTY)])
+    qtbot.waitUntil(lambda: vm.model.total_rows == 1, timeout=5000)
+    assert vm.model.data(vm.model.index(0, 0)) == "bert"
+    assert vm.position_of_row(3) == 0 and vm.position_of_row(2) is None
+    assert vm.position_of_row(9) is None
+
+
+def test_table_viewer_exports_the_view_and_computes_stats(qtbot, runner, tmp_path: Path) -> None:
+    csv_file = tmp_path / "t.csv"
+    csv_file.write_text("ID,Name\n3,c\n1,a\n2,b\n2,d\n", encoding="utf-8")
+    vm = _loaded_vm(qtbot, runner, csv_file)
+    vm.model.sort(0)
+    vm.set_filter("2")
+    qtbot.waitUntil(lambda: vm.model.total_rows == 2, timeout=5000)
+    exported = _collect(vm.exported)
+    target = tmp_path / "view.csv"
+    vm.export(str(target), [1, 0])  # reordered columns
+    qtbot.waitUntil(lambda: bool(exported), timeout=5000)
+    assert target.read_text(encoding="utf-8-sig").splitlines() == ["Name,ID", "b,2", "d,2"]
+    vm.export(str(tmp_path / "view.xlsx"), [0, 1])
+    qtbot.waitUntil(lambda: len(exported) == 2, timeout=5000)
+    assert (tmp_path / "view.xlsx").stat().st_size > 0
+
+    stats = _collect(vm.stats_ready)
+    vm.request_stats(0)
+    qtbot.waitUntil(lambda: bool(stats), timeout=5000)
+    assert stats[0].rows == 2 and stats[0].duplicate_rows == 2  # the rows shown
+    assert vm.copy_text([0, 1], [1], headers=True) == "Name\r\nb\r\nd"
