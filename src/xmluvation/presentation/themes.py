@@ -24,7 +24,7 @@ LIGHT_THEMES = frozenset({"light_theme_default"})
 SPIN_BOX_TEXT_INSET = {
     "dark_theme_default": 9,
     "light_theme_default": 9,
-    "dark_theme_yellow": 4,
+    "dark_theme_yellow": 9,
     "dark_theme_qlementine": 9,
     "dark_theme_metallic_spaceship": 7,
 }
