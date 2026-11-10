@@ -2085,19 +2085,6 @@ Ctrl+J toggles output</string>
                          </widget>
                         </item>
                         <item>
-                         <widget class="QPushButton" name="button_xml_compare_view_report">
-                          <property name="toolTip">
-                           <string>Open the report in the table viewer.</string>
-                          </property>
-                          <property name="text">
-                           <string>View in table</string>
-                          </property>
-                          <property name="role" stdset="0">
-                           <string>accent</string>
-                          </property>
-                         </widget>
-                        </item>
-                        <item>
                          <widget class="QPushButton" name="button_xml_compare_open_report">
                           <property name="toolTip">
                            <string>Open the report file.</string>

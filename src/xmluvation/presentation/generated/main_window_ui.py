@@ -935,11 +935,6 @@ class Ui_MainWindow(object):
 
         self.layout_xml_compare_result_path.addWidget(self.line_edit_xml_compare_result_path)
 
-        self.button_xml_compare_view_report = QPushButton(self.frame_xml_compare_result)
-        self.button_xml_compare_view_report.setObjectName(u"button_xml_compare_view_report")
-
-        self.layout_xml_compare_result_path.addWidget(self.button_xml_compare_view_report)
-
         self.button_xml_compare_open_report = QPushButton(self.frame_xml_compare_result)
         self.button_xml_compare_open_report.setObjectName(u"button_xml_compare_open_report")
 
@@ -2515,11 +2510,6 @@ class Ui_MainWindow(object):
         self.label_xml_compare_summary.setText("")
         self.label_xml_compare_result.setText(QCoreApplication.translate("MainWindow", u"Report", None))
         self.label_xml_compare_result.setProperty(u"role", QCoreApplication.translate("MainWindow", u"result-title", None))
-#if QT_CONFIG(tooltip)
-        self.button_xml_compare_view_report.setToolTip(QCoreApplication.translate("MainWindow", u"Open the report in the table viewer.", None))
-#endif // QT_CONFIG(tooltip)
-        self.button_xml_compare_view_report.setText(QCoreApplication.translate("MainWindow", u"View in table", None))
-        self.button_xml_compare_view_report.setProperty(u"role", QCoreApplication.translate("MainWindow", u"accent", None))
 #if QT_CONFIG(tooltip)
         self.button_xml_compare_open_report.setToolTip(QCoreApplication.translate("MainWindow", u"Open the report file.", None))
 #endif // QT_CONFIG(tooltip)

@@ -140,7 +140,7 @@ tools/regen_ui.py              regenerate presentation/generated after editing .
     changed elements, attributes and text with a readable XPath and line numbers in
     `<new>_vs_<old>_xmldiff.csv`. Comments and processing instructions are ignored;
     whitespace in text is normalized unless the option is turned off. The report stops
-    at 100,000 differences; it opens in the table viewer ("View in table").
+    at 100,000 differences; "Open" shows it in the default application.
   * Compare also shows both files side by side (`presentation/widgets/diff_view.py`,
     a promoted widget): old left, new right, removed/changed lines red, added/changed
     lines green, changed characters marked, filler rows keep both sides aligned, an

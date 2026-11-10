@@ -189,6 +189,5 @@ def test_xml_tools_page_validates_and_compares(qtbot, window, tmp_path: Path) ->
     assert not ui.card_xml_compare_diff.isHidden()
     assert ui.diff_view_xml_compare.pane_texts() == ("<n>1</n>", "<n>x</n>")
     assert ui.diff_view_xml_compare.position_text() == "Change 1 of 1"
-    ui.button_xml_compare_view_report.click()
-    qtbot.waitUntil(lambda: window.vms.table.model.rowCount() == 1, timeout=5000)
-    assert ui.stacked_pages.currentIndex() == PAGE_TABLE
+    assert not hasattr(ui, "button_xml_compare_view_report")  # reports open externally
+    assert ui.stacked_pages.currentIndex() != PAGE_TABLE
