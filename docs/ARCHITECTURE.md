@@ -101,7 +101,12 @@ tools/regen_ui.py              regenerate presentation/generated after editing .
 * Sections are `QFrame` cards. Widgets carry a dynamic `role` property (`card`,
   `card-title`, `hint`, `field-label`, `primary`, `accent`, `danger`, `flat`, `nav`, …)
   that the style sheets select on, so the `.ui` files contain no inline styles or fonts.
-* CSV tools: Convert, Split (`application/csv_split.py`), Compare
+* CSV tools: Convert turns a CSV file into Excel, HTML, JSON or Markdown
+  (`infrastructure/tabular_export.py`) and those back into CSV
+  (`infrastructure/tabular_import.py`: first worksheet via openpyxl, first `<table>`,
+  JSON records/rows/columns, first pipe table; every cell read as text). A CSV result is
+  written like the reports (UTF-8 with BOM, CRLF, comma unless a delimiter is set) and
+  never overwrites an existing file. Split (`application/csv_split.py`), Compare
   (`application/csv_compare.py`), Columns (`save_column_edits` in `csv_tools.py`),
   Profile clean-up and Hex → decimal. Split and Columns stream rows through
   `csv_io.csv_rows` and keep each cell's exact text plus the delimiter, encoding and BOM;
@@ -112,16 +117,26 @@ tools/regen_ui.py              regenerate presentation/generated after editing .
 * XML tools (`application/xml_tools.py`, bound by `presentation/views/xml_tools_view.py`):
   * Validate checks one file, or every `*.xml` directly in a folder, against an XSD 1.0
     schema (`infrastructure/xml_validation.py`, libxml2). Local `xs:include`/`xs:import`
-    files are resolved relative to the schema; the network is never used. Up to 1,000
-    problems per file go to `<schema>_validation.csv` next to the XML files.
+    files are resolved relative to the schema; the network is never used. The problems
+    are listed in the card (`file:line:column: level: message`, up to 5,000), and up to
+    1,000 problems per file go to `<schema>_validation.csv` next to the XML files.
   * Compare (`infrastructure/xml_diff.py`) fingerprints every subtree bottom-up, aligns
     child lists by fingerprint and then by tag (`difflib`, with common start/end trimmed
     and positional pairing for very long sibling lists), and lists added, removed and
     changed elements, attributes and text with a readable XPath and line numbers in
     `<new>_vs_<old>_xmldiff.csv`. Comments and processing instructions are ignored;
     whitespace in text is normalized unless the option is turned off. The report stops
-    at 100,000 differences.
-  * Both reports open in the table viewer ("View in table").
+    at 100,000 differences; it opens in the table viewer ("View in table").
+  * Compare also shows both files side by side (`presentation/widgets/diff_view.py`,
+    a promoted widget): old left, new right, removed/changed lines red, added/changed
+    lines green, changed characters marked, filler rows keep both sides aligned, an
+    overview strip and F7 / Shift+F7 navigate. The line diff is `domain/text_diff.py`: a
+    patience diff (anchors on lines unique to both sides, recursing into the gaps, plain
+    `difflib` only for small gaps without such lines), because `difflib` alone is
+    quadratic on XML's repeated closing tags. The files are decoded by BOM or XML
+    declaration (`xml_diff.read_text`); files over 16 MB are not shown side by side.
+    Backgrounds are painted per visible row, so large files stay responsive. Colors
+    come from `qproperty-*` in the theme, like `BusyBar`.
 * The CSV and XML tools pages are segmented `QTabWidget`s with one card per tool. Each tool's
   action row holds a `BusyBar` (`presentation/widgets/busy_bar.py`, a promoted widget
   in the `.ui`): an indeterminate striped bar that keeps its place in the layout, paints

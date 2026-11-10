@@ -18,6 +18,7 @@ cannot exhaust Python's recursion limit.
 
 from __future__ import annotations
 
+import re
 from collections import Counter
 from collections.abc import Callable, Hashable, Sequence
 from dataclasses import dataclass
@@ -319,6 +320,34 @@ class _Differ:
                 for j in sorted(j for rest in pending.values() for j in rest):
                     added(j)
         return entries
+
+
+_BOMS = (
+    (b"\xef\xbb\xbf", "utf-8"),
+    (b"\xff\xfe", "utf-16-le"),
+    (b"\xfe\xff", "utf-16-be"),
+)
+_DECLARED_ENCODING = re.compile(rb"""<\?xml[^>]*?encoding\s*=\s*["']([A-Za-z0-9._:-]+)["']""")
+
+
+def read_text(path: Path) -> str:
+    """The file's text, decoded by its BOM or XML declaration (UTF-8 if neither says).
+
+    Undecodable bytes become U+FFFD instead of failing: the text is only displayed.
+    """
+    try:
+        data = path.read_bytes()
+    except OSError as exc:
+        raise XmlParseError(f"Cannot read {path.name}:\n{exc}") from exc
+    for bom, encoding in _BOMS:
+        if data.startswith(bom):
+            return data[len(bom) :].decode(encoding, errors="replace")
+    match = _DECLARED_ENCODING.match(data[:256])
+    encoding = match.group(1).decode("ascii") if match else "utf-8"
+    try:
+        return data.decode(encoding, errors="replace")
+    except LookupError:  # unknown encoding name in the declaration
+        return data.decode("utf-8", errors="replace")
 
 
 def diff_files(

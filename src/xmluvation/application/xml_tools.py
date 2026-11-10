@@ -1,7 +1,8 @@
 """Use cases on XML files: validate against an XSD schema, compare two documents.
 
-Both write a CSV report (UTF-8 with BOM, so Excel shows umlauts correctly) that the
-table viewer can open; no report is written when there is nothing to list.
+Both write a CSV report (UTF-8 with BOM, so Excel shows umlauts correctly); no report is
+written when there is nothing to list. Validation also returns its problems for display,
+and compare returns a line-by-line text diff of both files for the side-by-side view.
 """
 
 from __future__ import annotations
@@ -13,6 +14,7 @@ from dataclasses import dataclass, field
 from pathlib import Path
 
 from ..domain.errors import OutputFileError, ValidationError
+from ..domain.text_diff import TextDiff, diff_lines, split_lines
 from ..domain.xml_checks import Change, SchemaIssue
 from ..infrastructure import xml_diff, xml_validation
 from ..infrastructure.xml_engine import list_xml_files
@@ -21,6 +23,8 @@ from .output_paths import unique_path
 
 VALIDATION_COLUMNS = ("File", "Line", "Column", "Level", "Message", "Path")
 DIFF_COLUMNS = ("Change", "Node", "Path", "Name", "Old value", "New value", "Old line", "New line")
+# Larger files are compared and reported, but not shown side by side.
+MAX_TEXT_DIFF_BYTES = 16 * 1024 * 1024
 
 
 def _existing_file(path_text: str, message: str, title: str) -> Path:
@@ -52,6 +56,7 @@ class SchemaValidationResult:
     levels: Counter[str] = field(default_factory=Counter)
     report: Path | None = None
     capped_files: list[str] = field(default_factory=list)
+    problems: list[SchemaIssue] = field(default_factory=list)
 
     @property
     def valid_files(self) -> int:
@@ -108,6 +113,7 @@ def validate_against_schema(
             issues.extend(found)
     reporter.progress(len(files), len(files))
     result.issues = len(issues)
+    result.problems = issues
     result.levels = Counter(issue.level for issue in issues)
     if issues:
         result.report = unique_path(report_folder / f"{schema_path.stem}_validation.csv")
@@ -147,6 +153,17 @@ def validation_summary(result: SchemaValidationResult) -> list[str]:
     return lines
 
 
+def format_issue(issue: SchemaIssue) -> str:
+    """``file:line:column: level: message`` (as compilers print it), plus the node path."""
+    where = issue.file
+    if issue.line:
+        where += f":{issue.line}"
+        if issue.column:
+            where += f":{issue.column}"
+    text = f"{where}: {issue.level}: {issue.message}"
+    return f"{text}\n    at {issue.path}" if issue.path else text
+
+
 # ---------------------------------------------------------------------------- compare
 
 
@@ -160,6 +177,8 @@ class XmlCompareResult:
     truncated: bool = False
     old_elements: int = 0
     new_elements: int = 0
+    text_diff: TextDiff | None = None
+    text_diff_note: str = ""  # why ``text_diff`` is missing
 
     @property
     def identical(self) -> bool:
@@ -192,6 +211,7 @@ def compare_xml(
         new_elements=outcome.new_elements,
         counts=Counter(f"{d.kind} {d.change}" for d in outcome.differences),
     )
+    _attach_text_diff(result, ignore_whitespace, reporter, token)
     if outcome.differences:
         result.report = unique_path(
             new_path.with_name(f"{new_path.stem}_vs_{old_path.stem}_xmldiff.csv")
@@ -214,6 +234,34 @@ def compare_xml(
             ),
         )
     return result
+
+
+def _attach_text_diff(
+    result: XmlCompareResult,
+    ignore_whitespace: bool,
+    reporter: ProgressReporter,
+    token: CancellationToken,
+) -> None:
+    too_large = [
+        path.name for path in (result.old, result.new) if path.stat().st_size > MAX_TEXT_DIFF_BYTES
+    ]
+    if too_large:
+        result.text_diff_note = (
+            f"{' and '.join(too_large)} {'is' if len(too_large) == 1 else 'are'} larger than "
+            f"{MAX_TEXT_DIFF_BYTES // (1024 * 1024)} MB, so the files are not shown side by "
+            "side. The report lists every difference."
+        )
+        return
+    reporter.message("Comparing the files line by line...")
+    old_lines = split_lines(xml_diff.read_text(result.old))
+    new_lines = split_lines(xml_diff.read_text(result.new))
+    token.raise_if_cancelled()
+    result.text_diff = diff_lines(
+        old_lines,
+        new_lines,
+        ignore_whitespace=ignore_whitespace,
+        check_cancelled=token.raise_if_cancelled,
+    )
 
 
 def compare_summary(result: XmlCompareResult) -> list[str]:

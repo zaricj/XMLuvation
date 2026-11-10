@@ -4,7 +4,7 @@ from __future__ import annotations
 
 from PySide6.QtCore import Signal
 
-from ...application.csv_tools import ConversionResult, convert_csv
+from ...application.csv_tools import ConversionResult, convert_csv, suggested_output_type
 from ...application.profile_cleanup import (
     CleanupPlan,
     CleanupResult,
@@ -46,6 +46,11 @@ class CsvToolsViewModel(ViewModel):
             on_message=self.log_appended.emit,
             on_finished=lambda: self.conversion_running_changed.emit(False),
         )
+
+    @staticmethod
+    def suggested_output_type(path: str, current: str) -> str | None:
+        """Output type to select for a newly chosen input file (``None``: keep ``current``)."""
+        return suggested_output_type(path, current)
 
     def _converted(self, result: ConversionResult) -> None:
         self.log_appended.emit(

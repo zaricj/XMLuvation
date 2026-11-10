@@ -1598,6 +1598,28 @@ Ctrl+J toggles output</string>
                        </widget>
                       </item>
                       <item>
+                       <widget class="QPlainTextEdit" name="text_edit_validate_problems">
+                        <property name="minimumSize">
+                         <size>
+                          <width>0</width>
+                          <height>240</height>
+                         </size>
+                        </property>
+                        <property name="lineWrapMode">
+                         <enum>QPlainTextEdit::LineWrapMode::NoWrap</enum>
+                        </property>
+                        <property name="readOnly">
+                         <bool>true</bool>
+                        </property>
+                        <property name="placeholderText">
+                         <string>Problems found during validation appear here.</string>
+                        </property>
+                        <property name="role" stdset="0">
+                         <string>code</string>
+                        </property>
+                       </widget>
+                      </item>
+                      <item>
                        <layout class="QHBoxLayout" name="layout_validate_result_path">
                         <property name="spacing">
                          <number>10</number>
@@ -1635,22 +1657,9 @@ Ctrl+J toggles output</string>
                          </widget>
                         </item>
                         <item>
-                         <widget class="QPushButton" name="button_validate_view_report">
-                          <property name="toolTip">
-                           <string>Open the report in the table viewer.</string>
-                          </property>
-                          <property name="text">
-                           <string>View in table</string>
-                          </property>
-                          <property name="role" stdset="0">
-                           <string>accent</string>
-                          </property>
-                         </widget>
-                        </item>
-                        <item>
                          <widget class="QPushButton" name="button_validate_open_report">
                           <property name="toolTip">
-                           <string>Open the report file.</string>
+                           <string>Open the report file (CSV) in its default program.</string>
                           </property>
                           <property name="text">
                            <string>Open</string>
@@ -2107,6 +2116,66 @@ Ctrl+J toggles output</string>
                  </widget>
                 </item>
                 <item>
+                 <widget class="QFrame" name="card_xml_compare_diff">
+                  <property name="frameShape">
+                   <enum>QFrame::Shape::StyledPanel</enum>
+                  </property>
+                  <property name="role" stdset="0">
+                   <string>card</string>
+                  </property>
+                  <layout class="QVBoxLayout" name="layout_card_xml_compare_diff">
+                   <property name="spacing">
+                    <number>10</number>
+                   </property>
+                   <property name="leftMargin">
+                    <number>18</number>
+                   </property>
+                   <property name="topMargin">
+                    <number>16</number>
+                   </property>
+                   <property name="rightMargin">
+                    <number>18</number>
+                   </property>
+                   <property name="bottomMargin">
+                    <number>18</number>
+                   </property>
+                   <item>
+                    <widget class="QLabel" name="label_card_xml_compare_diff_title">
+                     <property name="text">
+                      <string>Side by side</string>
+                     </property>
+                     <property name="role" stdset="0">
+                      <string>card-title</string>
+                     </property>
+                    </widget>
+                   </item>
+                   <item>
+                    <widget class="QLabel" name="label_card_xml_compare_diff_hint">
+                     <property name="text">
+                      <string>Both files line by line: removed and changed lines are red on the left, added and changed lines green on the right. Unlike the report, this view also shows comments and formatting. F7 / Shift+F7 jump to the next / previous change.</string>
+                     </property>
+                     <property name="wordWrap">
+                      <bool>true</bool>
+                     </property>
+                     <property name="role" stdset="0">
+                      <string>hint</string>
+                     </property>
+                    </widget>
+                   </item>
+                   <item>
+                    <widget class="DiffView" name="diff_view_xml_compare" native="true">
+                     <property name="minimumSize">
+                      <size>
+                       <width>0</width>
+                       <height>460</height>
+                      </size>
+                     </property>
+                    </widget>
+                   </item>
+                  </layout>
+                 </widget>
+                </item>
+                <item>
                  <spacer name="spacer_xml_102">
                   <property name="orientation">
                    <enum>Qt::Orientation::Vertical</enum>
@@ -2294,7 +2363,7 @@ Ctrl+J toggles output</string>
                    <item>
                     <widget class="QLabel" name="label_csv_conversion_desc">
                      <property name="text">
-                      <string>Turn a CSV file into an Excel workbook, HTML table, JSON records or a Markdown table. The result is saved next to the CSV file.</string>
+                      <string>Turn a CSV file into an Excel workbook, HTML table, JSON records or a Markdown table, or convert one of those back to CSV. The result is saved next to the input file.</string>
                      </property>
                      <property name="wordWrap">
                       <bool>true</bool>
@@ -2330,7 +2399,7 @@ Ctrl+J toggles output</string>
                      <item row="0" column="0">
                       <widget class="QLabel" name="label_conversion_input">
                        <property name="text">
-                        <string>CSV file</string>
+                        <string>Input file</string>
                        </property>
                        <property name="role" stdset="0">
                         <string>field-label</string>
@@ -2357,7 +2426,7 @@ Ctrl+J toggles output</string>
                        <item>
                         <widget class="QLineEdit" name="line_edit_csv_conversion_path_input">
                          <property name="placeholderText">
-                          <string>CSV file to convert</string>
+                          <string>CSV, Excel (.xlsx), HTML, JSON or Markdown file to convert</string>
                          </property>
                          <property name="clearButtonEnabled">
                           <bool>true</bool>
@@ -2367,7 +2436,7 @@ Ctrl+J toggles output</string>
                        <item>
                         <widget class="QPushButton" name="button_browse_csv_conversion_path_input">
                          <property name="toolTip">
-                          <string>Choose the CSV file to convert.</string>
+                          <string>Choose the file to convert.</string>
                          </property>
                          <property name="text">
                           <string>Browse…</string>
@@ -2431,12 +2500,17 @@ Ctrl+J toggles output</string>
                            <string>MARKDOWN</string>
                           </property>
                          </item>
+                         <item>
+                          <property name="text">
+                           <string>CSV</string>
+                          </property>
+                         </item>
                         </widget>
                        </item>
                        <item>
                         <widget class="QCheckBox" name="checkbox_write_index_column">
                          <property name="toolTip">
-                          <string>Add an index column starting at 1 (Excel, HTML and Markdown).</string>
+                          <string>Add an index column starting at 1 (Excel, HTML, Markdown and CSV).</string>
                          </property>
                          <property name="text">
                           <string>Write index column</string>
@@ -2488,7 +2562,7 @@ Ctrl+J toggles output</string>
                        <item>
                         <widget class="QCheckBox" name="checkbox_csv_conversion_manual_delimiter">
                          <property name="toolTip">
-                          <string>The delimiter is detected automatically. Tick this if it was detected wrong and choose or type it yourself.</string>
+                          <string>Reading a CSV file: the delimiter is detected automatically; tick this if it was detected wrong and choose or type it yourself. Converting to CSV: the file is written with this delimiter (a comma if not ticked).</string>
                          </property>
                          <property name="text">
                           <string>Set manually</string>
@@ -5279,6 +5353,11 @@ Ctrl+J toggles output</string>
    <class>BusyBar</class>
    <extends>QWidget</extends>
    <header>xmluvation.presentation.widgets.busy_bar</header>
+  </customwidget>
+  <customwidget>
+   <class>DiffView</class>
+   <extends>QWidget</extends>
+   <header>xmluvation.presentation.widgets.diff_view</header>
   </customwidget>
  </customwidgets>
  <resources>

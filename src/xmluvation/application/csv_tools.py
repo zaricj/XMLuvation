@@ -1,4 +1,5 @@
-"""Use cases on CSV files: conversion, header listing, column removal, table loading."""
+"""Use cases on CSV files: conversion (to and from CSV), header listing, column removal,
+table loading."""
 
 from __future__ import annotations
 
@@ -11,7 +12,7 @@ from pathlib import Path
 import pandas as pd
 
 from ..domain.errors import ValidationError
-from ..infrastructure import csv_io
+from ..infrastructure import csv_io, tabular_import
 from ..infrastructure.tabular_export import OutputFormat, output_path_for, write_table
 from .cancellation import CancellationToken, ProgressReporter
 from .output_paths import unique_path
@@ -45,6 +46,22 @@ def parse_delimiter(text: str) -> str:
     return value
 
 
+def suggested_output_type(path_text: str, current: str) -> str | None:
+    """The output type to switch to after the input file changed, if ``current`` no longer fits.
+
+    A non-CSV input (Excel, HTML, ...) is converted to CSV; a CSV input cannot be.
+    """
+    text = path_text.strip()
+    source = tabular_import.format_of(Path(text)) if text else None
+    if source is None:
+        return None
+    if source is OutputFormat.CSV and current == OutputFormat.CSV:
+        return OutputFormat.EXCEL.value
+    if source is not OutputFormat.CSV and current != OutputFormat.CSV:
+        return OutputFormat.CSV.value
+    return None
+
+
 def convert_csv(
     path_text: str,
     output_type: str,
@@ -52,37 +69,56 @@ def convert_csv(
     reporter: ProgressReporter,
     delimiter_text: str | None = None,
 ) -> ConversionResult:
-    """Convert a CSV file; ``delimiter_text`` overrides delimiter detection when given."""
+    """Convert a CSV file to another format, or an Excel/HTML/JSON/Markdown table to CSV.
+
+    ``delimiter_text`` is the delimiter of a CSV input (instead of detecting it) or of a
+    CSV output (instead of a comma). A CSV output never overwrites an existing file.
+    """
     source = _existing_csv(
         path_text,
-        title="CSV Input File Error",
-        message="No CSV file has been selected for conversion.\nPlease select a CSV file.",
+        title="Input File Error",
+        message="No file has been selected for conversion.\nPlease select a file to convert.",
     )
-    if source.suffix.lower() != ".csv":
+    source_format = tabular_import.format_of(source)
+    if source_format is None:
         raise ValidationError(
-            f"Cannot convert from '{source.suffix.lstrip('.')}' files; select a .csv file.",
+            f"Cannot convert from '{source.suffix.lstrip('.')}' files; select a CSV, "
+            "Excel (.xlsx), HTML, JSON or Markdown file.",
             title="Unsupported Conversion",
         )
     try:
         fmt = OutputFormat(output_type)
     except ValueError as exc:
         raise ValidationError(f"Unsupported output type: {output_type}") from exc
+    if fmt is source_format:
+        raise ValidationError(
+            f"{source.name} already is a {fmt.label} file. Choose another output format.",
+            title="Unsupported Conversion",
+        )
 
-    if delimiter_text is not None:
-        delimiter = parse_delimiter(delimiter_text)
-        reporter.message(f"Using delimiter: {csv_io.describe_delimiter(delimiter)}")
+    delimiter = parse_delimiter(delimiter_text) if delimiter_text is not None else None
+    if source_format is OutputFormat.CSV:
+        if delimiter is not None:
+            reporter.message(f"Using delimiter: {csv_io.describe_delimiter(delimiter)}")
+        else:
+            delimiter = csv_io.detect_delimiter(source)
+            reporter.message(f"Detected delimiter: {csv_io.describe_delimiter(delimiter)}")
+        df = csv_io.load_dataframe(source, delimiter)
     else:
-        delimiter = csv_io.detect_delimiter(source)
-        reporter.message(f"Detected delimiter: {csv_io.describe_delimiter(delimiter)}")
-    df = csv_io.load_dataframe(source, delimiter)
+        reporter.message(f"Reading {source.name} ({source_format.label})...")
+        df = tabular_import.read_table(source, source_format, reporter.message)
+        delimiter = delimiter if delimiter is not None else ","
     try:
         if df.empty and len(df.columns) == 0:
             raise ValidationError(
-                "The CSV file could be read, but it does not contain any columns."
+                f"{source.name} could be read, but it does not contain any columns."
             )
         target = output_path_for(source, fmt)
+        if fmt is OutputFormat.CSV:
+            target = unique_path(target)  # e.g. the CSV this file was made from
+            reporter.message(f"Writing CSV with delimiter {csv_io.describe_delimiter(delimiter)}")
         reporter.message("Starting conversion, please wait...")
-        write_table(df, target, fmt, write_index)
+        write_table(df, target, fmt, write_index, delimiter)
     finally:
         del df
         gc.collect()  # the DataFrame and writer buffers can be several times the CSV size

@@ -1,4 +1,4 @@
-"""Write a DataFrame as Excel, HTML, JSON or Markdown."""
+"""Write a DataFrame as Excel, HTML, JSON, Markdown or CSV."""
 
 from __future__ import annotations
 
@@ -22,10 +22,22 @@ class OutputFormat(StrEnum):
     HTML = "HTML"
     JSON = "JSON"
     MARKDOWN = "MARKDOWN"
+    CSV = "CSV"
 
     @property
     def extension(self) -> str:
-        return {"EXCEL": "xlsx", "HTML": "html", "JSON": "json", "MARKDOWN": "md"}[self.value]
+        return {
+            "EXCEL": "xlsx",
+            "HTML": "html",
+            "JSON": "json",
+            "MARKDOWN": "md",
+            "CSV": "csv",
+        }[self.value]
+
+    @property
+    def label(self) -> str:
+        """Name for messages."""
+        return {"EXCEL": "Excel", "MARKDOWN": "Markdown"}.get(self.value, self.value)
 
 
 def excel_sheet_name(file_path: Path) -> str:
@@ -47,8 +59,27 @@ def output_path_for(source: Path, fmt: OutputFormat) -> Path:
     return source.with_suffix(f".{fmt.extension}")
 
 
-def write_table(df: pd.DataFrame, target: Path, fmt: OutputFormat, write_index: bool) -> None:
+def write_table(
+    df: pd.DataFrame,
+    target: Path,
+    fmt: OutputFormat,
+    write_index: bool,
+    delimiter: str = ",",
+) -> None:
+    """``delimiter`` is used for CSV only. The index column, if written, counts from 1."""
+    if write_index:
+        df = df.set_axis(pd.RangeIndex(1, len(df) + 1), axis="index")
     match fmt:
+        case OutputFormat.CSV:
+            # Like the app's reports: UTF-8 with BOM (Excel shows umlauts), CRLF lines.
+            df.to_csv(
+                target,
+                sep=delimiter,
+                index=write_index,
+                index_label="Index" if write_index else None,
+                encoding="utf-8-sig",
+                lineterminator="\r\n",
+            )
         case OutputFormat.HTML:
             df.to_html(target, index=write_index)
         case OutputFormat.JSON:

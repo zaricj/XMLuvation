@@ -155,6 +155,7 @@ try {
         # pandas imports these only when a conversion asks for them, so Nuitka cannot see them.
         '--include-package=xlsxwriter',
         '--include-module=tabulate',
+        '--include-package=openpyxl',
         '--windows-console-mode=disable',
         "--windows-icon-from-ico=$Icon",
         '--product-name=XMLuvation',

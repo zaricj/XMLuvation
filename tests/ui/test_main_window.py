@@ -126,6 +126,19 @@ def test_compare_report_opens_in_table_viewer(qtbot, window, tmp_path: Path) -> 
     assert ui.stacked_pages.currentIndex() == PAGE_TABLE
 
 
+def test_conversion_input_selects_a_fitting_output_type(window) -> None:
+    ui = window.ui
+    combo = ui.combobox_csv_conversion_output_type
+    assert combo.currentText() == "EXCEL"
+    ui.line_edit_csv_conversion_path_input.setText(r"C:\data\report.xlsx")
+    assert combo.currentText() == "CSV"
+    ui.line_edit_csv_conversion_path_input.setText(r"C:\data\report.csv")
+    assert combo.currentText() == "EXCEL"
+    combo.setCurrentText("JSON")
+    ui.line_edit_csv_conversion_path_input.setText(r"C:\data\other.csv")
+    assert combo.currentText() == "JSON"  # still fits, kept
+
+
 def test_xml_tools_page_validates_and_compares(qtbot, window, tmp_path: Path) -> None:
     xsd = tmp_path / "s.xsd"
     xsd.write_text(
@@ -146,14 +159,28 @@ def test_xml_tools_page_validates_and_compares(qtbot, window, tmp_path: Path) ->
     ui.button_validate_start.click()
     qtbot.waitUntil(lambda: not ui.frame_validate_result.isHidden(), timeout=5000)
     assert ui.label_validate_summary.text().startswith("Valid")
-    assert ui.button_validate_view_report.isHidden()  # nothing to report
+    assert ui.button_validate_open_report.isHidden()  # nothing to report
+    assert ui.text_edit_validate_problems.isHidden()
 
+    # Problems are listed in the card itself, not in the table viewer.
+    ui.line_edit_validate_xml_path.setText(str(new))
+    ui.button_validate_start.click()
+    qtbot.waitUntil(lambda: not ui.text_edit_validate_problems.isHidden(), timeout=5000)
+    problems = ui.text_edit_validate_problems.toPlainText()
+    assert problems.startswith("new.xml:1:") and ": error: " in problems
+    assert not ui.button_validate_open_report.isHidden()
+    assert ui.stacked_pages.currentWidget() is ui.page_xml_tools
+
+    assert ui.card_xml_compare_diff.isHidden()
     ui.line_edit_xml_compare_old_path.setText(str(old))
     ui.line_edit_xml_compare_new_path.setText(str(new))
     ui.button_xml_compare_start.click()
     qtbot.waitUntil(lambda: not ui.frame_xml_compare_result.isHidden(), timeout=5000)
     assert "1 difference(s): 1 changed" in ui.label_xml_compare_summary.text()
     assert "Report saved" in ui.text_edit_xml_tools_output.toPlainText()
+    assert not ui.card_xml_compare_diff.isHidden()
+    assert ui.diff_view_xml_compare.pane_texts() == ("<n>1</n>", "<n>x</n>")
+    assert ui.diff_view_xml_compare.position_text() == "Change 1 of 1"
     ui.button_xml_compare_view_report.click()
     qtbot.waitUntil(lambda: window.vms.table.model.rowCount() == 1, timeout=5000)
     assert ui.stacked_pages.currentIndex() == PAGE_TABLE

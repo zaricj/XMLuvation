@@ -12,8 +12,9 @@ from xmluvation.application.csv_tools import (
     drop_csv_column,
     parse_delimiter,
     read_csv_headers,
+    suggested_output_type,
 )
-from xmluvation.domain.errors import ValidationError
+from xmluvation.domain.errors import CsvReadError, ValidationError
 from xmluvation.infrastructure.csv_io import detect_delimiter
 from xmluvation.infrastructure.tabular_export import excel_table_name
 
@@ -135,3 +136,101 @@ def test_convert_with_manual_delimiter_overrides_detection(tmp_path: Path) -> No
         {"A": "x,y", "B": 1},
         {"A": "z,w", "B": 2},
     ]
+
+
+# ---------------------------------------------------------------- back to CSV
+
+ROUND_TRIP = "Name;ID;Price\nMüller;007;1.75\nSmith;8;2.25\n"
+# The index column's header is "Index" in Excel and blank in HTML and Markdown (so it
+# comes back with a generated name); JSON records have no index.
+INDEX_HEADER = {"EXCEL": "Index;", "HTML": "Column 1;", "MARKDOWN": "Column 1;", "JSON": ""}
+
+
+@pytest.mark.parametrize("fmt", ["EXCEL", "HTML", "JSON", "MARKDOWN"])
+@pytest.mark.parametrize("index", [False, True])
+def test_converted_files_convert_back_to_the_same_csv(tmp_path: Path, fmt: str, index) -> None:
+    src = _write(tmp_path / "data.csv", ROUND_TRIP)
+    converted = convert_csv(str(src), fmt, index, NullReporter()).output
+    back = convert_csv(str(converted), "CSV", False, NullReporter(), delimiter_text=";")
+    assert back.output == tmp_path / "data (2).csv"  # the original is never overwritten
+    lines = back.output.read_bytes().decode("utf-8-sig").split("\r\n")
+    prefix = INDEX_HEADER[fmt] if index else ""
+    assert lines[0] == f"{prefix}Name;ID;Price"
+    # Reading the CSV infers types (007 -> 7); every format then keeps the cell text.
+    rows = ["Müller;7;1.75", "Smith;8;2.25"]
+    if prefix:
+        rows = [f"{number};{row}" for number, row in enumerate(rows, 1)]
+    assert lines[1:] == [*rows, ""]
+
+
+def test_csv_output_with_index_counts_from_one(tmp_path: Path) -> None:
+    src = _write(tmp_path / "t.json", '[{"A": "x"}, {"A": "y"}]')
+    out = convert_csv(str(src), "CSV", True, NullReporter()).output
+    assert out.read_bytes() == b"\xef\xbb\xbfIndex,A\r\n1,x\r\n2,y\r\n"
+
+
+def test_excel_import_reads_first_sheet_as_text(tmp_path: Path) -> None:
+    import pandas as pd
+
+    book = tmp_path / "book.xlsx"
+    with pd.ExcelWriter(book) as writer:
+        pd.DataFrame({"Code": ["007", "1"], "N": [1, 2.5], "E": ["a", None]}).to_excel(
+            writer, sheet_name="First", index=False
+        )
+        pd.DataFrame({"Other": [1]}).to_excel(writer, sheet_name="Second", index=False)
+    messages: list[str] = []
+
+    class Collect(NullReporter):
+        def message(self, text: str) -> None:
+            messages.append(text)
+
+    out = convert_csv(str(book), "CSV", False, Collect()).output
+    assert out.read_bytes().decode("utf-8-sig") == "Code,N,E\r\n007,1,a\r\n1,2.5,\r\n"
+    assert any("Not converted: Second" in m for m in messages)
+
+
+def test_json_shapes_and_markdown_escapes(tmp_path: Path) -> None:
+    rows = _write(tmp_path / "rows.json", '[["A", "B"], [1.50, true], [null, {"k": 1}]]')
+    out = convert_csv(str(rows), "CSV", False, NullReporter()).output
+    assert out.read_bytes().decode("utf-8-sig") == 'A,B\r\n1.50,true\r\n,"{""k"": 1}"\r\n'
+
+    columns = _write(tmp_path / "cols.json", '{"A": {"0": "x", "1": "y"}, "B": ["1"]}')
+    out = convert_csv(str(columns), "CSV", False, NullReporter()).output
+    assert out.read_bytes().decode("utf-8-sig") == "A,B\r\nx,1\r\ny,\r\n"
+
+    md = _write(
+        tmp_path / "t.md",
+        "Intro text\n\n| A | B |\n|:--|--:|\n| a \\| b | 2 |\n| c |\n\nAfter\n",
+    )
+    out = convert_csv(str(md), "CSV", False, NullReporter()).output
+    assert out.read_bytes().decode("utf-8-sig") == "A,B\r\na | b,2\r\nc,\r\n"
+
+
+def test_unsupported_conversions_are_rejected(tmp_path: Path) -> None:
+    src = _write(tmp_path / "t.csv", "A\n1\n")
+    with pytest.raises(ValidationError, match="already is a CSV file"):
+        convert_csv(str(src), "CSV", False, NullReporter())
+    with pytest.raises(ValidationError, match="Cannot convert from 'txt'"):
+        convert_csv(str(_write(tmp_path / "t.txt", "A")), "CSV", False, NullReporter())
+    with pytest.raises(CsvReadError, match="no <table>"):
+        convert_csv(str(_write(tmp_path / "t.html", "<p>x</p>")), "CSV", False, NullReporter())
+    with pytest.raises(CsvReadError, match="does not contain a table"):
+        convert_csv(str(_write(tmp_path / "t.json", '{"a": 1}')), "CSV", False, NullReporter())
+    with pytest.raises(CsvReadError, match="Cannot read"):
+        convert_csv(str(_write(tmp_path / "t.xlsx", "no zip")), "CSV", False, NullReporter())
+
+
+@pytest.mark.parametrize(
+    ("path", "current", "expected"),
+    [
+        ("a.xlsx", "EXCEL", "CSV"),
+        ("a.JSON", "HTML", "CSV"),
+        ("a.md", "CSV", None),
+        ("a.csv", "CSV", "EXCEL"),
+        ("a.csv", "JSON", None),
+        ("a.txt", "JSON", None),
+        ("", "JSON", None),
+    ],
+)
+def test_suggested_output_type(path: str, current: str, expected: str | None) -> None:
+    assert suggested_output_type(path, current) == expected

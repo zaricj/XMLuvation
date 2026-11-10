@@ -66,6 +66,11 @@ from .presets_manager import PreBuiltXPathsManager
 from .xml_tools_view import XmlToolsView
 
 XPATH_HELP_URL = "https://www.w3schools.com/xml/xpath_syntax.asp"
+CONVERT_FILTER = (
+    "Tables (*.csv *.xlsx *.xlsm *.html *.htm *.json *.md *.markdown);;"
+    "CSV File (*.csv);;Excel Workbook (*.xlsx *.xlsm);;HTML (*.html *.htm);;"
+    "JSON (*.json);;Markdown (*.md *.markdown);;All files (*)"
+)
 
 # Sidebar pages (order of list_widget_navigation / stacked_pages) and the output tab each uses.
 PAGE_EXTRACT, PAGE_XML_TOOLS, PAGE_CSV_TOOLS, PAGE_TABLE = range(4)
@@ -450,9 +455,13 @@ class MainWindow(QMainWindow):
         ui, csv_vm, table = self.ui, self.vms.csv_tools, self.vms.table
         ui.button_browse_csv_conversion_path_input.clicked.connect(
             lambda: browse_open_file_into(
-                self, "Select csv file", ui.line_edit_csv_conversion_path_input, "CSV File (*.csv)"
+                self,
+                "Select file to convert",
+                ui.line_edit_csv_conversion_path_input,
+                CONVERT_FILTER,
             )
         )
+        ui.line_edit_csv_conversion_path_input.textChanged.connect(self._conversion_input_changed)
         ui.button_csv_conversion_convert.clicked.connect(
             lambda: csv_vm.convert(
                 ui.line_edit_csv_conversion_path_input.text(),
@@ -521,6 +530,13 @@ class MainWindow(QMainWindow):
         self._xml_tools = XmlToolsView(self, self.vms.xml_tools, self._view_in_table)
         self.vms.xml_tools.log_appended.connect(ui.text_edit_xml_tools_output.append)
         self.vms.xml_tools.log_replaced.connect(ui.text_edit_xml_tools_output.setText)
+
+    def _conversion_input_changed(self, path: str) -> None:
+        """Excel, HTML, JSON and Markdown files convert to CSV; CSV files to the others."""
+        combo = self.ui.combobox_csv_conversion_output_type
+        suggested = self.vms.csv_tools.suggested_output_type(path, combo.currentText())
+        if suggested is not None:
+            combo.setCurrentText(suggested)
 
     def _open_converted_file(self) -> None:
         path = self.ui.line_edit_csv_conversion_open_file_path.text()

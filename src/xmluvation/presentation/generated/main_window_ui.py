@@ -27,6 +27,7 @@ from PySide6.QtWidgets import (QAbstractItemView, QAbstractSpinBox, QApplication
     QVBoxLayout, QWidget)
 
 from xmluvation.presentation.widgets.busy_bar import BusyBar
+from xmluvation.presentation.widgets.diff_view import DiffView
 from . import xmluvation_resources_rc
 
 class Ui_MainWindow(object):
@@ -730,6 +731,14 @@ class Ui_MainWindow(object):
 
         self.layout_validate_result.addWidget(self.label_validate_summary)
 
+        self.text_edit_validate_problems = QPlainTextEdit(self.frame_validate_result)
+        self.text_edit_validate_problems.setObjectName(u"text_edit_validate_problems")
+        self.text_edit_validate_problems.setMinimumSize(QSize(0, 240))
+        self.text_edit_validate_problems.setLineWrapMode(QPlainTextEdit.LineWrapMode.NoWrap)
+        self.text_edit_validate_problems.setReadOnly(True)
+
+        self.layout_validate_result.addWidget(self.text_edit_validate_problems)
+
         self.layout_validate_result_path = QHBoxLayout()
         self.layout_validate_result_path.setSpacing(10)
         self.layout_validate_result_path.setObjectName(u"layout_validate_result_path")
@@ -745,11 +754,6 @@ class Ui_MainWindow(object):
         self.line_edit_validate_result_path.setReadOnly(True)
 
         self.layout_validate_result_path.addWidget(self.line_edit_validate_result_path)
-
-        self.button_validate_view_report = QPushButton(self.frame_validate_result)
-        self.button_validate_view_report.setObjectName(u"button_validate_view_report")
-
-        self.layout_validate_result_path.addWidget(self.button_validate_view_report)
 
         self.button_validate_open_report = QPushButton(self.frame_validate_result)
         self.button_validate_open_report.setObjectName(u"button_validate_open_report")
@@ -950,6 +954,33 @@ class Ui_MainWindow(object):
 
         self.layout_scroll_tab_xml_compare_contents.addWidget(self.card_xml_compare)
 
+        self.card_xml_compare_diff = QFrame(self.scroll_tab_xml_compare_contents)
+        self.card_xml_compare_diff.setObjectName(u"card_xml_compare_diff")
+        self.card_xml_compare_diff.setFrameShape(QFrame.Shape.StyledPanel)
+        self.layout_card_xml_compare_diff = QVBoxLayout(self.card_xml_compare_diff)
+        self.layout_card_xml_compare_diff.setSpacing(10)
+        self.layout_card_xml_compare_diff.setObjectName(u"layout_card_xml_compare_diff")
+        self.layout_card_xml_compare_diff.setContentsMargins(18, 16, 18, 18)
+        self.label_card_xml_compare_diff_title = QLabel(self.card_xml_compare_diff)
+        self.label_card_xml_compare_diff_title.setObjectName(u"label_card_xml_compare_diff_title")
+
+        self.layout_card_xml_compare_diff.addWidget(self.label_card_xml_compare_diff_title)
+
+        self.label_card_xml_compare_diff_hint = QLabel(self.card_xml_compare_diff)
+        self.label_card_xml_compare_diff_hint.setObjectName(u"label_card_xml_compare_diff_hint")
+        self.label_card_xml_compare_diff_hint.setWordWrap(True)
+
+        self.layout_card_xml_compare_diff.addWidget(self.label_card_xml_compare_diff_hint)
+
+        self.diff_view_xml_compare = DiffView(self.card_xml_compare_diff)
+        self.diff_view_xml_compare.setObjectName(u"diff_view_xml_compare")
+        self.diff_view_xml_compare.setMinimumSize(QSize(0, 460))
+
+        self.layout_card_xml_compare_diff.addWidget(self.diff_view_xml_compare)
+
+
+        self.layout_scroll_tab_xml_compare_contents.addWidget(self.card_xml_compare_diff)
+
         self.spacer_xml_102 = QSpacerItem(20, 40, QSizePolicy.Policy.Minimum, QSizePolicy.Policy.Expanding)
 
         self.layout_scroll_tab_xml_compare_contents.addItem(self.spacer_xml_102)
@@ -1061,6 +1092,7 @@ class Ui_MainWindow(object):
         self.layout_conversion_format.setObjectName(u"layout_conversion_format")
         self.layout_conversion_format.setContentsMargins(0, 0, 0, 0)
         self.combobox_csv_conversion_output_type = QComboBox(self.groupbox_csv_conversion)
+        self.combobox_csv_conversion_output_type.addItem("")
         self.combobox_csv_conversion_output_type.addItem("")
         self.combobox_csv_conversion_output_type.addItem("")
         self.combobox_csv_conversion_output_type.addItem("")
@@ -2411,15 +2443,12 @@ class Ui_MainWindow(object):
         self.button_validate_start.setProperty(u"role", QCoreApplication.translate("MainWindow", u"primary", None))
         self.frame_validate_result.setProperty(u"role", QCoreApplication.translate("MainWindow", u"result", None))
         self.label_validate_summary.setText("")
+        self.text_edit_validate_problems.setPlaceholderText(QCoreApplication.translate("MainWindow", u"Problems found during validation appear here.", None))
+        self.text_edit_validate_problems.setProperty(u"role", QCoreApplication.translate("MainWindow", u"code", None))
         self.label_validate_result.setText(QCoreApplication.translate("MainWindow", u"Report", None))
         self.label_validate_result.setProperty(u"role", QCoreApplication.translate("MainWindow", u"result-title", None))
 #if QT_CONFIG(tooltip)
-        self.button_validate_view_report.setToolTip(QCoreApplication.translate("MainWindow", u"Open the report in the table viewer.", None))
-#endif // QT_CONFIG(tooltip)
-        self.button_validate_view_report.setText(QCoreApplication.translate("MainWindow", u"View in table", None))
-        self.button_validate_view_report.setProperty(u"role", QCoreApplication.translate("MainWindow", u"accent", None))
-#if QT_CONFIG(tooltip)
-        self.button_validate_open_report.setToolTip(QCoreApplication.translate("MainWindow", u"Open the report file.", None))
+        self.button_validate_open_report.setToolTip(QCoreApplication.translate("MainWindow", u"Open the report file (CSV) in its default program.", None))
 #endif // QT_CONFIG(tooltip)
         self.button_validate_open_report.setText(QCoreApplication.translate("MainWindow", u"Open", None))
         self.tab_widget_xml_tools.setTabText(self.tab_widget_xml_tools.indexOf(self.tab_xml_validate), QCoreApplication.translate("MainWindow", u"Validate", None))
@@ -2473,6 +2502,11 @@ class Ui_MainWindow(object):
         self.button_xml_compare_open_report.setToolTip(QCoreApplication.translate("MainWindow", u"Open the report file.", None))
 #endif // QT_CONFIG(tooltip)
         self.button_xml_compare_open_report.setText(QCoreApplication.translate("MainWindow", u"Open", None))
+        self.card_xml_compare_diff.setProperty(u"role", QCoreApplication.translate("MainWindow", u"card", None))
+        self.label_card_xml_compare_diff_title.setText(QCoreApplication.translate("MainWindow", u"Side by side", None))
+        self.label_card_xml_compare_diff_title.setProperty(u"role", QCoreApplication.translate("MainWindow", u"card-title", None))
+        self.label_card_xml_compare_diff_hint.setText(QCoreApplication.translate("MainWindow", u"Both files line by line: removed and changed lines are red on the left, added and changed lines green on the right. Unlike the report, this view also shows comments and formatting. F7 / Shift+F7 jump to the next / previous change.", None))
+        self.label_card_xml_compare_diff_hint.setProperty(u"role", QCoreApplication.translate("MainWindow", u"hint", None))
         self.tab_widget_xml_tools.setTabText(self.tab_widget_xml_tools.indexOf(self.tab_xml_compare), QCoreApplication.translate("MainWindow", u"Compare", None))
         self.page_csv_tools.setProperty(u"role", QCoreApplication.translate("MainWindow", u"page", None))
         self.label_page_csv_tools_title.setText(QCoreApplication.translate("MainWindow", u"CSV tools", None))
@@ -2486,13 +2520,13 @@ class Ui_MainWindow(object):
         self.groupbox_csv_conversion.setProperty(u"role", QCoreApplication.translate("MainWindow", u"card", None))
         self.label_groupbox_csv_conversion_title.setText(QCoreApplication.translate("MainWindow", u"Convert CSV", None))
         self.label_groupbox_csv_conversion_title.setProperty(u"role", QCoreApplication.translate("MainWindow", u"card-title", None))
-        self.label_csv_conversion_desc.setText(QCoreApplication.translate("MainWindow", u"Turn a CSV file into an Excel workbook, HTML table, JSON records or a Markdown table. The result is saved next to the CSV file.", None))
+        self.label_csv_conversion_desc.setText(QCoreApplication.translate("MainWindow", u"Turn a CSV file into an Excel workbook, HTML table, JSON records or a Markdown table, or convert one of those back to CSV. The result is saved next to the input file.", None))
         self.label_csv_conversion_desc.setProperty(u"role", QCoreApplication.translate("MainWindow", u"hint", None))
-        self.label_conversion_input.setText(QCoreApplication.translate("MainWindow", u"CSV file", None))
+        self.label_conversion_input.setText(QCoreApplication.translate("MainWindow", u"Input file", None))
         self.label_conversion_input.setProperty(u"role", QCoreApplication.translate("MainWindow", u"field-label", None))
-        self.line_edit_csv_conversion_path_input.setPlaceholderText(QCoreApplication.translate("MainWindow", u"CSV file to convert", None))
+        self.line_edit_csv_conversion_path_input.setPlaceholderText(QCoreApplication.translate("MainWindow", u"CSV, Excel (.xlsx), HTML, JSON or Markdown file to convert", None))
 #if QT_CONFIG(tooltip)
-        self.button_browse_csv_conversion_path_input.setToolTip(QCoreApplication.translate("MainWindow", u"Choose the CSV file to convert.", None))
+        self.button_browse_csv_conversion_path_input.setToolTip(QCoreApplication.translate("MainWindow", u"Choose the file to convert.", None))
 #endif // QT_CONFIG(tooltip)
         self.button_browse_csv_conversion_path_input.setText(QCoreApplication.translate("MainWindow", u"Browse\u2026", None))
         self.label_csv_conversion_output_type.setText(QCoreApplication.translate("MainWindow", u"Format", None))
@@ -2501,15 +2535,16 @@ class Ui_MainWindow(object):
         self.combobox_csv_conversion_output_type.setItemText(1, QCoreApplication.translate("MainWindow", u"HTML", None))
         self.combobox_csv_conversion_output_type.setItemText(2, QCoreApplication.translate("MainWindow", u"JSON", None))
         self.combobox_csv_conversion_output_type.setItemText(3, QCoreApplication.translate("MainWindow", u"MARKDOWN", None))
+        self.combobox_csv_conversion_output_type.setItemText(4, QCoreApplication.translate("MainWindow", u"CSV", None))
 
 #if QT_CONFIG(tooltip)
-        self.checkbox_write_index_column.setToolTip(QCoreApplication.translate("MainWindow", u"Add an index column starting at 1 (Excel, HTML and Markdown).", None))
+        self.checkbox_write_index_column.setToolTip(QCoreApplication.translate("MainWindow", u"Add an index column starting at 1 (Excel, HTML, Markdown and CSV).", None))
 #endif // QT_CONFIG(tooltip)
         self.checkbox_write_index_column.setText(QCoreApplication.translate("MainWindow", u"Write index column", None))
         self.label_csv_conversion_delimiter.setText(QCoreApplication.translate("MainWindow", u"Delimiter", None))
         self.label_csv_conversion_delimiter.setProperty(u"role", QCoreApplication.translate("MainWindow", u"field-label", None))
 #if QT_CONFIG(tooltip)
-        self.checkbox_csv_conversion_manual_delimiter.setToolTip(QCoreApplication.translate("MainWindow", u"The delimiter is detected automatically. Tick this if it was detected wrong and choose or type it yourself.", None))
+        self.checkbox_csv_conversion_manual_delimiter.setToolTip(QCoreApplication.translate("MainWindow", u"Reading a CSV file: the delimiter is detected automatically; tick this if it was detected wrong and choose or type it yourself. Converting to CSV: the file is written with this delimiter (a comma if not ticked).", None))
 #endif // QT_CONFIG(tooltip)
         self.checkbox_csv_conversion_manual_delimiter.setText(QCoreApplication.translate("MainWindow", u"Set manually", None))
         self.combobox_csv_conversion_delimiter.setItemText(0, QCoreApplication.translate("MainWindow", u",", None))

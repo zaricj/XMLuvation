@@ -5,16 +5,19 @@ from pathlib import Path
 
 import pytest
 
+from xmluvation.application import xml_tools
 from xmluvation.application.cancellation import CancellationToken, NullReporter
 from xmluvation.application.xml_tools import (
     compare_summary,
     compare_xml,
+    format_issue,
     validate_against_schema,
     validation_summary,
 )
 from xmluvation.domain.errors import Cancelled, ValidationError, XmlParseError
-from xmluvation.domain.xml_checks import Change, NodeKind
-from xmluvation.infrastructure.xml_diff import diff_files
+from xmluvation.domain.text_diff import RowKind
+from xmluvation.domain.xml_checks import Change, NodeKind, SchemaIssue
+from xmluvation.infrastructure.xml_diff import diff_files, read_text
 
 SCHEMA = """<xs:schema xmlns:xs="http://www.w3.org/2001/XMLSchema">
   <xs:element name="root"><xs:complexType><xs:sequence>
@@ -188,3 +191,59 @@ def test_compare_rejects_broken_xml_and_can_be_cancelled(tmp_path: Path) -> None
     token.cancel()
     with pytest.raises(Cancelled):
         compare_xml(str(good), str(good), True, NullReporter(), token)
+
+
+# ---------------------------------------------------------------- side-by-side text
+
+
+def test_compare_returns_line_diff_of_the_raw_files(tmp_path: Path) -> None:
+    old = _write(tmp_path / "v1.xml", "<r>\n  <!-- note -->\n  <a>1</a>\n</r>\n")
+    new = _write(tmp_path / "v2.xml", "<r>\n  <a>2</a>\n  <b/>\n</r>\n")
+    result = compare_xml(str(old), str(new), True, NullReporter(), CancellationToken())
+    diff = result.text_diff
+    assert diff is not None and result.text_diff_note == ""
+    assert diff.old_lines == ["<r>", "  <!-- note -->", "  <a>1</a>", "</r>"]
+    assert [(r.kind, r.old_number, r.new_number) for r in diff.rows] == [
+        (RowKind.EQUAL, 1, 1),
+        (RowKind.CHANGED, 2, 2),
+        (RowKind.CHANGED, 3, 3),
+        (RowKind.EQUAL, 4, 4),
+    ]
+
+
+def test_large_files_are_compared_without_side_by_side(tmp_path: Path, monkeypatch) -> None:
+    monkeypatch.setattr(xml_tools, "MAX_TEXT_DIFF_BYTES", 10)
+    old = _write(tmp_path / "big.xml", "<r><a>1</a></r>")
+    new = _write(tmp_path / "small.xml", "<r/>")
+    result = compare_xml(str(old), str(new), True, NullReporter(), CancellationToken())
+    assert result.text_diff is None
+    assert result.text_diff_note.startswith("big.xml is larger than")
+    assert result.differences == 1
+
+
+@pytest.mark.parametrize(
+    ("data", "expected"),
+    [
+        ('<?xml version="1.0" encoding="ISO-8859-1"?>\n<a>Ä</a>'.encode("latin-1"), "<a>Ä</a>"),
+        ("\ufeff<a>Ä</a>".encode(), "<a>Ä</a>"),
+        ("<a>Ä</a>".encode("utf-16"), "<a>Ä</a>"),
+        ('<?xml version="1.0" encoding="bogus"?>\n<a>Ä</a>'.encode(), "<a>Ä</a>"),
+    ],
+)
+def test_read_text_uses_the_declared_encoding(tmp_path: Path, data: bytes, expected: str) -> None:
+    path = tmp_path / "x.xml"
+    path.write_bytes(data)
+    assert read_text(path).splitlines()[-1] == expected
+
+
+def test_validation_problems_are_returned_for_display(tmp_path: Path) -> None:
+    schema = _write(tmp_path / "profile.xsd", SCHEMA)
+    target = _write(tmp_path / "bad.xml", "<root>\n<n>x</n>\n</root>")
+    result = _validate(schema, target)
+    assert len(result.problems) == result.issues == 1
+    text = format_issue(result.problems[0])
+    assert text.startswith("bad.xml:2:0: error: ") or text.startswith("bad.xml:2: error: ")
+    assert text.endswith("\n    at /root/n")
+    assert format_issue(SchemaIssue("f.xml", 0, 0, "unreadable", "gone")) == (
+        "f.xml: unreadable: gone"
+    )

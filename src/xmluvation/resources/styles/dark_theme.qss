@@ -573,6 +573,20 @@ QScrollBar::add-page, QScrollBar::sub-page {
 
 /* ---------------------------------------------------------------- tools page */
 
+DiffView {
+    qproperty-removedLineColor: rgba(248, 81, 73, 38);
+    qproperty-removedTextColor: rgba(248, 81, 73, 115);
+    qproperty-addedLineColor: rgba(46, 160, 67, 40);
+    qproperty-addedTextColor: rgba(46, 160, 67, 120);
+    qproperty-fillerColor: rgba(140, 146, 160, 70);
+    qproperty-lineNumberColor: #6e7681;
+}
+
+DiffView QPlainTextEdit[role="code"] {
+    padding: 0px;
+    border-radius: 4px;
+}
+
 BusyBar {
     qproperty-trackColor: #2c3038;
     qproperty-stripeColor: #5b7cfa;

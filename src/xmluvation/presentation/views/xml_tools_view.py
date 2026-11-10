@@ -5,13 +5,14 @@ from __future__ import annotations
 from collections.abc import Callable
 from typing import TYPE_CHECKING
 
-from PySide6.QtCore import QObject
-from PySide6.QtWidgets import QLineEdit
+from PySide6.QtCore import QObject, QTimer
+from PySide6.QtWidgets import QLineEdit, QSizePolicy
 
 from ...application.xml_tools import (
     SchemaValidationResult,
     XmlCompareResult,
     compare_summary,
+    format_issue,
     validation_summary,
 )
 from ..viewmodels.xml_tools_vm import XmlToolsViewModel
@@ -22,6 +23,8 @@ if TYPE_CHECKING:
 
 XML_FILTER = "XML File (*.xml);;All files (*)"
 XSD_FILTER = "XML Schema (*.xsd);;All files (*)"
+# More problems than this are only in the report file (a folder can have 1,000 per file).
+MAX_SHOWN_PROBLEMS = 5_000
 
 
 def _show_path(edit: QLineEdit, path: str) -> None:
@@ -44,6 +47,7 @@ class XmlToolsView(QObject):
         self._view_in_table = view_in_table
         self.ui.frame_validate_result.hide()
         self.ui.frame_xml_compare_result.hide()
+        self._show_diff_card(False)
         self._bind_validate()
         self._bind_compare()
 
@@ -72,9 +76,6 @@ class XmlToolsView(QObject):
             )
         )
         ui.button_validate_cancel.clicked.connect(vm.cancel_validation)
-        ui.button_validate_view_report.clicked.connect(
-            lambda: self._view_in_table(ui.line_edit_validate_result_path.text())
-        )
         ui.button_validate_open_report.clicked.connect(
             lambda: open_path(ui.line_edit_validate_result_path.text())
         )
@@ -105,12 +106,17 @@ class XmlToolsView(QObject):
     def _validated(self, result: SchemaValidationResult) -> None:
         ui = self.ui
         ui.label_validate_summary.setText("\n".join(validation_summary(result)))
+        shown = [format_issue(issue) for issue in result.problems[:MAX_SHOWN_PROBLEMS]]
+        hidden = len(result.problems) - len(shown)
+        if hidden > 0:
+            shown.append(f"... and {hidden:,} more problems, listed in the report file.")
+        ui.text_edit_validate_problems.setPlainText("\n".join(shown))
+        ui.text_edit_validate_problems.setVisible(bool(shown))
         has_report = result.report is not None
         _show_path(ui.line_edit_validate_result_path, str(result.report) if has_report else "")
         for widget in (
             ui.label_validate_result,
             ui.line_edit_validate_result_path,
-            ui.button_validate_view_report,
             ui.button_validate_open_report,
         ):
             widget.setVisible(has_report)
@@ -155,6 +161,7 @@ class XmlToolsView(QObject):
         ui.button_xml_compare_cancel.setVisible(running)
         if running:
             ui.frame_xml_compare_result.hide()
+            self._show_diff_card(False)
 
     def _compared(self, result: XmlCompareResult) -> None:
         ui = self.ui
@@ -169,3 +176,25 @@ class XmlToolsView(QObject):
         ):
             widget.setVisible(has_report)
         ui.frame_xml_compare_result.show()
+        ui.diff_view_xml_compare.set_diff(
+            result.text_diff, result.old.name, result.new.name, result.text_diff_note
+        )
+        self._show_diff_card(True)
+        # Bring the side-by-side view into sight once the layout has its new height.
+        QTimer.singleShot(
+            0, lambda: ui.scroll_tab_xml_compare.ensureWidgetVisible(ui.card_xml_compare_diff)
+        )
+
+    def _show_diff_card(self, visible: bool) -> None:
+        """While shown, the side-by-side card takes the free height of the tab."""
+        ui = self.ui
+        if not visible:
+            ui.diff_view_xml_compare.clear()  # release the text of large files
+        ui.card_xml_compare_diff.setVisible(visible)
+        ui.spacer_xml_102.changeSize(
+            0 if visible else 20,
+            0 if visible else 40,
+            QSizePolicy.Policy.Minimum,
+            QSizePolicy.Policy.Fixed if visible else QSizePolicy.Policy.Expanding,
+        )
+        ui.layout_scroll_tab_xml_compare_contents.invalidate()
