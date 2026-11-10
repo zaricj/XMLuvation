@@ -8,7 +8,7 @@ from PySide6.QtCore import QSettings
 from PySide6.QtWidgets import QApplication, QPlainTextEdit
 
 from xmluvation.infrastructure.settings_store import SettingsStore
-from xmluvation.presentation.views.main_window import PAGE_TABLE, PAGE_XML_TOOLS
+from xmluvation.presentation.views.main_window import PAGE_CSV_TOOLS, PAGE_TABLE, PAGE_XML_TOOLS
 
 
 def test_window_builds_with_theme_and_initial_state(window) -> None:
@@ -250,3 +250,36 @@ def test_table_viewer_page_tools(qtbot, window, tmp_path: Path) -> None:
     qtbot.waitUntil(lambda: ui.label_table_rows.text() == "t.json: 1 rows", timeout=5000)
     assert table.frozen_columns == 0 and window.vms.table.model.duplicate_column is None
     assert not page.button_send.isEnabled()  # only CSV files go to the CSV tools
+
+
+def test_spin_box_number_is_inside_its_border_in_every_theme(qtbot, window) -> None:
+    """Qt 6.12 drew the rows-per-file number under the spin box's left border (and in a
+    1 px wide field with NoButtons); it must line up with the text of a line edit."""
+    from PySide6.QtWidgets import QInputDialog, QLineEdit, QSpinBox
+
+    from xmluvation.presentation.themes import THEMES
+
+    ui = window.ui
+    ui.list_widget_navigation.setCurrentRow(PAGE_CSV_TOOLS)
+    ui.tab_widget_csv_tools.setCurrentWidget(ui.tab_tool_split)
+    spin, line = ui.spin_box_split_rows, ui.line_edit_split_csv_file_path
+    line.setText("1048575")
+    dialog = QInputDialog(window)  # e.g. the XML preview limit
+    dialog.setInputMode(QInputDialog.InputMode.IntInput)
+    dialog.show()
+    qtbot.addWidget(dialog)
+
+    def text_x(box: QSpinBox) -> int:
+        editor = box.findChild(QLineEdit, "qt_spinbox_lineedit")
+        editor.setCursorPosition(0)
+        return editor.mapTo(box, editor.cursorRect().center()).x()
+
+    for key in [*THEMES, "dark_theme_default"]:
+        window.vms.settings.set_theme(key)
+        QApplication.processEvents()
+        editor = spin.findChild(QLineEdit, "qt_spinbox_lineedit")
+        assert editor.width() > spin.width() // 2, key  # not collapsed
+        assert editor.fontMetrics().horizontalAdvance(spin.text()) < editor.width(), key
+        line.setCursorPosition(0)
+        assert abs(text_x(spin) - line.cursorRect().center().x()) <= 1, key
+        assert text_x(dialog.findChild(QSpinBox)) == text_x(spin), key

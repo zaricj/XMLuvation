@@ -337,6 +337,16 @@ QLineEdit:disabled, QComboBox:disabled, QSpinBox:disabled {
     border-color: #dde1e8;
 }
 
+/* Spin boxes: no step buttons (the arrow keys and the mouse wheel still step). The
+ * buttons are hidden here rather than with buttonSymbols = NoButtons, which shrinks the
+ * text field of a styled spin box to 1 px in Qt 6.12. Qt 6.12 also ignores the left
+ * border and padding for the text field, so the text inset is restored in code
+ * (themes.SPIN_BOX_TEXT_INSET). */
+QSpinBox::up-button, QSpinBox::down-button {
+    width: 0;
+    border: none;
+}
+
 QComboBox {
     padding-right: 28px;
 }

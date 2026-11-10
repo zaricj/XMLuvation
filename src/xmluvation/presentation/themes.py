@@ -18,6 +18,22 @@ THEMES: dict[str, str] = {
 
 LIGHT_THEMES = frozenset({"light_theme_default"})
 
+# Left border + padding of a spin box in each theme, in px: the text inset that Qt 6.12
+# leaves out (see widgets/spin_box_inset.py). Keep in sync with the QSpinBox rules of the
+# style sheets; themes that do not style spin boxes need none.
+SPIN_BOX_TEXT_INSET = {
+    "dark_theme_default": 9,
+    "light_theme_default": 9,
+    "dark_theme_yellow": 4,
+    "dark_theme_qlementine": 9,
+    "dark_theme_metallic_spaceship": 7,
+}
+
+
+def spin_box_text_inset(key: str) -> int:
+    return SPIN_BOX_TEXT_INSET.get(key, 0)
+
+
 # Icon colors (normal, disabled) per theme brightness. Qt's Windows theme icons and the
 # drawn table icon paint in the application palette's Text color, which style sheets do
 # not change, so it is set here; otherwise icons follow the Windows light/dark setting.

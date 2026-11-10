@@ -37,7 +37,13 @@ from ...domain.models import BuildCriteria, Operator, XmlIndex
 from ...domain.numbers import parse_hex
 from ..generated.main_window_ui import Ui_MainWindow
 from ..tasks import TaskRunner
-from ..themes import THEMES, apply_icon_palette, load_stylesheet, theme_label
+from ..themes import (
+    THEMES,
+    apply_icon_palette,
+    load_stylesheet,
+    spin_box_text_inset,
+    theme_label,
+)
 from ..viewmodels.csv_tools_vm import CsvToolsViewModel
 from ..viewmodels.csv_transforms_vm import CsvTransformsViewModel
 from ..viewmodels.export_vm import ExportViewModel
@@ -48,6 +54,7 @@ from ..viewmodels.xml_inspector_vm import XmlInspectorViewModel
 from ..viewmodels.xml_tools_vm import XmlToolsViewModel
 from ..viewmodels.xpath_workspace_vm import XPathWorkspaceViewModel
 from ..widgets.code_icon import code_icon
+from ..widgets.spin_box_inset import SpinBoxTextInset
 from ..widgets.steady_icon import steady_icon
 from ..widgets.table_icon import table_icon
 from .common import (
@@ -227,6 +234,8 @@ class MainWindow(QMainWindow):
         app = QApplication.instance()
         if isinstance(app, QApplication):
             apply_icon_palette(app, key)
+            # Before the style sheet: re-polishing applies the new theme's inset.
+            SpinBoxTextInset.for_app(app).set_inset(spin_box_text_inset(key))
             app.setStyleSheet(stylesheet)
 
     # ------------------------------------------------------------------ XPath builder

@@ -16,15 +16,14 @@ from PySide6.QtGui import (QAction, QBrush, QColor, QConicalGradient,
     QIcon, QImage, QKeySequence, QLinearGradient,
     QPainter, QPalette, QPixmap, QRadialGradient,
     QTransform)
-from PySide6.QtWidgets import (QAbstractItemView, QAbstractSpinBox, QApplication, QCheckBox,
-    QComboBox, QDockWidget, QFormLayout, QFrame,
-    QGridLayout, QHBoxLayout, QHeaderView, QLabel,
-    QLineEdit, QListWidget, QListWidgetItem, QMainWindow,
-    QMenu, QMenuBar, QPlainTextEdit, QProgressBar,
-    QPushButton, QRadioButton, QScrollArea, QSizePolicy,
-    QSpacerItem, QSpinBox, QSplitter, QStackedWidget,
-    QStatusBar, QTabWidget, QTextEdit, QVBoxLayout,
-    QWidget)
+from PySide6.QtWidgets import (QAbstractItemView, QApplication, QCheckBox, QComboBox,
+    QDockWidget, QFormLayout, QFrame, QGridLayout,
+    QHBoxLayout, QHeaderView, QLabel, QLineEdit,
+    QListWidget, QListWidgetItem, QMainWindow, QMenu,
+    QMenuBar, QPlainTextEdit, QProgressBar, QPushButton,
+    QRadioButton, QScrollArea, QSizePolicy, QSpacerItem,
+    QSpinBox, QSplitter, QStackedWidget, QStatusBar,
+    QTabWidget, QTextEdit, QVBoxLayout, QWidget)
 
 from xmluvation.presentation.widgets.busy_bar import BusyBar
 from xmluvation.presentation.widgets.data_table import DataTableView
@@ -1309,7 +1308,6 @@ class Ui_MainWindow(object):
         self.spin_box_split_rows = QSpinBox(self.card_split)
         self.spin_box_split_rows.setObjectName(u"spin_box_split_rows")
         self.spin_box_split_rows.setMinimumSize(QSize(150, 0))
-        self.spin_box_split_rows.setButtonSymbols(QAbstractSpinBox.ButtonSymbols.NoButtons)
         self.spin_box_split_rows.setMinimum(1)
         self.spin_box_split_rows.setMaximum(100000000)
         self.spin_box_split_rows.setValue(1048575)

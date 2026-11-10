@@ -3047,9 +3047,6 @@ Ctrl+J toggles output</string>
                            <property name="toolTip">
                             <string>1,048,575 data rows fill exactly one Excel sheet.</string>
                            </property>
-                           <property name="buttonSymbols">
-                            <enum>QAbstractSpinBox::ButtonSymbols::NoButtons</enum>
-                           </property>
                            <property name="minimum">
                             <number>1</number>
                            </property>

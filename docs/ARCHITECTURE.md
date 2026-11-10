@@ -185,7 +185,15 @@ tools/regen_ui.py              regenerate presentation/generated after editing .
   in the `.ui`): an indeterminate striped bar that keeps its place in the layout, paints
   nothing while idle, and takes its colors from `qproperty-trackColor`/`stripeColor`.
 * `dark_theme.qss` and `light_theme.qss` share one structure and differ only in color
-  values; change both together. The themes under `styles/other/` predate the roles and
+  values; change both together.
+* Spin boxes: Qt 6.12 places the text field of a style-sheet-styled spin box at the box's
+  left edge (left border and padding ignored), and shrinks it to 1 px with
+  `buttonSymbols = NoButtons`. So no spin box uses `NoButtons`: the default themes hide
+  the step buttons (`width: 0`), and `presentation/widgets/spin_box_inset.py`, one event
+  filter on the application, gives every spin box editor text margins of the active
+  theme's left border + padding (`themes.SPIN_BOX_TEXT_INSET`), minus wherever Qt
+  already placed the editor, so a fixed Qt adds nothing. Keep the inset in sync with the
+  style sheets; `test_spin_box_number_is_inside_its_border_in_every_theme` checks it. The themes under `styles/other/` predate the roles and
   only style generic widgets.
 * XPath 1.0 only (lxml). Namespaced documents are not handled specially yet: tags appear
   in Clark notation `{uri}name` and expressions are evaluated without a namespace map.
