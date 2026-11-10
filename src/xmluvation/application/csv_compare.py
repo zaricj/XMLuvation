@@ -1,54 +1,54 @@
-"""Use case: compare two CSV files by a key column and write a difference report.
+"""Use case: compare two CSV files row by row and cell by cell.
 
-Rows are matched by the key column. If a key occurs more than once, its occurrences are
-matched in order (first with first, second with second). The report is a CSV file with
-one row per removed or added row and one row per changed cell::
+Rows are aligned by their content and paired by an optional key column (see
+``infrastructure/csv_diff.py``). The result holds both files side by side for display
+and, when the files differ, a report CSV saved next to the new file with one row per
+removed, added or moved row and one row per changed cell::
 
-    Status, <key>, Column, Old value, New value
+    Status, Old row, New row, [<key>,] Column, Old value, New value
 
-Both files are loaded as text (pandas, all columns ``str``) and compared column by column
-with vectorized operations, so memory use is roughly three times the two files' size.
+Row numbers count the header as row 1, as in a spreadsheet.
 """
 
 from __future__ import annotations
 
-import gc
 from dataclasses import dataclass, field
 from pathlib import Path
 
-import pandas as pd
-
+from ..domain.csv_checks import RowChange, RowDifference
 from ..domain.errors import ValidationError
-from ..infrastructure import csv_io
+from ..domain.text_diff import TextDiff
+from ..infrastructure import csv_diff, csv_io
 from .cancellation import CancellationToken, ProgressReporter
 from .output_paths import unique_path
 
-STATUS_REMOVED = "removed"
-STATUS_ADDED = "added"
-STATUS_CHANGED = "changed"
-REPORT_COLUMNS = ("Status", "Key", "Column", "Old value", "New value")
-_OCCURRENCE = "\x00occurrence"
-_OLD, _NEW = "\x00old", "\x00new"
+# Larger files are compared and reported, but not shown side by side.
+MAX_TEXT_DIFF_BYTES = 16 * 1024 * 1024
 
 
 @dataclass(slots=True)
 class CompareResult:
-    report: Path
-    key: str
+    old: Path
+    new: Path
+    key: str = ""
+    report: Path | None = None
     old_rows: int = 0
     new_rows: int = 0
     removed: int = 0
     added: int = 0
     changed_rows: int = 0
+    moved: int = 0
     changed_cells: int = 0
     unchanged: int = 0
     duplicate_keys: int = 0
     only_in_old: list[str] = field(default_factory=list)
     only_in_new: list[str] = field(default_factory=list)
+    text_diff: TextDiff | None = None
+    text_diff_note: str = ""  # why ``text_diff`` is missing
 
     @property
     def identical(self) -> bool:
-        return not (self.removed or self.added or self.changed_rows)
+        return not (self.removed or self.added or self.changed_rows or self.moved)
 
 
 def _existing(path_text: str, which: str) -> Path:
@@ -58,21 +58,24 @@ def _existing(path_text: str, which: str) -> Path:
     return path
 
 
-def _load(path: Path, token: CancellationToken) -> pd.DataFrame:
-    df = csv_io.load_table(path, token.raise_if_cancelled)
-    df.columns = [str(c).strip() for c in df.columns]
-    if df.columns.duplicated().any():
-        duplicates = sorted(set(df.columns[df.columns.duplicated()]))
-        raise ValidationError(
-            f"{path.name} has duplicate column names: {', '.join(duplicates)}",
-            title="Duplicate columns",
-        )
-    return df
+def _report_columns(key: str) -> list[str]:
+    columns = ["Status", "Old row", "New row", "Column", "Old value", "New value"]
+    if key:
+        columns.insert(3, key if key not in columns else f"Key ({key})")
+    return columns
 
 
-def _normalized(series: pd.Series, loose: bool) -> pd.Series:
-    series = series.fillna("")
-    return series.str.strip().str.casefold() if loose else series
+def _report_rows(differences: list[RowDifference], key: str) -> list[list[object]]:
+    rows: list[list[object]] = []
+    for d in differences:
+        start: list[object] = [d.change, d.old_row or "", d.new_row or ""]
+        if key:
+            start.append(d.key)
+        if d.cells:
+            rows.extend([*start, c.column, c.old_value, c.new_value] for c in d.cells)
+        else:
+            rows.append([*start, "", "", ""])
+    return rows
 
 
 def compare_csv(
@@ -83,91 +86,56 @@ def compare_csv(
     reporter: ProgressReporter,
     token: CancellationToken,
 ) -> CompareResult:
+    """Compare two CSV files; ``key`` ("" for none) is the column that identifies a row."""
     old_path, new_path = _existing(old_text, "old"), _existing(new_text, "new")
     key = key.strip()
-    if not key:
-        raise ValidationError("Please choose the key column.", title="No key column")
+    too_large = [p.name for p in (old_path, new_path) if p.stat().st_size > MAX_TEXT_DIFF_BYTES]
 
-    reporter.message(f"Reading {old_path.name} and {new_path.name}...")
-    old, new = _load(old_path, token), _load(new_path, token)
-    for df, path in ((old, old_path), (new, new_path)):
-        if key not in df.columns:
-            raise ValidationError(
-                f"The key column '{key}' does not exist in {path.name}.", title="Key not found"
-            )
-    token.raise_if_cancelled()
-
-    report = unique_path(new_path.with_name(f"{new_path.stem}_vs_{old_path.stem}_diff.csv"))
-    result = CompareResult(report, key, old_rows=len(old.index), new_rows=len(new.index))
-    result.only_in_old = [c for c in old.columns if c not in new.columns]
-    result.only_in_new = [c for c in new.columns if c not in old.columns]
-    common = [c for c in old.columns if c in new.columns and c != key]
-    result.duplicate_keys = int(old[key].duplicated().sum() + new[key].duplicated().sum())
-
-    reporter.message("Comparing rows...")
-    match_keys = [key, _OCCURRENCE]
-    old[_OCCURRENCE] = old.groupby(key, sort=False).cumcount()
-    new[_OCCURRENCE] = new.groupby(key, sort=False).cumcount()
-    merged = old[[*match_keys, *common]].merge(
-        new[[*match_keys, *common]],
-        on=match_keys,
-        how="outer",
-        suffixes=(_OLD, _NEW),
-        indicator=True,
-        sort=False,
+    reporter.message(f"Comparing {old_path.name} with {new_path.name}...")
+    outcome = csv_diff.diff_files(
+        old_path,
+        new_path,
+        key=key,
+        loose=ignore_case_and_spaces,
+        build_view=not too_large,
+        check_cancelled=token.raise_if_cancelled,
     )
-    del old, new
-    token.raise_if_cancelled()
-
-    removed = merged["_merge"] == "left_only"
-    added = merged["_merge"] == "right_only"
-    both = merged["_merge"] == "both"
-    result.removed, result.added = int(removed.sum()), int(added.sum())
-
-    parts: list[pd.DataFrame] = []
-    for status, mask in ((STATUS_REMOVED, removed), (STATUS_ADDED, added)):
-        if mask.any():
-            parts.append(
-                pd.DataFrame({"Status": status, "Key": merged.loc[mask, key], "_order": -1})
-            )
-
-    changed_any = pd.Series(False, index=merged.index)
-    for order, column in enumerate(common):
-        old_values, new_values = merged[column + _OLD], merged[column + _NEW]
-        differs = both & (
-            _normalized(old_values, ignore_case_and_spaces)
-            != _normalized(new_values, ignore_case_and_spaces)
+    result = CompareResult(
+        old_path,
+        new_path,
+        key,
+        old_rows=outcome.old_rows,
+        new_rows=outcome.new_rows,
+        unchanged=outcome.unchanged,
+        duplicate_keys=outcome.duplicate_keys,
+        only_in_old=outcome.only_in_old,
+        only_in_new=outcome.only_in_new,
+        text_diff=outcome.text_diff,
+    )
+    for d in outcome.differences:
+        if d.change is RowChange.REMOVED:
+            result.removed += 1
+        elif d.change is RowChange.ADDED:
+            result.added += 1
+        elif d.change is RowChange.MOVED:
+            result.moved += 1
+        else:
+            result.changed_rows += 1
+        result.changed_cells += len(d.cells)
+    if too_large:
+        result.text_diff_note = (
+            f"{' and '.join(too_large)} {'is' if len(too_large) == 1 else 'are'} larger than "
+            f"{MAX_TEXT_DIFF_BYTES // (1024 * 1024)} MB, so the files are not shown side by "
+            "side. The report lists every difference."
         )
-        if differs.any():
-            changed_any |= differs
-            parts.append(
-                pd.DataFrame(
-                    {
-                        "Status": STATUS_CHANGED,
-                        "Key": merged.loc[differs, key],
-                        "Column": column,
-                        "Old value": old_values[differs],
-                        "New value": new_values[differs],
-                        "_order": order,
-                    }
-                )
-            )
-        token.raise_if_cancelled()
-    result.changed_rows = int(changed_any.sum())
-    result.unchanged = int(both.sum()) - result.changed_rows
-
-    if parts:
-        rows = pd.concat(parts)  # one concatenation, after all parts are built
-        rows["_row"] = rows.index
-        rows = rows.sort_values(["_row", "_order"], kind="stable")
-        result.changed_cells = int((rows["Status"] == STATUS_CHANGED).sum())
-        rows = rows.reindex(columns=list(REPORT_COLUMNS)).fillna("")
-    else:
-        rows = pd.DataFrame(columns=list(REPORT_COLUMNS))
-    rows = rows.rename(columns={"Key": key if key not in REPORT_COLUMNS else f"Key ({key})"})
-    rows.to_csv(report, index=False, encoding="utf-8-sig")
-    del merged, rows, parts
-    gc.collect()
+    token.raise_if_cancelled()
+    if outcome.differences:
+        result.report = unique_path(
+            new_path.with_name(f"{new_path.stem}_vs_{old_path.stem}_diff.csv")
+        )
+        csv_io.write_report(
+            result.report, _report_columns(key), _report_rows(outcome.differences, key)
+        )
     return result
 
 
@@ -175,10 +143,14 @@ def summary_lines(result: CompareResult) -> list[str]:
     if result.identical:
         lines = [f"No differences: {result.unchanged:,} rows match."]
     else:
+        moved = f", {result.moved:,} moved" if result.moved else ""
         lines = [
-            f"{result.removed:,} removed, {result.added:,} added, {result.changed_rows:,} changed "
-            f"rows ({result.changed_cells:,} cells), {result.unchanged:,} unchanged."
+            f"{result.removed:,} removed, {result.added:,} added, {result.changed_rows:,} changed"
+            f"{moved} rows ({result.changed_cells:,} changed cells), "
+            f"{result.unchanged:,} unchanged."
         ]
+    if not result.key and not result.identical:
+        lines.append("No key column: changed rows were paired by their position.")
     if result.only_in_old:
         lines.append(f"Columns only in the old file: {', '.join(result.only_in_old)}")
     if result.only_in_new:

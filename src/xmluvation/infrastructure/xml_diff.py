@@ -20,25 +20,21 @@ from __future__ import annotations
 
 import re
 from collections import Counter
-from collections.abc import Callable, Hashable, Sequence
+from collections.abc import Callable, Sequence
 from dataclasses import dataclass
-from difflib import SequenceMatcher
 from pathlib import Path
 from typing import Any
 
 from lxml import etree
 
 from ..domain.errors import XmlParseError
+from ..domain.text_diff import align as _align
 from ..domain.xml_checks import Change, NodeKind, XmlDifference
 
 MAX_DIFFERENCES = 100_000
 SNIPPET_CHARS = 200
-# difflib is quadratic on lists of near-identical items; larger regions are paired by
-# position within each tag instead (after trimming the common start and end).
-_ALIGN_LIMIT = 250_000
 
 Element = Any  # lxml's etree._Element (not exported as a public type)
-Opcode = tuple[str, int, int, int, int]
 
 
 @dataclass(slots=True)
@@ -119,32 +115,6 @@ def _child_paths(parent_path: str, children: Sequence[Element]) -> list[str]:
         index = f"[{seen[child.tag]}]" if totals[child.tag] > 1 else ""
         paths.append(f"{parent_path}/{_display_name(child, child.tag)}{index}")
     return paths
-
-
-def _align(a: Sequence[Hashable], b: Sequence[Hashable]) -> list[Opcode]:
-    """``SequenceMatcher`` opcodes with the common start/end trimmed and a size guard."""
-    start = 0
-    while start < len(a) and start < len(b) and a[start] == b[start]:
-        start += 1
-    end_a, end_b = len(a), len(b)
-    while end_a > start and end_b > start and a[end_a - 1] == b[end_b - 1]:
-        end_a, end_b = end_a - 1, end_b - 1
-    ops: list[Opcode] = []
-    if start:
-        ops.append(("equal", 0, start, 0, start))
-    middle_a, middle_b = a[start:end_a], b[start:end_b]
-    if middle_a or middle_b:
-        if len(middle_a) * len(middle_b) <= _ALIGN_LIMIT:
-            matcher = SequenceMatcher(None, middle_a, middle_b, autojunk=False)
-            ops.extend(
-                (tag, i1 + start, i2 + start, j1 + start, j2 + start)
-                for tag, i1, i2, j1, j2 in matcher.get_opcodes()
-            )
-        else:
-            ops.append(("replace", start, end_a, start, end_b))
-    if end_a < len(a):
-        ops.append(("equal", end_a, len(a), end_b, len(b)))
-    return ops
 
 
 def _snippet(el: Element, norm: Callable[[str | None], str]) -> str:

@@ -526,7 +526,7 @@ class MainWindow(QMainWindow):
         for signal in (table.model.modelReset, table.model.layoutChanged):
             signal.connect(self._update_table_rows)
         self._update_table_rows()
-        self._csv_transforms = CsvTransformsView(self, self.vms.transforms, self._view_in_table)
+        self._csv_transforms = CsvTransformsView(self, self.vms.transforms)
         self._xml_tools = XmlToolsView(self, self.vms.xml_tools, self._view_in_table)
         self.vms.xml_tools.log_appended.connect(ui.text_edit_xml_tools_output.append)
         self.vms.xml_tools.log_replaced.connect(ui.text_edit_xml_tools_output.setText)
@@ -546,7 +546,7 @@ class MainWindow(QMainWindow):
             )
 
     def _view_in_table(self, path: str) -> None:
-        """Open a CSV file (e.g. a compare report) in the table viewer page."""
+        """Open a CSV file (e.g. an XML compare report) in the table viewer page."""
         self.ui.line_edit_filter_table.clear()
         self.vms.table.load(path)
         self.ui.list_widget_navigation.setCurrentRow(PAGE_TABLE)

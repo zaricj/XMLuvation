@@ -109,11 +109,25 @@ tools/regen_ui.py              regenerate presentation/generated after editing .
   never overwrites an existing file. Split (`application/csv_split.py`), Compare
   (`application/csv_compare.py`), Columns (`save_column_edits` in `csv_tools.py`),
   Profile clean-up and Hex → decimal. Split and Columns stream rows through
-  `csv_io.csv_rows` and keep each cell's exact text plus the delimiter, encoding and BOM;
-  Compare loads both files as text with pandas. No tool overwrites an existing file
-  unless asked to (`application/output_paths.py`); Split removes its new folder if it
-  fails or is cancelled. `presentation/views/csv_transforms_view.py` binds Split,
-  Compare and Columns; `HeaderReader` loads a file's column names in the background.
+  `csv_io.csv_rows` and keep each cell's exact text plus the delimiter, encoding and BOM.
+  No tool overwrites an existing file unless asked to (`application/output_paths.py`);
+  Split removes its new folder if it fails or is cancelled.
+  `presentation/views/csv_transforms_view.py` binds Split, Compare and Columns;
+  `HeaderReader` loads a file's column names in the background.
+* CSV Compare (`infrastructure/csv_diff.py`, `application/csv_compare.py`) works like
+  XML Compare, with rows in place of child elements: every data row is fingerprinted
+  (its values in the columns both files have), rows are aligned by fingerprint with the
+  patience diff of `domain/text_diff.py` (`patience_opcodes`; a CSV file is one long
+  list, so plain `difflib` would not scale), and the rows of each differing region are
+  paired by the key column, or by position when "no key" is chosen. With a key, rows
+  paired out of order or across regions are reported as *moved*. Only each row's text
+  (re-written as one CSV record) and fingerprint are kept; paired rows are parsed again,
+  so memory stays near the files' size (300,000 rows / 12.6 MB: about 1.5 s). The result
+  is shown in the same `DiffView` as XML Compare: one record per line, header first,
+  numbered like spreadsheet rows, changed cells marked, `↵` for line breaks inside a
+  cell. Files over 16 MB are compared and reported but not shown side by side. The
+  report (`<new>_vs_<old>_diff.csv`, only written when the files differ) is opened in
+  the default application; the table viewer is only for reading tabular files.
 * XML tools (`application/xml_tools.py`, bound by `presentation/views/xml_tools_view.py`):
   * Validate checks one file, or every `*.xml` directly in a folder, against an XSD 1.0
     schema (`infrastructure/xml_validation.py`, libxml2). Local `xs:include`/`xs:import`

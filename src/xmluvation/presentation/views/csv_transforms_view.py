@@ -3,12 +3,11 @@
 from __future__ import annotations
 
 import os
-from collections.abc import Callable
 from typing import TYPE_CHECKING
 
-from PySide6.QtCore import QObject, Qt
+from PySide6.QtCore import QObject, Qt, QTimer
 from PySide6.QtGui import QKeySequence, QShortcut
-from PySide6.QtWidgets import QComboBox, QLineEdit, QListWidgetItem
+from PySide6.QtWidgets import QComboBox, QLineEdit, QListWidgetItem, QSizePolicy
 
 from ...application.csv_compare import CompareResult, summary_lines
 from ...application.csv_split import EXCEL_ROWS_PER_SHEET, SplitResult
@@ -22,6 +21,9 @@ if TYPE_CHECKING:
 _SOURCE_INDEX = Qt.ItemDataRole.UserRole
 _ORIGINAL_NAME = Qt.ItemDataRole.UserRole + 1
 CSV_FILTER = "CSV File (*.csv)"
+# Last entry of the key combobox: compare without a key column.
+NO_KEY_TEXT = "(no key: pair rows by position)"
+_NO_KEY = "no-key"
 
 
 def _refill(combo: QComboBox, items: list[str]) -> None:
@@ -48,19 +50,18 @@ class CsvTransformsView(QObject):
         self,
         window: MainWindow,
         vm: CsvTransformsViewModel,
-        view_in_table: Callable[[str], None],
     ) -> None:
         super().__init__(window)
         self.window = window
         self.ui = window.ui
         self.vm = vm
-        self._view_in_table = view_in_table
         for frame in (
             self.ui.frame_split_result,
             self.ui.frame_compare_result,
             self.ui.frame_columns_result,
         ):
             frame.hide()
+        self._show_diff_card(False)
         self._bind_split()
         self._bind_compare()
         self._bind_columns()
@@ -135,21 +136,16 @@ class CsvTransformsView(QObject):
             lambda: self._browse(ui.line_edit_compare_new_csv_file_path, "Select the new CSV file")
         )
         ui.line_edit_compare_old_csv_file_path.textChanged.connect(vm.compare_headers.set_path)
-        vm.compare_headers.headers_changed.connect(
-            lambda headers: _refill(ui.combobox_compare_key, headers)
-        )
+        vm.compare_headers.headers_changed.connect(self._show_compare_keys)
         ui.button_compare_start.clicked.connect(
             lambda: vm.compare(
                 ui.line_edit_compare_old_csv_file_path.text(),
                 ui.line_edit_compare_new_csv_file_path.text(),
-                ui.combobox_compare_key.currentText(),
+                self._compare_key(),
                 ui.checkbox_compare_loose.isChecked(),
             )
         )
         ui.button_compare_cancel.clicked.connect(vm.cancel_compare)
-        ui.button_compare_view_report.clicked.connect(
-            lambda: self._view_in_table(ui.line_edit_compare_result_path.text())
-        )
         ui.button_compare_open_report.clicked.connect(
             lambda: open_path(ui.line_edit_compare_result_path.text())
         )
@@ -158,6 +154,16 @@ class CsvTransformsView(QObject):
         _refill(ui.combobox_compare_key, [])
         self._set_comparing(False)
 
+    def _show_compare_keys(self, headers: list[str]) -> None:
+        combo = self.ui.combobox_compare_key
+        _refill(combo, headers)
+        if headers:
+            combo.addItem(NO_KEY_TEXT, _NO_KEY)
+
+    def _compare_key(self) -> str:
+        combo = self.ui.combobox_compare_key
+        return "" if combo.currentData() == _NO_KEY else combo.currentText()
+
     def _set_comparing(self, running: bool) -> None:
         ui = self.ui
         ui.busy_bar_compare.set_running(running)
@@ -165,13 +171,42 @@ class CsvTransformsView(QObject):
         ui.button_compare_cancel.setVisible(running)
         if running:
             ui.frame_compare_result.hide()
+            self._show_diff_card(False)
 
     def _compare_done(self, result: CompareResult) -> None:
         ui = self.ui
         ui.label_compare_summary.setText("\n".join(summary_lines(result)))
-        _show_path(ui.line_edit_compare_result_path, str(result.report))
-        ui.button_compare_view_report.setEnabled(not result.identical)
+        has_report = result.report is not None
+        _show_path(ui.line_edit_compare_result_path, str(result.report) if has_report else "")
+        for widget in (
+            ui.label_compare_result,
+            ui.line_edit_compare_result_path,
+            ui.button_compare_open_report,
+        ):
+            widget.setVisible(has_report)
         ui.frame_compare_result.show()
+        ui.diff_view_csv_compare.set_diff(
+            result.text_diff, result.old.name, result.new.name, result.text_diff_note, unit="row"
+        )
+        self._show_diff_card(True)
+        # Bring the side-by-side view into sight once the layout has its new height.
+        QTimer.singleShot(
+            0, lambda: ui.scroll_tab_tool_compare.ensureWidgetVisible(ui.card_compare_diff)
+        )
+
+    def _show_diff_card(self, visible: bool) -> None:
+        """While shown, the side-by-side card takes the free height of the tab."""
+        ui = self.ui
+        if not visible:
+            ui.diff_view_csv_compare.clear()  # release the text of large files
+        ui.card_compare_diff.setVisible(visible)
+        ui.spacer_14.changeSize(
+            0 if visible else 20,
+            0 if visible else 40,
+            QSizePolicy.Policy.Minimum,
+            QSizePolicy.Policy.Fixed if visible else QSizePolicy.Policy.Expanding,
+        )
+        ui.layout_scroll_tab_tool_compare_contents.invalidate()
 
     # ------------------------------------------------------------------ columns
 

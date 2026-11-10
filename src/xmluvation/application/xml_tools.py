@@ -7,16 +7,14 @@ and compare returns a line-by-line text diff of both files for the side-by-side 
 
 from __future__ import annotations
 
-import csv
 from collections import Counter
-from collections.abc import Iterable, Sequence
 from dataclasses import dataclass, field
 from pathlib import Path
 
-from ..domain.errors import OutputFileError, ValidationError
+from ..domain.errors import ValidationError
 from ..domain.text_diff import TextDiff, diff_lines, split_lines
 from ..domain.xml_checks import Change, SchemaIssue
-from ..infrastructure import xml_diff, xml_validation
+from ..infrastructure import csv_io, xml_diff, xml_validation
 from ..infrastructure.xml_engine import list_xml_files
 from .cancellation import CancellationToken, ProgressReporter
 from .output_paths import unique_path
@@ -32,16 +30,6 @@ def _existing_file(path_text: str, message: str, title: str) -> Path:
     if path is None or not path.is_file():
         raise ValidationError(message, title=title)
     return path
-
-
-def _write_report(path: Path, header: Sequence[str], rows: Iterable[Sequence[object]]) -> None:
-    try:
-        with path.open("w", encoding="utf-8-sig", newline="") as handle:
-            writer = csv.writer(handle, lineterminator="\r\n")
-            writer.writerow(header)
-            writer.writerows(rows)
-    except OSError as exc:
-        raise OutputFileError(f"Cannot write the report {path}:\n{exc}") from exc
 
 
 # ---------------------------------------------------------------------------- validation
@@ -117,7 +105,7 @@ def validate_against_schema(
     result.levels = Counter(issue.level for issue in issues)
     if issues:
         result.report = unique_path(report_folder / f"{schema_path.stem}_validation.csv")
-        _write_report(
+        csv_io.write_report(
             result.report,
             VALIDATION_COLUMNS,
             ((i.file, i.line or "", i.column or "", i.level, i.message, i.path) for i in issues),
@@ -216,7 +204,7 @@ def compare_xml(
         result.report = unique_path(
             new_path.with_name(f"{new_path.stem}_vs_{old_path.stem}_xmldiff.csv")
         )
-        _write_report(
+        csv_io.write_report(
             result.report,
             DIFF_COLUMNS,
             (

@@ -8,7 +8,7 @@ import io
 import itertools
 import os
 import tempfile
-from collections.abc import Callable, Iterator, Sequence
+from collections.abc import Callable, Iterable, Iterator, Sequence
 from contextlib import contextmanager
 from dataclasses import dataclass
 from pathlib import Path
@@ -187,6 +187,17 @@ def csv_rows(
     fmt = fmt or csv_format(path)
     with path.open(newline="", encoding=fmt.read_encoding) as handle:
         yield fmt, csv.reader(handle, delimiter=fmt.delimiter)
+
+
+def write_report(path: Path, header: Sequence[str], rows: Iterable[Sequence[object]]) -> None:
+    """Write a report CSV (UTF-8 with BOM, so Excel shows umlauts correctly; CRLF; comma)."""
+    try:
+        with path.open("w", encoding="utf-8-sig", newline="") as handle:
+            writer = csv.writer(handle, lineterminator="\r\n")
+            writer.writerow(header)
+            writer.writerows(rows)
+    except OSError as exc:
+        raise OutputFileError(f"Cannot write the report {path}:\n{exc}") from exc
 
 
 def csv_writer(handle: TextIO, fmt: CsvFormat) -> Any:

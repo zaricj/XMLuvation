@@ -110,20 +110,28 @@ def test_column_editor_reorders_renames_and_drops(qtbot, window, tmp_path: Path)
     assert edited.read_bytes() == b"Gamma,A\r\n3,1\r\n"
 
 
-def test_compare_report_opens_in_table_viewer(qtbot, window, tmp_path: Path) -> None:
+def test_csv_compare_shows_both_files_side_by_side(qtbot, window, tmp_path: Path) -> None:
     old, new = tmp_path / "old.csv", tmp_path / "new.csv"
     old.write_text("K,V\n1,a\n2,b\n", encoding="utf-8")
     new.write_text("K,V\n1,a\n2,c\n3,d\n", encoding="utf-8")
     ui = window.ui
+    assert ui.card_compare_diff.isHidden()
     ui.line_edit_compare_old_csv_file_path.setText(str(old))
     ui.line_edit_compare_new_csv_file_path.setText(str(new))
-    qtbot.waitUntil(lambda: ui.combobox_compare_key.count() == 2, timeout=5000)
+    qtbot.waitUntil(lambda: ui.combobox_compare_key.count() == 3, timeout=5000)
+    assert ui.combobox_compare_key.currentText() == "K"  # "no key" is the last entry
     ui.button_compare_start.click()
     qtbot.waitUntil(lambda: not ui.frame_compare_result.isHidden(), timeout=5000)
-    assert "1 added, 1 changed rows (1 cells)" in ui.label_compare_summary.text()
-    ui.button_compare_view_report.click()
-    qtbot.waitUntil(lambda: window.vms.table.model.rowCount() == 2, timeout=5000)
-    assert ui.stacked_pages.currentIndex() == PAGE_TABLE
+    assert "1 added, 1 changed rows (1 changed cells)" in ui.label_compare_summary.text()
+    assert not ui.card_compare_diff.isHidden()
+    assert ui.diff_view_csv_compare.pane_texts() == ("K,V\n1,a\n2,b\n", "K,V\n1,a\n2,c\n3,d")
+    assert ui.diff_view_csv_compare.position_text() == "Change 1 of 1"
+    assert ui.stacked_pages.currentIndex() != PAGE_TABLE
+
+    ui.combobox_compare_key.setCurrentIndex(2)  # no key
+    ui.button_compare_start.click()
+    qtbot.waitUntil(lambda: not ui.frame_compare_result.isHidden(), timeout=5000)
+    assert "paired by their position" in ui.label_compare_summary.text()
 
 
 def test_conversion_input_selects_a_fitting_output_type(window) -> None:

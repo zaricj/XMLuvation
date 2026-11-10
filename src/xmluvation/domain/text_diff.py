@@ -20,7 +20,7 @@ from __future__ import annotations
 
 import bisect
 from collections import Counter
-from collections.abc import Callable, Sequence
+from collections.abc import Callable, Hashable, Sequence
 from dataclasses import dataclass, field
 from difflib import SequenceMatcher
 from enum import StrEnum
@@ -99,7 +99,7 @@ def _no_check() -> None:
     return None
 
 
-def _longest_increasing(pairs: list[tuple[int, int]]) -> list[tuple[int, int]]:
+def longest_increasing(pairs: list[tuple[int, int]]) -> list[tuple[int, int]]:
     """Longest run of ``pairs`` (sorted by first item) that also increases in the second."""
     tails: list[int] = []  # second item of the last pair of the best run of each length
     tail_index: list[int] = []
@@ -123,9 +123,9 @@ def _longest_increasing(pairs: list[tuple[int, int]]) -> list[tuple[int, int]]:
 
 
 def _matches(
-    a: Sequence[str], b: Sequence[str], check: Callable[[], None]
+    a: Sequence[Hashable], b: Sequence[Hashable], check: Callable[[], None]
 ) -> list[tuple[int, int]]:
-    """Matched line pairs ``(i, j)``, increasing in both indices."""
+    """Matched item pairs ``(i, j)``, increasing in both indices."""
     matched: list[tuple[int, int]] = []
     regions = [(0, len(a), 0, len(b))]
     while regions:
@@ -140,8 +140,8 @@ def _matches(
         if a_lo == a_hi or b_lo == b_hi:
             continue
         a_counts = Counter(a[a_lo:a_hi])
-        b_first: dict[str, int] = {}
-        b_counts: Counter[str] = Counter()
+        b_first: dict[Hashable, int] = {}
+        b_counts: Counter[Hashable] = Counter()
         for j in range(b_lo, b_hi):
             b_counts[b[j]] += 1
             b_first.setdefault(b[j], j)
@@ -150,7 +150,7 @@ def _matches(
             for i in range(a_lo, a_hi)
             if a_counts[a[i]] == 1 and b_counts.get(a[i]) == 1
         ]
-        anchors = _longest_increasing(unique)
+        anchors = longest_increasing(unique)
         if anchors:
             matched.extend(anchors)
             bounds = [(a_lo - 1, b_lo - 1), *anchors, (a_hi, b_hi)]
@@ -170,7 +170,13 @@ def _matches(
     return matched
 
 
-def _opcodes(a: Sequence[str], b: Sequence[str], check: Callable[[], None]) -> list[Opcode]:
+def patience_opcodes(
+    a: Sequence[Hashable], b: Sequence[Hashable], check: Callable[[], None] = _no_check
+) -> list[Opcode]:
+    """``SequenceMatcher``-style opcodes from a patience diff (see the module docstring).
+
+    Works on any hashable items: lines here, row fingerprints in the CSV diff.
+    """
     ops: list[Opcode] = []
     i = j = 0
     for mi, mj in [*_matches(a, b, check), (len(a), len(b))]:
@@ -219,6 +225,38 @@ def inline_spans(old: str, new: str) -> tuple[tuple[Span, ...], tuple[Span, ...]
     )
 
 
+def align(a: Sequence[Hashable], b: Sequence[Hashable]) -> list[Opcode]:
+    """``SequenceMatcher`` opcodes with the common start/end trimmed and a size guard.
+
+    Used by the structural XML and CSV diffs on lists of fingerprints. ``difflib`` is
+    quadratic on lists of near-identical items, so a middle part larger than
+    ``_DIFFLIB_LIMIT`` comparisons becomes one ``replace`` block, which the caller pairs
+    by other means (tag, key or position).
+    """
+    start = 0
+    while start < len(a) and start < len(b) and a[start] == b[start]:
+        start += 1
+    end_a, end_b = len(a), len(b)
+    while end_a > start and end_b > start and a[end_a - 1] == b[end_b - 1]:
+        end_a, end_b = end_a - 1, end_b - 1
+    ops: list[Opcode] = []
+    if start:
+        ops.append(("equal", 0, start, 0, start))
+    middle_a, middle_b = a[start:end_a], b[start:end_b]
+    if middle_a or middle_b:
+        if len(middle_a) * len(middle_b) <= _DIFFLIB_LIMIT:
+            matcher = SequenceMatcher(None, middle_a, middle_b, autojunk=False)
+            ops.extend(
+                (tag, i1 + start, i2 + start, j1 + start, j2 + start)
+                for tag, i1, i2, j1, j2 in matcher.get_opcodes()
+            )
+        else:
+            ops.append(("replace", start, end_a, start, end_b))
+    if end_a < len(a):
+        ops.append(("equal", end_a, len(a), end_b, len(b)))
+    return ops
+
+
 def _whitespace_key(line: str) -> str:
     return " ".join(line.split())
 
@@ -242,7 +280,7 @@ def diff_lines(
         a, b = old_lines, new_lines
     result = TextDiff(old_lines, new_lines)
     rows = result.rows
-    for tag, i1, i2, j1, j2 in _opcodes(a, b, check_cancelled):
+    for tag, i1, i2, j1, j2 in patience_opcodes(a, b, check_cancelled):
         if tag == "equal":
             rows.extend(DiffRow(RowKind.EQUAL, i1 + k + 1, j1 + k + 1) for k in range(i2 - i1))
             continue

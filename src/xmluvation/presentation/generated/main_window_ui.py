@@ -1615,11 +1615,6 @@ class Ui_MainWindow(object):
 
         self.layout_compare_result_path.addWidget(self.line_edit_compare_result_path)
 
-        self.button_compare_view_report = QPushButton(self.frame_compare_result)
-        self.button_compare_view_report.setObjectName(u"button_compare_view_report")
-
-        self.layout_compare_result_path.addWidget(self.button_compare_view_report)
-
         self.button_compare_open_report = QPushButton(self.frame_compare_result)
         self.button_compare_open_report.setObjectName(u"button_compare_open_report")
 
@@ -1633,6 +1628,33 @@ class Ui_MainWindow(object):
 
 
         self.layout_scroll_tab_tool_compare_contents.addWidget(self.card_compare)
+
+        self.card_compare_diff = QFrame(self.scroll_tab_tool_compare_contents)
+        self.card_compare_diff.setObjectName(u"card_compare_diff")
+        self.card_compare_diff.setFrameShape(QFrame.Shape.StyledPanel)
+        self.layout_card_compare_diff = QVBoxLayout(self.card_compare_diff)
+        self.layout_card_compare_diff.setSpacing(10)
+        self.layout_card_compare_diff.setObjectName(u"layout_card_compare_diff")
+        self.layout_card_compare_diff.setContentsMargins(18, 16, 18, 18)
+        self.label_card_compare_diff_title = QLabel(self.card_compare_diff)
+        self.label_card_compare_diff_title.setObjectName(u"label_card_compare_diff_title")
+
+        self.layout_card_compare_diff.addWidget(self.label_card_compare_diff_title)
+
+        self.label_card_compare_diff_hint = QLabel(self.card_compare_diff)
+        self.label_card_compare_diff_hint.setObjectName(u"label_card_compare_diff_hint")
+        self.label_card_compare_diff_hint.setWordWrap(True)
+
+        self.layout_card_compare_diff.addWidget(self.label_card_compare_diff_hint)
+
+        self.diff_view_csv_compare = DiffView(self.card_compare_diff)
+        self.diff_view_csv_compare.setObjectName(u"diff_view_csv_compare")
+        self.diff_view_csv_compare.setMinimumSize(QSize(0, 460))
+
+        self.layout_card_compare_diff.addWidget(self.diff_view_csv_compare)
+
+
+        self.layout_scroll_tab_tool_compare_contents.addWidget(self.card_compare_diff)
 
         self.spacer_14 = QSpacerItem(20, 40, QSizePolicy.Policy.Minimum, QSizePolicy.Policy.Expanding)
 
@@ -2485,7 +2507,7 @@ class Ui_MainWindow(object):
 #endif // QT_CONFIG(tooltip)
         self.button_xml_compare_cancel.setText(QCoreApplication.translate("MainWindow", u"Cancel", None))
 #if QT_CONFIG(tooltip)
-        self.button_xml_compare_start.setToolTip(QCoreApplication.translate("MainWindow", u"Compare the files and write a difference report.", None))
+        self.button_xml_compare_start.setToolTip(QCoreApplication.translate("MainWindow", u"Compare the files, show them side by side and write a difference report.", None))
 #endif // QT_CONFIG(tooltip)
         self.button_xml_compare_start.setText(QCoreApplication.translate("MainWindow", u"Compare", None))
         self.button_xml_compare_start.setProperty(u"role", QCoreApplication.translate("MainWindow", u"primary", None))
@@ -2626,7 +2648,7 @@ class Ui_MainWindow(object):
         self.card_compare.setProperty(u"role", QCoreApplication.translate("MainWindow", u"card", None))
         self.label_card_compare_title.setText(QCoreApplication.translate("MainWindow", u"Compare two CSV files", None))
         self.label_card_compare_title.setProperty(u"role", QCoreApplication.translate("MainWindow", u"card-title", None))
-        self.label_card_compare_hint.setText(QCoreApplication.translate("MainWindow", u"Matches rows by a key column and lists removed rows, added rows and every changed cell in a report CSV saved next to the new file.", None))
+        self.label_card_compare_hint.setText(QCoreApplication.translate("MainWindow", u"Aligns the rows of both files, pairs them by a key column and shows removed, added, moved and changed rows side by side. Every difference is also listed in a report CSV saved next to the new file.", None))
         self.label_card_compare_hint.setProperty(u"role", QCoreApplication.translate("MainWindow", u"hint", None))
         self.label_compare_old.setText(QCoreApplication.translate("MainWindow", u"Old file", None))
         self.label_compare_old.setProperty(u"role", QCoreApplication.translate("MainWindow", u"field-label", None))
@@ -2656,7 +2678,7 @@ class Ui_MainWindow(object):
 #endif // QT_CONFIG(tooltip)
         self.button_compare_cancel.setText(QCoreApplication.translate("MainWindow", u"Cancel", None))
 #if QT_CONFIG(tooltip)
-        self.button_compare_start.setToolTip(QCoreApplication.translate("MainWindow", u"Compare the files and write a difference report.", None))
+        self.button_compare_start.setToolTip(QCoreApplication.translate("MainWindow", u"Compare the files, show them side by side and write a difference report.", None))
 #endif // QT_CONFIG(tooltip)
         self.button_compare_start.setText(QCoreApplication.translate("MainWindow", u"Compare", None))
         self.button_compare_start.setProperty(u"role", QCoreApplication.translate("MainWindow", u"primary", None))
@@ -2666,14 +2688,14 @@ class Ui_MainWindow(object):
         self.label_compare_result.setProperty(u"role", QCoreApplication.translate("MainWindow", u"result-title", None))
         self.line_edit_compare_result_path.setPlaceholderText("")
 #if QT_CONFIG(tooltip)
-        self.button_compare_view_report.setToolTip(QCoreApplication.translate("MainWindow", u"Open the report in the table viewer.", None))
-#endif // QT_CONFIG(tooltip)
-        self.button_compare_view_report.setText(QCoreApplication.translate("MainWindow", u"View in table", None))
-        self.button_compare_view_report.setProperty(u"role", QCoreApplication.translate("MainWindow", u"accent", None))
-#if QT_CONFIG(tooltip)
         self.button_compare_open_report.setToolTip(QCoreApplication.translate("MainWindow", u"Open the report file.", None))
 #endif // QT_CONFIG(tooltip)
         self.button_compare_open_report.setText(QCoreApplication.translate("MainWindow", u"Open", None))
+        self.card_compare_diff.setProperty(u"role", QCoreApplication.translate("MainWindow", u"card", None))
+        self.label_card_compare_diff_title.setText(QCoreApplication.translate("MainWindow", u"Side by side", None))
+        self.label_card_compare_diff_title.setProperty(u"role", QCoreApplication.translate("MainWindow", u"card-title", None))
+        self.label_card_compare_diff_hint.setText(QCoreApplication.translate("MainWindow", u"One row per line, header first, numbered as in a spreadsheet: removed and changed rows are red on the left, added and changed rows green on the right, and the changed cells are marked. Rows matched by key at another position are shown where they are in the new file. F7 / Shift+F7 jump to the next / previous change.", None))
+        self.label_card_compare_diff_hint.setProperty(u"role", QCoreApplication.translate("MainWindow", u"hint", None))
         self.tab_widget_csv_tools.setTabText(self.tab_widget_csv_tools.indexOf(self.tab_tool_compare), QCoreApplication.translate("MainWindow", u"Compare", None))
         self.tab_tool_columns.setProperty(u"role", QCoreApplication.translate("MainWindow", u"transparent", None))
         self.scroll_tab_tool_columns.setProperty(u"role", QCoreApplication.translate("MainWindow", u"transparent", None))
