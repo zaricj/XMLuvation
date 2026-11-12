@@ -1,7 +1,6 @@
 # Screenshots
 
-!["Dark Mode"](docs/images/dark_mode.png)
-!["LightMode"](docs/images/light_mode.png)
+![Main](docs/shots/dark_theme_default_main_view.png)
 
 # Running from source
 
@@ -11,3 +10,7 @@ uv run python -m xmluvation
 ```
 
 See [docs/ARCHITECTURE.md](docs/ARCHITECTURE.md) for the project structure, tests and tooling.
+
+# License
+
+[MIT](LICENSE)

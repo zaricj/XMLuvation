@@ -8,7 +8,7 @@ from PySide6.QtCore import QSettings
 from PySide6.QtWidgets import QApplication, QPlainTextEdit
 
 from xmluvation.infrastructure.settings_store import SettingsStore
-from xmluvation.presentation.views.main_window import PAGE_TABLE, PAGE_XML_TOOLS
+from xmluvation.presentation.views.main_window import PAGE_CSV_TOOLS, PAGE_TABLE, PAGE_XML_TOOLS
 
 
 def test_window_builds_with_theme_and_initial_state(window) -> None:
@@ -110,20 +110,28 @@ def test_column_editor_reorders_renames_and_drops(qtbot, window, tmp_path: Path)
     assert edited.read_bytes() == b"Gamma,A\r\n3,1\r\n"
 
 
-def test_compare_report_opens_in_table_viewer(qtbot, window, tmp_path: Path) -> None:
+def test_csv_compare_shows_both_files_side_by_side(qtbot, window, tmp_path: Path) -> None:
     old, new = tmp_path / "old.csv", tmp_path / "new.csv"
     old.write_text("K,V\n1,a\n2,b\n", encoding="utf-8")
     new.write_text("K,V\n1,a\n2,c\n3,d\n", encoding="utf-8")
     ui = window.ui
+    assert ui.card_compare_diff.isHidden()
     ui.line_edit_compare_old_csv_file_path.setText(str(old))
     ui.line_edit_compare_new_csv_file_path.setText(str(new))
-    qtbot.waitUntil(lambda: ui.combobox_compare_key.count() == 2, timeout=5000)
+    qtbot.waitUntil(lambda: ui.combobox_compare_key.count() == 3, timeout=5000)
+    assert ui.combobox_compare_key.currentText() == "K"  # "no key" is the last entry
     ui.button_compare_start.click()
     qtbot.waitUntil(lambda: not ui.frame_compare_result.isHidden(), timeout=5000)
-    assert "1 added, 1 changed rows (1 cells)" in ui.label_compare_summary.text()
-    ui.button_compare_view_report.click()
-    qtbot.waitUntil(lambda: window.vms.table.model.rowCount() == 2, timeout=5000)
-    assert ui.stacked_pages.currentIndex() == PAGE_TABLE
+    assert "1 added, 1 changed rows (1 changed cells)" in ui.label_compare_summary.text()
+    assert not ui.card_compare_diff.isHidden()
+    assert ui.diff_view_csv_compare.pane_texts() == ("K,V\n1,a\n2,b\n", "K,V\n1,a\n2,c\n3,d")
+    assert ui.diff_view_csv_compare.position_text() == "Change 1 of 1"
+    assert ui.stacked_pages.currentIndex() != PAGE_TABLE
+
+    ui.combobox_compare_key.setCurrentIndex(2)  # no key
+    ui.button_compare_start.click()
+    qtbot.waitUntil(lambda: not ui.frame_compare_result.isHidden(), timeout=5000)
+    assert "paired by their position" in ui.label_compare_summary.text()
 
 
 def test_conversion_input_selects_a_fitting_output_type(window) -> None:
@@ -181,6 +189,97 @@ def test_xml_tools_page_validates_and_compares(qtbot, window, tmp_path: Path) ->
     assert not ui.card_xml_compare_diff.isHidden()
     assert ui.diff_view_xml_compare.pane_texts() == ("<n>1</n>", "<n>x</n>")
     assert ui.diff_view_xml_compare.position_text() == "Change 1 of 1"
-    ui.button_xml_compare_view_report.click()
-    qtbot.waitUntil(lambda: window.vms.table.model.rowCount() == 1, timeout=5000)
-    assert ui.stacked_pages.currentIndex() == PAGE_TABLE
+    assert not hasattr(ui, "button_xml_compare_view_report")  # reports open externally
+    assert ui.stacked_pages.currentIndex() != PAGE_TABLE
+
+
+def test_table_viewer_page_tools(qtbot, window, tmp_path: Path) -> None:
+    from PySide6.QtCore import QItemSelectionModel
+    from PySide6.QtGui import QGuiApplication
+
+    from xmluvation.presentation.views.main_window import PAGE_CSV_TOOLS
+
+    ui, page = window.ui, window._table_viewer
+    csv_file = tmp_path / "people.csv"
+    csv_file.write_text("ID,Name,City\n1,Anna,Berlin\n2,Bob,Ulm\n2,Carl,Bonn\n", encoding="utf-8")
+    assert not page.button_send.isEnabled() and not page.button_export.isEnabled()
+    ui.table_csv_data.files_dropped.emit([str(tmp_path / "notes.txt"), str(csv_file)])
+    qtbot.waitUntil(ui.line_edit_filter_table.isEnabled, timeout=5000)
+    assert ui.label_table_rows.text() == "people.csv: 3 rows"
+    assert page.button_send.isEnabled()
+
+    table = ui.table_csv_data
+    table.set_frozen_columns(1)
+    assert not table.frozen_view().isHidden()
+    assert not table.frozen_view().isColumnHidden(0) and table.frozen_view().isColumnHidden(1)
+    table.horizontalHeader().moveSection(2, 0)  # City first
+    assert page._visible_columns() == [2, 0, 1]
+    assert table.frozen_view().isColumnHidden(0) and not table.frozen_view().isColumnHidden(2)
+    page._set_hidden(1, True)
+    assert page._visible_columns() == [2, 0]
+
+    model = table.model()
+    selection = table.selectionModel()
+    flags = QItemSelectionModel.SelectionFlag.Select
+    for row in (0, 1):
+        for column in (0, 1, 2):
+            selection.select(model.index(row, column), flags)
+    page._copy(headers=True)
+    assert QGuiApplication.clipboard().text() == "City\tID\r\nBerlin\t1\r\nUlm\t2"
+
+    page.edit_go_to.setText("3")
+    page.edit_go_to.returnPressed.emit()
+    assert table.currentIndex().row() == 2
+    page.edit_go_to.setText("7")
+    page.edit_go_to.returnPressed.emit()
+    assert "no row 7" in page.label_message.text()
+
+    page._highlight_duplicates(0, True)
+    assert "2 rows have a duplicated" in page.label_message.text()
+
+    compare_old = next(a for a in page.menu_send.actions() if "old" in a.text())
+    compare_old.trigger()
+    assert ui.line_edit_compare_old_csv_file_path.text() == str(csv_file)
+    assert ui.stacked_pages.currentIndex() == PAGE_CSV_TOOLS
+    assert ui.tab_widget_csv_tools.currentWidget() is ui.tab_tool_compare
+
+    # A new file starts with all columns, in order, nothing frozen or highlighted.
+    js = tmp_path / "t.json"
+    js.write_text('[{"A": "1"}]', encoding="utf-8")
+    page.load(str(js))
+    qtbot.waitUntil(lambda: ui.label_table_rows.text() == "t.json: 1 rows", timeout=5000)
+    assert table.frozen_columns == 0 and window.vms.table.model.duplicate_column is None
+    assert not page.button_send.isEnabled()  # only CSV files go to the CSV tools
+
+
+def test_spin_box_number_is_inside_its_border_in_every_theme(qtbot, window) -> None:
+    """Qt 6.12 drew the rows-per-file number under the spin box's left border (and in a
+    1 px wide field with NoButtons); it must line up with the text of a line edit."""
+    from PySide6.QtWidgets import QInputDialog, QLineEdit, QSpinBox
+
+    from xmluvation.presentation.themes import THEMES
+
+    ui = window.ui
+    ui.list_widget_navigation.setCurrentRow(PAGE_CSV_TOOLS)
+    ui.tab_widget_csv_tools.setCurrentWidget(ui.tab_tool_split)
+    spin, line = ui.spin_box_split_rows, ui.line_edit_split_csv_file_path
+    line.setText("1048575")
+    dialog = QInputDialog(window)  # e.g. the XML preview limit
+    dialog.setInputMode(QInputDialog.InputMode.IntInput)
+    dialog.show()
+    qtbot.addWidget(dialog)
+
+    def text_x(box: QSpinBox) -> int:
+        editor = box.findChild(QLineEdit, "qt_spinbox_lineedit")
+        editor.setCursorPosition(0)
+        return editor.mapTo(box, editor.cursorRect().center()).x()
+
+    for key in [*THEMES, "dark_theme_default"]:
+        window.vms.settings.set_theme(key)
+        QApplication.processEvents()
+        editor = spin.findChild(QLineEdit, "qt_spinbox_lineedit")
+        assert editor.width() > spin.width() // 2, key  # not collapsed
+        assert editor.fontMetrics().horizontalAdvance(spin.text()) < editor.width(), key
+        line.setCursorPosition(0)
+        assert abs(text_x(spin) - line.cursorRect().center().x()) <= 1, key
+        assert text_x(dialog.findChild(QSpinBox)) == text_x(spin), key

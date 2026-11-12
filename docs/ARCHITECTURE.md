@@ -92,6 +92,32 @@ tools/regen_ui.py              regenerate presentation/generated after editing .
   vectorized and produce a row permutation; there is no `QSortFilterProxyModel`.
   Filtering runs on a worker thread, debounced by 200 ms, and superseded results are
   dropped.
+* The page only reads tabular files: CSV, and through `infrastructure/tabular_import.py`
+  Excel, HTML, JSON and Markdown tables (`csv_tools.load_table_file`). Nothing else in
+  the application opens its results there. Files can be dropped on the table; the last
+  10 files are kept in `SettingsStore.recent_table_files`.
+* `presentation/models/table_ops.py` holds the pure, vectorized operations that run on
+  worker threads against the immutable `TableData`: `FilterSpec` (quick filter over any
+  column, optionally a regular expression or case-sensitive, plus any number of column
+  filters such as contains, equals, regex, is empty, is duplicated; all must match),
+  `column_stats` (empty, distinct and duplicated values, minimum and maximum as numbers
+  if every value is one, most frequent values; over the rows shown), `frame` (the rows and
+  columns shown, for "Export view" to CSV or Excel) and `tsv` (tab-separated text, quoted
+  as Excel expects, for Ctrl+C). An invalid regular expression is reported next to the
+  toolbar and the last valid result stays.
+* The row header shows the row's number in the file (1 = first data row), also after
+  sorting and filtering; "Go to row" uses the same numbers and fetches rows as needed.
+  "Highlight duplicate values" (header menu) colors one column's repeated values through
+  the model's `BackgroundRole`.
+* `presentation/widgets/data_table.py` (`DataTableView`, a promoted widget) adds frozen
+  leading columns: a second `QTableView` over the left edge that shares model and
+  selection and follows the main view's scrolling, widths, order and hidden columns (as in
+  Qt's "frozen column" example; it has no frame or theme border, so both viewports have
+  the same scroll range). Columns can be hidden, dragged to reorder and resized; the
+  header row never scrolls. The widget only signals copy requests, file drops and header
+  menus; `presentation/views/table_viewer_view.py` binds the page, builds the tool
+  controls that are not in the `.ui`, and resets filters and column changes when another
+  file is opened. "Send to" puts the open CSV file into Split, Compare or Columns.
 
 ## UI structure and themes
 
@@ -109,11 +135,28 @@ tools/regen_ui.py              regenerate presentation/generated after editing .
   never overwrites an existing file. Split (`application/csv_split.py`), Compare
   (`application/csv_compare.py`), Columns (`save_column_edits` in `csv_tools.py`),
   Profile clean-up and Hex → decimal. Split and Columns stream rows through
-  `csv_io.csv_rows` and keep each cell's exact text plus the delimiter, encoding and BOM;
-  Compare loads both files as text with pandas. No tool overwrites an existing file
-  unless asked to (`application/output_paths.py`); Split removes its new folder if it
-  fails or is cancelled. `presentation/views/csv_transforms_view.py` binds Split,
-  Compare and Columns; `HeaderReader` loads a file's column names in the background.
+  `csv_io.csv_rows` and keep each cell's exact text plus the delimiter, encoding and BOM.
+  No tool overwrites an existing file unless asked to (`application/output_paths.py`);
+  the exception is the report of a CSV or XML compare, which replaces the report of the
+  previous compare of the same two files (`replace_report`; it is removed when the files
+  no longer differ), so reports do not pile up. Copy a report elsewhere to keep it.
+  Split removes its new folder if it fails or is cancelled.
+  `presentation/views/csv_transforms_view.py` binds Split, Compare and Columns;
+  `HeaderReader` loads a file's column names in the background.
+* CSV Compare (`infrastructure/csv_diff.py`, `application/csv_compare.py`) works like
+  XML Compare, with rows in place of child elements: every data row is fingerprinted
+  (its values in the columns both files have), rows are aligned by fingerprint with the
+  patience diff of `domain/text_diff.py` (`patience_opcodes`; a CSV file is one long
+  list, so plain `difflib` would not scale), and the rows of each differing region are
+  paired by the key column, or by position when "no key" is chosen. With a key, rows
+  paired out of order or across regions are reported as *moved*. Only each row's text
+  (re-written as one CSV record) and fingerprint are kept; paired rows are parsed again,
+  so memory stays near the files' size (300,000 rows / 12.6 MB: about 1.5 s). The result
+  is shown in the same `DiffView` as XML Compare: one record per line, header first,
+  numbered like spreadsheet rows, changed cells marked, `↵` for line breaks inside a
+  cell. Files over 16 MB are compared and reported but not shown side by side. The
+  report (`<new>_vs_<old>_diff.csv`, only written when the files differ) is opened in
+  the default application; the table viewer is only for reading tabular files.
 * XML tools (`application/xml_tools.py`, bound by `presentation/views/xml_tools_view.py`):
   * Validate checks one file, or every `*.xml` directly in a folder, against an XSD 1.0
     schema (`infrastructure/xml_validation.py`, libxml2). Local `xs:include`/`xs:import`
@@ -126,7 +169,7 @@ tools/regen_ui.py              regenerate presentation/generated after editing .
     changed elements, attributes and text with a readable XPath and line numbers in
     `<new>_vs_<old>_xmldiff.csv`. Comments and processing instructions are ignored;
     whitespace in text is normalized unless the option is turned off. The report stops
-    at 100,000 differences; it opens in the table viewer ("View in table").
+    at 100,000 differences; "Open" shows it in the default application.
   * Compare also shows both files side by side (`presentation/widgets/diff_view.py`,
     a promoted widget): old left, new right, removed/changed lines red, added/changed
     lines green, changed characters marked, filler rows keep both sides aligned, an
@@ -142,7 +185,15 @@ tools/regen_ui.py              regenerate presentation/generated after editing .
   in the `.ui`): an indeterminate striped bar that keeps its place in the layout, paints
   nothing while idle, and takes its colors from `qproperty-trackColor`/`stripeColor`.
 * `dark_theme.qss` and `light_theme.qss` share one structure and differ only in color
-  values; change both together. The themes under `styles/other/` predate the roles and
+  values; change both together.
+* Spin boxes: Qt 6.12 places the text field of a style-sheet-styled spin box at the box's
+  left edge (left border and padding ignored), and shrinks it to 1 px with
+  `buttonSymbols = NoButtons`. So no spin box uses `NoButtons`: the default themes hide
+  the step buttons (`width: 0`), and `presentation/widgets/spin_box_inset.py`, one event
+  filter on the application, gives every spin box editor text margins of the active
+  theme's left border + padding (`themes.SPIN_BOX_TEXT_INSET`), minus wherever Qt
+  already placed the editor, so a fixed Qt adds nothing. Keep the inset in sync with the
+  style sheets; `test_spin_box_number_is_inside_its_border_in_every_theme` checks it. The themes under `styles/other/` predate the roles and
   only style generic widgets.
 * XPath 1.0 only (lxml). Namespaced documents are not handled specially yet: tags appear
   in Clark notation `{uri}name` and expressions are evaluated without a namespace map.

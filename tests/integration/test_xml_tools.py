@@ -181,6 +181,19 @@ def test_compare_xml_writes_report_and_summary(tmp_path: Path) -> None:
     same = compare_xml(str(old), str(old), True, NullReporter(), CancellationToken())
     assert same.identical and same.report is None
 
+    # Comparing the same two files again replaces the earlier report ...
+    again = compare_xml(str(old), str(new), True, NullReporter(), CancellationToken())
+    assert again.report == result.report
+    assert sorted(p.name for p in tmp_path.iterdir()) == [
+        "v1.xml",
+        "v2.xml",
+        "v2_vs_v1_xmldiff.csv",
+    ]
+    # ... and removes it when they no longer differ.
+    _write(new, "<r><a>1</a></r>")
+    identical = compare_xml(str(old), str(new), True, NullReporter(), CancellationToken())
+    assert identical.report is None and not result.report.exists()
+
 
 def test_compare_rejects_broken_xml_and_can_be_cancelled(tmp_path: Path) -> None:
     good = _write(tmp_path / "good.xml", "<r/>")

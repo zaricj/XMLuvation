@@ -399,8 +399,14 @@ class DiffView(QWidget):
         self.set_diff(None, note=note)
 
     def set_diff(
-        self, diff: TextDiff | None, old_name: str = "", new_name: str = "", note: str = ""
+        self,
+        diff: TextDiff | None,
+        old_name: str = "",
+        new_name: str = "",
+        note: str = "",
+        unit: str = "line",
     ) -> None:
+        """Show ``diff``; ``unit`` names what one line of the panes is (``line``, ``row``)."""
         self._note.setText(note)
         self._note.setVisible(bool(note))
         self._panes.setVisible(diff is not None)
@@ -417,7 +423,7 @@ class DiffView(QWidget):
         self._right_name.setText(f"New: {new_name}")
         self._fill(diff)
         self._hunks = diff.hunks
-        self._summary.setText(_summary(diff))
+        self._summary.setText(_summary(diff, unit))
         self._left.verticalScrollBar().setValue(0)
         self._update_navigation()
         if self._hunks:
@@ -543,9 +549,9 @@ class DiffView(QWidget):
         return self._position.text()
 
 
-def _summary(diff: TextDiff) -> str:
+def _summary(diff: TextDiff, unit: str = "line") -> str:
     if diff.identical:
-        return "The files are identical line by line."
+        return f"The files are identical {unit} by {unit}."
     parts = []
     for kind, label in (
         (RowKind.CHANGED, "changed"),
@@ -555,4 +561,4 @@ def _summary(diff: TextDiff) -> str:
         count = diff.count(kind)
         if count:
             parts.append(f"{count:,} {label}")
-    return f"Lines: {', '.join(parts)}."
+    return f"{unit.capitalize()}s: {', '.join(parts)}."

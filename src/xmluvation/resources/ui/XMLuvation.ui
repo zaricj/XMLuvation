@@ -2036,7 +2036,7 @@ Ctrl+J toggles output</string>
                         </size>
                        </property>
                        <property name="toolTip">
-                        <string>Compare the files and write a difference report.</string>
+                        <string>Compare the files, show them side by side and write a difference report.</string>
                        </property>
                        <property name="text">
                         <string>Compare</string>
@@ -2116,19 +2116,6 @@ Ctrl+J toggles output</string>
                           </property>
                           <property name="readOnly">
                            <bool>true</bool>
-                          </property>
-                         </widget>
-                        </item>
-                        <item>
-                         <widget class="QPushButton" name="button_xml_compare_view_report">
-                          <property name="toolTip">
-                           <string>Open the report in the table viewer.</string>
-                          </property>
-                          <property name="text">
-                           <string>View in table</string>
-                          </property>
-                          <property name="role" stdset="0">
-                           <string>accent</string>
                           </property>
                          </widget>
                         </item>
@@ -3095,9 +3082,6 @@ Ctrl+J toggles output</string>
                            <property name="toolTip">
                             <string>1,048,575 data rows fill exactly one Excel sheet.</string>
                            </property>
-                           <property name="buttonSymbols">
-                            <enum>QAbstractSpinBox::ButtonSymbols::NoButtons</enum>
-                           </property>
                            <property name="minimum">
                             <number>1</number>
                            </property>
@@ -3478,7 +3462,7 @@ Ctrl+J toggles output</string>
                    <item>
                     <widget class="QLabel" name="label_card_compare_hint">
                      <property name="text">
-                      <string>Matches rows by a key column and lists removed rows, added rows and every changed cell in a report CSV saved next to the new file.</string>
+                      <string>Aligns the rows of both files, pairs them by a key column and shows removed, added, moved and changed rows side by side. Every difference is also listed in a report CSV saved next to the new file.</string>
                      </property>
                      <property name="wordWrap">
                       <bool>true</bool>
@@ -3738,7 +3722,7 @@ Ctrl+J toggles output</string>
                         </size>
                        </property>
                        <property name="toolTip">
-                        <string>Compare the files and write a difference report.</string>
+                        <string>Compare the files, show them side by side and write a difference report.</string>
                        </property>
                        <property name="text">
                         <string>Compare</string>
@@ -3828,19 +3812,6 @@ Ctrl+J toggles output</string>
                          </widget>
                         </item>
                         <item>
-                         <widget class="QPushButton" name="button_compare_view_report">
-                          <property name="toolTip">
-                           <string>Open the report in the table viewer.</string>
-                          </property>
-                          <property name="text">
-                           <string>View in table</string>
-                          </property>
-                          <property name="role" stdset="0">
-                           <string>accent</string>
-                          </property>
-                         </widget>
-                        </item>
-                        <item>
                          <widget class="QPushButton" name="button_compare_open_report">
                           <property name="toolTip">
                            <string>Open the report file.</string>
@@ -3853,6 +3824,66 @@ Ctrl+J toggles output</string>
                        </layout>
                       </item>
                      </layout>
+                    </widget>
+                   </item>
+                  </layout>
+                 </widget>
+                </item>
+                <item>
+                 <widget class="QFrame" name="card_compare_diff">
+                  <property name="frameShape">
+                   <enum>QFrame::Shape::StyledPanel</enum>
+                  </property>
+                  <property name="role" stdset="0">
+                   <string>card</string>
+                  </property>
+                  <layout class="QVBoxLayout" name="layout_card_compare_diff">
+                   <property name="spacing">
+                    <number>10</number>
+                   </property>
+                   <property name="leftMargin">
+                    <number>18</number>
+                   </property>
+                   <property name="topMargin">
+                    <number>16</number>
+                   </property>
+                   <property name="rightMargin">
+                    <number>18</number>
+                   </property>
+                   <property name="bottomMargin">
+                    <number>18</number>
+                   </property>
+                   <item>
+                    <widget class="QLabel" name="label_card_compare_diff_title">
+                     <property name="text">
+                      <string>Side by side</string>
+                     </property>
+                     <property name="role" stdset="0">
+                      <string>card-title</string>
+                     </property>
+                    </widget>
+                   </item>
+                   <item>
+                    <widget class="QLabel" name="label_card_compare_diff_hint">
+                     <property name="text">
+                      <string>One row per line, header first, numbered as in a spreadsheet: removed and changed rows are red on the left, added and changed rows green on the right, and the changed cells are marked. Rows matched by key at another position are shown where they are in the new file. F7 / Shift+F7 jump to the next / previous change.</string>
+                     </property>
+                     <property name="wordWrap">
+                      <bool>true</bool>
+                     </property>
+                     <property name="role" stdset="0">
+                      <string>hint</string>
+                     </property>
+                    </widget>
+                   </item>
+                   <item>
+                    <widget class="DiffView" name="diff_view_csv_compare" native="true">
+                     <property name="minimumSize">
+                      <size>
+                       <width>0</width>
+                       <height>460</height>
+                      </size>
+                     </property>
                     </widget>
                    </item>
                   </layout>
@@ -4974,7 +5005,7 @@ Ctrl+J toggles output</string>
         <item>
          <widget class="QLabel" name="label_page_table_hint">
           <property name="text">
-           <string>Open a CSV file to browse it. Rows load as you scroll; click a column header to sort.</string>
+           <string>Open a CSV, Excel, HTML, JSON or Markdown table, or drop one on the table. Rows load as you scroll. Click a column header to sort, drag it to reorder, right-click it for filters, statistics, duplicates and freezing. Ctrl+C copies the selected cells for Excel.</string>
           </property>
           <property name="wordWrap">
            <bool>true</bool>
@@ -5004,7 +5035,7 @@ Ctrl+J toggles output</string>
           <item>
            <widget class="QLineEdit" name="line_edit_filter_table">
             <property name="placeholderText">
-             <string>Filter rows (matches any column, case-insensitive)</string>
+             <string>Quick filter: rows where any column contains this text</string>
             </property>
             <property name="clearButtonEnabled">
              <bool>true</bool>
@@ -5047,12 +5078,12 @@ Ctrl+J toggles output</string>
          </layout>
         </item>
         <item>
-         <widget class="QTableView" name="table_csv_data">
+         <widget class="DataTableView" name="table_csv_data">
           <property name="alternatingRowColors">
            <bool>true</bool>
           </property>
           <property name="selectionBehavior">
-           <enum>QAbstractItemView::SelectionBehavior::SelectRows</enum>
+           <enum>QAbstractItemView::SelectionBehavior::SelectItems</enum>
           </property>
           <property name="verticalScrollMode">
            <enum>QAbstractItemView::ScrollMode::ScrollPerPixel</enum>
@@ -5393,6 +5424,11 @@ Ctrl+J toggles output</string>
    <class>DiffView</class>
    <extends>QWidget</extends>
    <header>xmluvation.presentation.widgets.diff_view</header>
+  </customwidget>
+  <customwidget>
+   <class>DataTableView</class>
+   <extends>QTableView</extends>
+   <header>xmluvation.presentation.widgets.data_table</header>
   </customwidget>
  </customwidgets>
  <resources>

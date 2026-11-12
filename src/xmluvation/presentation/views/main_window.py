@@ -37,7 +37,13 @@ from ...domain.models import BuildCriteria, Operator, XmlIndex
 from ...domain.numbers import parse_hex
 from ..generated.main_window_ui import Ui_MainWindow
 from ..tasks import TaskRunner
-from ..themes import THEMES, apply_icon_palette, load_stylesheet, theme_label
+from ..themes import (
+    THEMES,
+    apply_icon_palette,
+    load_stylesheet,
+    spin_box_text_inset,
+    theme_label,
+)
 from ..viewmodels.csv_tools_vm import CsvToolsViewModel
 from ..viewmodels.csv_transforms_vm import CsvTransformsViewModel
 from ..viewmodels.export_vm import ExportViewModel
@@ -48,12 +54,12 @@ from ..viewmodels.xml_inspector_vm import XmlInspectorViewModel
 from ..viewmodels.xml_tools_vm import XmlToolsViewModel
 from ..viewmodels.xpath_workspace_vm import XPathWorkspaceViewModel
 from ..widgets.code_icon import code_icon
+from ..widgets.spin_box_inset import SpinBoxTextInset
 from ..widgets.steady_icon import steady_icon
 from ..widgets.table_icon import table_icon
 from .common import (
     ask_yes_no,
     browse_folder_into,
-    browse_open_file,
     browse_open_file_into,
     browse_save_file_into,
     connect_notifications,
@@ -63,6 +69,7 @@ from .csv_transforms_view import CsvTransformsView
 from .exit_dialog import ExitDialog
 from .paths_manager import CustomPathsManager
 from .presets_manager import PreBuiltXPathsManager
+from .table_viewer_view import TableViewerView
 from .xml_tools_view import XmlToolsView
 
 XPATH_HELP_URL = "https://www.w3schools.com/xml/xpath_syntax.asp"
@@ -158,8 +165,6 @@ class MainWindow(QMainWindow):
             ui.line_edit_xml_output_find_text,
         ):
             widget.hide()
-        ui.button_clear_table.setDisabled(True)
-        ui.line_edit_filter_table.setDisabled(True)
         ui.frame_conversion_result.hide()
         ui.label_hex_error.hide()
         for widget in (
@@ -170,9 +175,6 @@ class MainWindow(QMainWindow):
             ui.text_edit_xml_tools_output,
         ):
             widget.setContextMenuPolicy(Qt.ContextMenuPolicy.CustomContextMenu)
-        ui.table_csv_data.setModel(self.vms.table.model)
-        ui.table_csv_data.verticalHeader().setDefaultSectionSize(28)
-        ui.table_csv_data.horizontalHeader().setHighlightSections(False)
         self._find_shortcut = QShortcut(QKeySequence(Qt.Modifier.CTRL | Qt.Key.Key_F), self)
         self._find_shortcut.activated.connect(self._toggle_find)
         ui.line_edit_xml_output_find_text.returnPressed.connect(self._find_from_keyboard)
@@ -232,6 +234,8 @@ class MainWindow(QMainWindow):
         app = QApplication.instance()
         if isinstance(app, QApplication):
             apply_icon_palette(app, key)
+            # Before the style sheet: re-polishing applies the new theme's inset.
+            SpinBoxTextInset.for_app(app).set_inset(spin_box_text_inset(key))
             app.setStyleSheet(stylesheet)
 
     # ------------------------------------------------------------------ XPath builder
@@ -452,7 +456,7 @@ class MainWindow(QMainWindow):
     # ------------------------------------------------------------------ CSV tab
 
     def _bind_csv_tab(self) -> None:
-        ui, csv_vm, table = self.ui, self.vms.csv_tools, self.vms.table
+        ui, csv_vm = self.ui, self.vms.csv_tools
         ui.button_browse_csv_conversion_path_input.clicked.connect(
             lambda: browse_open_file_into(
                 self,
@@ -506,9 +510,6 @@ class MainWindow(QMainWindow):
             )
         )
         ui.line_edit_hexadecimal.textChanged.connect(self._hex_to_decimal)
-        ui.button_load_csv.clicked.connect(self._load_table)
-        ui.button_clear_table.clicked.connect(self._clear_table)
-        ui.line_edit_filter_table.textChanged.connect(table.set_filter)
 
         for vm in (csv_vm, self.vms.transforms):
             vm.log_appended.connect(ui.text_edit_csv_output.append)
@@ -517,17 +518,9 @@ class MainWindow(QMainWindow):
         csv_vm.converted_file_changed.connect(self._show_converted_file)
         csv_vm.cleanup_confirmation_requested.connect(self._confirm_cleanup)
         csv_vm.cleanup_running_changed.connect(self._set_cleaning_up)
-        table.has_table_changed.connect(self._table_state)
-        table.loading_changed.connect(ui.button_load_csv.setDisabled)
-        table.loading_changed.connect(
-            lambda busy: self._set_table_status("Loading…") if busy else self._update_table_rows()
-        )
-        table.filtering_changed.connect(lambda _busy: self._update_table_rows())
-        for signal in (table.model.modelReset, table.model.layoutChanged):
-            signal.connect(self._update_table_rows)
-        self._update_table_rows()
-        self._csv_transforms = CsvTransformsView(self, self.vms.transforms, self._view_in_table)
-        self._xml_tools = XmlToolsView(self, self.vms.xml_tools, self._view_in_table)
+        self._csv_transforms = CsvTransformsView(self, self.vms.transforms)
+        self._xml_tools = XmlToolsView(self, self.vms.xml_tools)
+        self._table_viewer = TableViewerView(self, self.vms.table, self._show_csv_tool)
         self.vms.xml_tools.log_appended.connect(ui.text_edit_xml_tools_output.append)
         self.vms.xml_tools.log_replaced.connect(ui.text_edit_xml_tools_output.setText)
 
@@ -545,11 +538,10 @@ class MainWindow(QMainWindow):
                 f"Invalid or missing path: Could not open file: {path}"
             )
 
-    def _view_in_table(self, path: str) -> None:
-        """Open a CSV file (e.g. a compare report) in the table viewer page."""
-        self.ui.line_edit_filter_table.clear()
-        self.vms.table.load(path)
-        self.ui.list_widget_navigation.setCurrentRow(PAGE_TABLE)
+    def _show_csv_tool(self, tab: QWidget) -> None:
+        """Switch to a tool of the CSV tools page (e.g. after "Send to" in the table viewer)."""
+        self.ui.list_widget_navigation.setCurrentRow(PAGE_CSV_TOOLS)
+        self.ui.tab_widget_csv_tools.setCurrentWidget(tab)
 
     def _confirm_cleanup(self, plan: CleanupPlan) -> None:
         names = "\n".join(p.name for p in plan.delete[:15])
@@ -593,35 +585,6 @@ class MainWindow(QMainWindow):
             return
         ui.label_hex_error.hide()
         ui.line_edit_decimal.setText("" if value is None else str(value))
-
-    def _load_table(self) -> None:
-        file_path = browse_open_file(self, "Select CSV file to display", "CSV File (*.csv)")
-        if file_path:
-            self.vms.table.load(file_path)
-
-    def _clear_table(self) -> None:
-        self.ui.line_edit_filter_table.clear()
-        self.vms.table.clear()
-
-    def _table_state(self, has_table: bool) -> None:
-        self.ui.button_clear_table.setDisabled(not has_table)
-        self.ui.line_edit_filter_table.setDisabled(not has_table)
-        if has_table:
-            self.ui.table_csv_data.resizeColumnsToContents()  # only fetched rows are measured
-        self._update_table_rows()
-
-    def _set_table_status(self, text: str) -> None:
-        self.ui.label_table_rows.setText(text)
-
-    def _update_table_rows(self) -> None:
-        model = self.vms.table.model
-        total = model.data_store.row_count
-        if total == 0 and model.columnCount() == 0:
-            self._set_table_status("")
-        elif model.total_rows == total:
-            self._set_table_status(f"{total:,} rows")
-        else:
-            self._set_table_status(f"{model.total_rows:,} of {total:,} rows")
 
     # ------------------------------------------------------------------ menus
 

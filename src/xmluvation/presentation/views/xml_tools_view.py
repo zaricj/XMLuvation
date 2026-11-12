@@ -2,7 +2,6 @@
 
 from __future__ import annotations
 
-from collections.abc import Callable
 from typing import TYPE_CHECKING
 
 from PySide6.QtCore import QObject, QTimer
@@ -38,13 +37,11 @@ class XmlToolsView(QObject):
         self,
         window: MainWindow,
         vm: XmlToolsViewModel,
-        view_in_table: Callable[[str], None],
     ) -> None:
         super().__init__(window)
         self.window = window
         self.ui = window.ui
         self.vm = vm
-        self._view_in_table = view_in_table
         self.ui.frame_validate_result.hide()
         self.ui.frame_xml_compare_result.hide()
         self._show_diff_card(False)
@@ -144,9 +141,6 @@ class XmlToolsView(QObject):
             )
         )
         ui.button_xml_compare_cancel.clicked.connect(vm.cancel_compare)
-        ui.button_xml_compare_view_report.clicked.connect(
-            lambda: self._view_in_table(ui.line_edit_xml_compare_result_path.text())
-        )
         ui.button_xml_compare_open_report.clicked.connect(
             lambda: open_path(ui.line_edit_xml_compare_result_path.text())
         )
@@ -171,7 +165,6 @@ class XmlToolsView(QObject):
         for widget in (
             ui.label_xml_compare_result,
             ui.line_edit_xml_compare_result_path,
-            ui.button_xml_compare_view_report,
             ui.button_xml_compare_open_report,
         ):
             widget.setVisible(has_report)

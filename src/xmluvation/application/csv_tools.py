@@ -11,7 +11,7 @@ from pathlib import Path
 
 import pandas as pd
 
-from ..domain.errors import ValidationError
+from ..domain.errors import OutputFileError, ValidationError
 from ..infrastructure import csv_io, tabular_import
 from ..infrastructure.tabular_export import OutputFormat, output_path_for, write_table
 from .cancellation import CancellationToken, ProgressReporter
@@ -208,3 +208,46 @@ def load_csv_table(path: Path, token: CancellationToken | None = None) -> pd.Dat
     except BaseException:
         gc.collect()  # free chunks read before the failure/cancellation
         raise
+
+
+TABLE_SUFFIXES = tabular_import.SUPPORTED_SUFFIXES  # files the table viewer opens
+
+
+def load_table_file(path: Path, token: CancellationToken | None = None) -> pd.DataFrame:
+    """A CSV, Excel, HTML, JSON or Markdown table with all cells as text, for display."""
+    fmt = tabular_import.format_of(path)
+    if fmt is None:
+        raise ValidationError(
+            f"{path.name} is not a table file. The table viewer opens "
+            f"{', '.join(TABLE_SUFFIXES)} files.",
+            title="Unsupported file",
+        )
+    if not path.is_file():
+        raise ValidationError(f"The file does not exist:\n{path}", title="File not found")
+    if fmt is OutputFormat.CSV:
+        return load_csv_table(path, token)
+    df = tabular_import.read_table(path, fmt)
+    if token is not None:
+        token.raise_if_cancelled()
+    return df
+
+
+def is_csv_file(path_text: str) -> bool:
+    return bool(path_text) and tabular_import.format_of(Path(path_text)) is OutputFormat.CSV
+
+
+def export_table(df: pd.DataFrame, target: Path) -> Path:
+    """Write ``df`` as CSV or Excel, chosen by the extension of ``target``.
+
+    The user picked ``target`` in a save dialog (which asked before overwriting).
+    """
+    fmt = tabular_import.format_of(target)
+    if fmt not in (OutputFormat.CSV, OutputFormat.EXCEL):
+        raise ValidationError("Export to a .csv or .xlsx file.", title="Unsupported export format")
+    try:
+        write_table(df, target, fmt, write_index=False)
+    except OSError as exc:
+        raise OutputFileError(
+            f"Cannot write {target.name}. Is it open in another program (e.g. Excel)?\n{exc}"
+        ) from exc
+    return target

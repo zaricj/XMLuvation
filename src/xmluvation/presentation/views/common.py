@@ -48,8 +48,10 @@ def browse_folder_into(parent: QWidget, caption: str, target: QLineEdit) -> None
         target.setText(folder)
 
 
-def browse_open_file(parent: QWidget, caption: str, file_filter: str) -> str:
-    file_name, _ = QFileDialog.getOpenFileName(parent, caption=caption, filter=file_filter)
+def browse_open_file(parent: QWidget, caption: str, file_filter: str, folder: str = "") -> str:
+    file_name, _ = QFileDialog.getOpenFileName(
+        parent, caption=caption, dir=folder, filter=file_filter
+    )
     return file_name
 
 

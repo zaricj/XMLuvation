@@ -9,6 +9,7 @@ from PySide6.QtCore import QByteArray, QSettings
 DEFAULT_THEME = "dark_theme_default"
 DEFAULT_PREVIEW_LIMIT_MB = 20
 MAX_RECENT_EXPRESSIONS = 10
+MAX_RECENT_FILES = 10
 
 
 class SettingsStore:
@@ -50,6 +51,15 @@ class SettingsStore:
     @recent_xpath_expressions.setter
     def recent_xpath_expressions(self, values: list[str]) -> None:
         self._s.setValue("recent_xpath_expressions", values[:MAX_RECENT_EXPRESSIONS])
+
+    @property
+    def recent_table_files(self) -> list[str]:
+        value: Any = self._s.value("recent_table_files", [], type=list)
+        return [str(v) for v in (value or [])]
+
+    @recent_table_files.setter
+    def recent_table_files(self, values: list[str]) -> None:
+        self._s.setValue("recent_table_files", values[:MAX_RECENT_FILES])
 
     @property
     def xml_preview_limit_mb(self) -> int:
