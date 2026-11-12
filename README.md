@@ -1,6 +1,7 @@
 # Screenshots
 
-![Main](docs/shots/dark_theme_default_main_view.png)
+![Main Dark](docs/shots/dark_theme_default_main_view.png)
+![Main Light](docs/shots/light_theme_default_main_view.png)
 
 # Running from source
 
