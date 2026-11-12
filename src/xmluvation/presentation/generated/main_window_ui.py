@@ -158,7 +158,7 @@ class Ui_MainWindow(object):
         self.scroll_extract.setWidgetResizable(True)
         self.scroll_extract_contents = QWidget()
         self.scroll_extract_contents.setObjectName(u"scroll_extract_contents")
-        self.scroll_extract_contents.setGeometry(QRect(0, 0, 701, 914))
+        self.scroll_extract_contents.setGeometry(QRect(0, 0, 688, 866))
         self.layout_scroll_extract_contents = QVBoxLayout(self.scroll_extract_contents)
         self.layout_scroll_extract_contents.setSpacing(14)
         self.layout_scroll_extract_contents.setObjectName(u"layout_scroll_extract_contents")
@@ -170,10 +170,30 @@ class Ui_MainWindow(object):
         self.layout_card_source.setSpacing(10)
         self.layout_card_source.setObjectName(u"layout_card_source")
         self.layout_card_source.setContentsMargins(18, 16, 18, 18)
+        self.layout_source = QHBoxLayout()
+        self.layout_source.setObjectName(u"layout_source")
         self.label_card_source_title = QLabel(self.card_source)
         self.label_card_source_title.setObjectName(u"label_card_source_title")
 
-        self.layout_card_source.addWidget(self.label_card_source_title)
+        self.layout_source.addWidget(self.label_card_source_title)
+
+        self.horizontalSpacer = QSpacerItem(40, 20, QSizePolicy.Policy.Expanding, QSizePolicy.Policy.Minimum)
+
+        self.layout_source.addItem(self.horizontalSpacer)
+
+        self.statusbar_xml_files_count = QLabel(self.card_source)
+        self.statusbar_xml_files_count.setObjectName(u"statusbar_xml_files_count")
+        sizePolicy = QSizePolicy(QSizePolicy.Policy.Preferred, QSizePolicy.Policy.Preferred)
+        sizePolicy.setHorizontalStretch(0)
+        sizePolicy.setVerticalStretch(0)
+        sizePolicy.setHeightForWidth(self.statusbar_xml_files_count.sizePolicy().hasHeightForWidth())
+        self.statusbar_xml_files_count.setSizePolicy(sizePolicy)
+        self.statusbar_xml_files_count.setMinimumSize(QSize(0, 0))
+
+        self.layout_source.addWidget(self.statusbar_xml_files_count)
+
+
+        self.layout_card_source.addLayout(self.layout_source)
 
         self.layout_source_path = QHBoxLayout()
         self.layout_source_path.setSpacing(8)
@@ -190,13 +210,13 @@ class Ui_MainWindow(object):
 
         self.layout_source_path.addWidget(self.button_browse_xml_folder)
 
+        self.button_read_xml = QPushButton(self.card_source)
+        self.button_read_xml.setObjectName(u"button_read_xml")
+
+        self.layout_source_path.addWidget(self.button_read_xml)
+
 
         self.layout_card_source.addLayout(self.layout_source_path)
-
-        self.statusbar_xml_files_count = QLabel(self.card_source)
-        self.statusbar_xml_files_count.setObjectName(u"statusbar_xml_files_count")
-
-        self.layout_card_source.addWidget(self.statusbar_xml_files_count)
 
 
         self.layout_scroll_extract_contents.addWidget(self.card_source)
@@ -494,10 +514,6 @@ class Ui_MainWindow(object):
 
         self.layout_scroll_extract_contents.addWidget(self.card_export)
 
-        self.spacer_6 = QSpacerItem(20, 40, QSizePolicy.Policy.Minimum, QSizePolicy.Policy.Expanding)
-
-        self.layout_scroll_extract_contents.addItem(self.spacer_6)
-
         self.scroll_extract.setWidget(self.scroll_extract_contents)
         self.splitter_extract.addWidget(self.scroll_extract)
         self.card_preview = QFrame(self.splitter_extract)
@@ -535,11 +551,6 @@ class Ui_MainWindow(object):
         self.text_edit_xml_output.setReadOnly(True)
 
         self.layout_card_preview.addWidget(self.text_edit_xml_output)
-
-        self.button_read_xml = QPushButton(self.card_preview)
-        self.button_read_xml.setObjectName(u"button_read_xml")
-
-        self.layout_card_preview.addWidget(self.button_read_xml)
 
         self.layout_preview_find = QHBoxLayout()
         self.layout_preview_find.setSpacing(8)
@@ -604,6 +615,7 @@ class Ui_MainWindow(object):
         self.scroll_tab_xml_validate.setWidgetResizable(True)
         self.scroll_tab_xml_validate_contents = QWidget()
         self.scroll_tab_xml_validate_contents.setObjectName(u"scroll_tab_xml_validate_contents")
+        self.scroll_tab_xml_validate_contents.setGeometry(QRect(0, 0, 1101, 598))
         self.layout_scroll_tab_xml_validate_contents = QVBoxLayout(self.scroll_tab_xml_validate_contents)
         self.layout_scroll_tab_xml_validate_contents.setSpacing(14)
         self.layout_scroll_tab_xml_validate_contents.setObjectName(u"layout_scroll_tab_xml_validate_contents")
@@ -791,6 +803,7 @@ class Ui_MainWindow(object):
         self.scroll_tab_xml_compare.setWidgetResizable(True)
         self.scroll_tab_xml_compare_contents = QWidget()
         self.scroll_tab_xml_compare_contents.setObjectName(u"scroll_tab_xml_compare_contents")
+        self.scroll_tab_xml_compare_contents.setGeometry(QRect(0, 0, 1101, 966))
         self.layout_scroll_tab_xml_compare_contents = QVBoxLayout(self.scroll_tab_xml_compare_contents)
         self.layout_scroll_tab_xml_compare_contents.setSpacing(14)
         self.layout_scroll_tab_xml_compare_contents.setObjectName(u"layout_scroll_tab_xml_compare_contents")
@@ -1029,7 +1042,7 @@ class Ui_MainWindow(object):
         self.scroll_tab_tool_convert.setWidgetResizable(True)
         self.scroll_tab_tool_convert_contents = QWidget()
         self.scroll_tab_tool_convert_contents.setObjectName(u"scroll_tab_tool_convert_contents")
-        self.scroll_tab_tool_convert_contents.setGeometry(QRect(0, 0, 439, 368))
+        self.scroll_tab_tool_convert_contents.setGeometry(QRect(0, 0, 1113, 494))
         self.layout_scroll_tab_tool_convert_contents = QVBoxLayout(self.scroll_tab_tool_convert_contents)
         self.layout_scroll_tab_tool_convert_contents.setSpacing(14)
         self.layout_scroll_tab_tool_convert_contents.setObjectName(u"layout_scroll_tab_tool_convert_contents")
@@ -1237,7 +1250,7 @@ class Ui_MainWindow(object):
         self.scroll_tab_tool_split.setWidgetResizable(True)
         self.scroll_tab_tool_split_contents = QWidget()
         self.scroll_tab_tool_split_contents.setObjectName(u"scroll_tab_tool_split_contents")
-        self.scroll_tab_tool_split_contents.setGeometry(QRect(0, 0, 497, 368))
+        self.scroll_tab_tool_split_contents.setGeometry(QRect(0, 0, 1113, 494))
         self.layout_scroll_tab_tool_split_contents = QVBoxLayout(self.scroll_tab_tool_split_contents)
         self.layout_scroll_tab_tool_split_contents.setSpacing(14)
         self.layout_scroll_tab_tool_split_contents.setObjectName(u"layout_scroll_tab_tool_split_contents")
@@ -1448,7 +1461,7 @@ class Ui_MainWindow(object):
         self.scroll_tab_tool_compare.setWidgetResizable(True)
         self.scroll_tab_tool_compare_contents = QWidget()
         self.scroll_tab_tool_compare_contents.setObjectName(u"scroll_tab_tool_compare_contents")
-        self.scroll_tab_tool_compare_contents.setGeometry(QRect(0, 0, 438, 424))
+        self.scroll_tab_tool_compare_contents.setGeometry(QRect(0, 0, 1113, 494))
         self.layout_scroll_tab_tool_compare_contents = QVBoxLayout(self.scroll_tab_tool_compare_contents)
         self.layout_scroll_tab_tool_compare_contents.setSpacing(14)
         self.layout_scroll_tab_tool_compare_contents.setObjectName(u"layout_scroll_tab_tool_compare_contents")
@@ -1656,7 +1669,7 @@ class Ui_MainWindow(object):
         self.scroll_tab_tool_columns.setWidgetResizable(True)
         self.scroll_tab_tool_columns_contents = QWidget()
         self.scroll_tab_tool_columns_contents.setObjectName(u"scroll_tab_tool_columns_contents")
-        self.scroll_tab_tool_columns_contents.setGeometry(QRect(0, 0, 354, 620))
+        self.scroll_tab_tool_columns_contents.setGeometry(QRect(0, 0, 1101, 588))
         self.layout_scroll_tab_tool_columns_contents = QVBoxLayout(self.scroll_tab_tool_columns_contents)
         self.layout_scroll_tab_tool_columns_contents.setSpacing(14)
         self.layout_scroll_tab_tool_columns_contents.setObjectName(u"layout_scroll_tab_tool_columns_contents")
@@ -1868,7 +1881,7 @@ class Ui_MainWindow(object):
         self.scroll_tab_tool_cleanup.setWidgetResizable(True)
         self.scroll_tab_tool_cleanup_contents = QWidget()
         self.scroll_tab_tool_cleanup_contents.setObjectName(u"scroll_tab_tool_cleanup_contents")
-        self.scroll_tab_tool_cleanup_contents.setGeometry(QRect(0, 0, 338, 288))
+        self.scroll_tab_tool_cleanup_contents.setGeometry(QRect(0, 0, 1113, 494))
         self.layout_scroll_tab_tool_cleanup_contents = QVBoxLayout(self.scroll_tab_tool_cleanup_contents)
         self.layout_scroll_tab_tool_cleanup_contents.setSpacing(14)
         self.layout_scroll_tab_tool_cleanup_contents.setObjectName(u"layout_scroll_tab_tool_cleanup_contents")
@@ -1992,7 +2005,7 @@ class Ui_MainWindow(object):
         self.scroll_tab_tool_hex.setWidgetResizable(True)
         self.scroll_tab_tool_hex_contents = QWidget()
         self.scroll_tab_tool_hex_contents.setObjectName(u"scroll_tab_tool_hex_contents")
-        self.scroll_tab_tool_hex_contents.setGeometry(QRect(0, 0, 177, 288))
+        self.scroll_tab_tool_hex_contents.setGeometry(QRect(0, 0, 1113, 494))
         self.layout_scroll_tab_tool_hex_contents = QVBoxLayout(self.scroll_tab_tool_hex_contents)
         self.layout_scroll_tab_tool_hex_contents.setSpacing(14)
         self.layout_scroll_tab_tool_hex_contents.setObjectName(u"layout_scroll_tab_tool_hex_contents")
@@ -2300,13 +2313,17 @@ class Ui_MainWindow(object):
         self.card_source.setProperty(u"role", QCoreApplication.translate("MainWindow", u"card", None))
         self.label_card_source_title.setText(QCoreApplication.translate("MainWindow", u"Source folder", None))
         self.label_card_source_title.setProperty(u"role", QCoreApplication.translate("MainWindow", u"card-title", None))
+        self.statusbar_xml_files_count.setText("")
+        self.statusbar_xml_files_count.setProperty(u"role", QCoreApplication.translate("MainWindow", u"status", None))
         self.line_edit_xml_folder_path_input.setPlaceholderText(QCoreApplication.translate("MainWindow", u"Folder that contains the XML files to search", None))
 #if QT_CONFIG(tooltip)
         self.button_browse_xml_folder.setToolTip(QCoreApplication.translate("MainWindow", u"Browse for the folder containing your XML files.", None))
 #endif // QT_CONFIG(tooltip)
         self.button_browse_xml_folder.setText(QCoreApplication.translate("MainWindow", u"Browse\u2026", None))
-        self.statusbar_xml_files_count.setText("")
-        self.statusbar_xml_files_count.setProperty(u"role", QCoreApplication.translate("MainWindow", u"status", None))
+#if QT_CONFIG(tooltip)
+        self.button_read_xml.setToolTip(QCoreApplication.translate("MainWindow", u"Open one XML file to fill the XPath builder lists and show its content in the preview.", None))
+#endif // QT_CONFIG(tooltip)
+        self.button_read_xml.setText(QCoreApplication.translate("MainWindow", u"Inspect XML file\u2026", None))
         self.card_builder.setProperty(u"role", QCoreApplication.translate("MainWindow", u"card", None))
         self.label_card_builder_title.setText(QCoreApplication.translate("MainWindow", u"XPath builder", None))
         self.label_card_builder_title.setProperty(u"role", QCoreApplication.translate("MainWindow", u"card-title", None))
@@ -2385,10 +2402,6 @@ class Ui_MainWindow(object):
         self.label_preview_shortcut.setProperty(u"role", QCoreApplication.translate("MainWindow", u"hint", None))
         self.text_edit_xml_output.setPlaceholderText(QCoreApplication.translate("MainWindow", u"Inspect an XML file to see its content here.", None))
         self.text_edit_xml_output.setProperty(u"role", QCoreApplication.translate("MainWindow", u"code", None))
-#if QT_CONFIG(tooltip)
-        self.button_read_xml.setToolTip(QCoreApplication.translate("MainWindow", u"Open one XML file to fill the XPath builder lists and show its content in the preview.", None))
-#endif // QT_CONFIG(tooltip)
-        self.button_read_xml.setText(QCoreApplication.translate("MainWindow", u"Inspect XML file\u2026", None))
         self.line_edit_xml_output_find_text.setPlaceholderText(QCoreApplication.translate("MainWindow", u"Find in preview", None))
 #if QT_CONFIG(tooltip)
         self.button_find_previous.setToolTip(QCoreApplication.translate("MainWindow", u"Find previous match (Shift+Enter)", None))

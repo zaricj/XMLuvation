@@ -260,8 +260,8 @@ Ctrl+J toggles output</string>
              <rect>
               <x>0</x>
               <y>0</y>
-              <width>701</width>
-              <height>914</height>
+              <width>688</width>
+              <height>866</height>
              </rect>
             </property>
             <property name="role" stdset="0">
@@ -308,14 +308,56 @@ Ctrl+J toggles output</string>
                  <number>18</number>
                 </property>
                 <item>
-                 <widget class="QLabel" name="label_card_source_title">
-                  <property name="text">
-                   <string>Source folder</string>
-                  </property>
-                  <property name="role" stdset="0">
-                   <string>card-title</string>
-                  </property>
-                 </widget>
+                 <layout class="QHBoxLayout" name="layout_source">
+                  <item>
+                   <widget class="QLabel" name="label_card_source_title">
+                    <property name="text">
+                     <string>Source folder</string>
+                    </property>
+                    <property name="role" stdset="0">
+                     <string>card-title</string>
+                    </property>
+                   </widget>
+                  </item>
+                  <item>
+                   <spacer name="horizontalSpacer">
+                    <property name="orientation">
+                     <enum>Qt::Orientation::Horizontal</enum>
+                    </property>
+                    <property name="sizeType">
+                     <enum>QSizePolicy::Policy::Expanding</enum>
+                    </property>
+                    <property name="sizeHint" stdset="0">
+                     <size>
+                      <width>40</width>
+                      <height>20</height>
+                     </size>
+                    </property>
+                   </spacer>
+                  </item>
+                  <item>
+                   <widget class="QLabel" name="statusbar_xml_files_count">
+                    <property name="sizePolicy">
+                     <sizepolicy hsizetype="Preferred" vsizetype="Preferred">
+                      <horstretch>0</horstretch>
+                      <verstretch>0</verstretch>
+                     </sizepolicy>
+                    </property>
+                    <property name="minimumSize">
+                     <size>
+                      <width>0</width>
+                      <height>0</height>
+                     </size>
+                    </property>
+                    <property name="text">
+                     <string/>
+                    </property>
+                    <property name="role" stdset="0">
+                     <string>status</string>
+                    </property>
+                   </widget>
+                  </item>
+                 </layout>
                 </item>
                 <item>
                  <layout class="QHBoxLayout" name="layout_source_path">
@@ -354,17 +396,17 @@ Ctrl+J toggles output</string>
                     </property>
                    </widget>
                   </item>
+                  <item>
+                   <widget class="QPushButton" name="button_read_xml">
+                    <property name="toolTip">
+                     <string>Open one XML file to fill the XPath builder lists and show its content in the preview.</string>
+                    </property>
+                    <property name="text">
+                     <string>Inspect XML file…</string>
+                    </property>
+                   </widget>
+                  </item>
                  </layout>
-                </item>
-                <item>
-                 <widget class="QLabel" name="statusbar_xml_files_count">
-                  <property name="text">
-                   <string/>
-                  </property>
-                  <property name="role" stdset="0">
-                   <string>status</string>
-                  </property>
-                 </widget>
                 </item>
                </layout>
               </widget>
@@ -1014,19 +1056,6 @@ Ctrl+J toggles output</string>
                </layout>
               </widget>
              </item>
-             <item>
-              <spacer name="spacer_6">
-               <property name="orientation">
-                <enum>Qt::Orientation::Vertical</enum>
-               </property>
-               <property name="sizeHint" stdset="0">
-                <size>
-                 <width>20</width>
-                 <height>40</height>
-                </size>
-               </property>
-              </spacer>
-             </item>
             </layout>
            </widget>
           </widget>
@@ -1121,16 +1150,6 @@ Ctrl+J toggles output</string>
               </property>
               <property name="role" stdset="0">
                <string>code</string>
-              </property>
-             </widget>
-            </item>
-            <item>
-             <widget class="QPushButton" name="button_read_xml">
-              <property name="toolTip">
-               <string>Open one XML file to fill the XPath builder lists and show its content in the preview.</string>
-              </property>
-              <property name="text">
-               <string>Inspect XML file…</string>
               </property>
              </widget>
             </item>
@@ -1284,6 +1303,14 @@ Ctrl+J toggles output</string>
                <string>transparent</string>
               </property>
               <widget class="QWidget" name="scroll_tab_xml_validate_contents">
+               <property name="geometry">
+                <rect>
+                 <x>0</x>
+                 <y>0</y>
+                 <width>1101</width>
+                 <height>598</height>
+                </rect>
+               </property>
                <property name="role" stdset="0">
                 <string>transparent</string>
                </property>
@@ -1731,6 +1758,14 @@ Ctrl+J toggles output</string>
                <string>transparent</string>
               </property>
               <widget class="QWidget" name="scroll_tab_xml_compare_contents">
+               <property name="geometry">
+                <rect>
+                 <x>0</x>
+                 <y>0</y>
+                 <width>1101</width>
+                 <height>966</height>
+                </rect>
+               </property>
                <property name="role" stdset="0">
                 <string>transparent</string>
                </property>
@@ -2297,8 +2332,8 @@ Ctrl+J toggles output</string>
                 <rect>
                  <x>0</x>
                  <y>0</y>
-                 <width>439</width>
-                 <height>368</height>
+                 <width>1113</width>
+                 <height>494</height>
                 </rect>
                </property>
                <property name="role" stdset="0">
@@ -2841,8 +2876,8 @@ Ctrl+J toggles output</string>
                 <rect>
                  <x>0</x>
                  <y>0</y>
-                 <width>497</width>
-                 <height>368</height>
+                 <width>1113</width>
+                 <height>494</height>
                 </rect>
                </property>
                <property name="role" stdset="0">
@@ -3377,8 +3412,8 @@ Ctrl+J toggles output</string>
                 <rect>
                  <x>0</x>
                  <y>0</y>
-                 <width>438</width>
-                 <height>424</height>
+                 <width>1113</width>
+                 <height>494</height>
                 </rect>
                </property>
                <property name="role" stdset="0">
@@ -3884,8 +3919,8 @@ Ctrl+J toggles output</string>
                 <rect>
                  <x>0</x>
                  <y>0</y>
-                 <width>354</width>
-                 <height>620</height>
+                 <width>1101</width>
+                 <height>588</height>
                 </rect>
                </property>
                <property name="role" stdset="0">
@@ -4415,8 +4450,8 @@ Ctrl+J toggles output</string>
                 <rect>
                  <x>0</x>
                  <y>0</y>
-                 <width>338</width>
-                 <height>288</height>
+                 <width>1113</width>
+                 <height>494</height>
                 </rect>
                </property>
                <property name="role" stdset="0">
@@ -4726,8 +4761,8 @@ Ctrl+J toggles output</string>
                 <rect>
                  <x>0</x>
                  <y>0</y>
-                 <width>177</width>
-                 <height>288</height>
+                 <width>1113</width>
+                 <height>494</height>
                 </rect>
                </property>
                <property name="role" stdset="0">

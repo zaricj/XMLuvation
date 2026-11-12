@@ -2,18 +2,26 @@
 <ui version="4.0">
  <class>PreBuiltXPathsManagerWidget</class>
  <widget class="QWidget" name="PreBuiltXPathsManagerWidget">
-  <property name="windowTitle">
-   <string>XPath presets</string>
-  </property>
-  <property name="windowIcon">
-   <iconset resource="../qrc/xmluvation_resources.qrc">
-    <normaloff>:/icons/xml_256px.ico</normaloff>:/icons/xml_256px.ico</iconset>
+  <property name="geometry">
+   <rect>
+    <x>0</x>
+    <y>0</y>
+    <width>1384</width>
+    <height>881</height>
+   </rect>
   </property>
   <property name="minimumSize">
    <size>
     <width>900</width>
     <height>0</height>
    </size>
+  </property>
+  <property name="windowTitle">
+   <string>XPath presets</string>
+  </property>
+  <property name="windowIcon">
+   <iconset resource="../qrc/xmluvation_resources.qrc">
+    <normaloff>:/icons/xml_256px.ico</normaloff>:/icons/xml_256px.ico</iconset>
   </property>
   <property name="role" stdset="0">
    <string>page</string>
@@ -160,11 +168,11 @@
           </item>
           <item>
            <widget class="QPushButton" name="button_add_xpath_to_list">
-            <property name="text">
-             <string>Add</string>
-            </property>
             <property name="toolTip">
              <string>Add the expression to the list below.</string>
+            </property>
+            <property name="text">
+             <string>Add</string>
             </property>
            </widget>
           </item>
@@ -172,14 +180,14 @@
         </item>
         <item>
          <widget class="QListWidget" name="list_widget_xpath_expressions">
-          <property name="alternatingRowColors">
-           <bool>true</bool>
-          </property>
           <property name="minimumSize">
            <size>
             <width>0</width>
             <height>110</height>
            </size>
+          </property>
+          <property name="alternatingRowColors">
+           <bool>true</bool>
           </property>
          </widget>
         </item>
@@ -222,11 +230,11 @@
           </item>
           <item>
            <widget class="QPushButton" name="button_add_csv_header_to_list">
-            <property name="text">
-             <string>Add</string>
-            </property>
             <property name="toolTip">
              <string>Add the header(s) to the list below.</string>
+            </property>
+            <property name="text">
+             <string>Add</string>
             </property>
            </widget>
           </item>
@@ -234,14 +242,14 @@
         </item>
         <item>
          <widget class="QListWidget" name="list_widget_csv_headers">
-          <property name="alternatingRowColors">
-           <bool>true</bool>
-          </property>
           <property name="minimumSize">
            <size>
             <width>0</width>
             <height>110</height>
            </size>
+          </property>
+          <property name="alternatingRowColors">
+           <bool>true</bool>
           </property>
          </widget>
         </item>
@@ -274,11 +282,11 @@
           </item>
           <item>
            <widget class="QPushButton" name="button_save_config">
-            <property name="text">
-             <string>Save preset</string>
-            </property>
             <property name="toolTip">
              <string>Save the expressions and headers above as a new preset.</string>
+            </property>
+            <property name="text">
+             <string>Save preset</string>
             </property>
             <property name="role" stdset="0">
              <string>primary</string>
@@ -363,21 +371,21 @@
           </item>
           <item>
            <widget class="QPushButton" name="button_load_config">
-            <property name="text">
-             <string>Load</string>
-            </property>
             <property name="toolTip">
              <string>Load the selected preset into the lists below.</string>
+            </property>
+            <property name="text">
+             <string>Load</string>
             </property>
            </widget>
           </item>
           <item>
            <widget class="QPushButton" name="button_delete_config">
-            <property name="text">
-             <string>Delete</string>
-            </property>
             <property name="toolTip">
              <string>Delete the selected preset.</string>
+            </property>
+            <property name="text">
+             <string>Delete</string>
             </property>
             <property name="role" stdset="0">
              <string>danger</string>
@@ -398,14 +406,14 @@
         </item>
         <item>
          <widget class="QListWidget" name="list_widget_edit_xpath_expressions">
-          <property name="alternatingRowColors">
-           <bool>true</bool>
-          </property>
           <property name="minimumSize">
            <size>
             <width>0</width>
             <height>110</height>
            </size>
+          </property>
+          <property name="alternatingRowColors">
+           <bool>true</bool>
           </property>
          </widget>
         </item>
@@ -421,14 +429,14 @@
         </item>
         <item>
          <widget class="QListWidget" name="list_widget_edit_csv_headers">
-          <property name="alternatingRowColors">
-           <bool>true</bool>
-          </property>
           <property name="minimumSize">
            <size>
             <width>0</width>
             <height>110</height>
            </size>
+          </property>
+          <property name="alternatingRowColors">
+           <bool>true</bool>
           </property>
          </widget>
         </item>
@@ -464,7 +472,7 @@
             <property name="orientation">
              <enum>Qt::Orientation::Horizontal</enum>
             </property>
-            <property name="sizeHint">
+            <property name="sizeHint" stdset="0">
              <size>
               <width>40</width>
               <height>20</height>
@@ -474,11 +482,11 @@
           </item>
           <item>
            <widget class="QPushButton" name="button_save_changes">
-            <property name="text">
-             <string>Save changes</string>
-            </property>
             <property name="toolTip">
              <string>Save the edited lists to the loaded preset.</string>
+            </property>
+            <property name="text">
+             <string>Save changes</string>
             </property>
             <property name="role" stdset="0">
              <string>primary</string>
@@ -527,7 +535,7 @@
        <property name="orientation">
         <enum>Qt::Orientation::Horizontal</enum>
        </property>
-       <property name="sizeHint">
+       <property name="sizeHint" stdset="0">
         <size>
          <width>40</width>
          <height>20</height>
@@ -537,21 +545,21 @@
      </item>
      <item>
       <widget class="QPushButton" name="button_remove_selected">
-       <property name="text">
-        <string>Remove selected</string>
-       </property>
        <property name="toolTip">
         <string>Remove the selected entry from the list you clicked last.</string>
+       </property>
+       <property name="text">
+        <string>Remove selected</string>
        </property>
       </widget>
      </item>
      <item>
       <widget class="QPushButton" name="button_remove_all">
-       <property name="text">
-        <string>Remove all</string>
-       </property>
        <property name="toolTip">
         <string>Remove every entry from the list you clicked last.</string>
+       </property>
+       <property name="text">
+        <string>Remove all</string>
        </property>
       </widget>
      </item>
@@ -560,7 +568,7 @@
   </layout>
  </widget>
  <resources>
-  <include location="../qrc/xmluvation_resources.qrc" />
+  <include location="../qrc/xmluvation_resources.qrc"/>
  </resources>
- <connections />
+ <connections/>
 </ui>

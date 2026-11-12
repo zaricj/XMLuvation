@@ -25,10 +25,11 @@ class Ui_PreBuiltXPathsManagerWidget(object):
     def setupUi(self, PreBuiltXPathsManagerWidget):
         if not PreBuiltXPathsManagerWidget.objectName():
             PreBuiltXPathsManagerWidget.setObjectName(u"PreBuiltXPathsManagerWidget")
+        PreBuiltXPathsManagerWidget.resize(1384, 881)
+        PreBuiltXPathsManagerWidget.setMinimumSize(QSize(900, 0))
         icon = QIcon()
         icon.addFile(u":/icons/xml_256px.ico", QSize(), QIcon.Mode.Normal, QIcon.State.Off)
         PreBuiltXPathsManagerWidget.setWindowIcon(icon)
-        PreBuiltXPathsManagerWidget.setMinimumSize(QSize(900, 0))
         self.layout_PreBuiltXPathsManagerWidget = QVBoxLayout(PreBuiltXPathsManagerWidget)
         self.layout_PreBuiltXPathsManagerWidget.setSpacing(14)
         self.layout_PreBuiltXPathsManagerWidget.setObjectName(u"layout_PreBuiltXPathsManagerWidget")
@@ -91,8 +92,8 @@ class Ui_PreBuiltXPathsManagerWidget(object):
 
         self.list_widget_xpath_expressions = QListWidget(self.groupBox)
         self.list_widget_xpath_expressions.setObjectName(u"list_widget_xpath_expressions")
-        self.list_widget_xpath_expressions.setAlternatingRowColors(True)
         self.list_widget_xpath_expressions.setMinimumSize(QSize(0, 110))
+        self.list_widget_xpath_expressions.setAlternatingRowColors(True)
 
         self.layout_groupBox.addWidget(self.list_widget_xpath_expressions)
 
@@ -121,8 +122,8 @@ class Ui_PreBuiltXPathsManagerWidget(object):
 
         self.list_widget_csv_headers = QListWidget(self.groupBox)
         self.list_widget_csv_headers.setObjectName(u"list_widget_csv_headers")
-        self.list_widget_csv_headers.setAlternatingRowColors(True)
         self.list_widget_csv_headers.setMinimumSize(QSize(0, 110))
+        self.list_widget_csv_headers.setAlternatingRowColors(True)
 
         self.layout_groupBox.addWidget(self.list_widget_csv_headers)
 
@@ -195,8 +196,8 @@ class Ui_PreBuiltXPathsManagerWidget(object):
 
         self.list_widget_edit_xpath_expressions = QListWidget(self.groupBox_pre_built_xpaths_main)
         self.list_widget_edit_xpath_expressions.setObjectName(u"list_widget_edit_xpath_expressions")
-        self.list_widget_edit_xpath_expressions.setAlternatingRowColors(True)
         self.list_widget_edit_xpath_expressions.setMinimumSize(QSize(0, 110))
+        self.list_widget_edit_xpath_expressions.setAlternatingRowColors(True)
 
         self.layout_groupBox_pre_built_xpaths_main.addWidget(self.list_widget_edit_xpath_expressions)
 
@@ -207,8 +208,8 @@ class Ui_PreBuiltXPathsManagerWidget(object):
 
         self.list_widget_edit_csv_headers = QListWidget(self.groupBox_pre_built_xpaths_main)
         self.list_widget_edit_csv_headers.setObjectName(u"list_widget_edit_csv_headers")
-        self.list_widget_edit_csv_headers.setAlternatingRowColors(True)
         self.list_widget_edit_csv_headers.setMinimumSize(QSize(0, 110))
+        self.list_widget_edit_csv_headers.setAlternatingRowColors(True)
 
         self.layout_groupBox_pre_built_xpaths_main.addWidget(self.list_widget_edit_csv_headers)
 
@@ -287,22 +288,22 @@ class Ui_PreBuiltXPathsManagerWidget(object):
         self.label_new_expressions.setText(QCoreApplication.translate("PreBuiltXPathsManagerWidget", u"XPath expressions", None))
         self.label_new_expressions.setProperty(u"role", QCoreApplication.translate("PreBuiltXPathsManagerWidget", u"field-label", None))
         self.line_edit_xpath_expression.setPlaceholderText(QCoreApplication.translate("PreBuiltXPathsManagerWidget", u"XPath expression", None))
-        self.button_add_xpath_to_list.setText(QCoreApplication.translate("PreBuiltXPathsManagerWidget", u"Add", None))
 #if QT_CONFIG(tooltip)
         self.button_add_xpath_to_list.setToolTip(QCoreApplication.translate("PreBuiltXPathsManagerWidget", u"Add the expression to the list below.", None))
 #endif // QT_CONFIG(tooltip)
+        self.button_add_xpath_to_list.setText(QCoreApplication.translate("PreBuiltXPathsManagerWidget", u"Add", None))
         self.label_new_headers.setText(QCoreApplication.translate("PreBuiltXPathsManagerWidget", u"CSV headers", None))
         self.label_new_headers.setProperty(u"role", QCoreApplication.translate("PreBuiltXPathsManagerWidget", u"field-label", None))
         self.line_edit_csv_header.setPlaceholderText(QCoreApplication.translate("PreBuiltXPathsManagerWidget", u"Header (comma-separated for several)", None))
-        self.button_add_csv_header_to_list.setText(QCoreApplication.translate("PreBuiltXPathsManagerWidget", u"Add", None))
 #if QT_CONFIG(tooltip)
         self.button_add_csv_header_to_list.setToolTip(QCoreApplication.translate("PreBuiltXPathsManagerWidget", u"Add the header(s) to the list below.", None))
 #endif // QT_CONFIG(tooltip)
+        self.button_add_csv_header_to_list.setText(QCoreApplication.translate("PreBuiltXPathsManagerWidget", u"Add", None))
         self.line_edit_config_name.setPlaceholderText(QCoreApplication.translate("PreBuiltXPathsManagerWidget", u"Preset name", None))
-        self.button_save_config.setText(QCoreApplication.translate("PreBuiltXPathsManagerWidget", u"Save preset", None))
 #if QT_CONFIG(tooltip)
         self.button_save_config.setToolTip(QCoreApplication.translate("PreBuiltXPathsManagerWidget", u"Save the expressions and headers above as a new preset.", None))
 #endif // QT_CONFIG(tooltip)
+        self.button_save_config.setText(QCoreApplication.translate("PreBuiltXPathsManagerWidget", u"Save preset", None))
         self.button_save_config.setProperty(u"role", QCoreApplication.translate("PreBuiltXPathsManagerWidget", u"primary", None))
         self.groupBox_pre_built_xpaths_main.setProperty(u"role", QCoreApplication.translate("PreBuiltXPathsManagerWidget", u"card", None))
         self.label_groupBox_pre_built_xpaths_main_title.setText(QCoreApplication.translate("PreBuiltXPathsManagerWidget", u"Edit preset", None))
@@ -310,14 +311,14 @@ class Ui_PreBuiltXPathsManagerWidget(object):
         self.label_9.setText(QCoreApplication.translate("PreBuiltXPathsManagerWidget", u"Load a preset to change or reorder its expressions and headers.", None))
         self.label_9.setProperty(u"role", QCoreApplication.translate("PreBuiltXPathsManagerWidget", u"hint", None))
         self.combobox_xpath_configs.setPlaceholderText(QCoreApplication.translate("PreBuiltXPathsManagerWidget", u"No presets", None))
-        self.button_load_config.setText(QCoreApplication.translate("PreBuiltXPathsManagerWidget", u"Load", None))
 #if QT_CONFIG(tooltip)
         self.button_load_config.setToolTip(QCoreApplication.translate("PreBuiltXPathsManagerWidget", u"Load the selected preset into the lists below.", None))
 #endif // QT_CONFIG(tooltip)
-        self.button_delete_config.setText(QCoreApplication.translate("PreBuiltXPathsManagerWidget", u"Delete", None))
+        self.button_load_config.setText(QCoreApplication.translate("PreBuiltXPathsManagerWidget", u"Load", None))
 #if QT_CONFIG(tooltip)
         self.button_delete_config.setToolTip(QCoreApplication.translate("PreBuiltXPathsManagerWidget", u"Delete the selected preset.", None))
 #endif // QT_CONFIG(tooltip)
+        self.button_delete_config.setText(QCoreApplication.translate("PreBuiltXPathsManagerWidget", u"Delete", None))
         self.button_delete_config.setProperty(u"role", QCoreApplication.translate("PreBuiltXPathsManagerWidget", u"danger", None))
         self.label_7.setText(QCoreApplication.translate("PreBuiltXPathsManagerWidget", u"XPath expressions", None))
         self.label_7.setProperty(u"role", QCoreApplication.translate("PreBuiltXPathsManagerWidget", u"field-label", None))
@@ -325,20 +326,20 @@ class Ui_PreBuiltXPathsManagerWidget(object):
         self.label_8.setProperty(u"role", QCoreApplication.translate("PreBuiltXPathsManagerWidget", u"field-label", None))
         self.button_open_config_directory.setText(QCoreApplication.translate("PreBuiltXPathsManagerWidget", u"Open config folder", None))
         self.button_open_config_directory.setProperty(u"role", QCoreApplication.translate("PreBuiltXPathsManagerWidget", u"flat", None))
-        self.button_save_changes.setText(QCoreApplication.translate("PreBuiltXPathsManagerWidget", u"Save changes", None))
 #if QT_CONFIG(tooltip)
         self.button_save_changes.setToolTip(QCoreApplication.translate("PreBuiltXPathsManagerWidget", u"Save the edited lists to the loaded preset.", None))
 #endif // QT_CONFIG(tooltip)
+        self.button_save_changes.setText(QCoreApplication.translate("PreBuiltXPathsManagerWidget", u"Save changes", None))
         self.button_save_changes.setProperty(u"role", QCoreApplication.translate("PreBuiltXPathsManagerWidget", u"primary", None))
         self.label_remove_hint.setText(QCoreApplication.translate("PreBuiltXPathsManagerWidget", u"Remove actions apply to the list you clicked last.", None))
         self.label_remove_hint.setProperty(u"role", QCoreApplication.translate("PreBuiltXPathsManagerWidget", u"hint", None))
-        self.button_remove_selected.setText(QCoreApplication.translate("PreBuiltXPathsManagerWidget", u"Remove selected", None))
 #if QT_CONFIG(tooltip)
         self.button_remove_selected.setToolTip(QCoreApplication.translate("PreBuiltXPathsManagerWidget", u"Remove the selected entry from the list you clicked last.", None))
 #endif // QT_CONFIG(tooltip)
-        self.button_remove_all.setText(QCoreApplication.translate("PreBuiltXPathsManagerWidget", u"Remove all", None))
+        self.button_remove_selected.setText(QCoreApplication.translate("PreBuiltXPathsManagerWidget", u"Remove selected", None))
 #if QT_CONFIG(tooltip)
         self.button_remove_all.setToolTip(QCoreApplication.translate("PreBuiltXPathsManagerWidget", u"Remove every entry from the list you clicked last.", None))
 #endif // QT_CONFIG(tooltip)
+        self.button_remove_all.setText(QCoreApplication.translate("PreBuiltXPathsManagerWidget", u"Remove all", None))
     # retranslateUi
 
