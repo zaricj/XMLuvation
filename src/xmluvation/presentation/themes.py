@@ -25,8 +25,9 @@ SPIN_BOX_TEXT_INSET = {
     "dark_theme_default": 9,
     "light_theme_default": 9,
     "dark_theme_yellow": 9,
+    "dark_theme_peach": 9,
     "dark_theme_qlementine": 9,
-    "dark_theme_metallic_spaceship": 7,
+    "dark_theme_metallic_spaceship": 9,
 }
 
 
